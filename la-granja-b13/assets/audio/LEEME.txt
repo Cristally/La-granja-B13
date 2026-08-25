@@ -1,0 +1,26 @@
+Esta carpeta ya tiene los sonidos reales que se usan en la app:
+
+  conejo.mp3    → sonido del conejo (recortado de rabbit-sounds.mp3, sin editar el clip)
+  gallina.mp3   → sonido de gallina (Sonido_Gallina.mp3 original, 3.5s, sin recortar)
+  gallo.mp3     → recorte de ~5.5s de Sound_chickens.mp3 (el original dura 99s: es un
+                  ambiente de gallinero completo, así que se recortó a un fragmento corto
+                  para usarlo como efecto de botón)
+  aves.mp3      → recorte de ~5.5s de Sonido_de_birds__avecitas_.mp3 (el original dura
+                  130s por la misma razón que gallo.mp3)
+  gato.mp3      → cute-cat-meow.mp3 original, sin editar
+
+¿Dónde se usan? Cada especie en js/data.js tiene un campo "sound" con la ruta al archivo
+correspondiente (por ejemplo, ANIMALS → conejo → sound: 'assets/audio/conejo.mp3'). Cuando
+existe ese campo, aparece el botón "🔊 Sonido real" en el encabezado de la ficha. Vaca y
+Oveja no tienen sonido propio todavía (no se recibió una grabación para ellas), así que ese
+botón no aparece en sus fichas — no es un error, es el comportamiento esperado.
+
+En el Mapa de la Granja, los animales individuales heredan el sonido de su especie
+automáticamente (todos los conejos usan conejo.mp3, por ejemplo), excepto Matías y Vicente /
+Otras gallinas, que usan gallina.mp3 en vez de gallo.mp3 porque son gallinas, no el gallo. La
+zona "Gato" del mapa también reproduce gato.mp3 al tocarla (no tiene ficha propia, es solo un
+detalle de ambientación).
+
+Si agregan sonido para vaca u oveja más adelante: guarden el archivo aquí y agreguen
+sound: 'assets/audio/nombre.mp3' a su entrada correspondiente en js/data.js — el botón
+aparece solo, no hay que tocar nada más.

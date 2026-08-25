@@ -1,0 +1,731 @@
+:root{
+  --paper:#FAF7EE;
+  --paper-dark:#EADBBE;
+  --paper-card:#FFFDF7;
+  --ink:#28311B;
+  --grass-dark:#3B5832;
+  --grass-mid:#5C8446;
+  --grass-light:#7FA858;
+  --sky-top:#74B9E6;
+  --sky-bot:#D2EDEC;
+  --hay:#E8A838;
+  --clay:#B34736;
+  --fence:#7D5838;
+  --fence-light:#A47A53;
+  --barn:#944336;
+  --card-shadow: 0 6px 20px rgba(40,49,27,0.12), 3px 3px 0 rgba(40,49,27,0.16);
+}
+*{box-sizing:border-box;}
+body{
+  margin:0;
+  background:var(--paper);
+  background-image:
+    radial-gradient(circle at 1px 1px, rgba(59,88,50,0.08) 1.2px, transparent 0),
+    radial-gradient(circle at 13px 13px, rgba(232,168,56,0.06) 1.2px, transparent 0);
+  background-size: 24px 24px;
+  color:var(--ink);
+  font-family:'Karla', sans-serif;
+  min-height: 100vh;
+}
+.app{
+  max-width:900px;
+  margin:0 auto;
+  padding:22px 20px 50px;
+}
+
+/* ---------- Header ---------- */
+header.top{
+  display:flex;justify-content:space-between;align-items:center;
+  border-bottom:3px solid var(--ink);
+  padding-bottom:12px;margin-bottom:14px;flex-wrap:wrap;gap:12px;
+}
+.brand-wrap{
+  display:flex;align-items:center;gap:14px;
+}
+.app-logo{
+  width:62px;height:62px;object-fit:contain;border-radius:50%;
+  filter:drop-shadow(2px 3px 4px rgba(40,49,27,0.22));border:2.5px solid var(--ink);background:#FAF7EE;
+  transition:transform .18s ease, box-shadow .18s ease;flex-shrink:0;cursor:pointer;
+}
+.app-logo:hover{
+  transform:rotate(6deg) scale(1.1);
+  box-shadow:0 0 10px rgba(232,168,56,0.6);
+}
+header.top h1{
+  font-family:'Fraunces', serif;font-weight:700;font-size:2rem;
+  margin:0;letter-spacing:-0.01em;color:var(--ink);line-height:1.15;
+}
+header.top .sub{font-size:0.85rem;color:var(--grass-dark);margin-top:3px;font-weight:500;}
+.scorebox{
+  font-family:'Space Mono', monospace;background:linear-gradient(180deg, #2E3821, #1C2314);
+  color:#FAF7EE;padding:8px 16px;border-radius:6px;font-size:0.85rem;text-align:right;
+  line-height:1.5;box-shadow: 2px 2px 0 rgba(40,49,27,0.25);border: 2px solid var(--hay);
+}
+.scorebox b{font-size:1.2rem;color:var(--hay);text-shadow: 0 0 8px rgba(232,168,56,0.5);}
+
+/* ---------- Toolbar ---------- */
+.toolbar{
+  display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;
+  gap:8px;margin-bottom:14px;
+}
+.student-pill{
+  display:inline-flex;align-items:center;gap:8px;background:var(--paper-card);border:2px solid var(--ink);
+  border-radius:8px;padding:5px 10px;cursor:pointer;transition:transform .12s, box-shadow .12s;
+  box-shadow: 2px 2px 0 rgba(40,49,27,0.18);flex-shrink:0;
+}
+.student-pill:hover{transform:translateY(-1px);box-shadow: 3px 3px 0 rgba(40,49,27,0.25);}
+.student-icon{font-size:1.2rem;}
+.student-info{display:flex;flex-direction:column;}
+.student-label{font-size:0.6rem;text-transform:uppercase;letter-spacing:0.06em;font-weight:700;color:var(--grass-dark);}
+.student-info b{font-size:0.85rem;color:var(--ink);white-space:nowrap;}
+.student-change-btn{
+  background:var(--paper-dark);border:1px solid var(--ink);border-radius:4px;
+  cursor:pointer;padding:2px 6px;font-size:0.75rem;margin-left:4px;
+}
+.student-change-btn:hover{background:var(--hay);}
+
+.tool-buttons{display:inline-flex;gap:6px;flex-wrap:wrap;align-items:center;}
+.tool-btn{
+  background:var(--paper-dark);border:2px solid var(--ink);border-radius:6px;
+  padding:6px 10px;font-family:'Karla',sans-serif;font-weight:700;font-size:0.76rem;
+  cursor:pointer;color:var(--ink);transition:background .12s, transform .12s, box-shadow .12s;
+  box-shadow: 2px 2px 0 rgba(40,49,27,0.12);white-space:nowrap;
+}
+.tool-btn:hover{background:#fff;transform:translateY(-1px);box-shadow: 3px 3px 0 rgba(40,49,27,0.2);}
+.tool-btn.off{opacity:0.55;}
+
+#dayNightBtn{
+  min-width:82px;text-align:center;display:inline-flex;justify-content:center;
+}
+
+/* ---------- Stage (Potrero Escénico) ---------- */
+.stage-wrap{
+  position:relative;border:3px solid var(--ink);border-radius:8px;overflow:hidden;
+  box-shadow:var(--card-shadow);background:#608A46;
+}
+.stage{
+  position:relative;height:380px;
+  background:linear-gradient(180deg, var(--sky-top) 0%, #A8DCF0 28%, var(--sky-bot) 46%, #689945 46%, var(--grass-mid) 60%, var(--grass-dark) 100%);
+  overflow:hidden;
+}
+
+/* Colinas en el horizonte */
+.hills-bg{
+  position:absolute;left:0;right:0;bottom:54%;height:50px;pointer-events:none;
+  background:
+    radial-gradient(ellipse 120px 36px at 20% 100%, #5B8342 98%, transparent 100%),
+    radial-gradient(ellipse 180px 45px at 58% 100%, #53793C 98%, transparent 100%),
+    radial-gradient(ellipse 140px 40px at 90% 100%, #5B8342 98%, transparent 100%);
+  opacity:0.85;
+}
+
+/* Sol radiante */
+.sun{
+  position:absolute;top:16px;right:26px;width:40px;height:40px;border-radius:50%;
+  background:radial-gradient(circle, #FFE77A 0%, var(--hay) 70%, #D48924 100%);
+  box-shadow:0 0 16px rgba(255,231,122,0.8), 0 0 32px rgba(232,168,56,0.4);
+  pointer-events:none;animation:sunPulse 4s ease-in-out infinite alternate;
+}
+@keyframes sunPulse{
+  0%{transform:scale(1);}
+  100%{transform:scale(1.08);}
+}
+
+/* Aves lejanas animadas */
+.birds-flock{
+  position:absolute;top:32px;left:28%;font-size:0.75rem;color:rgba(59,88,50,0.65);
+  letter-spacing:10px;pointer-events:none;animation:floatBirds 22s linear infinite;user-select:none;
+}
+@keyframes floatBirds{
+  0%{transform:translateX(180px) translateY(0);}
+  50%{transform:translateX(0px) translateY(-6px);}
+  100%{transform:translateX(-220px) translateY(0);}
+}
+
+/* Nubes suaves flotantes */
+.cloud{
+  position:absolute;background:rgba(255,255,255,0.85);border-radius:30px;
+  box-shadow: 0 4px 10px rgba(255,255,255,0.4);pointer-events:none;animation:driftCloud 38s linear infinite;
+}
+.cloud::before, .cloud::after{
+  content:'';position:absolute;background:inherit;border-radius:50%;
+}
+.cloud::before{width:50%;height:100%;top:-40%;left:15%;}
+.cloud::after{width:40%;height:80%;top:-30%;right:15%;}
+@keyframes driftCloud{
+  0%{transform:translateX(0);}
+  100%{transform:translateX(450px);}
+}
+
+/* Cerca de madera detallada (termina antes del granero) */
+.fence{
+  position:absolute;left:0;right:calc(6% + 115px);bottom:52%;height:32px;
+  display:flex;justify-content:space-around;pointer-events:none;z-index:1;
+}
+.fence::before, .fence::after{
+  content:'';position:absolute;left:0;right:0;height:4px;background:var(--fence-light);
+  border:1px solid var(--ink);box-shadow:0 1px 2px rgba(0,0,0,0.15);
+}
+.fence::before{top:8px;}
+.fence::after{top:20px;}
+.fence i{
+  display:block;width:7px;height:32px;background:var(--fence);
+  border:1px solid var(--ink);border-radius:2px 2px 0 0;position:relative;z-index:2;
+  box-shadow: 1px 2px 2px rgba(0,0,0,0.2);
+}
+
+/* Granero / Galpón de la Granja (en capa frontal a la cerca) */
+.barn{
+  position:absolute;right:6%;bottom:48%;width:80px;height:65px;
+  background:linear-gradient(180deg, var(--barn) 0%, #753226 100%);
+  border:2px solid var(--ink);border-top:none;border-radius:2px;pointer-events:none;
+  box-shadow: 3px 3px 6px rgba(0,0,0,0.25);z-index:2;
+}
+.barn-roof{
+  position:absolute;top:-30px;left:-6px;width:0;height:0;
+  border-left:46px solid transparent;border-right:46px solid transparent;border-bottom:30px solid var(--ink);
+}
+.barn-roof::after{
+  content:'';position:absolute;top:3px;left:-40px;width:0;height:0;
+  border-left:40px solid transparent;border-right:40px solid transparent;border-bottom:26px solid var(--clay);
+}
+.barn-window{
+  position:absolute;top:6px;left:50%;transform:translateX(-50%);width:16px;height:16px;
+  background:#FFE58F;border:2px solid var(--ink);border-radius:2px;box-shadow: 0 0 6px rgba(255,229,143,0.8);
+}
+.barn-window::before{
+  content:'';position:absolute;top:0;bottom:0;left:6px;width:2px;background:var(--ink);
+}
+.barn-window::after{
+  content:'';position:absolute;left:0;right:0;top:6px;height:2px;background:var(--ink);
+}
+.barn-door{
+  position:absolute;bottom:0;left:28px;width:24px;height:32px;
+  background:#4F241C;border:2px solid var(--ink);border-bottom:none;border-radius:3px 3px 0 0;
+}
+.straw-bale{
+  position:absolute;right:calc(6% + 86px);bottom:48%;width:26px;height:16px;
+  background:repeating-linear-gradient(90deg, #E8A838, #E8A838 3px, #D4952B 3px, #D4952B 6px);
+  border:2px solid var(--ink);border-radius:2px;box-shadow: 2px 2px 3px rgba(0,0,0,0.2);pointer-events:none;z-index:2;
+}
+
+/* Flores y pasto silvestre */
+.wildflowers{position:absolute;left:0;right:0;bottom:0;top:54%;pointer-events:none;}
+.flower{position:absolute;font-size:0.85rem;filter:drop-shadow(1px 1px 1px rgba(0,0,0,0.2));opacity:0.85;}
+.butterfly{position:absolute;font-size:0.9rem;animation:flyButterfly 14s ease-in-out infinite alternate;pointer-events:none;}
+@keyframes flyButterfly{
+  0%{transform:translate(0, 0) scale(1);}
+  30%{transform:translate(80px, -25px) scale(0.9) scaleX(-1);}
+  65%{transform:translate(160px, -8px) scale(1.05) scaleX(1);}
+  100%{transform:translate(240px, -35px) scale(0.95) scaleX(-1);}
+}
+
+.hint{
+  position:absolute;top:10px;left:12px;background:rgba(255,253,247,0.92);
+  border:2px solid var(--ink);border-radius:5px;padding:5px 11px;font-size:0.8rem;
+  font-weight:700;color:var(--grass-dark);z-index:2;box-shadow: 2px 2px 0 rgba(40,49,27,0.15);
+}
+
+/* Modo Noche en el Escenario */
+.stage.night{
+  background:linear-gradient(180deg, #090E1D 0%, #111A35 28%, #162444 46%, #1E3821 46%, #162B1A 65%, #0F1F13 100%);
+}
+.stage.night .hills-bg{
+  background:
+    radial-gradient(ellipse 120px 36px at 20% 100%, #182B1B 98%, transparent 100%),
+    radial-gradient(ellipse 180px 45px at 58% 100%, #142417 98%, transparent 100%),
+    radial-gradient(ellipse 140px 40px at 90% 100%, #182B1B 98%, transparent 100%);
+  opacity:0.95;
+}
+.stage.night .birds-flock{opacity:0.15;}
+.stage.night .sun{
+  background:radial-gradient(circle, #FFFDF0 0%, #E8E2B5 60%, #C9C28D 100%);
+  box-shadow:0 0 20px rgba(255,253,240,0.85), 0 0 40px rgba(232,226,181,0.4);
+}
+.stage.night .barn-window{
+  background:#FFD043;
+  box-shadow:0 0 14px rgba(255,208,67,0.95);
+}
+
+/* Estrellas nocturnas dinámicas */
+.star{
+  position:absolute;color:#FFFDE6;font-size:0.75rem;pointer-events:none;
+  animation:twinkleStar 2.5s ease-in-out infinite alternate;user-select:none;
+}
+@keyframes twinkleStar{
+  0%{opacity:0.25;transform:scale(0.8);}
+  50%{opacity:1;transform:scale(1.25);}
+  100%{opacity:0.35;transform:scale(0.85);}
+}
+
+/* Burbuja de sueño para animales de noche */
+.sleep-bubble{
+  position:absolute;top:-18px;right:2px;font-size:1.1rem;
+  animation:floatZzz 2s ease-in-out infinite alternate;pointer-events:none;
+}
+@keyframes floatZzz{
+  0%{transform:translateY(0) scale(0.9);opacity:0.6;}
+  100%{transform:translateY(-8px) scale(1.15);opacity:1;}
+}
+
+/* Animales en el Potrero */
+.animal{
+  position:absolute;bottom:0;width:72px;height:72px;
+  display:flex;flex-direction:column;align-items:center;justify-content:flex-end;
+  cursor:pointer;user-select:none;transition:transform .12s;z-index:3;
+}
+.animal:hover{transform:scale(1.12);}
+.animal.sleeping{cursor:pointer;filter:brightness(0.92);}
+.animal::after{
+  content:'';position:absolute;bottom:2px;width:38px;height:10px;
+  background:rgba(24,36,16,0.32);border-radius:50%;z-index:-1;filter:blur(1px);
+}
+.stage.night .animal::after{background:rgba(5,10,5,0.5);}
+.animal .sprite{
+  font-size:2.8rem;line-height:1;filter:drop-shadow(1px 3px 2px rgba(0,0,0,0.28));position:relative;
+}
+.animal .accessory{
+  position:absolute;font-size:1.25rem;top:-10px;left:50%;transform:translateX(-50%);
+  filter:drop-shadow(1px 1px 1px rgba(0,0,0,0.25));
+}
+.animal .tag{
+  font-family:'Space Mono',monospace;font-size:0.65rem;font-weight:700;background:var(--paper-card);
+  border:2px solid var(--ink);border-radius:4px;padding:2px 5px;margin-top:2px;white-space:nowrap;
+  box-shadow: 1px 2px 2px rgba(0,0,0,0.2);
+}
+.animal.flip .sprite{display:inline-block;transform:scaleX(-1);}
+.animal.bob .sprite{animation:bob 0.5s ease-in-out infinite alternate;}
+.animal.sleeping.bob .sprite{animation:sleepBob 1.8s ease-in-out infinite alternate;}
+.animal.happy .sprite{animation:happyBounce 0.5s ease;}
+@keyframes bob{from{transform:translateY(0)}to{transform:translateY(-5px)}}
+@keyframes sleepBob{from{transform:translateY(0) rotate(-2deg)}to{transform:translateY(-3px) rotate(2deg)}}
+@keyframes happyBounce{
+  0%{transform:translateY(0) scale(1);}
+  30%{transform:translateY(-20px) scale(1.2);}
+  55%{transform:translateY(0) scale(0.92);}
+  75%{transform:translateY(-8px) scale(1.08);}
+  100%{transform:translateY(0) scale(1);}
+}
+
+.legend{font-size:0.85rem;margin-top:14px;color:var(--grass-dark);font-weight:500;text-align:center;}
+
+/* ---------- Badges bar (Centrada y armoniosa) ---------- */
+.badges-bar{
+  display:flex;gap:10px;flex-wrap:wrap;justify-content:center;align-items:center;
+  margin:16px auto;max-width:840px;
+}
+.badge{
+  display:inline-flex;align-items:center;gap:7px;border:2px solid var(--ink);border-radius:20px;
+  padding:6px 14px 6px 10px;font-size:0.78rem;font-weight:700;background:var(--paper-dark);
+  color:var(--ink);cursor:pointer;opacity:0.65;filter:grayscale(0.5);transition:transform .12s, opacity .12s, box-shadow .12s, background .12s;
+  font-family:'Karla',sans-serif;box-shadow:2px 2px 0 rgba(46,52,33,0.15);
+}
+.badge:hover{
+  transform:translateY(-2px);opacity:0.95;background:#fff;box-shadow:3px 3px 0 rgba(46,52,33,0.25);
+}
+.badge.earned{
+  opacity:1;filter:none;background:#fff;border-color:var(--hay);box-shadow:2px 2px 0 rgba(227,168,59,0.4);
+}
+.badge.earned:hover{
+  box-shadow:3px 3px 0 rgba(227,168,59,0.6);
+}
+.badge .ic{font-size:1.1rem;}
+.badge .badge-check{color:var(--grass-dark);font-weight:bold;margin-left:4px;}
+.badge .badge-lock{font-size:0.68rem;opacity:0.7;margin-left:4px;}
+
+/* ---------- Modal ---------- */
+.overlay{
+  position:fixed;inset:0;background:rgba(46,52,33,0.55);
+  display:none;align-items:center;justify-content:center;padding:16px;z-index:50;
+}
+.overlay.open{display:flex;}
+.card{
+  background:var(--paper);border:3px solid var(--ink);border-radius:8px;
+  max-width:480px;width:100%;max-height:88vh;overflow:auto;box-shadow:8px 8px 0 rgba(46,52,33,0.25);
+  position:relative;
+}
+.card.small-card{max-width:420px;}
+.card-head{
+  display:flex;align-items:center;gap:12px;padding:16px 18px 10px;border-bottom:2px solid var(--ink);
+}
+.card-head .big-sprite{font-size:2.6rem;}
+.card-head h2{font-family:'Fraunces',serif;font-weight:600;margin:0;font-size:1.3rem;}
+.card-head .lat{font-size:0.72rem;font-style:italic;color:var(--grass-dark);}
+.close-btn{
+  position:absolute;top:10px;right:12px;background:none;border:none;font-size:1.3rem;
+  cursor:pointer;color:var(--ink);
+}
+.tabs{display:flex;border-bottom:2px solid var(--ink);}
+.tabs button{
+  flex:1;padding:9px 6px;background:var(--paper-dark);border:none;border-right:1px solid var(--ink);
+  font-family:'Karla',sans-serif;font-weight:700;font-size:0.78rem;cursor:pointer;color:var(--ink);
+}
+.tabs button:last-child{border-right:none;}
+.tabs button.active{background:var(--paper);border-bottom:3px solid var(--clay);margin-bottom:-2px;}
+.card-body{padding:16px 18px;}
+.tabpanel{padding:16px 18px;display:none;}
+.tabpanel.active{display:block;}
+
+.stamp{
+  display:inline-block;border:2px solid var(--clay);color:var(--clay);
+  font-family:'Space Mono',monospace;font-size:0.65rem;padding:3px 8px;border-radius:3px;
+  transform:rotate(-3deg);letter-spacing:0.04em;margin-bottom:10px;
+}
+.fact{margin-bottom:10px;}
+.fact .k{font-size:0.68rem;text-transform:uppercase;letter-spacing:0.06em;color:var(--grass-dark);font-weight:700;}
+.fact .v{font-size:0.92rem;line-height:1.4;margin-top:2px;}
+.fact.highlight .v{background:var(--paper-dark);border-left:3px solid var(--hay);padding:6px 8px;border-radius:3px;}
+
+.anatomy-box{margin-top:14px;border-top:2px dashed var(--ink);padding-top:12px;}
+.open-btn{
+  background:var(--clay);color:#fff;border:none;padding:8px 14px;border-radius:5px;
+  font-weight:700;font-size:0.82rem;cursor:pointer;display:inline-flex;align-items:center;gap:6px;
+}
+.open-btn:hover{filter:brightness(1.08);}
+.anatomy-diagram{margin-top:12px;background:#fff;border:2px solid var(--ink);border-radius:6px;padding:8px;}
+.anatomy-diagram svg{width:100%;height:auto;display:block;}
+.organ{cursor:pointer;stroke:var(--ink);stroke-width:1.5;transition:opacity .2s, transform .2s;transform-box:fill-box;transform-origin:center;}
+.organ:hover{opacity:0.75;transform:scale(1.05);}
+.organ.sel{stroke:var(--hay);stroke-width:3;}
+.organ-label{font-size:7px;font-family:'Karla',sans-serif;fill:var(--ink);text-anchor:middle;pointer-events:none;}
+.body-outline{fill:#F4EFE0;stroke:var(--ink);stroke-width:2;}
+.body-outline.open{fill:#F4EFE0;opacity:0.35;}
+.organ-info{
+  margin-top:10px;min-height:44px;background:var(--paper-dark);border-left:3px solid var(--clay);
+  border-radius:3px;padding:8px 10px;font-size:0.82rem;
+}
+.organ-info b{display:block;font-size:0.78rem;margin-bottom:2px;}
+.anatomy-hint{font-size:0.72rem;color:var(--grass-dark);margin-top:6px;}
+
+.field-row{margin-bottom:14px;}
+.field-row label{display:block;font-size:0.75rem;font-weight:700;margin-bottom:5px;}
+.field-row input[type=text]{
+  width:100%;padding:8px 10px;border:2px solid var(--ink);border-radius:4px;font-family:'Karla',sans-serif;font-size:0.9rem;background:#fff;
+  transition:border-color .15s, box-shadow .15s;
+}
+.field-row input[type=text]:focus{
+  outline:none;border-color:var(--hay);box-shadow:0 0 0 3px rgba(232,168,56,0.25);
+}
+.field-row input.input-error{
+  border-color:var(--clay) !important;background:#FFF5F5 !important;box-shadow:0 0 0 3px rgba(179,71,54,0.25) !important;
+}
+.swatches{display:flex;gap:8px;flex-wrap:wrap;}
+.swatch{width:26px;height:26px;border-radius:50%;border:2px solid var(--ink);cursor:pointer;}
+.swatch.sel{outline:3px solid var(--hay);outline-offset:2px;}
+.accessories{display:flex;gap:8px;flex-wrap:wrap;}
+.acc-btn{
+  border:2px solid var(--ink);background:#fff;border-radius:4px;padding:6px 9px;font-size:1.1rem;cursor:pointer;
+}
+.acc-btn.sel{background:var(--hay);}
+.save-note{font-size:0.75rem;color:var(--grass-dark);margin-top:8px;}
+
+/* ---------- Quiz ---------- */
+.quiz-auth-gate{
+  text-align:center;padding:24px 14px;background:var(--paper-dark);border:2px dashed var(--ink);border-radius:6px;
+}
+.quiz-done-banner{
+  display:flex;align-items:center;gap:12px;background:#E3F0D8;border:2px solid var(--grass-dark);
+  border-radius:6px;padding:10px 12px;
+}
+.quiz-review-list{
+  margin-top:10px;max-height:220px;overflow-y:auto;border:2px solid var(--ink);border-radius:4px;background:#fff;padding:6px;
+}
+.quiz-review-item{
+  padding:8px 10px;border-bottom:1px solid #e0e0e0;font-size:0.82rem;line-height:1.4;margin-bottom:4px;
+}
+.quiz-review-item:last-child{border-bottom:none;margin-bottom:0;}
+.quiz-review-item.correct{border-left:4px solid var(--grass-light);background:#fbfdf9;}
+.quiz-review-item.wrong{border-left:4px solid var(--clay);background:#fdf9f9;}
+.quiz-review-item .q-title{font-weight:700;margin-bottom:3px;}
+.quiz-review-item .q-ans{color:#444;margin-bottom:2px;}
+.quiz-review-item .q-correct{color:var(--clay);font-weight:700;margin-bottom:2px;}
+.quiz-review-item .q-explain{font-size:0.76rem;color:var(--grass-dark);margin-top:3px;}
+
+.quiz-progress{display:flex;gap:6px;margin-bottom:12px;}
+.quiz-dot{width:12px;height:12px;border-radius:50%;border:2px solid var(--ink);background:#fff;}
+.quiz-dot.correct{background:var(--grass-light);}
+.quiz-dot.wrong{background:var(--clay);}
+.quiz-dot.current{outline:3px solid var(--hay);outline-offset:2px;}
+.quiz-q{font-weight:700;margin-bottom:10px;font-size:0.95rem;line-height:1.4;}
+.quiz-opt{
+  position:relative;display:block;width:100%;text-align:left;padding:9px 12px;margin-bottom:8px;
+  border:2px solid var(--ink);border-radius:4px;background:#fff;cursor:pointer;font-family:'Karla',sans-serif;font-size:0.88rem;
+  transition:background .12s, transform .1s;
+}
+.quiz-opt:hover:not(:disabled){background:var(--paper-dark);transform:translateX(2px);}
+.quiz-opt.correct{background:#CFE0BE;border-color:var(--grass-dark);font-weight:700;}
+.quiz-opt.wrong{background:#F0CFC8;border-color:var(--clay);}
+.quiz-explain{font-size:0.84rem;background:var(--paper-dark);border-left:4px solid var(--clay);padding:9px 12px;margin-top:10px;border-radius:4px;line-height:1.4;}
+.quiz-points{font-size:0.82rem;font-weight:700;color:var(--grass-dark);margin-top:8px;}
+.quiz-next{margin-top:12px;background:var(--ink);color:var(--paper);border:none;padding:10px 16px;border-radius:4px;cursor:pointer;font-weight:700;font-size:0.85rem;width:100%;text-align:center;}
+.quiz-next:hover{background:#435E3A;}
+.quiz-done{font-size:0.88rem;}
+
+.star-burst{
+  position:absolute;top:-6px;right:8px;font-size:1.1rem;pointer-events:none;
+  animation:starPop .7s ease forwards;
+}
+@keyframes starPop{
+  0%{opacity:0;transform:translateY(0) scale(0.4);}
+  30%{opacity:1;transform:translateY(-10px) scale(1.2);}
+  100%{opacity:0;transform:translateY(-26px) scale(0.9);}
+}
+
+/* ---------- Normas ---------- */
+.rules-list{margin:0;padding-left:20px;}
+.rules-list li{margin-bottom:9px;font-size:0.88rem;line-height:1.4;}
+
+/* ---------- Modal de Logros en Lista Vertical ---------- */
+.achievements-vertical-list{
+  display:flex;flex-direction:column;gap:10px;margin-top:6px;max-height:65vh;overflow-y:auto;padding-right:4px;
+}
+.achievement-row{
+  display:flex;align-items:flex-start;gap:12px;padding:10px 12px;background:#fff;
+  border:2px solid var(--ink);border-radius:6px;box-shadow: 2px 2px 0 rgba(40,49,27,0.12);
+  transition:transform .12s, box-shadow .12s;
+}
+.achievement-row:hover{transform:translateX(3px);box-shadow: 3px 3px 0 rgba(40,49,27,0.2);}
+.achievement-row.earned{
+  border-color:var(--grass-dark);background:#F6FAF2;box-shadow: 2px 2px 0 rgba(67,94,58,0.25);
+}
+.achievement-icon-box{
+  width:44px;height:44px;min-width:44px;border-radius:50%;display:flex;align-items:center;
+  justify-content:center;font-size:1.6rem;background:var(--paper-dark);border:2px solid var(--ink);margin-top:2px;
+}
+.achievement-row.earned .achievement-icon-box{
+  background:#fff;border-color:var(--hay);box-shadow: 0 0 8px rgba(232,168,56,0.5);
+}
+.achievement-details{flex:1;}
+.achievement-title{font-size:0.92rem;font-weight:700;margin-bottom:2px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px;}
+.achievement-desc{font-size:0.8rem;color:#444;line-height:1.35;margin-bottom:5px;}
+.achievement-hint{
+  font-size:0.75rem;color:var(--grass-dark);background:var(--paper-dark);
+  padding:4px 8px;border-radius:3px;display:block;border-left:2px solid var(--hay);
+}
+.achievement-status-tag{
+  font-family:'Space Mono',monospace;font-size:0.68rem;font-weight:700;padding:2px 7px;
+  border-radius:10px;white-space:nowrap;
+}
+.achievement-row.earned .achievement-status-tag{
+  background:var(--grass-light);color:#fff;border:1px solid var(--grass-dark);
+}
+.achievement-row:not(.earned) .achievement-status-tag{
+  background:var(--paper-dark);color:#666;border:1px solid #aaa;
+}
+
+/* ---------- Panel docente ---------- */
+.teacher-summary{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:14px;}
+.teacher-chip{
+  background:var(--paper-dark);border:2px solid var(--ink);border-radius:5px;padding:6px 10px;font-size:0.78rem;
+}
+.teacher-chip b{display:block;font-size:1rem;}
+.teacher-table{width:100%;border-collapse:collapse;font-size:0.82rem;margin-bottom:12px;}
+.teacher-table th,.teacher-table td{border:1px solid var(--ink);padding:6px 7px;text-align:left;}
+.teacher-table th{background:var(--paper-dark);font-size:0.72rem;text-transform:uppercase;letter-spacing:0.03em;}
+.teacher-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px;}
+.final-message{font-size:0.95rem;line-height:1.5;}
+
+/* ---------- Modal de Escudo / Logo del Proyecto ---------- */
+.logo-modal-wrap{text-align:center;}
+.logo-modal-img{
+  width:160px;height:160px;object-fit:contain;border-radius:50%;
+  border:4px solid var(--ink);background:#FAF7EE;box-shadow: 0 6px 18px rgba(40,49,27,0.22);
+  margin:10px auto 14px;display:block;transition:transform .2s ease;
+}
+.logo-modal-img:hover{transform:scale(1.05) rotate(3deg);}
+.logo-symbol-list{
+  text-align:left;margin-top:14px;display:flex;flex-direction:column;gap:8px;font-size:0.84rem;
+}
+.logo-symbol-item{
+  display:flex;align-items:flex-start;gap:9px;background:var(--paper-dark);
+  padding:7px 11px;border-radius:5px;border-left:3px solid var(--hay);line-height:1.4;
+}
+.logo-symbol-item b{color:var(--ink);white-space:nowrap;}
+
+.toast{
+  position:fixed;top:24px;left:50%;transform:translate(-50%, -10px);
+  background:var(--ink);color:var(--paper);padding:10px 18px;border-radius:6px;font-size:0.88rem;font-weight:700;
+  opacity:0;pointer-events:none;transition:opacity .25s, transform .25s;z-index:90;max-width:90vw;text-align:center;
+  box-shadow:0 4px 12px rgba(46,52,33,0.35);border:2px solid var(--hay);
+}
+.toast.show{opacity:1;transform:translate(-50%, 0);}
+
+footer.ods{
+  margin-top:24px;font-size:0.75rem;color:var(--grass-dark);border-top:1px solid var(--paper-dark);
+  padding-top:12px;text-align:center;line-height:1.5;
+}
+
+@media (prefers-reduced-motion: reduce){
+  .animal.bob .sprite, .animal.happy .sprite, .star-burst{animation:none;}
+}
+
+/* ============================================================
+   Navegación entre vistas (Potrero / Mapa de la Granja)
+   ============================================================ */
+.view-nav{display:flex;gap:8px;margin-bottom:14px;}
+.view-nav a{
+  font-family:'Karla',sans-serif;font-weight:700;font-size:0.8rem;text-decoration:none;
+  color:var(--ink);background:var(--paper-dark);border:2px solid var(--ink);border-radius:20px;
+  padding:6px 14px;
+}
+.view-nav a.active{background:var(--ink);color:var(--paper);}
+.view-nav a:hover:not(.active){background:#fff;}
+
+.pixel-title{
+  font-family:'Press Start 2P', 'Fraunces', serif;font-size:1.15rem;line-height:1.5;
+  letter-spacing:-0.01em;margin:0;
+}
+
+/* ============================================================
+   Mapa de la Granja: imagen real + pines interactivos
+   ============================================================ */
+.map-wrap{padding:0;}
+.farmmap{
+  position:relative;width:100%;line-height:0;
+  background:var(--grass-dark);
+}
+.farmmap-bg{width:100%;height:auto;display:block;}
+
+.map-pin{
+  position:absolute;transform:translate(-50%,-50%);
+  width:38px;height:38px;border-radius:50%;
+  background:var(--paper);border:2.5px solid var(--ink);
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.2rem;cursor:pointer;padding:0;
+  box-shadow:2px 3px 0 rgba(46,52,33,0.35);
+  animation:pinIdle 2.6s ease-in-out infinite;
+  transition:transform .15s;
+  z-index:4;
+}
+.map-pin:hover, .map-pin:focus-visible{
+  transform:translate(-50%,-50%) scale(1.18);
+  outline:none;box-shadow:0 0 0 4px rgba(227,168,59,0.5), 2px 3px 0 rgba(46,52,33,0.35);
+}
+.map-pin.has-animals{border-color:var(--clay);background:#fff;}
+@keyframes pinIdle{
+  0%,100%{box-shadow:2px 3px 0 rgba(46,52,33,0.35);}
+  50%{box-shadow:2px 5px 6px rgba(46,52,33,0.3);}
+}
+.map-pin-count{
+  position:absolute;bottom:-7px;right:-9px;background:var(--clay);color:#fff;
+  font-family:'Space Mono',monospace;font-size:0.58rem;font-weight:700;
+  border-radius:8px;padding:1px 5px;border:1.5px solid var(--paper);min-width:20px;text-align:center;
+}
+.map-pin-count.full{background:var(--grass-dark);}
+
+@media (max-width: 640px){
+  .map-pin{width:32px;height:32px;font-size:1rem;}
+  .map-pin-label{font-size:0.52rem;}
+}
+
+/* ============================================================
+   Mini-vista: grilla de retratos de una zona
+   ============================================================ */
+.portrait-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:12px;
+}
+@media (max-width: 420px){
+  .portrait-grid{grid-template-columns:1fr;}
+}
+.portrait-card{
+  border:2px solid var(--ink);border-radius:6px;background:#fff;cursor:pointer;
+  padding:0;overflow:hidden;text-align:left;box-shadow:2px 2px 0 rgba(46,52,33,0.15);
+  font-family:'Karla',sans-serif;
+}
+.portrait-card:hover{transform:translateY(-2px);box-shadow:3px 4px 0 rgba(46,52,33,0.2);}
+.portrait-photo{width:100%;aspect-ratio:4/3;overflow:hidden;background:var(--paper-dark);}
+.portrait-photo img{width:100%;height:100%;object-fit:cover;display:block;}
+.portrait-name{padding:7px 9px 3px;font-weight:700;font-size:0.85rem;}
+.portrait-done{padding:0 9px 7px;font-size:0.68rem;color:var(--grass-dark);font-weight:700;}
+
+/* ============================================================
+   Foto del animal dentro de la ficha (Mapa de la Granja)
+   ============================================================ */
+.big-sprite.has-photo{line-height:0;}
+.big-sprite.has-photo img{
+  width:60px;height:46px;object-fit:cover;border-radius:5px;border:2px solid var(--ink);
+}
+.fact.pet-intro{background:var(--paper-dark);border-left:3px solid var(--clay);padding:8px 10px;border-radius:3px;}
+
+/* ============================================================
+   Botón de sonido real en el encabezado de la ficha
+   ============================================================ */
+.sound-btn{
+  margin-top:6px;background:var(--paper-dark);border:2px solid var(--ink);border-radius:14px;
+  padding:3px 10px;font-family:'Karla',sans-serif;font-weight:700;font-size:0.72rem;
+  cursor:pointer;color:var(--ink);
+}
+.sound-btn:hover{background:#fff;}
+.sound-btn:active{transform:scale(0.97);}
+
+/* ============================================================
+   Anatomía sobre imagen real (conejo / gallina / aves)
+   ============================================================ */
+.anatomy-box .k{
+  font-size:0.68rem;text-transform:uppercase;letter-spacing:0.06em;
+  color:var(--grass-dark);font-weight:700;margin-bottom:6px;
+}
+.anatomy-img-wrap{position:relative;width:100%;line-height:0;border-radius:6px;overflow:hidden;}
+.anatomy-img-wrap img{width:100%;height:auto;display:block;background:#fff;}
+.anatomy-pin{
+  position:absolute;transform:translate(-50%,-50%);
+  width:22px;height:22px;border-radius:50%;
+  background:rgba(232,226,201,0.55);border:2px solid var(--clay);
+  padding:0;cursor:pointer;box-shadow:0 0 0 2px rgba(255,255,255,0.55);
+  transition:transform .15s, background .15s;
+}
+.anatomy-pin::after{
+  content:'';position:absolute;inset:5px;border-radius:50%;background:var(--clay);opacity:0.85;
+}
+.anatomy-pin:hover, .anatomy-pin:focus-visible{transform:translate(-50%,-50%) scale(1.25);outline:none;}
+.anatomy-pin.sel{background:rgba(227,168,59,0.35);border-color:var(--hay);}
+.anatomy-pin.sel::after{background:var(--hay);}
+
+@media (max-width:480px){
+  .anatomy-pin{width:18px;height:18px;}
+  .anatomy-pin::after{inset:4px;}
+}
+
+/* ============================================================
+   Optimizaciones Responsivas para Dispositivos Móviles (Celulares)
+   ============================================================ */
+@media (max-width: 600px){
+  .app{padding:12px 10px 30px;}
+  header.top{flex-direction:row;align-items:center;justify-content:space-between;}
+  header.top h1{font-size:1.5rem;}
+  header.top .sub{font-size:0.75rem;}
+  .app-logo{width:48px;height:48px;}
+  .scorebox{padding:6px 10px;font-size:0.75rem;}
+  .scorebox b{font-size:1rem;}
+  
+  .toolbar{gap:6px;}
+  .student-pill{width:100%;justify-content:space-between;}
+  .tool-buttons{width:100%;justify-content:space-between;gap:4px;}
+  .tool-btn{flex:1;min-width:0;padding:6px 4px;font-size:0.7rem;text-align:center;}
+  #dayNightBtn{min-width:64px;flex:none;}
+
+  .stage{height:340px;}
+  .hint{font-size:0.72rem;padding:4px 8px;}
+  .animal{width:60px;height:60px;}
+  .animal .sprite{font-size:2.3rem;}
+  .animal .tag{font-size:0.58rem;padding:1px 4px;}
+  
+  .card{padding:14px 12px;max-height:88vh;}
+  .card-head h2{font-size:1.15rem;}
+  .card-tabs button{padding:6px 8px;font-size:0.75rem;}
+  .quiz-q{font-size:0.88rem;}
+  .quiz-opt{padding:8px 10px;font-size:0.82rem;}
+  
+  .badges-bar{gap:6px;}
+  .badge{padding:4px 8px;font-size:0.7rem;}
+  .badge .ic{font-size:0.95rem;}
+}
+
+@media (max-width: 380px){
+  header.top h1{font-size:1.3rem;}
+  .app-logo{width:40px;height:40px;}
+  .tool-buttons{flex-wrap:wrap;}
+  .tool-btn{flex-basis:calc(33.33% - 4px);}
+  #dayNightBtn{flex-basis:calc(50% - 4px);}
+  #achievementsBtn{flex-basis:calc(50% - 4px);}
+}

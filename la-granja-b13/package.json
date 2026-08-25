@@ -1,0 +1,23 @@
+{
+  "name": "la-granja-b13",
+  "version": "2.0.0",
+  "description": "Plataforma educativa gamificada sobre los animales de la granja del Liceo Domingo Herrera Rivera B-13",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": [
+    "educacion",
+    "granja",
+    "gamificacion",
+    "b13",
+    "go-innova"
+  ],
+  "author": "Liceo Domingo Herrera Rivera B-13",
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.19.2"
+  }
+}

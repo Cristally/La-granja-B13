@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mapa de la Granja — La Granja B13</title>
+<meta name="description" content="Mapa interactivo de La Granja B13: explora cada zona y conoce a los animales reales del liceo.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Karla:wght@400;500;700&family=Space+Mono:wght@400;700&family=Press+Start+2P&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<div class="app">
+
+  <nav class="view-nav">
+    <a href="index.html">🌾 Potrero</a>
+    <a href="mapa.html" class="active">🗺️ Mapa de la Granja</a>
+  </nav>
+
+  <header class="top">
+    <div class="brand-wrap">
+      <img src="assets/img/logo.png" alt="Logo Granja B-13" class="app-logo">
+      <div>
+        <h1 class="pixel-title">Mapa de la Granja</h1>
+        <div class="sub">Explora cada zona y conoce a los animales reales del liceo</div>
+      </div>
+    </div>
+    <div class="scorebox">
+      PUNTAJE: <b id="score">0</b><br>
+      ANIMALES: <span id="discovered">0</span>/10
+    </div>
+  </header>
+
+  <div class="toolbar">
+    <div class="student-pill" id="studentPill" title="Toca para cambiar o ingresar tus datos de estudiante">
+      <span class="student-icon">🎒</span>
+      <div class="student-info">
+        <span class="student-label">ESTUDIANTE</span>
+        <b id="studentDisplayName">(Sin registrar)</b>
+      </div>
+      <button id="changeStudentBtn" class="student-change-btn" type="button" aria-label="Editar estudiante">✏️</button>
+    </div>
+    <div class="tool-buttons">
+      <button id="achievementsBtn" class="tool-btn" type="button">🏆 Logros</button>
+      <button id="rulesBtn" class="tool-btn" type="button">📋 Normas</button>
+      <button id="soundBtn" class="tool-btn" type="button">🔊 Sonido</button>
+      <button id="teacherBtn" class="tool-btn" type="button">👩‍🏫 Panel docente</button>
+    </div>
+  </div>
+
+  <div class="stage-wrap map-wrap">
+    <div class="farmmap" id="farmmap">
+      <img src="assets/img/map/mapa-granja.jpg" alt="Mapa ilustrado de La Granja B13, estilo pixel art" class="farmmap-bg">
+    </div>
+  </div>
+  <div class="legend">Toca un espacio del mapa para explorarlo. Los espacios con 🐾 abren una mini-ficha por cada animal real.</div>
+
+  <div class="badges-bar" id="badgesBar"></div>
+
+  <footer class="ods">
+    Vinculado a ODS 4 (Educación de calidad) y ODS 15 (Vida de ecosistemas terrestres). Proyecto <b>La Granja B13</b> — Go Innova, Hecho Proyecto B-13.
+  </footer>
+</div>
+
+<!-- Mini-vista de una zona (varios animales) -->
+<div class="overlay" id="miniVistaOverlay">
+  <div class="card">
+    <button class="close-btn" data-close="miniVistaOverlay" aria-label="Cerrar">✕</button>
+    <div class="card-head">
+      <div class="big-sprite" id="miniVistaIcon">🐇</div>
+      <div>
+        <h2 id="miniVistaTitle">Zona</h2>
+        <div class="lat" id="miniVistaIntro"></div>
+      </div>
+    </div>
+    <div class="card-body" style="padding:14px 18px 18px;">
+      <div class="portrait-grid" id="portraitGrid"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Ficha de observación / Punto de interés del mapa (Huerto, Pozo, Almacén, Gato, etc.) -->
+<div class="overlay" id="zoneInfoOverlay">
+  <div class="card small-card">
+    <button class="close-btn" data-close="zoneInfoOverlay" aria-label="Cerrar">✕</button>
+    <div class="card-head">
+      <div class="big-sprite" id="zoneInfoIcon">🌱</div>
+      <div>
+        <h2 id="zoneInfoTitle">Zona</h2>
+        <div class="lat" id="zoneInfoCategory">Punto de Interés — Granja B13</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="stamp">OBSERVACIÓN DE CAMPO</div>
+      <p id="zoneInfoText" style="font-size:0.92rem;line-height:1.5;margin:10px 0 14px;"></p>
+      <div id="zoneInfoExtra" style="margin-bottom:12px;"></div>
+      <button class="tool-btn" data-close="zoneInfoOverlay" type="button" style="width:100%;padding:10px;background:var(--hay);color:var(--ink);font-weight:700;font-size:0.88rem;">
+        ✓ Continuar explorando el mapa
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Ficha del animal (mismo motor que el Potrero) -->
+<div class="overlay" id="overlay">
+  <div class="card">
+    <button class="close-btn" id="closeBtn" aria-label="Cerrar">✕</button>
+    <div class="card-head">
+      <div class="big-sprite" id="cardSprite">🐇</div>
+      <div>
+        <h2 id="cardName">Conejo</h2>
+        <div class="lat" id="cardLat">Oryctolagus cuniculus</div>
+        <button class="sound-btn" id="cardSoundBtn" type="button" style="display:none;">🔊 Sonido real</button>
+      </div>
+    </div>
+    <div class="tabs">
+      <button data-tab="ficha" class="active" type="button">Ficha</button>
+      <button data-tab="personalizar" type="button">Personalizar</button>
+      <button data-tab="quiz" type="button">Quiz</button>
+    </div>
+    <div class="tabpanel active" id="panel-ficha"></div>
+    <div class="tabpanel" id="panel-personalizar"></div>
+    <div class="tabpanel" id="panel-quiz"></div>
+  </div>
+</div>
+
+<!-- Registro / Identificación de Estudiante -->
+<div class="overlay" id="studentOverlay">
+  <div class="card small-card">
+    <button class="close-btn" data-close="studentOverlay" aria-label="Cerrar">✕</button>
+    <div class="card-head">
+      <div class="big-sprite">🎒</div>
+      <div>
+        <h2>Cuaderno de Campo</h2>
+        <div class="lat">Identificación del/la estudiante</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <p style="font-size:0.88rem;margin-top:0;line-height:1.4;">Ingresa tus datos para registrar tus respuestas, acumular puntaje y obtener décimas formativas en tu sesión individual:</p>
+      <form id="studentForm" onsubmit="return false;">
+        <div class="field-row">
+          <label for="studentNameInput">Nombre y Apellido *</label>
+          <input type="text" id="studentNameInput" placeholder="Ej: Yefrin González" maxlength="30" required autocomplete="off">
+        </div>
+        <div class="field-row">
+          <label for="studentGradeInput">Curso / Nivel *</label>
+          <input type="text" id="studentGradeInput" placeholder="Ej: 3°F" maxlength="20" required autocomplete="off">
+        </div>
+        <div id="studentError" style="color:var(--clay);font-size:0.8rem;font-weight:700;margin-bottom:8px;display:none;"></div>
+        <button type="submit" class="tool-btn" id="saveStudentBtn" style="width:100%;padding:10px;background:var(--hay);color:var(--ink);font-weight:700;font-size:0.9rem;">💾 Iniciar mi Cuaderno de Campo</button>
+      </form>
+      <div class="save-note" style="margin-top:10px;">Tu progreso se guardará bajo tu nombre para la evaluación docente y la entrega de décimas.</div>
+    </div>
+  </div>
+</div>
+
+<!-- Normas de la granja -->
+<div class="overlay" id="rulesOverlay">
+  <div class="card small-card">
+    <button class="close-btn" data-close="rulesOverlay" aria-label="Cerrar">✕</button>
+    <div class="card-head">
+      <div class="big-sprite">📋</div>
+      <div>
+        <h2>Antes de visitar la granja</h2>
+        <div class="lat">Normas de comportamiento y cuidado animal (ODS 15)</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="stamp">CUADERNO DE CAMPO</div>
+      <ul class="rules-list" id="rulesList"></ul>
+      <div class="save-note">Aprender estas normas antes de ir a la granja física ayuda a cuidar a los animales y a evitar que se estresen.</div>
+    </div>
+  </div>
+</div>
+
+<!-- Panel docente -->
+<div class="overlay" id="teacherOverlay">
+  <div class="card">
+    <button class="close-btn" data-close="teacherOverlay" aria-label="Cerrar">✕</button>
+    <div class="card-head">
+      <div class="big-sprite">👩‍🏫</div>
+      <div>
+        <h2>Panel docente</h2>
+        <div class="lat">Evaluación formativa, décimas y resumen pedagógico</div>
+      </div>
+    </div>
+    <div class="card-body" id="teacherBody"></div>
+  </div>
+</div>
+
+<!-- Mensaje final -->
+<div class="overlay" id="finalOverlay">
+  <div class="card small-card">
+    <button class="close-btn" data-close="finalOverlay" aria-label="Cerrar">✕</button>
+    <div class="card-head">
+      <div class="big-sprite">🏁</div>
+      <div>
+        <h2>¡Recorrido completo!</h2>
+        <div class="lat">La Granja B13</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <p id="finalMessage" class="final-message"></p>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de Lista Vertical de Logros e Insignias -->
+<div class="overlay" id="achievementsOverlay">
+  <div class="card">
+    <button class="close-btn" data-close="achievementsOverlay" aria-label="Cerrar">✕</button>
+    <div class="card-head">
+      <div class="big-sprite">🏆</div>
+      <div>
+        <h2>Cuaderno de Logros e Insignias</h2>
+        <div class="lat">Desafíos y metas de aprendizaje en La Granja B13</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="achievements-vertical-list" id="achievementsList"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de Información Individual de Insignia -->
+<div class="overlay" id="badgeOverlay">
+  <div class="card small-card">
+    <button class="close-btn" data-close="badgeOverlay" aria-label="Cerrar">✕</button>
+    <div class="card-head">
+      <div class="big-sprite" id="badgeModalIcon">🏆</div>
+      <div>
+        <h2 id="badgeModalTitle">Insignia</h2>
+        <div class="lat" id="badgeModalStatus">Estado del logro</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="stamp" id="badgeModalStamp">LOGRO DE CAMPO</div>
+      <p id="badgeModalDesc" style="font-size:0.92rem;line-height:1.5;margin:10px 0 14px;"></p>
+      <div id="badgeModalHint" style="font-size:0.82rem;color:var(--grass-dark);margin-bottom:14px;background:var(--paper-dark);padding:9px 12px;border-radius:4px;border-left:3px solid var(--hay);"></div>
+      <button class="tool-btn" data-close="badgeOverlay" type="button" style="width:100%;padding:10px;background:var(--hay);color:var(--ink);font-weight:700;font-size:0.88rem;">
+        ✓ Entendido
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de Escudo / Logo del Proyecto -->
+<div class="overlay" id="logoOverlay">
+  <div class="card small-card">
+    <button class="close-btn" data-close="logoOverlay" aria-label="Cerrar">✕</button>
+    <div class="card-head">
+      <div class="big-sprite">🏛️</div>
+      <div>
+        <h2>Escudo Oficial</h2>
+        <div class="lat">Proyecto La Granja B-13</div>
+      </div>
+    </div>
+    <div class="card-body logo-modal-wrap">
+      <img src="assets/img/logo.png" alt="Escudo Oficial Granja B-13" class="logo-modal-img">
+      <div class="stamp">BIOALFABETIZACIÓN B-13</div>
+      <p style="font-size:0.86rem;line-height:1.45;margin:8px 0;">
+        <b>Liceo Domingo Herrera Rivera B-13</b> (Antofagasta)<br>
+        Simbología y valores de la iniciativa pedagógica:
+      </p>
+      <div class="logo-symbol-list">
+        <div class="logo-symbol-item">
+          <span>🐰🐔</span>
+          <div><b>Fauna del Liceo:</b> Conejos y aves de la granja escolar bajo bienestar y respeto.</div>
+        </div>
+        <div class="logo-symbol-item">
+          <span>🌱</span>
+          <div><b>El Brote:</b> Educación ambiental, agricultura y biodiversidad terrestre (ODS 15).</div>
+        </div>
+        <div class="logo-symbol-item">
+          <span>⭐</span>
+          <div><b>Estrella Dorada:</b> Aprendizaje significativo, excelencia y educación de calidad (ODS 4).</div>
+        </div>
+        <div class="logo-symbol-item">
+          <span>🛡️</span>
+          <div><b>Niveles 1, 2 y 3:</b> Progreso formativo, insignias y evaluación con décimas.</div>
+        </div>
+      </div>
+      <button class="tool-btn" data-close="logoOverlay" type="button" style="width:100%;margin-top:14px;padding:9px;background:var(--hay);color:var(--ink);font-weight:700;font-size:0.88rem;">
+        ✓ Cerrar
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="js/data.js"></script>
+<script src="js/map-data.js"></script>
+<script src="js/audio.js"></script>
+<script src="js/state.js"></script>
+<script src="js/card.js"></script>
+<script src="js/map-app.js"></script>
+</body>
+</html>

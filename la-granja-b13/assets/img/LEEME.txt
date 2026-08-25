@@ -1,0 +1,32 @@
+Esta carpeta tiene las fotos e ilustraciones que usa la app:
+
+  map/
+    mapa-granja.jpg     → fondo del Mapa de la Granja. Las zonas se ubican encima con
+                          porcentajes en js/map-data.js (campo left/top de FARM_ZONES)
+
+  animals/
+    nesquik.png, vainilla.png, tasmi.png, quesito.png, general_rabbit.png
+    matias_vicente.png, farm_chickens.png, rooster.png
+    catitas.png, agapornis.png
+                        → retrato de cada animal/grupo real del liceo, usado en la
+                          mini-vista de cada zona y en la ficha (campo "photo" de cada
+                          animal en js/map-data.js)
+
+  anatomy/
+    conejo.jpg            → ilustración de referencia para la anatomía del Conejo
+    gallina.jpg            → ilustración de referencia para la anatomía del Gallo
+    ave-general.jpg          → ilustración general de aves, usada por Catita y Agapornis
+                        → cada especie en js/data.js tiene un campo "anatomyImage" con la
+                          ruta a su ilustración, y su lista "organs" trae la posición
+                          (left/top, en % de la imagen) de cada parte marcada. Vaca y Oveja
+                          no tienen "anatomyImage" todavía, así que su pestaña de Anatomía
+                          sigue mostrando el diagrama esquemático original (dibujado por
+                          código, sin foto de referencia) — no es un error.
+
+¿Cómo agregar o cambiar una imagen?
+  - Fotos de animales del mapa: mantengan el nombre de archivo, o actualicen el campo
+    "photo" correspondiente en js/map-data.js.
+  - Ilustración de anatomía: agreguen el archivo aquí y sumen "anatomyImage" + la lista
+    "organs" (con left/top de cada parte marcada) a la especie correspondiente en
+    js/data.js — el mismo código que ya usan Conejo/Gallo/Catita/Agapornis funciona para
+    cualquier especie nueva.
