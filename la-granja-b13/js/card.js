@@ -841,10 +841,12 @@ function renderTeacherPanel() {
 
     mapSection = `
       <div class="save-note" style="margin-top:14px;font-size:0.8rem;"><b>Mapa de la Granja:</b> ${mapDiscoveredSet.size}/${mapAnimals.length} descubiertos · ${mapCompleted}/${mapAnimals.length} quizzes completados.</div>
-      <table class="teacher-table">
-        <thead><tr><th>Animal (Mapa Real)</th><th>Descubierto</th><th>Evaluación Formativa</th></tr></thead>
-        <tbody>${mapRows}</tbody>
-      </table>`;
+      <div class="teacher-table-wrap">
+        <table class="teacher-table">
+          <thead><tr><th>Animal (Mapa Real)</th><th>Descubierto</th><th>Evaluación Formativa</th></tr></thead>
+          <tbody>${mapRows}</tbody>
+        </table>
+      </div>`;
   }
 
   // Lista de todos los estudiantes registrados en este navegador
@@ -885,10 +887,12 @@ function renderTeacherPanel() {
       <div class="teacher-chip">Insignias Obtenidas<br><b>${badgesEarned.length}/${BADGES.length}</b></div>
     </div>
 
-    <table class="teacher-table">
-      <thead><tr><th>Animal (Potrero)</th><th>Descubierto</th><th>Evaluación Formativa</th></tr></thead>
-      <tbody>${rows}</tbody>
-    </table>
+    <div class="teacher-table-wrap">
+      <table class="teacher-table">
+        <thead><tr><th>Animal (Potrero)</th><th>Descubierto</th><th>Evaluación Formativa</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>
     ${mapSection}
 
     ${profilesListHtml}

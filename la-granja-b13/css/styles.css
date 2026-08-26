@@ -519,10 +519,18 @@ header.top .sub{font-size:0.85rem;color:var(--grass-dark);margin-top:3px;font-we
   background:var(--paper-dark);border:2px solid var(--ink);border-radius:5px;padding:6px 10px;font-size:0.78rem;
 }
 .teacher-chip b{display:block;font-size:1rem;}
-.teacher-table{width:100%;border-collapse:collapse;font-size:0.82rem;margin-bottom:12px;}
+.teacher-table-wrap{
+  width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;margin-bottom:12px;
+  border-radius:4px;
+}
+.teacher-table{width:100%;border-collapse:collapse;font-size:0.82rem;margin-bottom:0;}
 .teacher-table th,.teacher-table td{border:1px solid var(--ink);padding:6px 7px;text-align:left;}
 .teacher-table th{background:var(--paper-dark);font-size:0.72rem;text-transform:uppercase;letter-spacing:0.03em;}
-.teacher-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px;}
+.teacher-actions{display:flex;flex-direction:column;gap:8px;margin-top:14px;width:100%;}
+.teacher-actions .tool-btn{
+  width:100%;text-align:center;padding:10px 14px;font-size:0.84rem;
+  display:flex;align-items:center;justify-content:center;box-sizing:border-box;
+}
 .final-message{font-size:0.95rem;line-height:1.5;}
 
 /* ---------- Modal de Escudo / Logo del Proyecto ---------- */
@@ -689,20 +697,42 @@ footer.ods{
 /* ============================================================
    Optimizaciones Responsivas para Dispositivos Móviles (Celulares)
    ============================================================ */
-@media (max-width: 600px){
+@media (max-width: 680px){
   .app{padding:12px 10px 30px;}
-  header.top{flex-direction:row;align-items:center;justify-content:space-between;}
-  header.top h1{font-size:1.5rem;}
-  header.top .sub{font-size:0.75rem;}
-  .app-logo{width:48px;height:48px;}
-  .scorebox{padding:6px 10px;font-size:0.75rem;}
-  .scorebox b{font-size:1rem;}
   
-  .toolbar{gap:6px;}
-  .student-pill{width:100%;justify-content:space-between;}
-  .tool-buttons{width:100%;justify-content:space-between;gap:4px;}
-  .tool-btn{flex:1;min-width:0;padding:6px 4px;font-size:0.7rem;text-align:center;}
-  #dayNightBtn{min-width:64px;flex:none;}
+  .view-nav{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;}
+  .view-nav a{flex:1 1 auto;min-width:90px;text-align:center;padding:7px 8px;font-size:0.78rem;}
+
+  header.top{display:flex;flex-direction:row;align-items:center;justify-content:space-between;gap:8px;}
+  header.top h1{font-size:1.45rem;}
+  header.top .sub{font-size:0.72rem;}
+  .app-logo{width:46px;height:46px;flex-shrink:0;}
+  .scorebox{padding:6px 10px;font-size:0.72rem;flex-shrink:0;}
+  .scorebox b{font-size:1.05rem;}
+  
+  .toolbar{gap:8px;margin-bottom:12px;}
+  .student-pill{
+    width:100%;box-sizing:border-box;display:flex;align-items:center;
+    justify-content:space-between;padding:7px 10px;gap:8px;
+  }
+  .student-icon{font-size:1.15rem;flex-shrink:0;}
+  .student-info{flex:1;min-width:0;margin:0 4px;}
+  .student-info b{
+    display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:0.84rem;
+  }
+  .student-change-btn{flex-shrink:0;padding:3px 7px;font-size:0.85rem;}
+  
+  .tool-buttons{
+    width:100%;display:grid;grid-template-columns:repeat(3, 1fr);gap:6px;
+  }
+  .tool-btn{
+    padding:8px 4px;font-size:0.72rem;text-align:center;min-width:0;
+    display:flex;align-items:center;justify-content:center;box-sizing:border-box;
+    white-space:nowrap;
+  }
+  #dayNightBtn{min-width:0;}
+  #soundBtn{grid-column:1;}
+  #teacherBtn{grid-column:2 / span 2;}
 
   .stage{height:340px;}
   .hint{font-size:0.72rem;padding:4px 8px;}
@@ -710,11 +740,22 @@ footer.ods{
   .animal .sprite{font-size:2.3rem;}
   .animal .tag{font-size:0.58rem;padding:1px 4px;}
   
-  .card{padding:14px 12px;max-height:88vh;}
+  .overlay{padding:10px;}
+  .card{padding:14px 12px;max-height:88vh;box-sizing:border-box;width:100%;}
   .card-head h2{font-size:1.15rem;}
   .card-tabs button{padding:6px 8px;font-size:0.75rem;}
   .quiz-q{font-size:0.88rem;}
   .quiz-opt{padding:8px 10px;font-size:0.82rem;}
+  
+  .teacher-table-wrap{
+    width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;margin-bottom:12px;
+  }
+  .teacher-table{min-width:300px;}
+  .teacher-actions{display:flex;flex-direction:column;gap:8px;width:100%;margin-top:14px;}
+  .teacher-actions .tool-btn{
+    width:100%;padding:10px;font-size:0.84rem;text-align:center;
+    white-space:normal;box-sizing:border-box;
+  }
   
   .badges-bar{gap:6px;}
   .badge{padding:4px 8px;font-size:0.7rem;}
@@ -722,12 +763,10 @@ footer.ods{
 }
 
 @media (max-width: 380px){
-  header.top h1{font-size:1.3rem;}
+  header.top h1{font-size:1.25rem;}
   .app-logo{width:40px;height:40px;}
-  .tool-buttons{flex-wrap:wrap;}
-  .tool-btn{flex-basis:calc(33.33% - 4px);}
-  #dayNightBtn{flex-basis:calc(50% - 4px);}
-  #achievementsBtn{flex-basis:calc(50% - 4px);}
+  .view-nav a{font-size:0.72rem;padding:6px 4px;}
+  .tool-btn{font-size:0.68rem;padding:7px 2px;}
 }
 
 /* ============================================================
