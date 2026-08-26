@@ -1,0 +1,11 @@
+# Dependencias
+node_modules/
+
+# Archivos de sistema operativo y temporales
+.DS_Store
+Thumbs.db
+*.tmp
+*.log
+
+# Entornos locales
+.env

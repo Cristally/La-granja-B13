@@ -729,3 +729,143 @@ footer.ods{
   #dayNightBtn{flex-basis:calc(50% - 4px);}
   #achievementsBtn{flex-basis:calc(50% - 4px);}
 }
+
+/* ============================================================
+   Vista: Galería Real B-13 (Fotografías y Correspondencia)
+   ============================================================ */
+.gallery-intro-box{
+  background:var(--paper-card);border:2px solid var(--ink);border-radius:8px;
+  padding:14px 16px;margin-bottom:16px;box-shadow: 2px 3px 0 rgba(40,49,27,0.14);
+}
+.gallery-intro-box h2{
+  margin:0 0 6px;font-family:'Fraunces',serif;font-size:1.3rem;color:var(--ink);
+}
+.gallery-intro-box p{
+  margin:0;font-size:0.88rem;color:#444;line-height:1.45;
+}
+
+.gallery-filter-bar{
+  display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px;align-items:center;
+}
+.filter-btn{
+  background:var(--paper-dark);border:2px solid var(--ink);border-radius:20px;
+  padding:6px 14px;font-family:'Karla',sans-serif;font-weight:700;font-size:0.8rem;
+  cursor:pointer;color:var(--ink);transition:all .15s ease;box-shadow: 1px 2px 0 rgba(40,49,27,0.1);
+}
+.filter-btn:hover{background:#fff;transform:translateY(-1px);}
+.filter-btn.active{
+  background:var(--grass-dark);color:#fff;border-color:var(--ink);
+  box-shadow: 2px 3px 0 rgba(40,49,27,0.25);
+}
+
+.gallery-grid{
+  display:grid;grid-template-columns:repeat(auto-fill, minmax(360px, 1fr));
+  gap:18px;margin-bottom:30px;
+}
+@media (max-width: 480px){
+  .gallery-grid{grid-template-columns:1fr;gap:14px;}
+}
+
+.gallery-card{
+  background:#fff;border:2px solid var(--ink);border-radius:8px;
+  overflow:hidden;box-shadow: 3px 4px 0 rgba(40,49,27,0.15);
+  display:flex;flex-direction:column;transition:transform .15s, box-shadow .15s;
+}
+.gallery-card:hover{transform:translateY(-2px);box-shadow: 4px 6px 0 rgba(40,49,27,0.2);}
+
+.gallery-card-img-wrap{
+  position:relative;width:100%;aspect-ratio:4/3;overflow:hidden;background:#2E3821;cursor:pointer;
+}
+.gallery-card-img-wrap img{
+  width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s ease;
+}
+.gallery-card:hover .gallery-card-img-wrap img{transform:scale(1.04);}
+
+.gallery-real-badge{
+  position:absolute;top:10px;left:10px;background:rgba(40,49,27,0.88);color:#FAF7EE;
+  font-family:'Space Mono',monospace;font-size:0.65rem;font-weight:700;
+  padding:3px 8px;border-radius:4px;border:1px solid var(--hay);backdrop-filter:blur(3px);
+}
+.gallery-zoom-hint{
+  position:absolute;bottom:10px;right:10px;background:rgba(255,255,255,0.9);
+  color:var(--ink);font-size:0.7rem;font-weight:700;padding:3px 8px;border-radius:12px;
+  border:1.5px solid var(--ink);pointer-events:none;
+}
+
+.gallery-extra-thumbs{
+  display:flex;gap:6px;padding:6px 12px;background:var(--paper-dark);border-bottom:1px solid var(--paper-dark);
+}
+.gallery-thumb-btn{
+  width:46px;height:36px;border:1.5px solid var(--ink);border-radius:4px;overflow:hidden;
+  cursor:pointer;padding:0;background:#fff;
+}
+.gallery-thumb-btn img{width:100%;height:100%;object-fit:cover;}
+.gallery-thumb-btn.active{outline:2px solid var(--hay);outline-offset:1px;}
+
+.gallery-card-body{
+  padding:14px;display:flex;flex-direction:column;flex:1;
+}
+.gallery-game-ref{
+  display:inline-flex;align-items:center;gap:6px;background:#E8F0DC;
+  border:1.5px solid var(--grass-dark);border-radius:16px;padding:4px 10px;
+  font-size:0.75rem;font-weight:700;color:var(--grass-dark);margin-bottom:10px;
+  text-decoration:none;align-self:flex-start;transition:background .12s, transform .1s;
+}
+.gallery-game-ref:hover{background:#D8E6C5;transform:scale(1.02);color:var(--ink);}
+
+.gallery-card-title{
+  font-family:'Fraunces',serif;font-size:1.15rem;margin:0 0 3px;color:var(--ink);
+}
+.gallery-card-subtitle{
+  font-size:0.75rem;color:var(--grass-dark);font-weight:700;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:10px;
+}
+
+.gallery-specs{
+  background:var(--paper-dark);border:1px solid #ddd;border-radius:5px;
+  padding:8px 10px;margin-bottom:10px;display:flex;flex-direction:column;gap:5px;font-size:0.8rem;
+}
+.gallery-spec-row{display:flex;gap:6px;line-height:1.35;}
+.gallery-spec-k{font-weight:700;color:var(--grass-dark);min-width:75px;}
+.gallery-spec-v{color:var(--ink);flex:1;}
+
+.gallery-card-desc{font-size:0.84rem;line-height:1.45;color:#333;margin-bottom:10px;flex:1;}
+.gallery-card-pedagogy{
+  font-size:0.78rem;background:#FFF9E6;border-left:3px solid var(--hay);
+  padding:7px 9px;border-radius:3px;color:#614700;line-height:1.35;
+}
+
+/* Lightbox Modal */
+.lightbox-modal{
+  position:fixed;inset:0;background:rgba(20,28,15,0.92);backdrop-filter:blur(6px);
+  display:none;align-items:center;justify-content:center;z-index:999;padding:16px;
+}
+.lightbox-modal.open{display:flex;}
+.lightbox-content{
+  max-width:920px;width:100%;max-height:92vh;background:#fff;border:3px solid var(--ink);
+  border-radius:8px;overflow:hidden;display:flex;flex-direction:column;position:relative;
+  box-shadow:0 12px 35px rgba(0,0,0,0.5);animation:fadeInCard .2s ease;
+}
+.lightbox-img-box{
+  flex:1;background:#111;display:flex;align-items:center;justify-content:center;
+  max-height:65vh;overflow:hidden;
+}
+.lightbox-img-box img{
+  max-width:100%;max-height:65vh;object-fit:contain;display:block;
+}
+.lightbox-info{
+  padding:14px 18px;background:#fff;border-top:2px solid var(--ink);
+}
+.lightbox-info h3{
+  margin:0 0 4px;font-family:'Fraunces',serif;font-size:1.25rem;color:var(--ink);
+}
+.lightbox-info p{
+  margin:0;font-size:0.88rem;color:#444;line-height:1.4;
+}
+.lightbox-close{
+  position:absolute;top:10px;right:10px;background:rgba(255,255,255,0.92);
+  border:2px solid var(--ink);border-radius:50%;width:34px;height:34px;
+  font-weight:700;font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  z-index:2;
+}
+.lightbox-close:hover{background:var(--clay);color:#fff;}
+

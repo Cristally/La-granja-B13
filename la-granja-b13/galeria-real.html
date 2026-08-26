@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>La Granja B13</title>
-<meta name="description" content="La Granja B13 — plataforma educativa gamificada sobre los animales de la granja del liceo.">
+<title>Granja Real B-13 — Galería Fotográfica y Correspondencia Interactiva</title>
+<meta name="description" content="Recorrido fotográfico interactivo por la granja real del Liceo Domingo Herrera Rivera B-13 y su conexión con el juego.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Karla:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/styles.css">
@@ -13,22 +13,22 @@
 <div class="app">
 
   <nav class="view-nav">
-    <a href="index.html" class="active">🌾 Potrero</a>
+    <a href="index.html">🌾 Potrero</a>
     <a href="mapa.html">🗺️ Mapa de la Granja</a>
-    <a href="galeria-real.html">📸 Granja Real B-13</a>
+    <a href="galeria-real.html" class="active">📸 Granja Real B-13</a>
   </nav>
 
   <header class="top">
     <div class="brand-wrap">
       <img src="assets/img/logo.png" alt="Logo Granja B-13" class="app-logo">
       <div>
-        <h1>La Granja B13</h1>
-        <div class="sub">Bioalfabetización gamificada — Liceo Domingo Herrera Rivera B-13</div>
+        <h1>Granja Real B-13</h1>
+        <div class="sub">Recorrido fotográfico y correspondencia con el juego — Liceo B-13 Antofagasta</div>
       </div>
     </div>
     <div class="scorebox">
       PUNTAJE: <b id="score">0</b><br>
-      FICHAS: <span id="discovered">0</span>/5
+      REGISTROS: <span id="galleryCount">13</span>
     </div>
   </header>
 
@@ -42,7 +42,6 @@
       <button id="changeStudentBtn" class="student-change-btn" type="button" aria-label="Editar estudiante">✏️</button>
     </div>
     <div class="tool-buttons">
-      <button id="dayNightBtn" class="tool-btn" type="button" title="Alternar ciclo Día y Noche">🌙 Noche</button>
       <button id="achievementsBtn" class="tool-btn" type="button">🏆 Logros</button>
       <button id="rulesBtn" class="tool-btn" type="button">📋 Normas</button>
       <button id="soundBtn" class="tool-btn" type="button">🔊 Sonido</button>
@@ -50,59 +49,40 @@
     </div>
   </div>
 
-  <div class="stage-wrap">
-    <div class="stage" id="stage">
-      <div class="hint">🌾 Toca un animal para abrir su ficha de campo y responder su quiz</div>
-      <div class="sun" id="stageSun"></div>
-      <div class="stars-layer" id="starsLayer"></div>
-      <div class="birds-flock" id="birdsFlock">^ ^  ^  ^^</div>
-      <div class="hills-bg"></div>
-      <div class="fence" id="fence"></div>
-      <div class="straw-bale"></div>
-      <div class="barn">
-        <div class="barn-roof"></div>
-        <div class="barn-window"></div>
-        <div class="barn-door"></div>
-      </div>
-      <div class="wildflowers" id="wildflowers">
-        <span class="butterfly" style="left:18%;top:15%;">🦋</span>
-        <span class="butterfly" style="left:65%;top:38%;animation-delay:4s;">🦋</span>
-      </div>
-    </div>
-  </div>
-  <div class="legend">Cada animal camina libremente por el potrero del liceo. Al tocarlo se abre su ficha: biología, personalización y quiz formativo.</div>
+  <section class="gallery-intro-box">
+    <h2>📸 De la Realidad a la Gamificación</h2>
+    <p>
+      Esta vista documenta las <b>instalaciones reales, animales y carteles de identidad</b> de la granja pedagógica del <b>Liceo Domingo Herrera Rivera B-13</b>. Cada fotografía se conecta directamente con su representación interactiva en el <b>Potrero</b> o en el <b>Mapa de la Granja</b> para que los estudiantes reconozcan su entorno escolar en el mundo físico y digital.
+    </p>
+  </section>
+
+  <div class="gallery-filter-bar" id="galleryFilterBar"></div>
+
+  <main class="gallery-grid" id="galleryGrid"></main>
 
   <div class="badges-bar" id="badgesBar"></div>
 
   <footer class="ods">
     Vinculado a ODS 4 (Educación de calidad) y ODS 15 (Vida de ecosistemas terrestres). Proyecto <b>La Granja B13</b> — Go Innova, Hecho Proyecto B-13.
   </footer>
+
 </div>
 
-<!-- Ficha del animal -->
-<div class="overlay" id="overlay">
-  <div class="card">
-    <button class="close-btn" id="closeBtn" aria-label="Cerrar">✕</button>
-    <div class="card-head">
-      <div class="big-sprite" id="cardSprite">🐇</div>
-      <div>
-        <h2 id="cardName">Conejo</h2>
-        <div class="lat" id="cardLat">Oryctolagus cuniculus</div>
-        <button class="sound-btn" id="cardSoundBtn" type="button" style="display:none;">🔊 Sonido real</button>
-      </div>
+<!-- Modal Lightbox para Ampliación de Fotos en Alta Resolución -->
+<div class="lightbox-modal" id="lightboxModal">
+  <div class="lightbox-content">
+    <button class="lightbox-close" aria-label="Cerrar visor">✕</button>
+    <div class="lightbox-img-box">
+      <img src="" alt="Ampliación fotográfica" id="lightboxImg">
     </div>
-    <div class="tabs">
-      <button data-tab="ficha" class="active" type="button">Ficha</button>
-      <button data-tab="personalizar" type="button">Personalizar</button>
-      <button data-tab="quiz" type="button">Quiz</button>
+    <div class="lightbox-info">
+      <h3 id="lightboxTitle">Título</h3>
+      <p id="lightboxDesc">Descripción de la fotografía real.</p>
     </div>
-    <div class="tabpanel active" id="panel-ficha"></div>
-    <div class="tabpanel" id="panel-personalizar"></div>
-    <div class="tabpanel" id="panel-quiz"></div>
   </div>
 </div>
 
-<!-- Registro / Identificación de Estudiante -->
+<!-- Modal de Identificación del Estudiante -->
 <div class="overlay" id="studentOverlay">
   <div class="card small-card">
     <button class="close-btn" data-close="studentOverlay" aria-label="Cerrar">✕</button>
@@ -114,71 +94,43 @@
       </div>
     </div>
     <div class="card-body">
-      <p style="font-size:0.88rem;margin-top:0;line-height:1.4;">Ingresa tus datos para registrar tus respuestas, acumular puntaje y obtener décimas formativas en tu sesión individual:</p>
+      <p style="font-size:0.86rem;line-height:1.45;margin-bottom:12px;">
+        Ingresa tus datos para registrar tus respuestas, acumular puntaje y obtener décimas formativas en tu sesión individual:
+      </p>
       <form id="studentForm" onsubmit="return false;">
         <div class="field-row">
           <label for="studentNameInput">Nombre y Apellido *</label>
-          <input type="text" id="studentNameInput" placeholder="Ej: Yefrin González" maxlength="30" required autocomplete="off">
+          <input type="text" id="studentNameInput" placeholder="Ej: Yefrin González" maxlength="40" autocomplete="name" required>
         </div>
         <div class="field-row">
           <label for="studentGradeInput">Curso / Nivel *</label>
-          <input type="text" id="studentGradeInput" placeholder="Ej: 3°F" maxlength="20" required autocomplete="off">
+          <input type="text" id="studentGradeInput" placeholder="Ej: 3°F" maxlength="20" required>
         </div>
-        <div id="studentError" style="color:var(--clay);font-size:0.8rem;font-weight:700;margin-bottom:8px;display:none;"></div>
-        <button type="submit" class="tool-btn" id="saveStudentBtn" style="width:100%;padding:10px;background:var(--hay);color:var(--ink);font-weight:700;font-size:0.9rem;">💾 Iniciar mi Cuaderno de Campo</button>
+        <div id="studentError" style="color:var(--clay);font-size:0.8rem;font-weight:700;display:none;margin-bottom:10px;"></div>
+        <button type="submit" id="saveStudentBtn" class="tool-btn" style="width:100%;padding:10px;background:var(--hay);color:var(--ink);font-weight:700;font-size:0.92rem;">
+          💾 Iniciar mi Cuaderno de Campo
+        </button>
       </form>
-      <div class="save-note" style="margin-top:10px;">Tu progreso se guardará bajo tu nombre para la evaluación docente y la entrega de décimas.</div>
+      <div class="save-note">Tu progreso se guardará bajo tu nombre para la evaluación docente y la entrega de décimas.</div>
     </div>
   </div>
 </div>
 
-<!-- Normas de la granja -->
+<!-- Modal de Normas -->
 <div class="overlay" id="rulesOverlay">
-  <div class="card small-card">
+  <div class="card">
     <button class="close-btn" data-close="rulesOverlay" aria-label="Cerrar">✕</button>
     <div class="card-head">
       <div class="big-sprite">📋</div>
       <div>
-        <h2>Antes de visitar la granja</h2>
-        <div class="lat">Normas de comportamiento y cuidado animal (ODS 15)</div>
+        <h2>Normas de la Granja</h2>
+        <div class="lat">Protocolos de bienestar y seguridad animal — B-13</div>
       </div>
     </div>
     <div class="card-body">
       <div class="stamp">CUADERNO DE CAMPO</div>
       <ul class="rules-list" id="rulesList"></ul>
       <div class="save-note">Aprender estas normas antes de ir a la granja física ayuda a cuidar a los animales y a evitar que se estresen.</div>
-    </div>
-  </div>
-</div>
-
-<!-- Panel docente -->
-<div class="overlay" id="teacherOverlay">
-  <div class="card">
-    <button class="close-btn" data-close="teacherOverlay" aria-label="Cerrar">✕</button>
-    <div class="card-head">
-      <div class="big-sprite">👩‍🏫</div>
-      <div>
-        <h2>Panel docente</h2>
-        <div class="lat">Evaluación formativa, décimas y resumen pedagógico</div>
-      </div>
-    </div>
-    <div class="card-body" id="teacherBody"></div>
-  </div>
-</div>
-
-<!-- Mensaje final -->
-<div class="overlay" id="finalOverlay">
-  <div class="card small-card">
-    <button class="close-btn" data-close="finalOverlay" aria-label="Cerrar">✕</button>
-    <div class="card-head">
-      <div class="big-sprite">🏁</div>
-      <div>
-        <h2>¡Recorrido completo!</h2>
-        <div class="lat">La Granja B13</div>
-      </div>
-    </div>
-    <div class="card-body">
-      <p id="finalMessage" class="final-message"></p>
     </div>
   </div>
 </div>
@@ -265,12 +217,29 @@
   </div>
 </div>
 
+<!-- Panel docente -->
+<div class="overlay" id="teacherOverlay">
+  <div class="card">
+    <button class="close-btn" data-close="teacherOverlay" aria-label="Cerrar">✕</button>
+    <div class="card-head">
+      <div class="big-sprite">👩‍🏫</div>
+      <div>
+        <h2>Panel docente</h2>
+        <div class="lat">Evaluación formativa, décimas y resumen pedagógico</div>
+      </div>
+    </div>
+    <div class="card-body" id="teacherBody"></div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script src="js/data.js"></script>
+<script src="js/map-data.js"></script>
 <script src="js/audio.js"></script>
 <script src="js/state.js"></script>
 <script src="js/card.js"></script>
-<script src="js/app.js"></script>
+<script src="js/real-gallery-data.js"></script>
+<script src="js/real-gallery-app.js"></script>
 </body>
 </html>

@@ -56,28 +56,28 @@ const MAP_ANIMALS = [
     id: 'nesquik', name: 'Nesquik', store: 'mapQuiz', zoneId: 'conejos',
     photo: 'assets/img/animals/nesquik.png', emoji: '🐇',
     color: COLORS[0], accessory: 'none',
-    blurb: 'Conejo de pelaje canela y orejas caídas, con un pelaje más largo y esponjoso alrededor de la cara.',
+    blurb: 'Edad: 3 años. Carácter: Introvertido e impredecible. Pelaje: Color café con manchas oscuras, pelo largo y esponjoso.',
     ...speciesFacts('conejo')
   },
   {
     id: 'vainilla', name: 'Vainilla', store: 'mapQuiz', zoneId: 'conejos',
     photo: 'assets/img/animals/vainilla.png', emoji: '🐇',
     color: COLORS[1], accessory: 'none',
-    blurb: 'Conejo blanco de orejas erguidas, con una mancha canela junto a una de las orejas.',
+    blurb: 'Edad: 5 años. Carácter: Enamoradizo y tierno. Pelaje: Color blanco con manchas café claro en las orejas y ojitos, pelito corto.',
     ...speciesFacts('conejo')
   },
   {
     id: 'tasmi', name: 'Tasmi', store: 'mapQuiz', zoneId: 'conejos',
     photo: 'assets/img/animals/tasmi.png', emoji: '🐇',
     color: COLORS[2], accessory: 'none',
-    blurb: 'Conejo blanco de orejas erguidas, con una pequeña mancha canela cerca de la oreja.',
+    blurb: 'Edad: 2 años. Carácter: Revoltoso y destructor. Pelaje: Color blanco con manchas café claro en las orejitas, pelo corto.',
     ...speciesFacts('conejo')
   },
   {
     id: 'quesito', name: 'Quesito', store: 'mapQuiz', zoneId: 'conejos',
     photo: 'assets/img/animals/quesito.png', emoji: '🐇',
     color: COLORS[3], accessory: 'none',
-    blurb: 'Conejo blanco de pelaje largo y esponjoso, el más lanudo del grupo.',
+    blurb: 'Edad: 1 año. Carácter: Metiche y amistoso. Pelaje: Color blanco, largo y esponjoso, tiene los ojitos azules.',
     ...speciesFacts('conejo')
   },
   {
@@ -91,7 +91,7 @@ const MAP_ANIMALS = [
     id: 'm_matias_vicente', name: 'Matías y Vicente', store: 'mapQuiz', zoneId: 'gallinas',
     photo: 'assets/img/animals/matias_vicente.png', emoji: '🐔',
     color: COLORS[0], accessory: 'none',
-    blurb: 'Pareja de gallinas de plumaje blanco y copete esponjoso en la cabeza.',
+    blurb: 'Dos gallitos japoneses muy amorosos de plumaje blanco sedoso, patas emplumadas y carácter sociable.',
     ...speciesFacts('gallo'),
     sound: 'assets/audio/gallina.mp3'
   },
