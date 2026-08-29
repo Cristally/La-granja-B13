@@ -6,8 +6,9 @@
   <p><b>Liceo Domingo Herrera Rivera B-13 — Antofagasta, Chile</b></p>
   <p><i>Postulación Go Innova — Vinculado a ODS 4 (Educación de Calidad) y ODS 15 (Vida de Ecosistemas Terrestres)</i></p>
 
-  [![Render](https://img.shields.io/badge/Web_App-En_Línea_en_Render-success?style=for-the-badge&logo=render)](https://la-granja-b13.onrender.com)
-  [![Node.js](https://img.shields.io/badge/Backend-Node.js_Express-339933?style=for-the-badge&logo=node.js)](https://nodejs.org)
+  [![Render](https://img.shields.io/badge/Web_App-En_Línea_en_Render-7BAE7F?style=for-the-badge&logo=render&logoColor=FAF7EE&labelColor=2E3821)](https://la-granja-b13.onrender.com)
+  [![Node.js](https://img.shields.io/badge/Backend-Node.js_Express-D8A47F?style=for-the-badge&logo=node.js&logoColor=FAF7EE&labelColor=2E3821)](https://nodejs.org)
+  [![Go Innova](https://img.shields.io/badge/Proyecto-Go_Innova_B--13-E9C46A?style=for-the-badge&logo=target&logoColor=2E3821&labelColor=2E3821)](https://la-granja-b13.onrender.com)
 </div>
 
 ---
