@@ -1,4 +1,4 @@
-# 🌾 La Granja B13 — Bioalfabetización Gamificada 🐓🐇🦜
+# 🌾🦜 La Granja B13 — Bioalfabetización Gamificada 🐓🐇
 
 <div align="center">
   <img src="la-granja-b13/assets/img/logo.png" alt="Escudo Oficial Granja B-13" width="160" />
