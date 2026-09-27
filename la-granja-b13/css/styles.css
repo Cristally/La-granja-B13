@@ -1222,3 +1222,421 @@ footer.ods{
   cursor: pointer;
 }
 
+/* ============================================================
+   PANTALLAS COMPLETAS DE ENTRADA, MODOS, ROLES Y ESTADÍSTICAS
+   (Aportadas por el diseño del prototipo GranjitaBase)
+   ============================================================ */
+
+.start-screen,
+.mode-screen,
+.auth-screen,
+.admin-screen {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  z-index: 9999;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background: #4a0d1f;
+  font-family: 'Fredoka', 'Baloo 2', 'Trebuchet MS', 'Karla', sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+.start-screen[hidden],
+.mode-screen[hidden],
+.auth-screen[hidden],
+.admin-screen[hidden] {
+  display: none !important;
+}
+
+.start-content,
+.mode-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.2rem;
+  width: 100%;
+  max-width: 480px;
+  padding: 2rem 1.5rem;
+}
+
+.logo-img,
+.auth-logo {
+  display: block;
+  width: clamp(90px, 24vw, 130px);
+  height: auto;
+  margin-bottom: 0.5rem;
+  filter: drop-shadow(0 4px 10px rgba(0,0,0,0.4));
+}
+
+.game-title {
+  text-align: center;
+  color: #ffd83d;
+  line-height: 1.25;
+  margin: 0;
+}
+
+.title-line1 {
+  display: block;
+  font-size: clamp(1.2rem, 5.5vw, 1.6rem);
+  font-weight: 500;
+  color: #fff6de;
+}
+
+.title-line2 {
+  display: block;
+  font-size: clamp(1.8rem, 8vw, 2.5rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.enter-btn,
+.mode-btn {
+  width: 100%;
+  max-width: 320px;
+  padding: 0.95rem 1.4rem;
+  border-radius: 12px;
+  border: 2px solid #ffd83d;
+  background: #7a0f2b;
+  color: #fff6de;
+  font-family: 'Fredoka', sans-serif;
+  font-weight: 600;
+  font-size: 1.05rem;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  transition: all .15s ease;
+  text-align: center;
+}
+.enter-btn:hover,
+.mode-btn:hover {
+  background: #901637;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.4);
+}
+
+.corner-buttons {
+  position: absolute;
+  left: 4%;
+  bottom: 3%;
+  display: flex;
+  gap: 0.6rem;
+  z-index: 10;
+}
+
+.admin-btn {
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  border: 2px solid #ffd83d;
+  background: #2a0812;
+  color: #ffd83d;
+  font-family: 'Fredoka', sans-serif;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all .15s ease;
+}
+.admin-btn:hover {
+  background: #420f1e;
+  transform: translateY(-1px);
+}
+
+.admin-reset-btn {
+  margin-top: 1rem;
+  align-self: center;
+  border-color: #ff6b6b;
+  color: #ffb3b3;
+  background: #330c12;
+}
+
+.mode-back,
+.auth-back {
+  position: absolute;
+  top: 4%;
+  left: 5%;
+  background: none;
+  border: none;
+  color: #fff6de;
+  font-family: 'Fredoka', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.mode-back:hover,
+.auth-back:hover {
+  color: #ffd83d;
+}
+
+.mode-title {
+  color: #fff6de;
+  font-size: clamp(1.2rem, 5.5vw, 1.5rem);
+  text-align: center;
+  margin: 0;
+}
+
+.auth-content {
+  position: relative;
+  width: 100%;
+  max-width: 440px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 5% 6%;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 360px;
+  background: #7a0f2b;
+  border: 2px solid #ffd83d;
+  border-radius: 14px;
+  padding: 1.4rem 1.3rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.8rem;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+}
+
+.auth-title {
+  color: #ffd83d;
+  font-size: 1.25rem;
+  margin: 0;
+  text-align: center;
+}
+
+.auth-form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+.auth-input {
+  width: 100%;
+  padding: 0.7rem 0.9rem;
+  border-radius: 8px;
+  border: 2px solid #ffd83d;
+  background: #fff6de;
+  color: #3a1010;
+  font-family: 'Fredoka', sans-serif;
+  font-size: 0.92rem;
+  box-sizing: border-box;
+}
+
+.auth-pin {
+  text-align: center;
+  font-size: 1.5rem;
+  letter-spacing: 0.4rem;
+}
+
+.auth-submit {
+  padding: 0.75rem 1.1rem;
+  border: none;
+  border-radius: 8px;
+  background: #ffd83d;
+  color: #3a1010;
+  font-family: 'Fredoka', sans-serif;
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all .15s ease;
+}
+.auth-submit:hover {
+  background: #ffe36e;
+  transform: translateY(-1px);
+}
+
+.auth-hint {
+  color: #ffe9b0;
+  font-size: 0.8rem;
+  text-align: center;
+  margin: 0;
+}
+
+.auth-switch {
+  background: none;
+  border: none;
+  color: #fff6de;
+  text-decoration: underline;
+  font-size: 0.84rem;
+  cursor: pointer;
+}
+.auth-switch:hover {
+  color: #ffd83d;
+}
+
+.auth-error {
+  color: #ffd0d0;
+  background: rgba(0, 0, 0, 0.35);
+  border-radius: 6px;
+  padding: 0.4rem 0.6rem;
+  font-size: 0.82rem;
+  text-align: center;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.admin-content {
+  position: relative;
+  width: 100%;
+  max-width: 580px;
+  padding: 4rem 1.2rem 3rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  box-sizing: border-box;
+}
+
+.brand-heading {
+  color: #ffd83d;
+  font-size: clamp(1.2rem, 5.5vw, 1.6rem);
+  text-align: center;
+  margin: 0 0 0.5rem;
+}
+
+.brand-heading-sm {
+  font-size: clamp(1.05rem, 5vw, 1.25rem);
+}
+
+.admin-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.stat-card {
+  background: #7a0f2b;
+  border: 2px solid #ffd83d;
+  border-radius: 12px;
+  padding: 1.1rem 1.2rem;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.3);
+}
+
+.stat-card h3 {
+  color: #ffd83d;
+  font-size: 1.05rem;
+  margin: 0 0 0.6rem;
+}
+
+.stat-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.35rem 0;
+  border-bottom: 1px solid rgba(255, 216, 61, 0.2);
+  font-size: 0.88rem;
+  color: #fff6de;
+}
+
+.stat-row:last-child {
+  border-bottom: none;
+}
+
+.stat-row-value {
+  font-weight: 700;
+  color: #ffd83d;
+  white-space: nowrap;
+}
+
+.stat-big-number {
+  color: #ffd83d;
+  font-size: 2.4rem;
+  text-align: center;
+  font-weight: 800;
+}
+
+.stat-big-label {
+  color: #fff6de;
+  font-size: 0.85rem;
+  text-align: center;
+  margin-top: 0.1rem;
+  font-weight: 600;
+}
+
+.stat-empty {
+  color: #ffe9b0;
+  font-size: 0.85rem;
+  text-align: center;
+  font-style: italic;
+  padding: 0.6rem 0;
+}
+
+.line-chart {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Modales de PIN Admin y Login Profesor */
+.granjita-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6%;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+}
+.granjita-modal[hidden] {
+  display: none !important;
+}
+
+.granjita-modal-card {
+  position: relative;
+  width: 100%;
+  max-width: 380px;
+  background: #7a0f2b;
+  border: 2px solid #ffd83d;
+  border-radius: 14px;
+  padding: 1.5rem 1.3rem;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+.granjita-modal-close {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  background: none;
+  border: none;
+  color: #fff6de;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+.granjita-modal-close:hover {
+  color: #ffd83d;
+}
+
+/* Botón Inicio en el juego principal */
+.btn-inicio-portal {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: #7a0f2b;
+  color: #ffd83d;
+  border: 1.5px solid #ffd83d;
+  border-radius: 6px;
+  padding: 5px 10px;
+  font-family: 'Fredoka', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all .15s ease;
+}
+.btn-inicio-portal:hover {
+  background: #901637;
+  color: #fff;
+}
+
