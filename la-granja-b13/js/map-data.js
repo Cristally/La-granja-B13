@@ -21,20 +21,24 @@ function speciesFacts(id) {
   } : null;
 }
 
-const FARM_ZONES = [
+const FARM_ZONES_CLASSIC = [
   { id: 'almacen', label: 'Almacén de Granja', kind: 'deco', icon: '📦', left: 20.0, top: 10.5,
-    flavor: 'Aquí se almacenan los alimentos (granos, heno, forraje) y herramientas del liceo. Mantenerlo seco, limpio y ordenado evita plagas y asegura que los animales reciban alimento en óptimas condiciones.' },
+    flavor: 'Aquí se almacenan los alimentos (granos, heno, forraje) y herramientas del liceo. Mantenerlo seco, limpio y ordenado evita plagas y asegura que los animales reciban alimento en óptimas condiciones.',
+    image: 'assets/img/real/canasto_huevos_taller.jpg' },
   { id: 'conejos', label: 'Conejeras', kind: 'animals', icon: '🐇', left: 47.0, top: 20.0,
     intro: 'La conejera del liceo. Toca a cada conejo para abrir su ficha de campo y quiz.',
     animalIds: ['nesquik', 'vainilla', 'tasmi', 'quesito', 'm_conejo_grupo'] },
   { id: 'plantas', label: 'Huerto Escolar', kind: 'deco', icon: '🌱', left: 74.7, top: 20.0,
-    flavor: 'El huerto vegetal del liceo. Parte de lo que se cosecha aquí complementa la dieta fresca de los animales (como hojas verdes y forraje para conejos y gallinas), promoviendo la sustentabilidad y el cuidado vegetal.' },
+    flavor: 'El huerto vegetal del liceo. Parte de lo que se cosecha aquí complementa la dieta fresca de los animales, promoviendo la sustentabilidad y el cuidado vegetal.',
+    image: 'assets/img/real/huerto_bancales.jpg' },
   { id: 'lista', label: 'Pizarrón de Tareas', kind: 'deco', icon: '📋', left: 31.3, top: 40.5,
     flavor: 'Pizarrón de tareas y turnos de la granja. Aquí el equipo de estudiantes y profesores coordina la alimentación, limpieza de bebederos y revisión del bienestar de cada animal.' },
   { id: 'huerto', label: 'Huerto de Bayas', kind: 'deco', icon: '🫐', left: 62.3, top: 45.0,
-    flavor: 'Arbustos y frutos del huerto. Proporciona sombra natural y frutos que enriquecen el ecosistema de la granja y sirven de estímulo para las aves del liceo.' },
+    flavor: 'Arbustos y frutos del huerto. Proporciona sombra natural y frutos que enriquecen el ecosistema de la granja.',
+    image: 'assets/img/real/tomates_maceta.jpg' },
   { id: 'pozo', label: 'Pozo de Agua Limpia', kind: 'deco', icon: '🪣', left: 83.8, top: 45.0,
-    flavor: 'Fuente principal de agua de la granja. El acceso a agua limpia, fresca y sin impurezas es indispensable para la hidratación, digestión y salud de todas las especies.' },
+    flavor: 'Fuente principal de agua de la granja. El acceso a agua limpia, fresca y sin impurezas es indispensable para la salud de todas las especies.',
+    image: 'assets/img/real/pozo_real.jpg' },
   { id: 'arboleda', label: 'Arboleda de Nidos', kind: 'animals', icon: '🌳', left: 11.5, top: 68.0,
     intro: 'El árbol donde habitan las aves pequeñas de la granja (catitas y agapornis).',
     animalIds: ['m_catitas', 'm_agapornis'] },
@@ -45,11 +49,48 @@ const FARM_ZONES = [
     intro: 'El recinto del único gallo de la granja.',
     animalIds: ['m_rooster'] },
   { id: 'paja', label: 'Zona de Paja y Cama', kind: 'deco', icon: '🌾', left: 68.4, top: 72.0,
-    flavor: 'Zona de acopio de paja y heno seco. Se utiliza como cama térmica y absorbente en el gallinero y conejeras, manteniendo a los animales secos, cómodos y abrigados.' },
+    flavor: 'Zona de acopio de paja y heno seco. Se utiliza como cama térmica y absorbente en el gallinero y conejeras.',
+    image: 'assets/img/real/canasto_huevos_taller.jpg' },
   { id: 'gato', label: 'Gato de la Granja', kind: 'deco', icon: '🐈', left: 83.0, top: 63.0,
+    flavor: 'El felino guardián de la granja. Ronda los alrededores del almacén y los corrales, ayudando de forma natural en el control biológico de roedores.',
+    sound: 'assets/audio/gato.mp3' }
+];
+
+// Zonas oficiales calibradas sobre el render 3D realista (mapa3.jpg)
+const FARM_ZONES_3D = [
+  { id: 'pozo', label: 'Pozo de Agua Limpia', kind: 'deco', icon: '🪣', left: 50.0, top: 8.0,
+    flavor: 'Fuente principal de agua de la granja. El acceso a agua limpia, fresca y sin impurezas es indispensable para la hidratación, digestión y salud de todas las especies.',
+    image: 'assets/img/real/pozo_real.jpg' },
+  { id: 'almacen', label: 'Almacén de Granja', kind: 'deco', icon: '📦', left: 23.0, top: 11.0,
+    flavor: 'Aquí se almacenan los alimentos (granos, heno, forraje) y herramientas del liceo. Mantenerlo seco, limpio y ordenado evita plagas y asegura que los animales reciban alimento en óptimas condiciones.',
+    image: 'assets/img/real/canasto_huevos_taller.jpg' },
+  { id: 'plantas', label: 'Huerto Escolar y Bancales', kind: 'deco', icon: '🌱', left: 20.0, top: 20.0,
+    flavor: 'El huerto vegetal del liceo. Parte de lo que se cosecha aquí complementa la dieta fresca de los animales (como hojas verdes y forraje para conejos y gallinas), promoviendo la sustentabilidad y el cuidado vegetal (ODS 15).',
+    image: 'assets/img/real/huerto_bancales.jpg' },
+  { id: 'conejos', label: 'Conejeras', kind: 'animals', icon: '🐇', left: 20.0, top: 48.0,
+    intro: 'La conejera y corral de esparcimiento del liceo. Toca a cada conejo para abrir su ficha de campo y quiz.',
+    animalIds: ['nesquik', 'vainilla', 'tasmi', 'quesito', 'm_conejo_grupo'] },
+  { id: 'mesa', label: 'Mesa de Trabajo Botánico', kind: 'deco', icon: '🪴', left: 48.0, top: 60.0,
+    flavor: 'Mesa de cultivo circular y banco de trabajo botánico para la propagación de esquejes, siembra en maceteros y toma de notas de campo al aire libre.',
+    image: 'assets/img/real/mesa_cultivo_flores.jpg' },
+  { id: 'gallinas', label: 'Gallinero Protegido', kind: 'animals', icon: '🐔', left: 82.0, top: 48.0,
+    intro: 'El gallinero del liceo bajo toldo a rayas. Toca a cada ave para abrir su ficha y conocer su biología.',
+    animalIds: ['m_matias_vicente', 'm_gallinas_grupo'] },
+  { id: 'jaula-gallo', label: 'Recinto del Gallo', kind: 'animals', icon: '🐓', left: 82.0, top: 22.0,
+    intro: 'El recinto superior de aves donde reside el gallo guardián de la granja.',
+    animalIds: ['m_rooster'] },
+  { id: 'arboleda', label: 'Aviario de Aves Menores', kind: 'animals', icon: '🦜', left: 77.0, top: 80.0,
+    intro: 'El aviario escolar donde habitan las catitas australianas y los agapornis entre ramas y nidos.',
+    animalIds: ['m_catitas', 'm_agapornis'] },
+  { id: 'taller', label: 'Taller de Palets y Camas', kind: 'deco', icon: '🌾', left: 22.0, top: 80.0,
+    flavor: 'Sector de acopio de paja, sustratos y herramientas de cultivo construidas con maderas recicladas de la comunidad.',
+    image: 'assets/img/real/canasto_huevos_taller.jpg' },
+  { id: 'gato', label: 'Gato de la Granja', kind: 'deco', icon: '🐈', left: 64.0, top: 58.0,
     flavor: 'El felino guardián de la granja. Ronda los alrededores del almacén y los corrales, ayudando de forma natural en el control biológico de roedores sin necesidad de químicos nocivos.',
     sound: 'assets/audio/gato.mp3' }
 ];
+
+let FARM_ZONES = FARM_ZONES_3D;
 
 const MAP_ANIMALS = [
   {

@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>La Granja del b13! (Esqueleto)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Fredoka:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <div class="start-screen" id="startScreen">
+    <img src="img/logo.png" alt="Escudo DHR Antofagasta" class="logo-img">
+
+    <div class="start-content">
+      <h1 class="game-title">
+        <span class="title-line1">Bienvenidos a la</span>
+        <span class="title-line2">Granjita B13</span>
+      </h1>
+
+      <button class="enter-btn" id="enterBtn">Entrar</button>
+    </div>
+
+    <div class="corner-buttons">
+      <button class="admin-btn" id="startAdminBtn">🔧 Admin</button>
+      <button class="admin-btn" id="startProfesorBtn">🍎 Profesor</button>
+    </div>
+  </div>
+
+  <div class="mode-screen" id="modeScreen" hidden>
+    <button class="auth-back mode-back" id="modeBackBtn">← Inicio</button>
+
+    <div class="mode-content">
+      <img src="img/logo.png" alt="Escudo DHR Antofagasta" class="auth-logo">
+      <h2 class="mode-title">¿Cómo quieres entrar?</h2>
+
+      <button class="mode-btn" id="modeVisitaBtn">🧭 Modo Visitas</button>
+      <button class="mode-btn" id="modeEstudianteBtn">🎓 Modo Estudiante</button>
+    </div>
+
+    <div class="corner-buttons">
+      <button class="admin-btn" id="modeAdminBtn">🔧 Admin</button>
+      <button class="admin-btn" id="modeProfesorBtn">🍎 Profesor</button>
+    </div>
+  </div>
+
+  <div class="auth-screen" id="authScreen" hidden>
+    <div class="auth-content">
+      <button class="auth-back" id="authBackBtn">← Volver</button>
+
+      <img src="img/logo.png" alt="Escudo DHR Antofagasta" class="auth-logo">
+
+      <div class="auth-card" id="loginCard">
+        <h2 class="auth-title">Iniciar sesión</h2>
+        <form class="auth-form" id="loginForm">
+          <input class="auth-input" type="email" id="loginCorreo" placeholder="Correo" autocomplete="username" value="demo@granja.cl" required>
+          <input class="auth-input" type="password" id="loginClave" placeholder="Contraseña" autocomplete="current-password" value="demo1234" required>
+          <p class="auth-error" id="loginError" hidden></p>
+          <button class="auth-submit" type="submit">Entrar</button>
+        </form>
+        <p class="auth-hint">Prueba: demo@granja.cl / demo1234</p>
+        <button class="auth-switch" id="showRegisterBtn">¿No tienes cuenta? Regístrate</button>
+      </div>
+
+      <div class="auth-card" id="registerCard" hidden>
+        <h2 class="auth-title">Registro de estudiante</h2>
+        <form class="auth-form" id="registerForm">
+          <input class="auth-input" type="text" id="regNombre" placeholder="Nombre completo" autocomplete="name" required>
+          <input class="auth-input" type="text" id="regCurso" placeholder="Curso (ej: 7°A)" required>
+          <select class="auth-input" id="regGenero" required>
+            <option value="" disabled selected>Género</option>
+            <option value="Femenino">Femenino</option>
+            <option value="Masculino">Masculino</option>
+            <option value="Prefiero no decirlo">Prefiero no decirlo</option>
+          </select>
+          <input class="auth-input" type="email" id="regCorreo" placeholder="Correo" autocomplete="username" required>
+          <input class="auth-input" type="password" id="regClave" placeholder="Contraseña" autocomplete="new-password" required>
+          <p class="auth-error" id="registerError" hidden></p>
+          <button class="auth-submit" type="submit">Crear cuenta</button>
+        </form>
+        <button class="auth-switch" id="showLoginBtn">¿Ya tienes cuenta? Inicia sesión</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="game-screen" id="gameScreen" hidden>
+    <img src="img/mapa3.jpg" alt="Mapa de la granja" class="map-img">
+    <div class="hotspots" id="hotspots"></div>
+    <div class="hotspots" id="hotspotsQuiz"></div>
+
+    <button class="back-btn" id="mapBackBtn">← Inicio</button>
+
+    <div class="score-badge" id="scoreBadge" hidden>⭐ <span id="scoreValue">0</span></div>
+
+    <div class="info-modal" id="infoModal" hidden>
+      <div class="info-card" id="infoCard">
+        <button class="info-close" id="infoClose">✕</button>
+        <div class="info-image-wrap" id="infoImageWrap" hidden>
+          <img class="info-image" id="infoImage" alt="">
+          <span class="info-image-zoom">🔍</span>
+        </div>
+        <h3 class="info-title" id="infoTitle"></h3>
+        <p class="info-body" id="infoBody"></p>
+      </div>
+    </div>
+
+    <div class="bottom-menu" id="bottomMenu">
+      <button class="menu-btn" id="galeriaGranjaBtn">🌾 Más Granjita</button>
+      <button class="menu-btn" id="galeriaMascotasBtn">🐾 Las Mascotitas</button>
+      <button class="menu-btn" id="quizFab" hidden>📝 Quiz</button>
+    </div>
+
+    <div class="gallery-modal" id="galleryModal" hidden>
+      <div class="gallery-card" id="galleryCard">
+        <button class="info-close" id="galleryClose">✕</button>
+        <h3 class="gallery-title" id="galleryTitle"></h3>
+        <div class="gallery-scroll" id="galleryScroll"></div>
+      </div>
+    </div>
+
+    <div class="bio-modal" id="bioModal" hidden>
+      <div class="bio-card" id="bioCard">
+        <button class="info-close" id="bioClose">✕</button>
+        <div class="info-image-wrap" id="bioImageWrap" hidden>
+          <img class="info-image" id="bioImage" alt="">
+          <span class="info-image-zoom">🔍</span>
+        </div>
+        <h3 class="bio-title" id="bioTitle"></h3>
+        <div class="bio-body" id="bioBody"></div>
+      </div>
+    </div>
+
+    <div class="quiz-modal" id="quizModal" hidden>
+      <div class="quiz-card" id="quizCard">
+        <button class="info-close" id="quizClose">✕</button>
+        <h3 class="quiz-title">Modo Quiz</h3>
+        <p class="quiz-meta" id="quizMeta"></p>
+        <p class="quiz-progreso" id="quizProgreso"></p>
+
+        <div id="quizPreguntaWrap">
+          <p class="quiz-question" id="quizQuestion"></p>
+          <div class="quiz-options" id="quizOptions"></div>
+          <p class="quiz-feedback" id="quizFeedback" hidden></p>
+          <button class="quiz-next-btn" id="quizSiguienteBtn" hidden>Siguiente ➤</button>
+        </div>
+
+        <div id="quizFinalWrap" hidden>
+          <p class="quiz-resultado" id="quizResultado"></p>
+          <textarea class="auth-input quiz-comentario" id="quizComentario" placeholder="Comentarios sobre el quiz (opcional)"></textarea>
+          <button class="auth-submit" id="quizEnviarComentario">Enviar y cerrar</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="lightbox" id="lightbox" hidden>
+      <button class="lightbox-close" id="lightboxClose">✕</button>
+      <div class="lightbox-viewport" id="lightboxViewport">
+        <img class="lightbox-img" id="lightboxImg" src="" alt="">
+      </div>
+      <p class="lightbox-hint">Doble toque o pellizca para hacer zoom</p>
+    </div>
+  </div>
+
+  <div class="admin-screen" id="adminScreen" hidden>
+    <div class="admin-content">
+      <button class="auth-back" id="adminBackBtn">← Salir</button>
+      <h2 class="brand-heading">📊 Estadísticas de la Granjita B13</h2>
+      <div class="admin-stats" id="adminStats"></div>
+      <button class="admin-btn admin-reset-btn" id="resetDatosBtn">🗑️ Borrar todos los datos</button>
+    </div>
+  </div>
+
+  <div class="admin-screen" id="profesorScreen" hidden>
+    <div class="admin-content">
+      <button class="auth-back" id="profesorBackBtn">← Salir</button>
+      <h2 class="brand-heading">🍎 Panel del Profesor</h2>
+
+      <div class="stat-card">
+        <h3>Crear quiz para una zona del mapa</h3>
+        <p class="auth-hint">Máximo 10 preguntas por zona.</p>
+        <form class="auth-form" id="quizEditorForm">
+          <input class="auth-input" type="text" id="quizAutor" placeholder="Tu nombre (profesor/a)" value="Profesor Demo" required>
+          <select class="auth-input" id="quizZona" required></select>
+          <input class="auth-input" type="text" id="quizPregunta" placeholder="Pregunta" required>
+          <input class="auth-input" type="text" id="quizOpcion0" placeholder="Alternativa 1" required>
+          <input class="auth-input" type="text" id="quizOpcion1" placeholder="Alternativa 2" required>
+          <input class="auth-input" type="text" id="quizOpcion2" placeholder="Alternativa 3" required>
+          <input class="auth-input" type="text" id="quizOpcion3" placeholder="Alternativa 4" required>
+          <select class="auth-input" id="quizCorrecta" required>
+            <option value="" disabled selected>¿Cuál alternativa es correcta?</option>
+            <option value="0">Alternativa 1</option>
+            <option value="1">Alternativa 2</option>
+            <option value="2">Alternativa 3</option>
+            <option value="3">Alternativa 4</option>
+          </select>
+          <input class="auth-input" type="number" id="quizDecimas" placeholder="Décimas si acierta (ej: 0.5)" step="0.1" min="0" max="1" value="0.3" required>
+          <p class="auth-error" id="quizEditorError" hidden></p>
+          <button class="auth-submit" type="submit">➕ Agregar quiz al mapa</button>
+        </form>
+      </div>
+
+      <div class="admin-stats" id="quizListaProfesor"></div>
+    </div>
+  </div>
+
+  <div class="global-overlays">
+    <div class="info-modal" id="adminPinModal" hidden>
+      <div class="info-card" id="adminPinCard">
+        <button class="info-close" id="adminPinClose">✕</button>
+        <h3 class="brand-heading brand-heading-sm">Acceso administrador</h3>
+        <form class="auth-form" id="adminForm">
+          <input class="auth-input auth-pin" type="tel" inputmode="numeric" pattern="[0-9]*" maxlength="4" id="adminPin" placeholder="PIN" autocomplete="off" required>
+          <p class="auth-error" id="adminError" hidden></p>
+          <button class="auth-submit" type="submit">Entrar</button>
+        </form>
+        <p class="auth-hint">PIN de prueba: 1234</p>
+      </div>
+    </div>
+
+    <div class="info-modal" id="profesorLoginModal" hidden>
+      <div class="info-card" id="profesorLoginCard">
+        <button class="info-close" id="profesorLoginClose">✕</button>
+        <h3 class="brand-heading brand-heading-sm">Acceso Profesor</h3>
+        <form class="auth-form" id="profesorLoginForm">
+          <input class="auth-input" type="email" id="profesorCorreo" placeholder="Correo" autocomplete="username" value="profesor@granja.cl" required>
+          <input class="auth-input" type="password" id="profesorClave" placeholder="Contraseña" autocomplete="current-password" value="profesor1234" required>
+          <p class="auth-error" id="profesorError" hidden></p>
+          <button class="auth-submit" type="submit">Entrar</button>
+        </form>
+        <p class="auth-hint">Datos de prueba precargados</p>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/app.js"></script>
+</body>
+</html>

@@ -1,32 +1,74 @@
 /*
   map-app.js — Lógica específica de la vista "Mapa de la Granja"
-  (mapa.html): los pines sobre la imagen del mapa, la mini-vista por
-  zona (grilla de retratos) y la conexión con la ficha compartida de
-  card.js. La ficha, el quiz y las insignias son exactamente el mismo
-  motor que usa el Potrero.
+  (mapa.html): pines sobre la imagen 3D realista (mapa3.jpg),
+  mini-vista por zona (grilla de retratos con animales reales),
+  pines de quiz docente y alternancia con vista clásica 2D.
 */
 
 const farmmap = document.getElementById('farmmap');
+const farmmapBg = document.getElementById('farmmapBg');
+const toggleMapModeBtn = document.getElementById('toggleMapModeBtn');
 
-FARM_ZONES.forEach(zone => {
-  const pin = document.createElement('button');
-  pin.type = 'button';
-  pin.className = 'map-pin' + (zone.kind === 'animals' ? ' has-animals' : '');
-  pin.style.left = zone.left + '%';
-  pin.style.top = zone.top + '%';
-  pin.title = zone.label;
-  pin.dataset.zone = zone.id;
-  pin.innerHTML = `<span class="map-pin-ic">${zone.icon}</span>`;
-  if (zone.kind === 'animals') {
-    pin.innerHTML += `<span class="map-pin-count" id="count-${zone.id}"></span>`;
+let currentMapMode = '3d'; // '3d' o 'classic'
+
+function renderMapPins() {
+  if (!farmmap) return;
+
+  // Limpiar pines existentes
+  farmmap.querySelectorAll('.map-pin').forEach(p => p.remove());
+
+  const activeZones = currentMapMode === '3d' ? FARM_ZONES_3D : FARM_ZONES_CLASSIC;
+  FARM_ZONES = activeZones;
+
+  if (farmmapBg) {
+    farmmapBg.src = currentMapMode === '3d' ? 'assets/img/map/mapa3.jpg' : 'assets/img/map/mapa-granja.jpg';
+    farmmapBg.alt = currentMapMode === '3d' ? 'Mapa 3D realista de La Granja B13' : 'Mapa ilustrado clásico de La Granja B13';
   }
-  pin.addEventListener('click', () => onZoneClick(zone));
-  farmmap.appendChild(pin);
-  // No agregamos una etiqueta de texto aparte: la imagen ya trae el
-  // nombre de cada zona pintado en su propio cartel de madera.
-});
+
+  activeZones.forEach(zone => {
+    const pin = document.createElement('button');
+    pin.type = 'button';
+    pin.className = 'map-pin' + (zone.kind === 'animals' ? ' has-animals' : '');
+    pin.style.left = zone.left + '%';
+    pin.style.top = zone.top + '%';
+    pin.title = zone.label;
+    pin.dataset.zone = zone.id;
+    pin.innerHTML = `<span class="map-pin-ic">${zone.icon}</span>`;
+    if (zone.kind === 'animals') {
+      pin.innerHTML += `<span class="map-pin-count" id="count-${zone.id}"></span>`;
+    }
+    pin.addEventListener('click', () => onZoneClick(zone));
+    farmmap.appendChild(pin);
+
+    // Pin de Quizzes creados por el profesor para esta zona
+    const teacherQuizzes = (typeof TeacherQuizzes !== 'undefined') ? TeacherQuizzes.getForZone(zone.id) : [];
+    if (teacherQuizzes && teacherQuizzes.length > 0) {
+      const qPin = document.createElement('button');
+      qPin.type = 'button';
+      qPin.className = 'map-pin map-pin-teacher-quiz';
+      qPin.style.left = Math.min(94, zone.left + 5.5) + '%';
+      qPin.style.top = Math.max(3, zone.top - 5.5) + '%';
+      qPin.title = `📝 Quiz del Profesor: ${zone.label} (${teacherQuizzes.length} preg.)`;
+      qPin.innerHTML = `<span class="map-pin-ic" style="font-size:1.05rem;">📝</span><span class="map-pin-count" style="background:#e9c46a;color:#2e3821;">${teacherQuizzes.length}</span>`;
+      qPin.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (typeof abrirQuizProfesorZona === 'function') {
+          abrirQuizProfesorZona(zone.id, zone.label);
+        }
+      });
+      farmmap.appendChild(qPin);
+    }
+  });
+
+  refreshZonePinBadges();
+}
 
 function onZoneClick(zone) {
+  // Registrar visita de zona en estadísticas
+  if (typeof Auth !== 'undefined' && typeof Auth.registrarVisitaZona === 'function') {
+    Auth.registrarVisitaZona(zone.id);
+  }
+
   if (zone.kind === 'animals') {
     renderMiniVista(zone);
     openOverlayId('miniVistaOverlay');
@@ -43,11 +85,24 @@ function renderZoneInfo(zone) {
   const catEl = document.getElementById('zoneInfoCategory');
   const textEl = document.getElementById('zoneInfoText');
   const extraEl = document.getElementById('zoneInfoExtra');
+  const imgWrap = document.getElementById('zoneInfoImgWrap');
+  const imgEl = document.getElementById('zoneInfoImg');
 
   if (iconEl) iconEl.textContent = zone.icon || '📍';
   if (titleEl) titleEl.textContent = zone.label || 'Punto de Interés';
   if (catEl) catEl.textContent = 'Espacio de la Granja B13';
   if (textEl) textEl.textContent = zone.flavor || '';
+
+  // Foto real de la zona
+  if (imgWrap && imgEl) {
+    if (zone.image) {
+      imgEl.src = zone.image;
+      imgEl.alt = zone.label;
+      imgWrap.style.display = 'block';
+    } else {
+      imgWrap.style.display = 'none';
+    }
+  }
 
   if (extraEl) {
     if (zone.sound) {
@@ -91,6 +146,10 @@ function renderMiniVista(zone) {
       ${done ? '<div class="portrait-done">✓ Quiz completo</div>' : ''}
     `;
     card.addEventListener('click', () => {
+      // Registrar visita de animal
+      if (typeof Auth !== 'undefined' && typeof Auth.registrarVisitaAnimal === 'function') {
+        Auth.registrarVisitaAnimal(a.name);
+      }
       closeOverlayId('miniVistaOverlay');
       openFichaOverlay(a);
     });
@@ -101,7 +160,8 @@ function renderMiniVista(zone) {
 /* ============ Cabecera y pines (progreso) ============ */
 
 function refreshZonePinBadges() {
-  FARM_ZONES.forEach(zone => {
+  const activeZones = currentMapMode === '3d' ? FARM_ZONES_3D : FARM_ZONES_CLASSIC;
+  activeZones.forEach(zone => {
     if (zone.kind !== 'animals') return;
     const el = document.getElementById('count-' + zone.id);
     if (!el) return;
@@ -112,17 +172,24 @@ function refreshZonePinBadges() {
 }
 
 function updateHeader() {
-  document.getElementById('score').textContent = state.score;
-  document.getElementById('discovered').textContent = mapDiscoveredSet.size;
+  const scoreEl = document.getElementById('score');
+  const discEl = document.getElementById('discovered');
+  if (scoreEl) scoreEl.textContent = state.score;
+  if (discEl) discEl.textContent = mapDiscoveredSet.size;
   refreshZonePinBadges();
 }
 
-// El Mapa no tiene un sprite visible detrás de la ficha (la mini-vista
-// se cierra antes de abrirla), así que no hay nada que refrescar ahí:
-// el retrato se vuelve a dibujar solo la próxima vez que se abra esa
-// zona, leyendo el nombre/color ya actualizado.
 function refreshSprite(a) { /* sin sprite visible en esta vista */ }
 
-/* ============ Inicio ============ */
+// Botón de alternancia de mapa (3D vs 2D clásico)
+if (toggleMapModeBtn) {
+  toggleMapModeBtn.addEventListener('click', () => {
+    currentMapMode = currentMapMode === '3d' ? 'classic' : '3d';
+    toggleMapModeBtn.textContent = currentMapMode === '3d' ? '🔄 Cambiar a vista clásica 2D' : '🔄 Cambiar a vista 3D realista';
+    renderMapPins();
+  });
+}
 
+/* ============ Inicio ============ */
+renderMapPins();
 updateHeader();

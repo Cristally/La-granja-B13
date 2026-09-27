@@ -808,6 +808,8 @@ function calculateDecimas(potreroDone, mapDone) {
   return `+${dec}`;
 }
 
+let activeTeacherTab = 'calificaciones';
+
 function renderTeacherPanel() {
   const body = document.getElementById('teacherBody');
   if (!body) return;
@@ -821,6 +823,7 @@ function renderTeacherPanel() {
 
   const decimasSugeridas = calculateDecimas(potreroCompleted, mapCompleted);
 
+  // Tab 1: Calificaciones
   const rows = potreroAnimals.map(a => {
     const q = state.quiz[a.id] || { results: [], completed: false };
     const correct = (q.results || []).filter(Boolean).length;
@@ -849,7 +852,6 @@ function renderTeacherPanel() {
       </div>`;
   }
 
-  // Lista de todos los estudiantes registrados en este navegador
   const allProfiles = loadAllProfiles();
   const profileKeys = Object.keys(allProfiles);
   let profilesListHtml = '';
@@ -878,42 +880,208 @@ function renderTeacherPanel() {
   const updated = state.updatedAt ? new Date(state.updatedAt).toLocaleString() : '—';
   const studentInfoStr = state.studentName ? `${state.studentName} (${state.studentGrade || 'Curso no especificado'})` : '(Estudiante sin registrar)';
 
+  // Tab 2: Quizzes creados por el profesor
+  const quizzesDocente = typeof TeacherQuizzes !== 'undefined' ? TeacherQuizzes.getAll() : {};
+  const zonasMap = typeof FARM_ZONES !== 'undefined' ? FARM_ZONES : [];
+  const optionsZonas = zonasMap.map(z => `<option value="${z.id}">${z.icon} ${z.label}</option>`).join('');
+
+  let listaQuizzesHtml = '';
+  const zonasConQuizzes = Object.keys(quizzesDocente);
+  if (zonasConQuizzes.length === 0) {
+    listaQuizzesHtml = '<p style="font-size:0.84rem;color:#777;text-align:center;padding:12px;">Aún no se han creado quizzes personalizados.</p>';
+  } else {
+    zonasConQuizzes.forEach(zId => {
+      const zObj = zonasMap.find(z => z.id === zId) || { label: zId, icon: '📍' };
+      const arr = quizzesDocente[zId];
+      if (arr && arr.length > 0) {
+        listaQuizzesHtml += `<div style="font-weight:700;font-size:0.84rem;color:var(--grass-dark);margin:10px 0 4px;">${zObj.icon} ${zObj.label} (${arr.length} preguntas):</div>`;
+        arr.forEach((q, qIdx) => {
+          listaQuizzesHtml += `
+            <div class="quiz-item-row">
+              <div style="flex:1;">
+                <strong>${q.pregunta}</strong><br>
+                <span style="font-size:0.75rem;color:#555;">Correcta: ${q.opciones[q.correcta]} · Bono: +${(q.decimas || 0.3).toFixed(1)} décimas · Por: ${q.profesor || 'Docente'}</span>
+              </div>
+              <button class="quiz-item-del" data-del-zid="${zId}" data-del-idx="${qIdx}" type="button" title="Eliminar pregunta">✕</button>
+            </div>
+          `;
+        });
+      }
+    });
+  }
+
+  // Tab 3: Métricas
+  let respuestasTotales = [];
+  try {
+    respuestasTotales = JSON.parse(localStorage.getItem('granjaRespuestasQuiz')) || [];
+  } catch (e) {}
+  const totalCorrectas = respuestasTotales.filter(r => r.correcta).length;
+  const pctCorrectas = respuestasTotales.length ? Math.round((totalCorrectas / respuestasTotales.length) * 100) : 0;
+
+  let visitasZonas = {};
+  try {
+    visitasZonas = JSON.parse(localStorage.getItem('granjaVisitasZonas')) || {};
+  } catch (e) {}
+  const rankingZonas = Object.entries(visitasZonas).sort((a,b) => b[1]-a[1]).map(([zid, cnt]) => {
+    const zObj = zonasMap.find(z => z.id === zid);
+    return `<li><b>${zObj ? zObj.label : zid}:</b> ${cnt} visitas</li>`;
+  }).join('') || '<li>Sin visitas registradas todavía.</li>';
+
+  const estudiantesRegistrados = typeof Auth !== 'undefined' ? Auth.getEstudiantes() : [];
+
   body.innerHTML = `
-    <div class="teacher-summary">
-      <div class="teacher-chip">Estudiante Activo<br><b>${studentInfoStr}</b></div>
-      <div class="teacher-chip">Puntaje Total<br><b>${state.score} pts</b></div>
-      <div class="teacher-chip">Potrero (Fichas / Quizzes)<br><b>${discoveredSet.size}/${potreroAnimals.length} · ${potreroCompleted}/${potreroAnimals.length}</b></div>
-      <div class="teacher-chip" style="background:#E3F0D8;border-color:var(--grass-dark);">Décimas Sugeridas<br><b style="color:var(--grass-dark);font-size:1.15rem;">${decimasSugeridas} décimas</b></div>
-      <div class="teacher-chip">Insignias Obtenidas<br><b>${badgesEarned.length}/${BADGES.length}</b></div>
+    <div class="teacher-tabs">
+      <button class="teacher-tab-btn ${activeTeacherTab === 'calificaciones' ? 'active' : ''}" data-ttab="calificaciones" type="button">📋 Calificaciones</button>
+      <button class="teacher-tab-btn ${activeTeacherTab === 'quizzes' ? 'active' : ''}" data-ttab="quizzes" type="button">➕ Crear Quizzes</button>
+      <button class="teacher-tab-btn ${activeTeacherTab === 'stats' ? 'active' : ''}" data-ttab="stats" type="button">📊 Métricas del Liceo</button>
     </div>
 
-    <div class="teacher-table-wrap">
-      <table class="teacher-table">
-        <thead><tr><th>Animal (Potrero)</th><th>Descubierto</th><th>Evaluación Formativa</th></tr></thead>
-        <tbody>${rows}</tbody>
-      </table>
+    <!-- Pestaña 1: Calificaciones -->
+    <div id="tabContentCalificaciones" style="${activeTeacherTab === 'calificaciones' ? 'display:block;' : 'display:none;'}">
+      <div class="teacher-summary">
+        <div class="teacher-chip">Estudiante Activo<br><b>${studentInfoStr}</b></div>
+        <div class="teacher-chip">Puntaje Total<br><b>${state.score} pts</b></div>
+        <div class="teacher-chip">Potrero (Fichas / Quizzes)<br><b>${discoveredSet.size}/${potreroAnimals.length} · ${potreroCompleted}/${potreroAnimals.length}</b></div>
+        <div class="teacher-chip" style="background:#E3F0D8;border-color:var(--grass-dark);">Décimas Sugeridas<br><b style="color:var(--grass-dark);font-size:1.15rem;">${decimasSugeridas} décimas</b></div>
+        <div class="teacher-chip">Insignias Obtenidas<br><b>${badgesEarned.length}/${BADGES.length}</b></div>
+      </div>
+
+      <div class="teacher-table-wrap">
+        <table class="teacher-table">
+          <thead><tr><th>Animal (Potrero)</th><th>Descubierto</th><th>Evaluación Formativa</th></tr></thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>
+      ${mapSection}
+
+      ${profilesListHtml}
+
+      <div class="save-note" style="margin-top:12px;">
+        <b>Nota pedagógica:</b> Los puntajes y décimas corresponden a la evaluación formativa individual según la rúbrica de Go Innova.
+        Última actualización: ${updated}.
+      </div>
+
+      <div class="teacher-actions" style="margin-top:14px;">
+        <button class="tool-btn" id="exportBtn" type="button">⬇️ Descargar informe oficial (.txt)</button>
+        <button class="tool-btn" id="newStudentSessionBtn" type="button">👤 Registrar nuevo estudiante</button>
+        <button class="tool-btn" id="resetBtn" type="button" style="color:var(--clay);">🔄 Reiniciar datos locales</button>
+      </div>
     </div>
-    ${mapSection}
 
-    ${profilesListHtml}
+    <!-- Pestaña 2: Creador de Quizzes -->
+    <div id="tabContentQuizzes" style="${activeTeacherTab === 'quizzes' ? 'display:block;' : 'display:none;'}">
+      <div class="quiz-creator-card">
+        <h3 style="font-family:'Fraunces',serif;margin:0 0 4px;font-size:1.1rem;color:var(--ink);">Agregar Quiz a una Zona del Mapa</h3>
+        <p style="font-size:0.8rem;color:#555;margin-bottom:12px;">Diseña preguntas biológicas o de normas con décimas asignables para motivar a los estudiantes.</p>
 
-    <div class="save-note" style="margin-top:12px;">
-      <b>Nota pedagógica:</b> Los puntajes y décimas corresponden a la evaluación formativa individual según la rúbrica de Go Innova.
-      Última actualización: ${updated}.
+        <form id="formTeacherQuizCreator">
+          <div class="auth-input-group">
+            <label class="auth-label">Zona del Mapa:</label>
+            <select class="auth-field" id="tqcZona" required>
+              ${optionsZonas}
+            </select>
+          </div>
+          <div class="auth-input-group">
+            <label class="auth-label">Pregunta:</label>
+            <input class="auth-field" type="text" id="tqcPregunta" placeholder="Escribe la pregunta formativa" required>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">
+            <div class="auth-input-group" style="margin-bottom:0;">
+              <label class="auth-label">Alternativa A:</label>
+              <input class="auth-field" type="text" id="tqcOpc0" placeholder="Opción A" required>
+            </div>
+            <div class="auth-input-group" style="margin-bottom:0;">
+              <label class="auth-label">Alternativa B:</label>
+              <input class="auth-field" type="text" id="tqcOpc1" placeholder="Opción B" required>
+            </div>
+            <div class="auth-input-group" style="margin-bottom:0;">
+              <label class="auth-label">Alternativa C:</label>
+              <input class="auth-field" type="text" id="tqcOpc2" placeholder="Opción C" required>
+            </div>
+            <div class="auth-input-group" style="margin-bottom:0;">
+              <label class="auth-label">Alternativa D:</label>
+              <input class="auth-field" type="text" id="tqcOpc3" placeholder="Opción D" required>
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">
+            <div class="auth-input-group" style="margin-bottom:0;">
+              <label class="auth-label">¿Cuál es la correcta?:</label>
+              <select class="auth-field" id="tqcCorrecta" required>
+                <option value="0">Alternativa A</option>
+                <option value="1">Alternativa B</option>
+                <option value="2">Alternativa C</option>
+                <option value="3">Alternativa D</option>
+              </select>
+            </div>
+            <div class="auth-input-group" style="margin-bottom:0;">
+              <label class="auth-label">Décimas al acertar:</label>
+              <input class="auth-field" type="number" step="0.1" min="0.1" max="1.0" id="tqcDecimas" value="0.3" required>
+            </div>
+          </div>
+          <button class="tool-btn" type="submit" style="width:100%;padding:10px;background:var(--grass-dark);color:#fff;font-weight:700;">
+            ➕ Publicar Quiz en el Mapa
+          </button>
+        </form>
+      </div>
+
+      <div style="background:#fff;border:2px solid var(--ink);border-radius:8px;padding:12px;">
+        <h4 style="font-family:'Fraunces',serif;margin:0 0 8px;font-size:1rem;color:var(--ink);">Quizzes Publicados en el Mapa</h4>
+        ${listaQuizzesHtml}
+      </div>
     </div>
 
-    <div class="teacher-actions" style="margin-top:14px;">
-      <button class="tool-btn" id="exportBtn" type="button">⬇️ Descargar informe oficial (.txt)</button>
-      <button class="tool-btn" id="newStudentSessionBtn" type="button">👤 Registrar nuevo estudiante</button>
-      <button class="tool-btn" id="resetBtn" type="button" style="color:var(--clay);">🔄 Reiniciar datos locales</button>
+    <!-- Pestaña 3: Métricas del Liceo -->
+    <div id="tabContentStats" style="${activeTeacherTab === 'stats' ? 'display:block;' : 'display:none;'}">
+      <div class="teacher-summary">
+        <div class="teacher-chip">Alumnos Registrados<br><b>${estudiantesRegistrados.length}</b></div>
+        <div class="teacher-chip">Respuestas en Quizzes<br><b>${respuestasTotales.length}</b></div>
+        <div class="teacher-chip">Porcentaje de Aciertos<br><b>${pctCorrectas}%</b></div>
+        <div class="teacher-chip">Zonas Activas con Quiz<br><b>${zonasConQuizzes.length} zonas</b></div>
+      </div>
+
+      <div style="background:#fff;border:2px solid var(--ink);border-radius:8px;padding:12px;margin-bottom:12px;">
+        <h4 style="font-family:'Fraunces',serif;margin:0 0 6px;font-size:0.95rem;color:var(--ink);">🗺️ Zonas más visitadas por los estudiantes</h4>
+        <ul style="font-size:0.84rem;line-height:1.6;margin:0;padding-left:18px;">
+          ${rankingZonas}
+        </ul>
+      </div>
+
+      <div style="background:#fff;border:2px solid var(--ink);border-radius:8px;padding:12px;">
+        <h4 style="font-family:'Fraunces',serif;margin:0 0 6px;font-size:0.95rem;color:var(--ink);">👥 Estudiantes en el Sistema</h4>
+        <div style="display:flex;flex-direction:column;gap:6px;max-height:160px;overflow-y:auto;">
+          ${estudiantesRegistrados.map(e => `
+            <div style="display:flex;justify-content:space-between;padding:6px 8px;background:var(--paper-dark);border-radius:4px;font-size:0.8rem;">
+              <span><b>${e.nombre}</b> (${e.curso || 'Sin curso'})</span>
+              <span style="color:#666;">${e.correo}</span>
+            </div>
+          `).join('')}
+        </div>
+      </div>
     </div>
   `;
 
-  document.getElementById('exportBtn').addEventListener('click', exportReport);
-  document.getElementById('newStudentSessionBtn').addEventListener('click', () => {
-    closeOverlayId('teacherOverlay');
-    openStudentModal();
+  // Cambiar pestañas
+  body.querySelectorAll('.teacher-tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      activeTeacherTab = btn.dataset.ttab;
+      renderTeacherPanel();
+    });
   });
+
+  // Eventos de Tab 1
+  const exportBtn = document.getElementById('exportBtn');
+  if (exportBtn) exportBtn.addEventListener('click', exportReport);
+
+  const newStudentBtn = document.getElementById('newStudentSessionBtn');
+  if (newStudentBtn) {
+    newStudentBtn.addEventListener('click', () => {
+      closeOverlayId('teacherOverlay');
+      if (typeof Auth !== 'undefined') {
+        Auth.cerrarModales();
+        document.getElementById('authStudentModal').classList.add('active');
+      }
+    });
+  }
 
   const loadBtn = document.getElementById('loadProfileBtn');
   if (loadBtn) {
@@ -934,10 +1102,58 @@ function renderTeacherPanel() {
     });
   }
 
-  document.getElementById('resetBtn').addEventListener('click', () => {
-    if (confirm('¿Deseas reiniciar los datos locales de este navegador?')) {
-      resetState();
-    }
+  const resetBtn = document.getElementById('resetBtn');
+  if (resetBtn) {
+    resetBtn.addEventListener('click', () => {
+      if (confirm('¿Deseas reiniciar los datos locales de este navegador?')) {
+        resetState();
+      }
+    });
+  }
+
+  // Eventos de Tab 2: Crear Quiz
+  const formCreator = document.getElementById('formTeacherQuizCreator');
+  if (formCreator) {
+    formCreator.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const zId = document.getElementById('tqcZona').value;
+      const preg = document.getElementById('tqcPregunta').value;
+      const opc = [
+        document.getElementById('tqcOpc0').value,
+        document.getElementById('tqcOpc1').value,
+        document.getElementById('tqcOpc2').value,
+        document.getElementById('tqcOpc3').value,
+      ];
+      const corr = document.getElementById('tqcCorrecta').value;
+      const dec = document.getElementById('tqcDecimas').value;
+      const ses = typeof Auth !== 'undefined' ? Auth.getSesion() : { nombre: 'Profesor/a B-13' };
+
+      if (typeof TeacherQuizzes !== 'undefined') {
+        const res = TeacherQuizzes.add(zId, preg, opc, corr, dec, ses.nombre);
+        if (!res.ok) {
+          alert(res.error);
+          return;
+        }
+        showToast('¡Quiz publicado en el mapa con éxito!');
+        renderTeacherPanel();
+        if (typeof renderMapPins === 'function') renderMapPins();
+      }
+    });
+  }
+
+  // Eventos de eliminar pregunta
+  body.querySelectorAll('.quiz-item-del').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const zId = btn.dataset.delZid;
+      const idx = parseInt(btn.dataset.delIdx, 10);
+      if (confirm('¿Eliminar esta pregunta del mapa?')) {
+        if (typeof TeacherQuizzes !== 'undefined') {
+          TeacherQuizzes.remove(zId, idx);
+          renderTeacherPanel();
+          if (typeof renderMapPins === 'function') renderMapPins();
+        }
+      }
+    });
   });
 }
 

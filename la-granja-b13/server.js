@@ -149,6 +149,57 @@ app.get('/api/export-csv', (req, res) => {
   }
 });
 
+// Quizzes personalizados creados por el profesor
+app.get('/api/quizzes', (req, res) => {
+  try {
+    const db = readDatabase();
+    res.json({ success: true, quizzes: db.quizzes || {} });
+  } catch (err) {
+    res.status(500).json({ error: 'Error al obtener quizzes: ' + err.message });
+  }
+});
+
+app.post('/api/quizzes', (req, res) => {
+  try {
+    const { zonaId, pregunta, opciones, correcta, decimas, profesor } = req.body;
+    if (!zonaId || !pregunta || !Array.isArray(opciones)) {
+      return res.status(400).json({ error: 'Datos de quiz incompletos.' });
+    }
+    const db = readDatabase();
+    if (!db.quizzes) db.quizzes = {};
+    if (!db.quizzes[zonaId]) db.quizzes[zonaId] = [];
+    db.quizzes[zonaId].push({
+      pregunta,
+      opciones,
+      correcta: parseInt(correcta, 10),
+      decimas: parseFloat(decimas) || 0.3,
+      profesor: profesor || 'Profesor/a B-13',
+      createdAt: new Date().toISOString()
+    });
+    writeDatabase(db);
+    res.json({ success: true, message: 'Quiz guardado con éxito.' });
+  } catch (err) {
+    res.status(500).json({ error: 'Error al guardar quiz: ' + err.message });
+  }
+});
+
+// Estadísticas generales para el panel docente y directivo
+app.get('/api/stats', (req, res) => {
+  try {
+    const db = readDatabase();
+    const studentsList = Object.values(db.students || {});
+    res.json({
+      success: true,
+      totalStudents: studentsList.length,
+      averageScore: studentsList.length ? Math.round(studentsList.reduce((acc, s) => acc + (s.score || 0), 0) / studentsList.length) : 0,
+      totalQuizzesCompleted: studentsList.reduce((acc, s) => acc + (s.potreroQuizCompleted || 0) + (s.mapQuizCompleted || 0), 0),
+      students: studentsList.map(s => ({ name: s.studentName, grade: s.studentGrade, score: s.score, updatedAt: s.updatedAt }))
+    });
+  } catch (err) {
+    res.status(500).json({ error: 'Error al obtener estadísticas: ' + err.message });
+  }
+});
+
 // Rutas directas para el frontend
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));

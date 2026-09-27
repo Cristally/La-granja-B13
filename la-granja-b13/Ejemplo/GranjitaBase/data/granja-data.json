@@ -1,0 +1,11 @@
+{
+  "_nota": "Aqui se insertara la informacion del proyecto anterior: cultivos, animales, tareas, precios, niveles, etc. Reemplaza este contenido cuando la informacion este lista.",
+  "cultivos": [],
+  "animales": [],
+  "tareas": [],
+  "jugador": {
+    "nombre": "",
+    "nivel": 1,
+    "monedas": 0
+  }
+}

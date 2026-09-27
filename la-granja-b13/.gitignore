@@ -9,3 +9,6 @@ Thumbs.db
 
 # Entornos locales
 .env
+
+# Archivos multimedia pesados
+*.mp4

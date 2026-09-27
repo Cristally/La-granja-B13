@@ -51,10 +51,15 @@
 
   <div class="stage-wrap map-wrap">
     <div class="farmmap" id="farmmap">
-      <img src="assets/img/map/mapa-granja.jpg" alt="Mapa ilustrado de La Granja B13, estilo pixel art" class="farmmap-bg">
+      <img src="assets/img/map/mapa3.jpg" alt="Mapa 3D realista de La Granja B13" class="farmmap-bg" id="farmmapBg">
     </div>
   </div>
-  <div class="legend">Toca un espacio del mapa para explorarlo. Los espacios con 🐾 abren una mini-ficha por cada animal real.</div>
+  <div style="display:flex;justify-content:center;margin:8px 0 6px;">
+    <button class="tool-btn" id="toggleMapModeBtn" type="button" style="font-size:0.82rem;padding:6px 14px;background:var(--paper);border:1.5px solid var(--ink);border-radius:20px;cursor:pointer;">
+      🔄 Cambiar a vista clásica 2D
+    </button>
+  </div>
+  <div class="legend">Toca un espacio del mapa para explorarlo. Los espacios con 🐾 abren los animales reales del liceo con sus fichas.</div>
 
   <div class="badges-bar" id="badgesBar"></div>
 
@@ -92,6 +97,9 @@
       </div>
     </div>
     <div class="card-body">
+      <div id="zoneInfoImgWrap" style="display:none;margin-bottom:12px;border-radius:8px;overflow:hidden;border:2px solid var(--ink);max-height:220px;">
+        <img id="zoneInfoImg" src="" alt="" style="width:100%;height:auto;display:block;object-fit:cover;">
+      </div>
       <div class="stamp">OBSERVACIÓN DE CAMPO</div>
       <p id="zoneInfoText" style="font-size:0.92rem;line-height:1.5;margin:10px 0 14px;"></p>
       <div id="zoneInfoExtra" style="margin-bottom:12px;"></div>
@@ -294,6 +302,8 @@
 <script src="js/map-data.js"></script>
 <script src="js/audio.js"></script>
 <script src="js/state.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/auth-ui.js"></script>
 <script src="js/card.js"></script>
 <script src="js/map-app.js"></script>
 </body>

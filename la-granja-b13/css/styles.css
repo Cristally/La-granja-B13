@@ -978,3 +978,247 @@ footer.ods{
 }
 .lightbox-close:hover{background:var(--clay);color:#fff;}
 
+/* ============================================================
+   ESTILOS DE ROLES, AUTENTICACIÓN Y QUIZZES DEL PROFESOR
+   ============================================================ */
+
+/* Píldora de rol en la barra superior */
+.student-pill.role-profesor {
+  background: #FFE8E8;
+  border-color: #B22222;
+  color: #7A0F2B;
+}
+.student-pill.role-admin {
+  background: #FFF3CD;
+  border-color: #856404;
+  color: #533F03;
+}
+.student-pill.role-visita {
+  background: var(--paper-dark);
+  border-color: var(--ink);
+  color: var(--ink);
+}
+.student-pill.role-estudiante {
+  background: #E8F4D9;
+  border-color: var(--grass-dark);
+  color: var(--grass-dark);
+}
+
+/* Modal de Roles y Acceso */
+.role-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(20, 28, 15, 0.82);
+  backdrop-filter: blur(4px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 16px;
+}
+.role-modal-overlay.active {
+  display: flex;
+}
+.role-modal-card {
+  background: var(--paper);
+  border: 3px solid var(--ink);
+  border-radius: 12px;
+  max-width: 480px;
+  width: 100%;
+  padding: 22px 20px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+  position: relative;
+  max-height: 92vh;
+  overflow-y: auto;
+  animation: fadeInCard .2s ease;
+}
+.role-modal-title {
+  font-family: 'Fraunces', serif;
+  font-size: 1.35rem;
+  color: var(--ink);
+  text-align: center;
+  margin: 0 0 4px;
+}
+.role-modal-sub {
+  font-size: 0.82rem;
+  color: var(--grass-dark);
+  text-align: center;
+  margin-bottom: 16px;
+  font-weight: 600;
+}
+.role-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.role-btn-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  background: #fff;
+  border: 2px solid var(--ink);
+  border-radius: 8px;
+  cursor: pointer;
+  text-align: left;
+  transition: all .15s ease;
+  box-shadow: 2px 2px 0 rgba(40,49,27,0.15);
+}
+.role-btn-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--grass-dark);
+  box-shadow: 2px 4px 0 rgba(40,49,27,0.25);
+  background: #F9FBF6;
+}
+.role-btn-icon {
+  font-size: 1.7rem;
+  min-width: 36px;
+  text-align: center;
+}
+.role-btn-name {
+  font-family: 'Fraunces', serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 2px;
+}
+.role-btn-desc {
+  font-size: 0.78rem;
+  color: #555;
+  line-height: 1.3;
+}
+
+/* Formularios de Autenticación */
+.auth-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-bottom: 12px;
+  text-align: left;
+}
+.auth-label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--ink);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+.auth-field {
+  padding: 9px 11px;
+  border: 2px solid var(--ink);
+  border-radius: 6px;
+  font-family: 'Karla', sans-serif;
+  font-size: 0.9rem;
+  background: #fff;
+  width: 100%;
+  box-sizing: border-box;
+}
+.auth-field:focus {
+  outline: none;
+  border-color: var(--grass-dark);
+  box-shadow: 0 0 0 2px rgba(67,94,58,0.2);
+}
+.auth-error-msg {
+  background: #FFECEC;
+  color: #A00;
+  border: 1px solid #E00;
+  padding: 6px 10px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  margin-bottom: 10px;
+  display: none;
+}
+.auth-tabs {
+  display: flex;
+  border-bottom: 2px solid var(--ink);
+  margin-bottom: 14px;
+  gap: 4px;
+}
+.auth-tab-btn {
+  flex: 1;
+  padding: 8px 10px;
+  border: none;
+  background: transparent;
+  font-family: 'Fraunces', serif;
+  font-size: 0.92rem;
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  color: #666;
+}
+.auth-tab-btn.active {
+  color: var(--ink);
+  font-weight: 700;
+  border-bottom-color: var(--grass-dark);
+}
+
+/* Pin especial para quizzes del profesor en el mapa */
+.map-pin.map-pin-teacher-quiz {
+  background: #FFF2C6;
+  border-color: #B58500;
+  box-shadow: 0 0 8px rgba(233,196,106,0.8), 2px 2px 0 rgba(40,49,27,0.3);
+  animation: pulseTeacherQuiz 2s infinite ease-in-out;
+  z-index: 10;
+}
+@keyframes pulseTeacherQuiz {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); box-shadow: 0 0 14px rgba(233,196,106,1), 2px 2px 0 rgba(40,49,27,0.4); }
+}
+
+/* Tabs del Panel Docente */
+.teacher-tabs {
+  display: flex;
+  gap: 6px;
+  border-bottom: 2px solid var(--ink);
+  margin-bottom: 14px;
+  overflow-x: auto;
+}
+.teacher-tab-btn {
+  padding: 8px 12px;
+  background: var(--paper-dark);
+  border: 1.5px solid var(--ink);
+  border-bottom: none;
+  border-radius: 6px 6px 0 0;
+  font-family: 'Karla', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.teacher-tab-btn.active {
+  background: #fff;
+  border-bottom: 2px solid #fff;
+  margin-bottom: -2px;
+  color: var(--grass-dark);
+}
+
+/* Creador de Quizzes */
+.quiz-creator-card {
+  background: #fff;
+  border: 2px solid var(--ink);
+  border-radius: 8px;
+  padding: 14px;
+  margin-bottom: 14px;
+}
+.quiz-item-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 8px 10px;
+  background: var(--paper-dark);
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  margin-bottom: 6px;
+  font-size: 0.82rem;
+}
+.quiz-item-del {
+  background: #FFE8E8;
+  border: 1px solid #B22222;
+  color: #B22222;
+  border-radius: 4px;
+  padding: 2px 7px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
