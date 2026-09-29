@@ -29,6 +29,9 @@ function showToast(msg) {
 function openOverlayId(id) {
   const el = document.getElementById(id);
   if (el) el.classList.add('open');
+  if (id === 'rulesOverlay' && typeof unlockSecretBadge === 'function') {
+    unlockSecretBadge('devoralibros');
+  }
 }
 
 function closeOverlayId(id) {
@@ -88,18 +91,8 @@ function openStudentModal() {
     return;
   }
 
-  const nameInput = document.getElementById('studentNameInput');
-  const gradeInput = document.getElementById('studentGradeInput');
-  const errEl = document.getElementById('studentError');
-  if (errEl) errEl.style.display = 'none';
-
-  if (nameInput) nameInput.value = state.studentName || '';
-  if (gradeInput) gradeInput.value = state.studentGrade || '';
-
+  renderStudentProfileModal();
   openOverlayId('studentOverlay');
-  if (nameInput && typeof nameInput.focus === 'function') {
-    setTimeout(() => nameInput.focus(), 100);
-  }
 }
 
 /* ============ Validación y Registro de Estudiante ============ */
@@ -113,11 +106,9 @@ function validateStudentName(name) {
   if (!name || name.trim().length < 3) {
     return { valid: false, msg: '⚠️ Por favor ingresa tu nombre y apellido (mínimo 3 letras).' };
   }
-  // Rechazar números o teléfonos
   if (/\d/.test(name)) {
     return { valid: false, msg: '⚠️ El nombre no debe contener números ni dígitos de teléfono. Ingresa tu nombre real.' };
   }
-  // Permitir letras latinas, tildes, ñ, diéresis y espacios
   const nameRegex = /^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s.'-]{3,40}$/;
   if (!nameRegex.test(name)) {
     return { valid: false, msg: '⚠️ Por favor ingresa un nombre y apellido válido (solo letras, ej: Yefrin González).' };
@@ -136,7 +127,241 @@ function validateStudentGrade(grade) {
   return { valid: true };
 }
 
+function renderStudentProfileModal() {
+  const container = document.getElementById('studentModalBody') || document.querySelector('#studentOverlay .card-body');
+  if (!container) return;
+
+  const currentAvatar = state.avatarIcon || '🧑‍🌾';
+  const currentFrameColor = state.avatarColor || '#ffd83d';
+  const currentTitle = state.studentTitle || 'Explorador/a de Campo';
+  const currentName = state.studentName || '';
+  const currentGrade = state.studentGrade || '';
+  const score = state.score || 0;
+  const badgesEarned = (state.badges || []).length;
+  const secretsEarned = (state.secretBadges || []).length;
+
+  const isEligibleForCert = state.certificateUnlocked ||
+    (state.badges && (state.badges.includes('guardian') || state.badges.includes('veterinario'))) ||
+    (POTRERO_IDS.every(id => state.quiz[id] && state.quiz[id].completed));
+
+  if (isEligibleForCert && !state.certificateUnlocked) {
+    state.certificateUnlocked = true;
+    if (!state.certificateCode) {
+      const rnd = Math.random().toString(36).substring(2, 7).toUpperCase();
+      state.certificateCode = `B13-CERT-2026-${rnd}`;
+      state.certificateIssuedAt = Date.now();
+    }
+    unlockSecretBadge('cert_unlocked');
+    saveState();
+  }
+
+  container.innerHTML = `
+    <!-- Tarjeta de Identidad y Previsualización en Vivo -->
+    <div class="student-profile-preview" style="background:var(--paper-dark);border:2px solid var(--ink);border-radius:8px;padding:12px;margin-bottom:14px;display:flex;align-items:center;gap:14px;">
+      <div id="modalAvatarPreview" style="font-size:2.4rem;width:64px;height:64px;display:flex;align-items:center;justify-content:center;border-radius:50%;background:#fff;border:3px solid ${currentFrameColor};box-shadow:0 3px 6px rgba(0,0,0,0.15);flex-shrink:0;">
+        ${currentAvatar}
+      </div>
+      <div style="flex:1;min-width:0;">
+        <div id="modalTitlePreview" style="font-size:0.75rem;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;color:var(--grass-dark);">
+          ${currentTitle}
+        </div>
+        <div id="modalNamePreview" style="font-size:1.05rem;font-weight:700;color:var(--ink);font-family:'Fraunces',serif;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
+          ${currentName || 'Estudiante Sin Registrar'}
+        </div>
+        <div style="font-size:0.8rem;color:#555;">
+          ${currentGrade ? `Curso: ${currentGrade} · ` : ''}<b>${score} pts</b> · ${badgesEarned} insignias · ${secretsEarned} misterios
+        </div>
+      </div>
+    </div>
+
+    <!-- Recompensa Tangible: Certificado Oficial -->
+    <div class="cert-status-banner" style="margin-bottom:14px;padding:12px;border-radius:8px;border:2px solid ${isEligibleForCert ? '#ffd83d' : '#ccc'};background:${isEligibleForCert ? '#fffdf0' : '#f9f9f9'};">
+      ${isEligibleForCert ? `
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span style="font-size:2rem;">🎓</span>
+          <div style="flex:1;">
+            <div style="font-weight:700;color:#7A0F2B;font-size:0.92rem;">¡Certificado Oficial B-13 Desbloqueado!</div>
+            <div style="font-size:0.78rem;color:#444;line-height:1.35;margin-top:2px;">
+              Has completado el recorrido de aprendizaje animal. Tu diploma oficial firmado digitalmente está emitido y listo para imprimir o guardar en PDF.
+            </div>
+          </div>
+        </div>
+        <button type="button" id="btnOpenCertModal" class="tool-btn" style="width:100%;margin-top:10px;padding:9px;background:#7A0F2B;color:#fff;font-weight:700;font-size:0.88rem;border:2px solid #1a1a1a;border-radius:6px;cursor:pointer;">
+          📜 Ver e Imprimir mi Certificado Oficial B-13
+        </button>
+      ` : `
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span style="font-size:1.8rem;opacity:0.6;">🔒</span>
+          <div>
+            <div style="font-weight:700;color:#555;font-size:0.88rem;">Certificado Oficial B-13 (Pendiente)</div>
+            <div style="font-size:0.76rem;color:#777;line-height:1.35;margin-top:2px;">
+              Completa los desafíos y quizzes de la granja para desbloquear tu diploma oficial firmado digitalmente por el Liceo.
+            </div>
+          </div>
+        </div>
+      `}
+    </div>
+
+    <!-- Formulario de Datos Básicos y Personalización -->
+    <form id="studentForm" onsubmit="return false;">
+      <div class="field-row" style="margin-bottom:10px;">
+        <label for="studentNameInput" style="font-size:0.82rem;font-weight:700;">Nombre y Apellido *</label>
+        <input type="text" id="studentNameInput" value="${currentName}" placeholder="Ej: Yefrin González" maxlength="30" required autocomplete="off" style="width:100%;padding:8px 10px;border:2px solid var(--ink);border-radius:6px;font-size:0.9rem;">
+      </div>
+      <div class="field-row" style="margin-bottom:10px;">
+        <label for="studentGradeInput" style="font-size:0.82rem;font-weight:700;">Curso / Nivel *</label>
+        <input type="text" id="studentGradeInput" value="${currentGrade}" placeholder="Ej: 3°F o 2° Medio" maxlength="20" required autocomplete="off" style="width:100%;padding:8px 10px;border:2px solid var(--ink);border-radius:6px;font-size:0.9rem;">
+      </div>
+
+      <!-- Selector de Título Honorífico -->
+      <div class="field-row" style="margin-bottom:12px;">
+        <label for="studentTitleSelect" style="font-size:0.82rem;font-weight:700;">Título Honorífico de Campo</label>
+        <select id="studentTitleSelect" style="width:100%;padding:8px 10px;border:2px solid var(--ink);border-radius:6px;font-size:0.88rem;background:#fff;">
+          ${(typeof STUDENT_TITLES !== 'undefined' ? STUDENT_TITLES : []).map(t => `<option value="${t}" ${t === currentTitle ? 'selected' : ''}>${t}</option>`).join('')}
+        </select>
+      </div>
+
+      <!-- Selector de Avatar -->
+      <div style="margin-bottom:12px;">
+        <label style="font-size:0.82rem;font-weight:700;display:block;margin-bottom:6px;">Elige tu Avatar (Estudiantes B-13)</label>
+        <div class="avatar-select-grid" id="avatarGrid" style="display:grid;grid-template-columns:repeat(5, 1fr);gap:6px;">
+          ${(typeof STUDENT_AVATARS !== 'undefined' ? STUDENT_AVATARS : []).map(av => `
+            <button type="button" class="avatar-picker-btn ${av.icon === currentAvatar ? 'selected' : ''}" data-icon="${av.icon}" title="${av.name} — ${av.desc}" style="background:#fff;border:2px solid ${av.icon === currentAvatar ? 'var(--grass-dark)' : '#ccc'};border-radius:8px;padding:6px 2px;font-size:1.6rem;cursor:pointer;display:flex;flex-direction:column;align-items:center;transition:all 0.15s ease;">
+              <span>${av.icon}</span>
+              <span style="font-size:0.62rem;font-weight:600;color:#333;margin-top:2px;text-align:center;line-height:1;overflow:hidden;text-overflow:ellipsis;width:100%;">${av.name.split(' ')[0]}</span>
+            </button>
+          `).join('')}
+        </div>
+      </div>
+
+      <!-- Selector de Marco / Color de Borde -->
+      <div style="margin-bottom:14px;">
+        <label style="font-size:0.82rem;font-weight:700;display:block;margin-bottom:6px;">Marco Distintivo</label>
+        <div class="frame-select-row" id="frameRow" style="display:flex;gap:8px;flex-wrap:wrap;">
+          ${(typeof AVATAR_FRAMES !== 'undefined' ? AVATAR_FRAMES : []).map(f => `
+            <button type="button" class="frame-picker-btn ${f.color === currentFrameColor ? 'selected' : ''}" data-color="${f.color}" title="${f.name}" style="background:${f.color};width:32px;height:32px;border-radius:50%;border:3px solid ${f.color === currentFrameColor ? '#1a1a1a' : '#fff'};box-shadow:0 1px 3px rgba(0,0,0,0.2);cursor:pointer;position:relative;">
+              ${f.color === currentFrameColor ? '<span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:0.75rem;color:#1a1a1a;font-weight:900;">✓</span>' : ''}
+            </button>
+          `).join('')}
+        </div>
+      </div>
+
+      <div id="studentError" style="color:var(--clay);font-size:0.8rem;font-weight:700;margin-bottom:8px;display:none;"></div>
+
+      <button type="submit" class="tool-btn" id="saveStudentBtn" style="width:100%;padding:10px;background:var(--hay);color:var(--ink);font-weight:700;font-size:0.92rem;border:2px solid var(--ink);border-radius:6px;cursor:pointer;">
+        💾 Guardar Cambios de Perfil
+      </button>
+    </form>
+
+    <button type="button" id="btnOverlayCambiarModo" class="nav-switch-btn" style="width:100%;margin-top:10px;padding:9px;justify-content:center;display:flex;border:2px solid var(--ink);border-radius:6px;cursor:pointer;">
+      🔄 Cambiar Modo / Cerrar Sesión
+    </button>
+  `;
+
+  // Listeners dinámicos
+  let tempAvatar = currentAvatar;
+  let tempFrame = currentFrameColor;
+  let tempTitle = currentTitle;
+
+  const avatarGrid = document.getElementById('avatarGrid');
+  if (avatarGrid) {
+    avatarGrid.querySelectorAll('.avatar-picker-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        avatarGrid.querySelectorAll('.avatar-picker-btn').forEach(b => {
+          b.classList.remove('selected');
+          b.style.borderColor = '#ccc';
+        });
+        btn.classList.add('selected');
+        btn.style.borderColor = 'var(--grass-dark)';
+        tempAvatar = btn.dataset.icon;
+        const prev = document.getElementById('modalAvatarPreview');
+        if (prev) prev.textContent = tempAvatar;
+      });
+    });
+  }
+
+  const frameRow = document.getElementById('frameRow');
+  if (frameRow) {
+    frameRow.querySelectorAll('.frame-picker-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        frameRow.querySelectorAll('.frame-picker-btn').forEach(b => {
+          b.classList.remove('selected');
+          b.style.borderColor = '#fff';
+          b.innerHTML = '';
+        });
+        btn.classList.add('selected');
+        btn.style.borderColor = '#1a1a1a';
+        btn.innerHTML = '<span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:0.75rem;color:#1a1a1a;font-weight:900;">✓</span>';
+        tempFrame = btn.dataset.color;
+        const prev = document.getElementById('modalAvatarPreview');
+        if (prev) prev.style.borderColor = tempFrame;
+      });
+    });
+  }
+
+  const titleSel = document.getElementById('studentTitleSelect');
+  if (titleSel) {
+    titleSel.addEventListener('change', () => {
+      tempTitle = titleSel.value;
+      const prev = document.getElementById('modalTitlePreview');
+      if (prev) prev.textContent = tempTitle;
+    });
+  }
+
+  const nameInp = document.getElementById('studentNameInput');
+  if (nameInp) {
+    nameInp.addEventListener('input', () => {
+      const prev = document.getElementById('modalNamePreview');
+      if (prev) prev.textContent = nameInp.value || 'Estudiante Sin Registrar';
+    });
+  }
+
+  const form = document.getElementById('studentForm');
+  if (form) {
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      saveStudentProfile(tempAvatar, tempFrame, tempTitle);
+    });
+  }
+
+  const saveBtn = document.getElementById('saveStudentBtn');
+  if (saveBtn) {
+    saveBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      saveStudentProfile(tempAvatar, tempFrame, tempTitle);
+    });
+  }
+
+  const certBtn = document.getElementById('btnOpenCertModal');
+  if (certBtn) {
+    certBtn.addEventListener('click', () => {
+      closeOverlayId('studentOverlay');
+      openCertificateModal();
+    });
+  }
+
+  const modoBtn = document.getElementById('btnOverlayCambiarModo');
+  if (modoBtn) {
+    modoBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      closeOverlayId('studentOverlay');
+      if (typeof volverAlEspacioModos === 'function') {
+        volverAlEspacioModos();
+      } else if (typeof volverAlInicio === 'function') {
+        volverAlInicio();
+      }
+    });
+  }
+}
+
 function handleSaveStudent() {
+  const currentAvatar = state.avatarIcon || '🧑‍🌾';
+  const currentFrameColor = state.avatarColor || '#ffd83d';
+  const currentTitle = state.studentTitle || 'Explorador/a de Campo';
+  saveStudentProfile(currentAvatar, currentFrameColor, currentTitle);
+}
+
+function saveStudentProfile(avatar, frame, title) {
   const nameInput = document.getElementById('studentNameInput');
   const gradeInput = document.getElementById('studentGradeInput');
   const errEl = document.getElementById('studentError');
@@ -149,27 +374,15 @@ function handleSaveStudent() {
 
   const nameVal = validateStudentName(cleanName);
   if (!nameVal.valid) {
-    if (errEl) {
-      errEl.textContent = nameVal.msg;
-      errEl.style.display = 'block';
-    }
-    if (nameInput) {
-      nameInput.focus();
-      nameInput.classList.add('input-error');
-    }
+    if (errEl) { errEl.textContent = nameVal.msg; errEl.style.display = 'block'; }
+    if (nameInput) { nameInput.focus(); nameInput.classList.add('input-error'); }
     return;
   }
 
   const gradeVal = validateStudentGrade(cleanGrade);
   if (!gradeVal.valid) {
-    if (errEl) {
-      errEl.textContent = gradeVal.msg;
-      errEl.style.display = 'block';
-    }
-    if (gradeInput) {
-      gradeInput.focus();
-      gradeInput.classList.add('input-error');
-    }
+    if (errEl) { errEl.textContent = gradeVal.msg; errEl.style.display = 'block'; }
+    if (gradeInput) { gradeInput.focus(); gradeInput.classList.add('input-error'); }
     return;
   }
 
@@ -179,18 +392,200 @@ function handleSaveStudent() {
 
   const ok = setActiveStudent(cleanName, cleanGrade);
   if (ok) {
+    state.avatarIcon = avatar || state.avatarIcon || '🧑‍🌾';
+    state.avatarColor = frame || state.avatarColor || '#ffd83d';
+    state.studentTitle = title || state.studentTitle || 'Explorador/a de Campo';
+    saveState();
+
     discoveredSet = new Set(state.discovered);
     mapDiscoveredSet = new Set(state.mapDiscovered);
     closeOverlayId('studentOverlay');
     updateStudentUI();
     if (typeof updateHeader === 'function') updateHeader();
+    if (typeof Auth !== 'undefined' && typeof Auth.aplicarRestriccionesRol === 'function') {
+      Auth.aplicarRestriccionesRol();
+    }
     renderBadgesBar();
-    showToast(`🎒 Cuaderno de Campo activado para ${cleanName}`);
+    showToast(`🎒 Perfil actualizado: ${cleanName} (${state.studentTitle})`);
 
-    // Si había una ficha abierta en la pestaña de quiz, refrescar
     if (activeAnimal) {
       renderQuiz(activeAnimal);
     }
+  }
+}
+
+/* ============ Sistema de Logros Secretos y Easter Eggs ============ */
+
+function unlockSecretBadge(id) {
+  if (!state) return;
+  if (!state.secretBadges) state.secretBadges = [];
+  if (state.secretBadges.includes(id)) return;
+
+  state.secretBadges.push(id);
+  saveState();
+
+  const sb = (typeof SECRET_BADGES !== 'undefined' ? SECRET_BADGES : []).find(x => x.id === id);
+  if (sb) {
+    showToast(`🌟 ¡MISTERIO DESCUBIERTO! ${sb.icon} ${sb.label}`);
+    playVictory();
+  }
+  if (typeof renderAchievementsList === 'function') renderAchievementsList();
+  if (typeof renderBadgesBar === 'function') renderBadgesBar();
+}
+
+function trackAnimalSound(soundSrc) {
+  if (!state) return;
+  if (!state.soundsPlayed) state.soundsPlayed = [];
+  if (soundSrc && !state.soundsPlayed.includes(soundSrc)) {
+    state.soundsPlayed.push(soundSrc);
+    saveState();
+  }
+  if (state.soundsPlayed.length >= 5) {
+    unlockSecretBadge('susurrador');
+  }
+}
+window.trackAnimalSound = trackAnimalSound;
+
+/* ============ Certificado Oficial Digital Liceo B-13 ============ */
+
+function openCertificateModal() {
+  renderCertificate();
+  openOverlayId('certificateOverlay');
+  setupCertificateEvents();
+}
+
+function renderCertificate() {
+  const container = document.getElementById('certificateContent');
+  if (!container) return;
+
+  const studentName = (state.studentName || 'Estudiante B-13').toUpperCase();
+  const studentGrade = state.studentGrade || 'Enseñanza Media';
+  const studentTitle = state.studentTitle || 'Guardián/a de la Granja';
+  const studentScore = state.score || 0;
+  const badgesCount = (state.badges || []).length;
+  const secretCount = (state.secretBadges || []).length;
+  const totalBadges = badgesCount + secretCount;
+
+  if (!state.certificateCode) {
+    const rnd = Math.random().toString(36).substring(2, 7).toUpperCase();
+    state.certificateCode = `B13-CERT-2026-${rnd}`;
+    state.certificateIssuedAt = Date.now();
+    saveState();
+  }
+
+  const issueDate = state.certificateIssuedAt
+    ? new Date(state.certificateIssuedAt).toLocaleDateString('es-CL', { year: 'numeric', month: 'long', day: 'numeric' })
+    : new Date().toLocaleDateString('es-CL', { year: 'numeric', month: 'long', day: 'numeric' });
+
+  container.innerHTML = `
+    <div class="certificate-sheet">
+      <div class="cert-border-outer">
+        <div class="cert-border-inner">
+          
+          <!-- Encabezado Institucional -->
+          <div class="cert-header">
+            <div class="cert-logo-box">
+              <img src="assets/img/logo.png" alt="Escudo Liceo B-13" class="cert-logo-img">
+            </div>
+            <div class="cert-inst-text">
+              <div class="cert-inst-title">REPÚBLICA DE CHILE · MINISTERIO DE EDUCACIÓN</div>
+              <div class="cert-inst-sub">LICEO DOMINGO HERRERA RIVERA B-13 — ANTOFAGASTA</div>
+              <div class="cert-inst-sub2">DEPARTAMENTO DE CIENCIAS NATURALES Y EDUCACIÓN AMBIENTAL</div>
+              <div class="cert-inst-proj">PROYECTO EDUCATIVO «LA GRANJA ESCOLAR B-13»</div>
+            </div>
+            <div class="cert-flag-box">
+              <span style="font-size:2rem;">🇨🇱</span>
+            </div>
+          </div>
+
+          <div class="cert-divider"></div>
+
+          <!-- Título del Certificado -->
+          <div class="cert-title-section">
+            <h1 class="cert-main-title">CERTIFICADO OFICIAL DE DISTINCIÓN</h1>
+            <h2 class="cert-sub-title">COMPETENCIA EN BIENESTAR ANIMAL, BIOLOGÍA APLICADA Y TRABAJO DE CAMPO</h2>
+          </div>
+
+          <!-- Cuerpo del Certificado -->
+          <div class="cert-body-text">
+            El Liceo B-13 y el Comité Coordinador de La Granja Educativa confieren con honores la presente distinción a:
+          </div>
+
+          <div class="cert-student-highlight">
+            <div class="cert-student-name">${studentName}</div>
+            <div class="cert-student-meta">
+              <span>Nivel / Curso: <b>${studentGrade}</b></span>
+              <span>•</span>
+              <span>Título Honorífico: <b>${studentTitle}</b></span>
+            </div>
+          </div>
+
+          <p class="cert-praise">
+            Por haber superado exitosamente los desafíos de aprendizaje, observación biológica, anatomía comparada, fisiología y protocolos de cuidado y bienestar animal en los módulos interactivos de La Granja B-13, promoviendo activamente la sustentabilidad escolar y los Objetivos de Desarrollo Sostenible (ODS 4 y ODS 15).
+          </p>
+
+          <!-- Métricas y Logros de Campo -->
+          <div class="cert-merits-grid">
+            <div class="cert-merit-box">
+              <div class="cert-merit-val">${studentScore} PTS</div>
+              <div class="cert-merit-lbl">PUNTAJE ACUMULADO</div>
+            </div>
+            <div class="cert-merit-box">
+              <div class="cert-merit-val">+0.5 DÉCIMAS</div>
+              <div class="cert-merit-lbl">RECOMPENSA PEDAGÓGICA CIENCIAS</div>
+            </div>
+            <div class="cert-merit-box">
+              <div class="cert-merit-val">${totalBadges} INSIGNIAS</div>
+              <div class="cert-merit-lbl">LOGROS Y SECRETOS DESBLOQUEADOS</div>
+            </div>
+            <div class="cert-merit-box">
+              <div class="cert-merit-val">DISTINCIÓN MÁXIMA</div>
+              <div class="cert-merit-lbl">CALIFICACIÓN DE CAMPO</div>
+            </div>
+          </div>
+
+          <!-- Firmas y Sello Oficial -->
+          <div class="cert-signatures-section">
+            <div class="cert-sig-box">
+              <div class="cert-sig-line">
+                <span class="digital-sig-draw">Prof. Encargado(a) B-13</span>
+              </div>
+              <div class="cert-sig-name">Profesor(a) Encargado(a)</div>
+              <div class="cert-sig-role">Coordinación de Granja Escolar B-13</div>
+            </div>
+
+            <div class="cert-seal-box">
+              <div class="cert-seal-stamp">
+                <div class="cert-seal-inner">
+                  <span class="cert-seal-star">★ ★ ★</span>
+                  <span class="cert-seal-txt">LICEO B-13</span>
+                  <span class="cert-seal-valid">OFICIALMENTE VALIDADO</span>
+                  <span class="cert-seal-year">2026</span>
+                </div>
+              </div>
+              <div class="cert-code-tag">FOLIO: ${state.certificateCode}</div>
+              <div class="cert-date-tag">Fecha: ${issueDate}</div>
+            </div>
+
+            <div class="cert-sig-box">
+              <div class="cert-sig-line">
+                <span class="digital-sig-draw">Dirección Liceo B-13</span>
+              </div>
+              <div class="cert-sig-name">Dirección del Establecimiento</div>
+              <div class="cert-sig-role">Liceo Domingo Herrera Rivera B-13</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function setupCertificateEvents() {
+  const printBtn = document.getElementById('printCertBtn');
+  if (printBtn) {
+    printBtn.onclick = () => window.print();
   }
 }
 
@@ -209,12 +604,20 @@ function renderAchievementsList() {
   const container = document.getElementById('achievementsList');
   if (!container) return;
   
-  const earnedCount = BADGES.filter(b => state.badges.includes(b.id)).length;
+  const earnedOfficialCount = BADGES.filter(b => state.badges.includes(b.id)).length;
+  const secretsList = typeof SECRET_BADGES !== 'undefined' ? SECRET_BADGES : [];
+  const earnedSecretCount = secretsList.filter(s => (state.secretBadges || []).includes(s.id)).length;
   
   container.innerHTML = `
-    <div style="font-size:0.85rem;font-weight:700;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;background:var(--paper-dark);padding:8px 12px;border-radius:6px;border:2px solid var(--ink);">
-      <span>PROGRESO DE LOGROS:</span>
-      <span style="color:var(--grass-dark);font-family:'Space Mono',monospace;font-size:0.95rem;">${earnedCount} / ${BADGES.length} Desbloqueados</span>
+    <div style="font-size:0.85rem;font-weight:700;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;background:var(--paper-dark);padding:10px 14px;border-radius:6px;border:2px solid var(--ink);">
+      <span>PROGRESO TOTAL:</span>
+      <span style="color:var(--grass-dark);font-family:'Space Mono',monospace;font-size:0.95rem;">
+        ${earnedOfficialCount}/${BADGES.length} Oficiales · ${earnedSecretCount}/${secretsList.length} Secretos
+      </span>
+    </div>
+
+    <div style="font-size:0.8rem;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;color:var(--grass-dark);margin:12px 0 6px;">
+      🏅 Insignias Oficiales de Campo
     </div>
     ${BADGES.map(b => {
       const isEarned = state.badges.includes(b.id);
@@ -228,10 +631,46 @@ function renderAchievementsList() {
               <span class="achievement-status-tag">${isEarned ? '✅ OBTENIDO' : '🔒 PENDIENTE'}</span>
             </div>
             <div class="achievement-desc">${b.desc}</div>
-            <div class="achievement-hint">💡 <b>Pista:</b> ${hint}</div>
+            <div class="achievement-hint">💡 <b>Requisito:</b> ${hint}</div>
           </div>
         </div>
       `;
+    }).join('')}
+
+    <div style="font-size:0.8rem;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;color:#8B4513;margin:18px 0 6px;">
+      🌟 Logros Ocultos y Misterios de Terreno (Easter Eggs)
+    </div>
+    ${secretsList.map(s => {
+      const isEarned = (state.secretBadges || []).includes(s.id);
+      if (isEarned) {
+        return `
+          <div class="achievement-row earned secret-unlocked" style="background:#fffcf0;border-left:4px solid #ffd83d;">
+            <div class="achievement-icon-box" style="background:#ffd83d;border-color:#1a1a1a;">${s.icon}</div>
+            <div class="achievement-details">
+              <div class="achievement-title">
+                <span style="color:#7A0F2B;font-weight:700;">${s.label}</span>
+                <span class="achievement-status-tag" style="background:#ffd83d;color:#1a1a1a;border-color:#1a1a1a;">✨ DESCUBIERTO</span>
+              </div>
+              <div class="achievement-desc">${s.desc}</div>
+              <div class="achievement-hint" style="color:#5c3d00;">🎉 ¡Misterio descubierto por tu espíritu observador!</div>
+            </div>
+          </div>
+        `;
+      } else {
+        return `
+          <div class="achievement-row secret-locked" style="opacity:0.85;background:#f8f8f8;">
+            <div class="achievement-icon-box" style="filter:grayscale(1);opacity:0.6;">❓</div>
+            <div class="achievement-details">
+              <div class="achievement-title">
+                <span style="color:#777;font-style:italic;">??? (Logro Misterioso)</span>
+                <span class="achievement-status-tag" style="background:#e0e0e0;color:#555;">🔒 MISTERIO</span>
+              </div>
+              <div class="achievement-desc" style="color:#888;font-style:italic;">Un secreto de la granja que aún no has descubierto...</div>
+              <div class="achievement-hint" style="color:#8B4513;">💡 <b>Pista misteriosa:</b> ${s.secretHint}</div>
+            </div>
+          </div>
+        `;
+      }
     }).join('')}
   `;
 }
@@ -239,16 +678,32 @@ function renderAchievementsList() {
 function renderBadgesBar() {
   const box = document.getElementById('badgesBar');
   if (!box) return;
-  box.innerHTML = BADGES.map(b => {
+  
+  const officialHtml = BADGES.map(b => {
     const earned = state.badges.includes(b.id);
     return `
-      <button type="button" class="badge${earned ? ' earned' : ''}" data-badge="${b.id}" title="${b.desc}">
+      <button type="button" class="badge${earned ? ' earned' : ''}" data-badge="${b.id}" title="${b.label}: ${b.desc}">
         <span class="ic">${b.icon}</span>
         <span class="badge-label">${b.label}</span>
         ${earned ? '<span class="badge-check">✓</span>' : '<span class="badge-lock">🔒</span>'}
       </button>
     `;
   }).join('');
+
+  const secretsList = typeof SECRET_BADGES !== 'undefined' ? SECRET_BADGES : [];
+  const secretHtml = (state.secretBadges || []).map(sid => {
+    const s = secretsList.find(x => x.id === sid);
+    if (!s) return '';
+    return `
+      <button type="button" class="badge earned secret-badge" data-badge="${s.id}" title="🌟 ${s.label}: ${s.desc}" style="background:#fffcf0;border-color:#ffd83d;">
+        <span class="ic">${s.icon}</span>
+        <span class="badge-label">${s.label}</span>
+        <span class="badge-check" style="color:#ffd83d;">★</span>
+      </button>
+    `;
+  }).join('');
+
+  box.innerHTML = officialHtml + secretHtml;
 
   box.querySelectorAll('.badge').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -321,6 +776,23 @@ function checkBadges() {
     playVictory();
   });
   if (newly.length) renderBadgesBar();
+
+  if (allCompleted || mapAllCompleted || state.badges.includes('guardian') || state.badges.includes('veterinario')) {
+    if (!state.certificateUnlocked) {
+      state.certificateUnlocked = true;
+      if (!state.certificateCode) {
+        const rnd = Math.random().toString(36).substring(2, 7).toUpperCase();
+        state.certificateCode = `B13-CERT-2026-${rnd}`;
+        state.certificateIssuedAt = Date.now();
+      }
+      unlockSecretBadge('cert_unlocked');
+    }
+  }
+
+  const curH = new Date().getHours();
+  if (curH >= 20 || curH < 6) {
+    unlockSecretBadge('noctambulo');
+  }
 
   if (allCompleted && !state.finalShown) {
     state.finalShown = true;
@@ -513,6 +985,15 @@ function attachOrganHandlers(a) {
       const organ = a.organs.find(o => o.id === el.dataset.id);
       if (organ) {
         info.innerHTML = `<b>${organ.label}</b>${organ.desc}`;
+        if (!state.organsInspected) state.organsInspected = [];
+        const organKey = `${a.id}_${organ.id}`;
+        if (!state.organsInspected.includes(organKey)) {
+          state.organsInspected.push(organKey);
+          saveState();
+        }
+        if (state.organsInspected.length >= 6) {
+          unlockSecretBadge('anatomista');
+        }
       }
     });
   });
@@ -648,9 +1129,17 @@ function renderQuiz(a) {
   // Caso B: Modo Docente (Vista Previa Formativa)
   if (sesionActual.rol === 'profesor' || sesionActual.rol === 'admin') {
     let previewHtml = a.quiz.map((q, i) => {
+      const diffBadge = q.difficulty === 'dificil'
+        ? '<span class="diff-badge diff-dificil">🔴 Avanzado (20 pts)</span>'
+        : (q.difficulty === 'medio'
+            ? '<span class="diff-badge diff-medio">🟡 Intermedio (15 pts)</span>'
+            : '<span class="diff-badge diff-facil">🟢 Básico (10 pts)</span>');
       return `
         <div class="quiz-review-item correct" style="margin-bottom:10px;">
-          <div class="q-title"><b>${i + 1}.</b> ${q.q}</div>
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <div class="q-title"><b>${i + 1}.</b> ${q.q}</div>
+            ${diffBadge}
+          </div>
           <div class="q-correct" style="margin-top:4px;">Respuesta correcta: <b>${q.options[q.a]}</b></div>
           <div class="q-explain">💡 ${q.explain}</div>
         </div>
@@ -706,9 +1195,17 @@ function renderQuiz(a) {
       const chosenIdx = qState.answers ? qState.answers[i] : null;
       const chosenText = chosenIdx !== null && chosenIdx !== undefined ? q.options[chosenIdx] : '—';
       const rightText = q.options[q.a];
+      const diffBadge = q.difficulty === 'dificil'
+        ? '<span class="diff-badge diff-dificil">🔴 Avanzado</span>'
+        : (q.difficulty === 'medio'
+            ? '<span class="diff-badge diff-medio">🟡 Intermedio</span>'
+            : '<span class="diff-badge diff-facil">🟢 Básico</span>');
       return `
         <div class="quiz-review-item ${isRight ? 'correct' : 'wrong'}">
-          <div class="q-title"><b>${i + 1}.</b> ${q.q}</div>
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <div class="q-title"><b>${i + 1}.</b> ${q.q}</div>
+            ${diffBadge}
+          </div>
           <div class="q-ans">Tu respuesta: <i>${chosenText}</i> ${isRight ? '✅' : '❌'}</div>
           ${!isRight ? `<div class="q-correct">Respuesta correcta: <b>${rightText}</b></div>` : ''}
           <div class="q-explain">💡 ${q.explain}</div>
@@ -740,7 +1237,6 @@ function renderQuiz(a) {
 
     document.getElementById('repasoQuizBtn').addEventListener('click', () => {
       if (confirm('¿Deseas reiniciar este quiz para un nuevo intento? Tu puntaje anterior de este quiz se actualizará con el nuevo resultado.')) {
-        // Restar el puntaje anterior si se había sumado
         if (qState.scoreEarned) {
           state.score = Math.max(0, state.score - qState.scoreEarned);
         }
@@ -772,8 +1268,17 @@ function renderQuiz(a) {
   const q = a.quiz[idx];
   const isAnswered = qState.results[idx] !== undefined && qState.results[idx] !== null;
 
+  const diffLabel = q.difficulty === 'dificil'
+    ? '<span class="diff-badge diff-dificil">🔴 Avanzado (+20 pts)</span>'
+    : (q.difficulty === 'medio'
+        ? '<span class="diff-badge diff-medio">🟡 Intermedio (+15 pts)</span>'
+        : '<span class="diff-badge diff-facil">🟢 Básico (+10 pts)</span>');
+
   panel.innerHTML = `
-    <div class="quiz-progress">${renderDots(a, qState)}</div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+      <div class="quiz-progress">${renderDots(a, qState)}</div>
+      ${diffLabel}
+    </div>
     <div class="quiz-q"><b>Pregunta ${idx + 1} de ${a.quiz.length}:</b><br>${q.q}</div>
     <div id="opts" class="quiz-opts-box"></div>
     <div id="quizFeedback" class="quiz-feedback-slot"></div>
@@ -799,34 +1304,48 @@ function renderQuiz(a) {
         const isCorrect = (i === q.a);
         qState.answers[idx] = i;
         qState.results[idx] = isCorrect;
+        const ptsVal = q.points || (q.difficulty === 'dificil' ? 20 : (q.difficulty === 'medio' ? 15 : 10));
 
         if (isCorrect) {
           b.classList.add('correct');
           spawnStarBurst(b);
-          state.score += 10;
-          qState.scoreEarned = (qState.scoreEarned || 0) + 10;
+          state.score += ptsVal;
+          qState.scoreEarned = (qState.scoreEarned || 0) + ptsVal;
+
+          // Racha para logro relámpago
+          state.streak = (state.streak || 0) + 1;
+          if (state.streak >= 3) {
+            unlockSecretBadge('relampago');
+          }
+          // Logro cecotrofia master
+          if (q.q && q.q.toLowerCase().includes('cecotrofia')) {
+            unlockSecretBadge('cecotrofia_master');
+          }
+
           if (typeof updateHeader === 'function') updateHeader();
           playCorrect();
           bounceSpriteIfPresent(a.id);
         } else {
           b.classList.add('wrong');
+          state.streak = 0;
           if (optsBox.children[q.a]) optsBox.children[q.a].classList.add('correct');
           playWrong();
         }
 
         saveState();
-        drawFeedbackAndNext(a, qState, idx, q, isCorrect, feedbackBox);
+        drawFeedbackAndNext(a, qState, idx, q, isCorrect, feedbackBox, ptsVal);
       });
     }
     optsBox.appendChild(b);
   });
 
   if (isAnswered) {
-    drawFeedbackAndNext(a, qState, idx, q, qState.results[idx] === true, feedbackBox);
+    const ptsVal = q.points || (q.difficulty === 'dificil' ? 20 : (q.difficulty === 'medio' ? 15 : 10));
+    drawFeedbackAndNext(a, qState, idx, q, qState.results[idx] === true, feedbackBox, ptsVal);
   }
 }
 
-function drawFeedbackAndNext(a, qState, idx, q, isCorrect, container) {
+function drawFeedbackAndNext(a, qState, idx, q, isCorrect, container, ptsVal) {
   container.innerHTML = '';
 
   const exp = document.createElement('div');
@@ -837,7 +1356,7 @@ function drawFeedbackAndNext(a, qState, idx, q, isCorrect, container) {
   if (isCorrect) {
     const pts = document.createElement('div');
     pts.className = 'quiz-points';
-    pts.textContent = CORRECT_MESSAGE;
+    pts.innerHTML = `¡Respuesta correcta! Ganaste <b>+${ptsVal || 10} puntos</b> por aprender sobre biología y bienestar animal.`;
     container.appendChild(pts);
   }
 

@@ -72,6 +72,9 @@ function isSoundOn() {
 let realAudioEl = null;
 function playRealSound(src) {
   if (!src || !isSoundOn()) return;
+  if (typeof trackAnimalSound === 'function' && !src.includes('victoria')) {
+    trackAnimalSound(src);
+  }
   try {
     if (realAudioEl) { realAudioEl.pause(); }
     realAudioEl = new Audio(src);

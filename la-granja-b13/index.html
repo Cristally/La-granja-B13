@@ -104,33 +104,19 @@
   </div>
 </div>
 
-<!-- Registro / Identificación de Estudiante -->
+<!-- Registro / Identificación de Estudiante y Personalización de Avatar -->
 <div class="overlay" id="studentOverlay">
-  <div class="card small-card">
+  <div class="card student-custom-card">
     <button class="close-btn" data-close="studentOverlay" aria-label="Cerrar">✕</button>
     <div class="card-head">
-      <div class="big-sprite">🎒</div>
+      <div class="big-sprite" id="studentModalAvatarIcon">🧑‍🌾</div>
       <div>
         <h2>Cuaderno de Campo</h2>
-        <div class="lat">Identificación del/la estudiante</div>
+        <div class="lat" id="studentModalAvatarSubtitle">Perfil del Estudiante B-13 & Logros</div>
       </div>
     </div>
-    <div class="card-body">
-      <p style="font-size:0.88rem;margin-top:0;line-height:1.4;">Ingresa tus datos para registrar tus respuestas, acumular puntaje y obtener décimas formativas en tu sesión individual:</p>
-      <form id="studentForm" onsubmit="return false;">
-        <div class="field-row">
-          <label for="studentNameInput">Nombre y Apellido *</label>
-          <input type="text" id="studentNameInput" placeholder="Ej: Yefrin González" maxlength="30" required autocomplete="off">
-        </div>
-        <div class="field-row">
-          <label for="studentGradeInput">Curso / Nivel *</label>
-          <input type="text" id="studentGradeInput" placeholder="Ej: 3°F" maxlength="20" required autocomplete="off">
-        </div>
-        <div id="studentError" style="color:var(--clay);font-size:0.8rem;font-weight:700;margin-bottom:8px;display:none;"></div>
-        <button type="submit" class="tool-btn" id="saveStudentBtn" style="width:100%;padding:10px;background:var(--hay);color:var(--ink);font-weight:700;font-size:0.9rem;">💾 Iniciar mi Cuaderno de Campo</button>
-      </form>
-      <div class="save-note" style="margin-top:10px;">Tu progreso se guardará bajo tu nombre para el seguimiento de tus décimas y logros de campo.</div>
-      <button type="button" id="btnOverlayCambiarModo" class="nav-switch-btn" style="width:100%;margin-top:12px;padding:9px;justify-content:center;display:flex;">🔄 Cambiar Modo / Cerrar Sesión</button>
+    <div class="card-body" id="studentModalBody">
+      <!-- Se inyecta dinámicamente con renderStudentProfileModal() -->
     </div>
   </div>
 </div>
@@ -264,6 +250,28 @@
       <button class="tool-btn" data-close="logoOverlay" type="button" style="width:100%;margin-top:14px;padding:9px;background:var(--hay);color:var(--ink);font-weight:700;font-size:0.88rem;">
         ✓ Cerrar
       </button>
+    </div>
+  </div>
+<!-- Modal de Certificado Oficial -->
+<div class="overlay" id="certificateOverlay">
+  <div class="card cert-modal-card">
+    <div class="cert-modal-header no-print">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span style="font-size:1.8rem;">🎓</span>
+        <div>
+          <h2 style="margin:0;font-family:'Fraunces',serif;color:var(--grass-dark);">Certificado Oficial B-13</h2>
+          <div style="font-size:0.82rem;color:var(--ink);">Acreditación de competencia y bienestar animal</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <button type="button" class="tool-btn" id="printCertBtn" style="background:#ffd83d;color:#1a1a1a;font-weight:700;padding:8px 16px;border:2px solid #1a1a1a;border-radius:6px;cursor:pointer;">
+          🖨️ Imprimir / Guardar en PDF
+        </button>
+        <button class="close-btn" data-close="certificateOverlay" aria-label="Cerrar" style="position:static;">✕</button>
+      </div>
+    </div>
+    <div class="card-body cert-modal-body" id="certificateContent">
+      <!-- Se inyecta la hoja de diploma -->
     </div>
   </div>
 </div>

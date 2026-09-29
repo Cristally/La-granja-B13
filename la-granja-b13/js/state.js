@@ -41,12 +41,23 @@ function defaultStudentSession(name, grade) {
   return {
     studentName: name || '',
     studentGrade: grade || '',
+    avatarIcon: '🧑‍🌾',
+    avatarColor: '#ffd83d',
+    studentTitle: 'Explorador/a de Campo',
     score: 0,
     discovered: [],
     quiz: quiz,
     mapDiscovered: [],
     mapQuiz: mapQuiz,
     badges: [],
+    secretBadges: [],
+    certificateUnlocked: false,
+    certificateIssuedAt: null,
+    certificateCode: '',
+    organsInspected: [],
+    soundsPlayed: [],
+    rulesRead: false,
+    streak: 0,
     custom: {},
     soundOn: true,
     finalShown: false,
@@ -105,10 +116,21 @@ function loadState() {
       if (saved && saved.studentName && typeof saved.studentName === 'string' && saved.studentName.trim() !== '') {
         base.studentName = saved.studentName.trim();
         base.studentGrade = (saved.studentGrade || '').trim();
+        base.avatarIcon = saved.avatarIcon || '🧑‍🌾';
+        base.avatarColor = saved.avatarColor || '#ffd83d';
+        base.studentTitle = saved.studentTitle || 'Explorador/a de Campo';
         base.score = typeof saved.score === 'number' ? saved.score : 0;
         base.discovered = Array.isArray(saved.discovered) ? saved.discovered : [];
         base.mapDiscovered = Array.isArray(saved.mapDiscovered) ? saved.mapDiscovered : [];
         base.badges = Array.isArray(saved.badges) ? saved.badges : [];
+        base.secretBadges = Array.isArray(saved.secretBadges) ? saved.secretBadges : [];
+        base.certificateUnlocked = !!saved.certificateUnlocked;
+        base.certificateIssuedAt = saved.certificateIssuedAt || null;
+        base.certificateCode = saved.certificateCode || '';
+        base.organsInspected = Array.isArray(saved.organsInspected) ? saved.organsInspected : [];
+        base.soundsPlayed = Array.isArray(saved.soundsPlayed) ? saved.soundsPlayed : [];
+        base.rulesRead = !!saved.rulesRead;
+        base.streak = typeof saved.streak === 'number' ? saved.streak : 0;
         base.custom = saved.custom || {};
         base.soundOn = saved.soundOn !== false;
         base.finalShown = !!saved.finalShown;
@@ -119,7 +141,7 @@ function loadState() {
         if (saved.quiz) {
           Object.keys(base.quiz).forEach(id => {
             const sp = ANIMALS.find(x => x.id === id);
-            const qCount = sp && sp.quiz ? sp.quiz.length : 3;
+            const qCount = sp && sp.quiz ? sp.quiz.length : 6;
             base.quiz[id] = ensureQuizBucketStructure(saved.quiz[id], qCount);
           });
         }
@@ -148,12 +170,17 @@ function saveState() {
       profiles[key] = {
         studentName: state.studentName.trim(),
         studentGrade: (state.studentGrade || '').trim(),
+        avatarIcon: state.avatarIcon || '🧑‍🌾',
+        avatarColor: state.avatarColor || '#ffd83d',
+        studentTitle: state.studentTitle || 'Explorador/a de Campo',
         score: state.score,
         discoveredCount: state.discovered.length,
         mapDiscoveredCount: state.mapDiscovered.length,
         potreroQuizCompleted: Object.keys(state.quiz).filter(k => state.quiz[k] && state.quiz[k].completed).length,
         mapQuizCompleted: Object.keys(state.mapQuiz).filter(k => state.mapQuiz[k] && state.mapQuiz[k].completed).length,
         badgesCount: state.badges.length,
+        secretBadgesCount: (state.secretBadges || []).length,
+        certificateUnlocked: !!state.certificateUnlocked,
         updatedAt: state.updatedAt,
         stateData: JSON.parse(JSON.stringify(state))
       };

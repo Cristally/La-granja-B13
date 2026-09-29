@@ -256,17 +256,26 @@ const Auth = {
         scorebox.innerHTML = `<span style="color:#ffd83d;font-weight:700;">🧭 VISITA</span><br>${unit}: <span id="discovered">${count}</span>/${total}`;
       }
     } else if (rol === 'estudiante') {
-      if (iconEl) iconEl.textContent = '🎒';
-      if (labelEl) labelEl.textContent = 'ESTUDIANTE';
+      const studentAvatar = (typeof state !== 'undefined' && state.avatarIcon) ? state.avatarIcon : '🧑‍🌾';
+      const studentBorder = (typeof state !== 'undefined' && state.avatarColor) ? state.avatarColor : '#ffd83d';
+      const studentTitle = (typeof state !== 'undefined' && state.studentTitle) ? state.studentTitle : 'Estudiante B-13';
+
+      if (iconEl) {
+        iconEl.textContent = studentAvatar;
+        iconEl.style.border = `2px solid ${studentBorder}`;
+        iconEl.style.borderRadius = '50%';
+        iconEl.style.padding = '1px';
+      }
+      if (labelEl) labelEl.textContent = studentTitle.toUpperCase();
       const nombre = sesion.nombre || (typeof state !== 'undefined' && state.studentName) || 'Estudiante';
       const curso = sesion.curso || (typeof state !== 'undefined' && state.studentGrade) || '';
       if (displayEl) displayEl.textContent = `${nombre}${curso ? ' (' + curso + ')' : ''}`;
       if (changeBtn) {
         changeBtn.textContent = '✏️';
-        changeBtn.title = 'Ver o editar mi Cuaderno de Campo';
+        changeBtn.title = 'Ver mi perfil, personalizar avatar y certificado oficial';
       }
       if (pill) {
-        pill.title = 'Toca para abrir tu Cuaderno de Campo';
+        pill.title = 'Toca para abrir tu Cuaderno de Campo, personalizar avatar y ver tu certificado';
       }
 
       // Restricción: estudiantes NUNCA ven el panel docente

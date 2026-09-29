@@ -2289,3 +2289,442 @@ body.rol-admin .badges-bar {
   color: #fff;
 }
 
+/* ==============================================================
+   NUEVAS CARACTERÍSTICAS: DIFICULTADES, AVATAR, LOGROS & DIPLOMA
+   ============================================================== */
+
+/* 1. Badges de dificultad de preguntas */
+.diff-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 12px;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  border: 1.5px solid transparent;
+}
+.diff-facil {
+  background: #e8f5e9;
+  color: #2e7d32;
+  border-color: #a5d6a7;
+}
+.diff-medio {
+  background: #fff8e1;
+  color: #f57f17;
+  border-color: #ffe082;
+}
+.diff-dificil {
+  background: #ffebee;
+  color: #c62828;
+  border-color: #ef9a9a;
+}
+
+/* 2. Personalización de Avatar de Estudiante */
+.student-custom-card {
+  max-width: 520px !important;
+  width: 95% !important;
+  max-height: 90vh !important;
+  overflow-y: auto !important;
+}
+
+.avatar-picker-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+}
+.avatar-picker-btn.selected {
+  border-color: #2d6a4f !important;
+  background: #e8f5e9 !important;
+  box-shadow: 0 0 0 2px #2d6a4f;
+}
+
+.frame-picker-btn:hover {
+  transform: scale(1.15);
+}
+
+/* 3. Logros Secretos e Insignias */
+.achievement-row.secret-unlocked {
+  background: #fffcf0 !important;
+  border: 2px solid #ffd83d !important;
+  box-shadow: 0 3px 10px rgba(255, 216, 61, 0.2);
+}
+.achievement-row.secret-locked {
+  background: #f8f9fa !important;
+  opacity: 0.85;
+}
+.badge.secret-badge {
+  background: #fffcf0;
+  border-color: #ffd83d;
+}
+
+/* 4. Certificado Oficial Digital Liceo B-13 */
+.cert-modal-card {
+  max-width: 920px !important;
+  width: 96% !important;
+  max-height: 94vh !important;
+  overflow-y: auto !important;
+  padding: 0 !important;
+  background: #2b0b14 !important;
+  border: 3px solid #ffd83d !important;
+  border-radius: 14px !important;
+}
+
+.cert-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 20px;
+  background: #460918;
+  border-bottom: 2px solid #ffd83d;
+  color: #fff;
+}
+.cert-modal-header h2 {
+  color: #ffd83d !important;
+}
+
+.cert-modal-body {
+  padding: 16px !important;
+  background: #3b0918;
+  display: flex;
+  justify-content: center;
+}
+
+.certificate-sheet {
+  background: #fffdf8;
+  color: #1a1a1a;
+  width: 100%;
+  max-width: 860px;
+  padding: 22px;
+  border-radius: 8px;
+  box-shadow: 0 10px 35px rgba(0,0,0,0.5);
+  box-sizing: border-box;
+  font-family: 'Fraunces', Georgia, serif;
+}
+
+.cert-border-outer {
+  border: 4px solid #7a0f2b;
+  padding: 5px;
+  border-radius: 6px;
+}
+
+.cert-border-inner {
+  border: 2px dashed #d4af37;
+  padding: 20px 24px;
+  border-radius: 4px;
+  background: #fffefb;
+  position: relative;
+}
+
+.cert-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.cert-logo-box {
+  width: 75px;
+  height: 75px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cert-logo-img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.cert-inst-text {
+  flex: 1;
+  text-align: center;
+  line-height: 1.3;
+}
+
+.cert-inst-title {
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  font-weight: 700;
+  color: #555;
+  font-family: 'Space Mono', monospace;
+}
+
+.cert-inst-sub {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #7a0f2b;
+  margin: 2px 0;
+  letter-spacing: -0.01em;
+}
+
+.cert-inst-sub2 {
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: #444;
+}
+
+.cert-inst-proj {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #2d6a4f;
+  margin-top: 2px;
+  letter-spacing: 0.04em;
+}
+
+.cert-divider {
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #d4af37, #7a0f2b, #d4af37, transparent);
+  margin: 14px 0 12px;
+}
+
+.cert-title-section {
+  text-align: center;
+  margin-bottom: 12px;
+}
+
+.cert-main-title {
+  font-size: 1.6rem;
+  color: #7a0f2b;
+  margin: 0;
+  letter-spacing: 0.04em;
+  font-weight: 800;
+}
+
+.cert-sub-title {
+  font-size: 0.78rem;
+  color: #666;
+  letter-spacing: 0.06em;
+  margin: 3px 0 0;
+  font-family: 'Space Mono', monospace;
+  font-weight: 600;
+}
+
+.cert-body-text {
+  text-align: center;
+  font-size: 0.88rem;
+  color: #444;
+  margin-top: 8px;
+  font-style: italic;
+}
+
+.cert-student-highlight {
+  text-align: center;
+  margin: 10px 0 8px;
+  padding: 8px 14px;
+  background: #faf4e8;
+  border-radius: 6px;
+  border-bottom: 2px solid #7a0f2b;
+}
+
+.cert-student-name {
+  font-size: 1.7rem;
+  color: #7a0f2b;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+
+.cert-student-meta {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  font-size: 0.85rem;
+  color: #333;
+  margin-top: 3px;
+  font-family: 'Space Mono', monospace;
+}
+
+.cert-praise {
+  text-align: center;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: #333;
+  max-width: 720px;
+  margin: 10px auto 16px;
+}
+
+.cert-merits-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.cert-merit-box {
+  background: #fdfaf3;
+  border: 1.5px solid #e2d2b5;
+  border-radius: 6px;
+  padding: 8px;
+  text-align: center;
+}
+
+.cert-merit-val {
+  font-size: 1rem;
+  font-weight: 800;
+  color: #2d6a4f;
+  font-family: 'Space Mono', monospace;
+}
+
+.cert-merit-lbl {
+  font-size: 0.64rem;
+  font-weight: 700;
+  color: #666;
+  margin-top: 2px;
+  letter-spacing: 0.02em;
+}
+
+.cert-signatures-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-top: 22px;
+  padding-top: 10px;
+}
+
+.cert-sig-box {
+  text-align: center;
+  width: 200px;
+}
+
+.cert-sig-line {
+  border-bottom: 1.5px solid #1a1a1a;
+  padding-bottom: 4px;
+  margin-bottom: 4px;
+}
+
+.digital-sig-draw {
+  font-family: 'Caveat', cursive, 'Brush Script MT', italic;
+  font-size: 1.15rem;
+  color: #0d3b66;
+  display: block;
+}
+
+.cert-sig-name {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+.cert-sig-role {
+  font-size: 0.68rem;
+  color: #555;
+  line-height: 1.2;
+}
+
+.cert-seal-box {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.cert-seal-stamp {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #f9c74f 0%, #d4af37 60%, #b8860b 100%);
+  border: 3px double #7a0f2b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 10px rgba(184, 134, 11, 0.4);
+  margin-bottom: 4px;
+}
+
+.cert-seal-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+.cert-seal-star {
+  font-size: 0.6rem;
+  color: #7a0f2b;
+}
+
+.cert-seal-txt {
+  font-size: 0.7rem;
+  font-weight: 900;
+  color: #7a0f2b;
+  letter-spacing: 0.05em;
+}
+
+.cert-seal-valid {
+  font-size: 0.45rem;
+  font-weight: 800;
+  color: #1a1a1a;
+}
+
+.cert-seal-year {
+  font-size: 0.55rem;
+  font-weight: 700;
+  color: #7a0f2b;
+}
+
+.cert-code-tag {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.65rem;
+  color: #555;
+  font-weight: 700;
+}
+
+.cert-date-tag {
+  font-size: 0.68rem;
+  color: #777;
+}
+
+/* Reglas de impresión para PDF / papel */
+@media print {
+  body {
+    background: #fff !important;
+  }
+  body * {
+    visibility: hidden !important;
+  }
+  #certificateOverlay,
+  #certificateOverlay * {
+    visibility: visible !important;
+  }
+  #certificateOverlay {
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 100% !important;
+    height: auto !important;
+    background: #fff !important;
+    display: block !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+  .cert-modal-card {
+    border: none !important;
+    box-shadow: none !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    background: #fff !important;
+  }
+  .cert-modal-header,
+  .no-print {
+    display: none !important;
+  }
+  .cert-modal-body {
+    padding: 0 !important;
+    background: #fff !important;
+  }
+  .certificate-sheet {
+    box-shadow: none !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    padding: 10px !important;
+    page-break-inside: avoid !important;
+  }
+  @page {
+    size: landscape;
+    margin: 0.8cm;
+  }
+}
+
