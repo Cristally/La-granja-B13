@@ -251,6 +251,13 @@ window.addEventListener('resize', () => {
 /* ============ Ficha (usa el motor compartido de card.js) ============ */
 
 function updateHeader() {
+  const sesion = (typeof Auth !== 'undefined' && typeof Auth.getSesion === 'function') ? Auth.getSesion() : { rol: 'visita' };
+  if (sesion.rol === 'visita') {
+    if (typeof Auth !== 'undefined' && typeof Auth.aplicarRestriccionesRol === 'function') {
+      Auth.aplicarRestriccionesRol();
+    }
+    return;
+  }
   const scoreEl = document.getElementById('score');
   const discEl = document.getElementById('discovered');
   if (scoreEl) scoreEl.textContent = state.score;

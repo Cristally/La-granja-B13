@@ -57,13 +57,17 @@ function bounceSpriteIfPresent(id) {
 /* ============ Gestión de Estudiante ============ */
 
 function updateStudentUI() {
-  const displayEl = document.getElementById('studentDisplayName');
-  if (displayEl) {
-    if (state.studentName && state.studentName.trim() !== '') {
-      const gradeText = state.studentGrade ? ` (${state.studentGrade})` : '';
-      displayEl.textContent = state.studentName + gradeText;
-    } else {
-      displayEl.textContent = '(Sin registrar — Toca para ingresar)';
+  if (typeof Auth !== 'undefined' && typeof Auth.aplicarRestriccionesRol === 'function') {
+    Auth.aplicarRestriccionesRol();
+  } else {
+    const displayEl = document.getElementById('studentDisplayName');
+    if (displayEl) {
+      if (state.studentName && state.studentName.trim() !== '') {
+        const gradeText = state.studentGrade ? ` (${state.studentGrade})` : '';
+        displayEl.textContent = state.studentName + gradeText;
+      } else {
+        displayEl.textContent = 'Visitante';
+      }
     }
   }
 
@@ -74,6 +78,17 @@ function updateStudentUI() {
 }
 
 function openStudentModal() {
+  const sesion = (typeof Auth !== 'undefined' && typeof Auth.getSesion === 'function') ? Auth.getSesion() : { rol: 'visita' };
+  if (sesion.rol === 'visita') {
+    // Un visitante no tiene cuaderno de campo; se le ofrece identificarse o cambiar de rol
+    if (typeof volverAlInicio === 'function') {
+      volverAlInicio();
+    } else if (typeof Auth !== 'undefined' && typeof Auth.abrirSelectorRoles === 'function') {
+      Auth.abrirSelectorRoles();
+    }
+    return;
+  }
+
   const nameInput = document.getElementById('studentNameInput');
   const gradeInput = document.getElementById('studentGradeInput');
   const errEl = document.getElementById('studentError');
@@ -596,6 +611,66 @@ function renderDots(a, qState) {
 function renderQuiz(a) {
   const panel = document.getElementById('panel-quiz');
   if (!panel) return;
+
+  const sesionActual = (typeof Auth !== 'undefined' && typeof Auth.getSesion === 'function') ? Auth.getSesion() : { rol: 'visita' };
+
+  // Caso A: Modo Visita
+  if (sesionActual.rol === 'visita') {
+    panel.innerHTML = `
+      <div class="quiz-auth-gate">
+        <div style="font-size:2.4rem;margin-bottom:8px;">🧭</div>
+        <h3 style="margin:0 0 6px;font-family:'Fraunces',serif;color:var(--grass-dark);">Modo Visita: Recorrido Libre</h3>
+        <p style="font-size:0.88rem;line-height:1.45;margin:0 0 14px;color:var(--ink);">
+          Estás recorriendo La Granja B13 como visitante. Los quizzes formativos, preguntas de campo y la entrega de décimas son exclusivos del <b>Modo Estudiante</b> para alumnos del Liceo Domingo Herrera Rivera B-13.
+        </p>
+        <button class="tool-btn" id="gateVisitaToStudentBtn" type="button" style="background:var(--hay);color:var(--ink);font-weight:700;font-size:0.88rem;padding:9px 18px;border:2px solid var(--ink);border-radius:6px;cursor:pointer;">
+          🎓 Iniciar sesión como Estudiante
+        </button>
+      </div>
+    `;
+    const toStudentBtn = document.getElementById('gateVisitaToStudentBtn');
+    if (toStudentBtn) {
+      toStudentBtn.addEventListener('click', () => {
+        closeFichaOverlay();
+        if (typeof volverAlInicio === 'function') {
+          volverAlInicio();
+          const startScreen = document.getElementById('startScreen');
+          const authScreen = document.getElementById('authScreen');
+          if (startScreen && authScreen) {
+            startScreen.hidden = true;
+            authScreen.hidden = false;
+          }
+        }
+      });
+    }
+    return;
+  }
+
+  // Caso B: Modo Docente (Vista Previa Formativa)
+  if (sesionActual.rol === 'profesor' || sesionActual.rol === 'admin') {
+    let previewHtml = a.quiz.map((q, i) => {
+      return `
+        <div class="quiz-review-item correct" style="margin-bottom:10px;">
+          <div class="q-title"><b>${i + 1}.</b> ${q.q}</div>
+          <div class="q-correct" style="margin-top:4px;">Respuesta correcta: <b>${q.options[q.a]}</b></div>
+          <div class="q-explain">💡 ${q.explain}</div>
+        </div>
+      `;
+    }).join('');
+
+    panel.innerHTML = `
+      <div class="quiz-box">
+        <div class="quiz-title" style="color:#7A0F2B;border-bottom:2px solid #7A0F2B;padding-bottom:6px;">
+          🍎 Vista Previa Docente — ${a.name}
+        </div>
+        <p style="font-size:0.82rem;color:#555;margin:6px 0 12px;">
+          Como docente, aquí puedes revisar las preguntas formativas y explicaciones pedagógicas de este animal.
+        </p>
+        ${previewHtml}
+      </div>
+    `;
+    return;
+  }
 
   // 1. Validar que el/la estudiante se haya identificado
   if (!state.studentName || state.studentName.trim() === '') {
@@ -1238,16 +1313,41 @@ function updateSoundBtn() {
   }
 }
 
+function onStudentPillClick() {
+  const sesion = (typeof Auth !== 'undefined' && typeof Auth.getSesion === 'function') ? Auth.getSesion() : { rol: 'visita' };
+  if (sesion.rol === 'estudiante') {
+    openStudentModal();
+  } else if (sesion.rol === 'visita') {
+    if (typeof volverAlInicio === 'function') {
+      volverAlInicio();
+    } else if (typeof Auth !== 'undefined' && typeof Auth.abrirSelectorRoles === 'function') {
+      Auth.abrirSelectorRoles();
+    }
+  } else if (sesion.rol === 'profesor') {
+    renderTeacherPanel();
+    openOverlayId('teacherOverlay');
+  } else if (sesion.rol === 'admin') {
+    const adminScreen = document.getElementById('adminScreen');
+    if (adminScreen) {
+      adminScreen.hidden = false;
+      const appContainer = document.querySelector('.app');
+      if (appContainer) appContainer.style.display = 'none';
+      if (typeof renderizarEstadisticasAdmin === 'function') renderizarEstadisticasAdmin();
+    }
+  }
+}
+
 const changeStudentBtn = document.getElementById('changeStudentBtn');
 if (changeStudentBtn) {
-  changeStudentBtn.addEventListener('click', openStudentModal);
+  changeStudentBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    onStudentPillClick();
+  });
 }
 
 const studentPill = document.getElementById('studentPill');
 if (studentPill) {
-  studentPill.addEventListener('click', (e) => {
-    if (e.target !== changeStudentBtn) openStudentModal();
-  });
+  studentPill.addEventListener('click', onStudentPillClick);
 }
 
 const saveStudentBtn = document.getElementById('saveStudentBtn');
@@ -1292,6 +1392,11 @@ if (achievementsBtn) {
 const teacherBtn = document.getElementById('teacherBtn');
 if (teacherBtn) {
   teacherBtn.addEventListener('click', () => {
+    const sesion = (typeof Auth !== 'undefined') ? Auth.getSesion() : null;
+    if (!sesion || (sesion.rol !== 'profesor' && sesion.rol !== 'admin')) {
+      if (typeof Auth !== 'undefined') Auth.mostrarNotificacion('El panel docente requiere acceso de profesor.');
+      return;
+    }
     renderTeacherPanel();
     openOverlayId('teacherOverlay');
   });
@@ -1328,8 +1433,9 @@ renderBadgesBar();
 updateSoundBtn();
 updateStudentUI();
 
-// Si al cargar no hay estudiante registrado, abrir modal de bienvenida para identificarse
-if (!state.studentName || state.studentName.trim() === '') {
+// Solo abrir modal de bienvenida si el rol activo es ESTUDIANTE y no tiene nombre guardado
+const sesionActual = (typeof Auth !== 'undefined' && typeof Auth.getSesion === 'function') ? Auth.getSesion() : null;
+if (sesionActual && sesionActual.rol === 'estudiante' && (!state.studentName || state.studentName.trim() === '')) {
   setTimeout(() => {
     openStudentModal();
   }, 500);

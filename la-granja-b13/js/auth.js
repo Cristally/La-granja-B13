@@ -64,14 +64,17 @@ const Auth = {
 
     // Sincronizar estado global con la sesión activa
     const sesion = Auth.getSesion();
-    if (sesion && sesion.rol === 'estudiante') {
-      if (typeof state !== 'undefined') {
-        state.studentName = sesion.nombre;
+    if (typeof state !== 'undefined') {
+      if (sesion && sesion.rol === 'estudiante') {
+        state.studentName = sesion.nombre || '';
         state.studentGrade = sesion.curso || '';
+      } else {
+        state.studentName = '';
+        state.studentGrade = '';
       }
     }
 
-    Auth.actualizarPildora();
+    Auth.aplicarRestriccionesRol();
   },
 
   getSesion() {
@@ -85,12 +88,17 @@ const Auth = {
 
   setSesion(sesion) {
     localStorage.setItem(CLAVE_SESION, JSON.stringify(sesion));
-    if (typeof state !== 'undefined' && sesion.rol === 'estudiante') {
-      state.studentName = sesion.nombre;
-      state.studentGrade = sesion.curso || '';
+    if (typeof state !== 'undefined') {
+      if (sesion.rol === 'estudiante') {
+        state.studentName = sesion.nombre || '';
+        state.studentGrade = sesion.curso || '';
+      } else {
+        state.studentName = '';
+        state.studentGrade = '';
+      }
       if (typeof saveState === 'function') saveState();
     }
-    Auth.actualizarPildora();
+    Auth.aplicarRestriccionesRol();
     if (typeof updateHeaderUI === 'function') updateHeaderUI();
   },
 
@@ -189,25 +197,131 @@ const Auth = {
   },
 
   actualizarPildora() {
-    const pill = document.getElementById('studentPill');
-    const label = document.getElementById('studentPillName');
-    if (!pill || !label) return;
+    Auth.aplicarRestriccionesRol();
+  },
 
+  aplicarRestriccionesRol() {
     const sesion = Auth.getSesion();
-    pill.classList.remove('role-profesor', 'role-admin', 'role-visita', 'role-estudiante');
+    const rol = (sesion && sesion.rol) ? sesion.rol : 'visita';
 
-    if (sesion.rol === 'profesor') {
-      pill.classList.add('role-profesor');
-      label.textContent = '🍎 Docente: ' + (sesion.nombre || 'Profesor/a');
-    } else if (sesion.rol === 'admin') {
-      pill.classList.add('role-admin');
-      label.textContent = '🔧 Admin B-13';
-    } else if (sesion.rol === 'estudiante') {
-      pill.classList.add('role-estudiante');
-      label.textContent = `🎓 ${sesion.nombre} (${sesion.curso || 'Estudiante'})`;
-    } else {
-      pill.classList.add('role-visita');
-      label.textContent = '🧭 Modo Visitas (Invitado)';
+    // Clase CSS en el body para control instantáneo y sin parpadeo
+    document.body.classList.remove('rol-visita', 'rol-estudiante', 'rol-profesor', 'rol-admin');
+    document.body.classList.add('rol-' + rol);
+
+    // 1. Píldora de usuario
+    const pill = document.getElementById('studentPill');
+    const labelEl = pill ? pill.querySelector('.student-label') : null;
+    const iconEl = pill ? pill.querySelector('.student-icon') : null;
+    const displayEl = document.getElementById('studentDisplayName');
+    const changeBtn = document.getElementById('changeStudentBtn');
+
+    if (pill) {
+      pill.classList.remove('role-profesor', 'role-admin', 'role-visita', 'role-estudiante');
+      pill.classList.add('role-' + rol);
+    }
+
+    // 2. Elementos de barra de herramientas y progreso
+    const teacherBtn = document.getElementById('teacherBtn');
+    const achievementsBtn = document.getElementById('achievementsBtn');
+    const badgesBar = document.getElementById('badgesBar');
+    const scorebox = document.querySelector('.scorebox');
+
+    if (rol === 'visita') {
+      if (iconEl) iconEl.textContent = '🧭';
+      if (labelEl) labelEl.textContent = 'MODO VISITA';
+      if (displayEl) displayEl.textContent = 'Visitante (Explorador)';
+      if (changeBtn) {
+        changeBtn.textContent = '🎓';
+        changeBtn.title = 'Iniciar sesión como Estudiante o Profesor';
+      }
+      if (pill) {
+        pill.title = 'Modo Visita: toca para iniciar sesión como Estudiante o Docente';
+      }
+
+      // Restricción: visitantes NUNCA ven panel docente ni barra de logros
+      if (teacherBtn) teacherBtn.style.display = 'none';
+      if (achievementsBtn) achievementsBtn.style.display = 'none';
+      if (badgesBar) badgesBar.style.display = 'none';
+
+      // Ajustar scorebox para visita (sin puntaje escolar acumulable)
+      if (scorebox) {
+        const isMap = document.title.includes('Mapa');
+        const isGallery = document.title.includes('Galería') || document.title.includes('Galeria') || !!document.getElementById('galleryCount');
+        const count = isGallery ? (document.getElementById('galleryCount')?.textContent || '13') :
+                      isMap ? (typeof mapDiscoveredSet !== 'undefined' ? mapDiscoveredSet.size : 0) :
+                      (typeof discoveredSet !== 'undefined' ? discoveredSet.size : 0);
+        const total = isGallery ? '13' : (isMap ? '10' : '5');
+        const unit = isGallery ? 'REGISTROS' : (isMap ? 'ANIMALES' : 'FICHAS');
+        scorebox.innerHTML = `<span style="color:#ffd83d;font-weight:700;">🧭 VISITA</span><br>${unit}: <span id="discovered">${count}</span>/${total}`;
+      }
+    } else if (rol === 'estudiante') {
+      if (iconEl) iconEl.textContent = '🎒';
+      if (labelEl) labelEl.textContent = 'ESTUDIANTE';
+      const nombre = sesion.nombre || (typeof state !== 'undefined' && state.studentName) || 'Estudiante';
+      const curso = sesion.curso || (typeof state !== 'undefined' && state.studentGrade) || '';
+      if (displayEl) displayEl.textContent = `${nombre}${curso ? ' (' + curso + ')' : ''}`;
+      if (changeBtn) {
+        changeBtn.textContent = '✏️';
+        changeBtn.title = 'Ver o editar mi Cuaderno de Campo';
+      }
+      if (pill) {
+        pill.title = 'Toca para abrir tu Cuaderno de Campo';
+      }
+
+      // Restricción: estudiantes NUNCA ven el panel docente
+      if (teacherBtn) teacherBtn.style.display = 'none';
+      if (achievementsBtn) achievementsBtn.style.display = '';
+      if (badgesBar) badgesBar.style.display = '';
+
+      // Restaurar scorebox de estudiante
+      if (scorebox && !document.getElementById('score')) {
+        const isMap = document.title.includes('Mapa');
+        const count = isMap ? (typeof mapDiscoveredSet !== 'undefined' ? mapDiscoveredSet.size : 0) :
+                      (typeof discoveredSet !== 'undefined' ? discoveredSet.size : 0);
+        const total = isMap ? '10' : '5';
+        const unit = isMap ? 'ANIMALES' : 'FICHAS';
+        const scoreVal = (typeof state !== 'undefined') ? state.score : 0;
+        scorebox.innerHTML = `PUNTAJE: <b id="score">${scoreVal}</b><br>${unit}: <span id="discovered">${count}</span>/${total}`;
+      }
+    } else if (rol === 'profesor') {
+      if (iconEl) iconEl.textContent = '🍎';
+      if (labelEl) labelEl.textContent = 'DOCENTE';
+      if (displayEl) displayEl.textContent = `Prof. ${sesion.nombre || 'B-13'}`;
+      if (changeBtn) {
+        changeBtn.textContent = '⚙️';
+        changeBtn.title = 'Abrir Panel Docente';
+      }
+      if (pill) {
+        pill.title = 'Docente: toca para abrir el panel de evaluación';
+      }
+
+      // El profesor SÍ ve el panel docente; se oculta barra de insignias de estudiante
+      if (teacherBtn) teacherBtn.style.display = '';
+      if (achievementsBtn) achievementsBtn.style.display = 'none';
+      if (badgesBar) badgesBar.style.display = 'none';
+
+      if (scorebox) {
+        scorebox.innerHTML = `<span style="color:#ffd83d;font-weight:700;">🍎 DOCENTE</span><br><span style="font-size:0.75rem;color:var(--hay);">Evaluación y Quizzes</span>`;
+      }
+    } else if (rol === 'admin') {
+      if (iconEl) iconEl.textContent = '🔧';
+      if (labelEl) labelEl.textContent = 'ADMIN';
+      if (displayEl) displayEl.textContent = 'Administrador/a B-13';
+      if (changeBtn) {
+        changeBtn.textContent = '📊';
+        changeBtn.title = 'Abrir Panel de Métricas';
+      }
+      if (pill) {
+        pill.title = 'Toca para abrir métricas de administración';
+      }
+
+      if (teacherBtn) teacherBtn.style.display = '';
+      if (achievementsBtn) achievementsBtn.style.display = 'none';
+      if (badgesBar) badgesBar.style.display = 'none';
+
+      if (scorebox) {
+        scorebox.innerHTML = `<span style="color:#ffd83d;font-weight:700;">🔧 ADMIN</span><br><span style="font-size:0.75rem;color:var(--hay);">Métricas Liceo B-13</span>`;
+      }
     }
   },
 

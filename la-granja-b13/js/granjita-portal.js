@@ -15,9 +15,8 @@
     portalWrap.innerHTML = `
       <!-- PANTALLA 1: Inicio / Bienvenida -->
       <div class="start-screen" id="startScreen">
-        <img src="assets/img/logo.png" alt="Escudo DHR Antofagasta" class="logo-img">
-
         <div class="start-content">
+          <img src="assets/img/logo.png" alt="Escudo Oficial Granja B13" class="logo-img">
           <h1 class="game-title">
             <span class="title-line1">Bienvenidos a la</span>
             <span class="title-line2">Granjita B13</span>
@@ -37,7 +36,7 @@
         <button class="auth-back mode-back" id="portalModeBackBtn" type="button">← Inicio</button>
 
         <div class="mode-content">
-          <img src="assets/img/logo.png" alt="Escudo DHR Antofagasta" class="auth-logo">
+          <img src="assets/img/logo.png" alt="Escudo Oficial Granja B13" class="auth-logo">
           <h2 class="mode-title">¿Cómo quieres entrar?</h2>
 
           <button class="mode-btn" id="portalModeVisitaBtn" type="button">🧭 Modo Visitas</button>
@@ -134,6 +133,7 @@
             <h3>📋 Evaluación y Registro</h3>
             <div style="display:flex;flex-direction:column;gap:8px;margin-top:6px;">
               <button class="admin-btn" id="btnProfesorAbrirPlanilla" type="button" style="text-align:center;padding:10px;">📋 Ver Calificaciones del Curso en el Juego</button>
+              <button class="admin-btn" id="btnProfesorEntrarJuego" type="button" style="text-align:center;padding:10px;background:#ffd83d;color:#4a0d1f;font-weight:700;">🌾 Entrar a la Granja (Modo Docente)</button>
               <a href="/api/export-csv" class="admin-btn" style="text-align:center;padding:10px;text-decoration:none;display:block;background:#1e4d2b;border-color:#5ac57a;color:#fff;">📊 Descargar Planilla Excel / CSV</a>
             </div>
           </div>
@@ -184,25 +184,23 @@
   }
 
   function inyectarBotonInicioEnJuego() {
-    const topBar = document.querySelector('.top-bar');
-    if (topBar && !document.getElementById('btnPortalRegresarInicio')) {
+    const existing = document.getElementById('btnPortalRegresarInicio');
+    if (existing) {
+      existing.onclick = () => volverAlInicio();
+      return;
+    }
+    const toolButtons = document.querySelector('.tool-buttons');
+    if (toolButtons) {
       const btn = document.createElement('button');
       btn.id = 'btnPortalRegresarInicio';
       btn.type = 'button';
-      btn.className = 'btn-inicio-portal';
-      btn.innerHTML = '🚪 Inicio';
-      btn.title = 'Regresar a la pantalla de inicio / cambiar de rol';
+      btn.className = 'tool-btn btn-portal-inicio';
+      btn.innerHTML = '🚪 Salir / Modo';
+      btn.title = 'Regresar a la selección de rol o inicio';
       btn.addEventListener('click', () => {
         volverAlInicio();
       });
-
-      // Insertar al lado del studentPill
-      const studentPill = document.getElementById('studentPill');
-      if (studentPill && studentPill.parentNode) {
-        studentPill.parentNode.insertBefore(btn, studentPill);
-      } else {
-        topBar.appendChild(btn);
-      }
+      toolButtons.appendChild(btn);
     }
   }
 
@@ -214,10 +212,10 @@
 
   function verificarEstadoInicial() {
     const sesionActiva = localStorage.getItem(CLAVE_SESION_ACTIVA) === 'true';
-    const mainWrap = document.querySelector('.wrap');
+    const appContainer = document.querySelector('.app') || document.querySelector('.wrap');
 
     if (!sesionActiva) {
-      if (mainWrap) mainWrap.style.display = 'none';
+      if (appContainer) appContainer.style.display = 'none';
       document.getElementById('startScreen').hidden = false;
       document.getElementById('modeScreen').hidden = true;
       document.getElementById('authScreen').hidden = true;
@@ -225,7 +223,10 @@
       document.getElementById('profesorScreen').hidden = true;
     } else {
       ocultarTodasLasPantallas();
-      if (mainWrap) mainWrap.style.display = '';
+      if (appContainer) appContainer.style.display = '';
+      if (typeof Auth !== 'undefined') {
+        Auth.aplicarRestriccionesRol();
+      }
     }
   }
 
@@ -240,19 +241,25 @@
     localStorage.setItem(CLAVE_SESION_ACTIVA, 'true');
     if (typeof Auth !== 'undefined') {
       Auth.setSesion({ rol, ...datos });
+      Auth.aplicarRestriccionesRol();
     }
     ocultarTodasLasPantallas();
-    const mainWrap = document.querySelector('.wrap');
-    if (mainWrap) mainWrap.style.display = '';
-    if (typeof Auth !== 'undefined') Auth.actualizarPildora();
+    const appContainer = document.querySelector('.app') || document.querySelector('.wrap');
+    if (appContainer) appContainer.style.display = '';
   }
 
   window.volverAlInicio = function() {
     localStorage.removeItem(CLAVE_SESION_ACTIVA);
-    const mainWrap = document.querySelector('.wrap');
-    if (mainWrap) mainWrap.style.display = 'none';
+    const appContainer = document.querySelector('.app') || document.querySelector('.wrap');
+    if (appContainer) appContainer.style.display = 'none';
     ocultarTodasLasPantallas();
-    document.getElementById('startScreen').hidden = false;
+    const modeScreen = document.getElementById('modeScreen');
+    if (modeScreen) {
+      modeScreen.hidden = false;
+    } else {
+      const startScreen = document.getElementById('startScreen');
+      if (startScreen) startScreen.hidden = false;
+    }
   };
 
   function inicializarEventos() {
@@ -439,6 +446,13 @@
         openOverlayId('teacherOverlay');
       }
     };
+
+    const btnEntrarDocente = document.getElementById('btnProfesorEntrarJuego');
+    if (btnEntrarDocente) {
+      btnEntrarDocente.onclick = () => {
+        entrarAlJuego('profesor', { nombre: 'Profesor/a B-13' });
+      };
+    }
 
     // Botón reiniciar datos en admin
     document.getElementById('portalResetDatosBtn').onclick = () => {

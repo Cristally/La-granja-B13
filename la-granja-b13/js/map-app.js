@@ -52,6 +52,15 @@ function renderMapPins() {
       qPin.innerHTML = `<span class="map-pin-ic" style="font-size:1.05rem;">📝</span><span class="map-pin-count" style="background:#e9c46a;color:#2e3821;">${teacherQuizzes.length}</span>`;
       qPin.addEventListener('click', (e) => {
         e.stopPropagation();
+        const sesion = (typeof Auth !== 'undefined') ? Auth.getSesion() : { rol: 'visita' };
+        if (sesion.rol === 'visita') {
+          if (typeof showToast === 'function') {
+            showToast('📝 Desafíos formativos con décimas: Exclusivos del Modo Estudiante.');
+          } else if (typeof Auth !== 'undefined') {
+            Auth.mostrarNotificacion('📝 Desafíos formativos con décimas: Exclusivos del Modo Estudiante.');
+          }
+          return;
+        }
         if (typeof abrirQuizProfesorZona === 'function') {
           abrirQuizProfesorZona(zone.id, zone.label);
         }
@@ -172,6 +181,14 @@ function refreshZonePinBadges() {
 }
 
 function updateHeader() {
+  const sesion = (typeof Auth !== 'undefined' && typeof Auth.getSesion === 'function') ? Auth.getSesion() : { rol: 'visita' };
+  if (sesion.rol === 'visita') {
+    if (typeof Auth !== 'undefined' && typeof Auth.aplicarRestriccionesRol === 'function') {
+      Auth.aplicarRestriccionesRol();
+    }
+    refreshZonePinBadges();
+    return;
+  }
   const scoreEl = document.getElementById('score');
   const discEl = document.getElementById('discovered');
   if (scoreEl) scoreEl.textContent = state.score;

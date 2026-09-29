@@ -13,6 +13,13 @@ function initGallery() {
 }
 
 function updateGalleryHeader() {
+  const sesion = (typeof Auth !== 'undefined' && typeof Auth.getSesion === 'function') ? Auth.getSesion() : { rol: 'visita' };
+  if (sesion.rol === 'visita') {
+    if (typeof Auth !== 'undefined' && typeof Auth.aplicarRestriccionesRol === 'function') {
+      Auth.aplicarRestriccionesRol();
+    }
+    return;
+  }
   const scoreEl = document.getElementById('score');
   const countEl = document.getElementById('galleryCount');
   if (scoreEl) scoreEl.textContent = (typeof state !== 'undefined' && state.score) ? state.score : 0;

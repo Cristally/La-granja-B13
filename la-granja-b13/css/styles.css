@@ -1004,6 +1004,47 @@ footer.ods{
   color: var(--grass-dark);
 }
 
+/* ============================================================
+   REGLAS ESTRICTAS DE VISIBILIDAD POR ROL
+   ============================================================ */
+body.rol-visita #teacherBtn,
+body.rol-visita #achievementsBtn,
+body.rol-visita #badgesBar,
+body.rol-visita .badges-bar {
+  display: none !important;
+}
+
+body.rol-estudiante #teacherBtn {
+  display: none !important;
+}
+
+body.rol-profesor #achievementsBtn,
+body.rol-profesor #badgesBar,
+body.rol-profesor .badges-bar {
+  display: none !important;
+}
+
+body.rol-admin #achievementsBtn,
+body.rol-admin #badgesBar,
+body.rol-admin .badges-bar {
+  display: none !important;
+}
+
+/* Botón para regresar al inicio / cambiar de rol */
+.btn-portal-inicio {
+  background: #7a0f2b !important;
+  color: #fff !important;
+  border: 2px solid #ffd83d !important;
+  font-weight: 700 !important;
+  box-shadow: 2px 2px 0 rgba(0,0,0,0.2) !important;
+  transition: transform 0.15s ease, background 0.15s ease !important;
+}
+.btn-portal-inicio:hover {
+  background: #961637 !important;
+  transform: translateY(-2px) scale(1.02) !important;
+  box-shadow: 3px 3px 0 rgba(0,0,0,0.28) !important;
+}
+
 /* Modal de Roles y Acceso */
 .role-modal-overlay {
   position: fixed;
@@ -1266,13 +1307,24 @@ footer.ods{
   padding: 2rem 1.5rem;
 }
 
-.logo-img,
+.logo-img {
+  display: block;
+  width: clamp(140px, 34vw, 215px);
+  height: auto;
+  margin-bottom: 0.75rem;
+  filter: drop-shadow(0 8px 24px rgba(0,0,0,0.55));
+  transition: transform 0.3s ease;
+}
+.logo-img:hover {
+  transform: scale(1.04) rotate(1.5deg);
+}
+
 .auth-logo {
   display: block;
-  width: clamp(90px, 24vw, 130px);
+  width: clamp(110px, 26vw, 160px);
   height: auto;
-  margin-bottom: 0.5rem;
-  filter: drop-shadow(0 4px 10px rgba(0,0,0,0.4));
+  margin-bottom: 0.6rem;
+  filter: drop-shadow(0 6px 18px rgba(0,0,0,0.45));
 }
 
 .game-title {
