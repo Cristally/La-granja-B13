@@ -200,6 +200,51 @@ app.get('/api/stats', (req, res) => {
   }
 });
 
+// Borrar todos los registros de estudiantes o reiniciar base de datos (Admin)
+app.post('/api/reset', (req, res) => {
+  try {
+    const initialData = {
+      students: {},
+      createdAt: new Date().toISOString()
+    };
+    writeDatabase(initialData);
+    res.json({ success: true, message: 'Base de datos reiniciada con éxito.' });
+  } catch (err) {
+    res.status(500).json({ error: 'Error al reiniciar base de datos: ' + err.message });
+  }
+});
+
+// Eliminar un estudiante específico por ID o correo
+app.delete('/api/students/:id', (req, res) => {
+  try {
+    const db = readDatabase();
+    const id = decodeURIComponent(req.params.id || '').toLowerCase();
+    let foundKey = null;
+
+    if (db.students[id]) {
+      foundKey = id;
+    } else {
+      // Buscar por nombre o correo si la clave es compuesta
+      for (const k in db.students) {
+        const s = db.students[k];
+        if (k.toLowerCase() === id || (s.studentName && s.studentName.toLowerCase() === id) || (s.correo && s.correo.toLowerCase() === id)) {
+          foundKey = k;
+          break;
+        }
+      }
+    }
+
+    if (foundKey) {
+      delete db.students[foundKey];
+      writeDatabase(db);
+      return res.json({ success: true, message: `Estudiante ${foundKey} eliminado del servidor.` });
+    }
+    res.status(404).json({ error: 'Estudiante no encontrado en el servidor.' });
+  } catch (err) {
+    res.status(500).json({ error: 'Error al eliminar estudiante: ' + err.message });
+  }
+});
+
 // Rutas directas para el frontend
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));

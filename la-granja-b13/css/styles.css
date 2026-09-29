@@ -1969,6 +1969,38 @@ body.rol-admin .badges-bar {
   display: block;
 }
 
+.admin-notif-banner {
+  background: #1b6330;
+  color: #e6fcf5;
+  border: 1.5px solid #51cf66;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  animation: fadeInPane 0.25s ease-out;
+}
+.admin-notif-banner[hidden] {
+  display: none !important;
+}
+
+.btn-borrar-estudiante {
+  background: #c92a2a;
+  color: #fff;
+  border: 1px solid #ff8787;
+  border-radius: 5px;
+  padding: 4px 8px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.btn-borrar-estudiante:hover {
+  background: #e03131;
+  transform: scale(1.05);
+}
+
 /* Modales de PIN Admin y Login Profesor */
 .granjita-modal {
   position: fixed;

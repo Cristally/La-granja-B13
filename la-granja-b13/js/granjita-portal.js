@@ -199,9 +199,24 @@
       <div class="admin-screen" id="adminScreen" hidden>
         <div class="admin-content">
           <button class="auth-back" id="portalAdminBackBtn" type="button">← Salir</button>
-          <h2 class="brand-heading">📊 Estadísticas de la Granjita B13</h2>
+          <h2 class="brand-heading">📊 Estadísticas y Control de la Granjita B13</h2>
+          <div id="portalAdminNotif" class="admin-notif-banner" hidden></div>
           <div class="admin-stats" id="portalAdminStats"></div>
-          <button class="admin-btn admin-reset-btn" id="portalResetDatosBtn" type="button">🗑️ Borrar todos los datos locales</button>
+          
+          <div class="stat-card" style="margin-top:14px;border:1.5px solid #ff6b6b;background:rgba(70,10,25,0.92);text-align:left;">
+            <h3 style="color:#ffb3b3;margin-top:0;">⚙️ Limpieza y Control de Registros</h3>
+            <p class="auth-hint" style="text-align:left;color:#ffe6e6;margin-bottom:12px;line-height:1.4;">
+              Gestiona o vacía la base de datos de estudiantes, puntuaciones y respuestas para iniciar un nuevo ciclo o sesión de evaluación limpia.
+            </p>
+            <div style="display:flex;flex-direction:column;gap:10px;">
+              <button class="admin-btn" id="portalResetRespuestasBtn" type="button" style="background:#8c4400;border-color:#ffa94d;color:#fff;padding:10px;font-size:0.88rem;cursor:pointer;">
+                📝 Borrar solo respuestas y actividad (conservar lista de estudiantes)
+              </button>
+              <button class="admin-btn admin-reset-btn" id="portalResetDatosBtn" type="button" style="background:#a31626;border-color:#ff8787;color:#fff;font-weight:700;padding:11px;font-size:0.92rem;cursor:pointer;">
+                🗑️ Borrar TODOS los registros (Estudiantes, Respuestas, Puntuaciones y Perfiles)
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -676,14 +691,110 @@
       };
     }
 
-    // Botón reiniciar datos en admin
-    document.getElementById('portalResetDatosBtn').onclick = () => {
-      if (confirm('¿Borrar TODOS los datos de prueba y registros locales?')) {
-        [CLAVE_ESTUDIANTES, CLAVE_SESION, CLAVE_QUIZZES_ZONA, CLAVE_RESPUESTAS, CLAVE_VISITAS_ZONAS, CLAVE_VISITAS_ANIMALES, CLAVE_ACTIVIDAD_DIA].forEach(k => localStorage.removeItem(k));
-        if (typeof Auth !== 'undefined') Auth.init();
-        renderizarEstadisticasAdmin();
+    function mostrarNotifAdmin(msg) {
+      const banner = document.getElementById('portalAdminNotif');
+      if (banner) {
+        banner.textContent = msg;
+        banner.hidden = false;
+        setTimeout(() => { banner.hidden = true; }, 4500);
       }
-    };
+    }
+
+    // Botón borrar solo respuestas y actividad
+    const btnResetRespuestas = document.getElementById('portalResetRespuestasBtn');
+    if (btnResetRespuestas) {
+      btnResetRespuestas.onclick = () => {
+        if (!confirm('¿Deseas vaciar todas las respuestas a quizzes y métricas de visitas? Los estudiantes registrados se conservarán.')) return;
+
+        localStorage.setItem('granjaRespuestasQuiz', '[]');
+        localStorage.setItem('granjaVisitasZonas', '{}');
+        localStorage.setItem('granjaVisitasAnimales', '{}');
+        localStorage.setItem('granjaActividadPorDia', '{}');
+
+        // Limpiar respuestas en perfiles de alumnos
+        try {
+          const raw = localStorage.getItem('granja_b13_state_v3.profiles');
+          if (raw) {
+            const profiles = JSON.parse(raw);
+            Object.keys(profiles).forEach(k => {
+              if (profiles[k] && profiles[k].stateData) {
+                profiles[k].stateData.score = 0;
+                profiles[k].stateData.quiz = {};
+                profiles[k].stateData.mapQuiz = {};
+                profiles[k].score = 0;
+                profiles[k].potreroQuizCompleted = 0;
+                profiles[k].mapQuizCompleted = 0;
+              }
+            });
+            localStorage.setItem('granja_b13_state_v3.profiles', JSON.stringify(profiles));
+          }
+        } catch (e) {}
+
+        if (typeof state !== 'undefined') {
+          state.score = 0;
+          state.quiz = {};
+          state.mapQuiz = {};
+          if (typeof saveState === 'function') saveState();
+        }
+
+        renderizarEstadisticasAdmin();
+        mostrarNotifAdmin('✅ Respuestas, visitas y métricas reiniciadas a cero.');
+      };
+    }
+
+    // Botón reiniciar TODOS los datos en admin
+    const btnResetDatos = document.getElementById('portalResetDatosBtn');
+    if (btnResetDatos) {
+      btnResetDatos.onclick = () => {
+        if (!confirm('⚠️ ¿Estás seguro/a de borrar TODOS los registros (estudiantes, respuestas, visitas, puntajes y perfiles)? Esta acción dejará las estadísticas completamente en cero.')) return;
+
+        // 1. Vaciar listas locales
+        localStorage.setItem('granjaEstudiantes', '[]');
+        localStorage.setItem('granjaRespuestasQuiz', '[]');
+        localStorage.setItem('granjaVisitasZonas', '{}');
+        localStorage.setItem('granjaVisitasAnimales', '{}');
+        localStorage.setItem('granjaActividadPorDia', '{}');
+
+        // 2. Eliminar estados de juego y perfiles
+        [
+          'granja_b13_state_v3',
+          'granja_b13_state_v3.profiles',
+          'granja_b13_state',
+          'granja_b13_state_v2',
+          'granjaSesion',
+          'granjaSesionActiva',
+          'granjaSeedEstudiantes',
+          'granjaSeedVisitas',
+          'granjaSeedQuizzes',
+          'granjaSeedComentarios',
+          'granjaComentariosQuiz'
+        ].forEach(k => localStorage.removeItem(k));
+
+        // 3. Eliminar claves dinámicas
+        Object.keys(localStorage).forEach(k => {
+          if (k.startsWith('granjaPuntaje_') || k.startsWith('granjaDecimas_')) {
+            localStorage.removeItem(k);
+          }
+        });
+
+        // 4. Reiniciar servidor backend si está activo
+        try {
+          if (typeof fetch === 'function') {
+            fetch('/api/reset', { method: 'POST' }).catch(() => {});
+          }
+        } catch (e) {}
+
+        // 5. Reiniciar estado en memoria
+        if (typeof defaultStudentSession === 'function') {
+          state = defaultStudentSession('', '');
+          if (typeof saveState === 'function') saveState();
+        }
+
+        // 6. Actualizar pantalla admin
+        renderizarEstadisticasAdmin();
+        mostrarNotifAdmin('✅ Todos los registros y datos locales fueron borrados con éxito.');
+      };
+    }
   }
 
   // Renderizar Panel del Profesor (Zonas y lista de quizzes)
@@ -855,17 +966,86 @@
       </div>
 
       <div class="stat-card">
-        <h3>👥 Lista de Estudiantes</h3>
-        <div style="display:flex;flex-direction:column;gap:5px;max-height:160px;overflow-y:auto;">
-          ${estudiantes.map(e => `
-            <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid rgba(255,216,61,0.2);font-size:0.82rem;color:#fff6de;">
-              <span><strong>${e.nombre}</strong> (${e.curso || 'Sin curso'})</span>
-              <span style="color:#ffd83d;">${e.correo}</span>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+          <h3 style="margin:0;">👥 Lista de Estudiantes (${estudiantes.length})</h3>
+        </div>
+        <div class="admin-lista-estudiantes" style="display:flex;flex-direction:column;gap:6px;max-height:220px;overflow-y:auto;">
+          ${estudiantes.length === 0 ? '<p class="stat-empty">No hay estudiantes registrados actualmente.</p>' : estudiantes.map(e => `
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:7px 10px;border-bottom:1px solid rgba(255,216,61,0.2);background:rgba(0,0,0,0.2);border-radius:6px;font-size:0.82rem;color:#fff6de;">
+              <div>
+                <strong>${e.nombre}</strong> (${e.curso || 'Sin curso'})<br>
+                <span style="color:#ffd83d;font-size:0.75rem;">${e.correo || 'Sin correo'}</span>
+              </div>
+              <button class="btn-borrar-estudiante" data-email="${e.correo || ''}" data-nombre="${e.nombre}" type="button" title="Eliminar estudiante y sus datos">
+                🗑️ Borrar
+              </button>
             </div>
           `).join('')}
         </div>
       </div>
     `;
+
+    // Vincular botones de borrar estudiante individual
+    contenedor.querySelectorAll('.btn-borrar-estudiante').forEach(btn => {
+      btn.onclick = () => {
+        const email = btn.dataset.email;
+        const nombre = btn.dataset.nombre;
+        if (!confirm(`¿Eliminar al estudiante "${nombre}" y todos sus registros y respuestas?`)) return;
+
+        // 1. Filtrar lista de estudiantes
+        let lista = [];
+        try {
+          lista = JSON.parse(localStorage.getItem('granjaEstudiantes')) || [];
+        } catch (e) {}
+        lista = lista.filter(e => {
+          const matchEmail = email && e.correo && e.correo.toLowerCase() === email.toLowerCase();
+          const matchNombre = nombre && e.nombre && e.nombre.toLowerCase() === nombre.toLowerCase();
+          return !matchEmail && !matchNombre;
+        });
+        localStorage.setItem('granjaEstudiantes', JSON.stringify(lista));
+
+        // 2. Filtrar respuestas de quiz
+        let resps = [];
+        try {
+          resps = JSON.parse(localStorage.getItem('granjaRespuestasQuiz')) || [];
+        } catch (e) {}
+        resps = resps.filter(r => {
+          const matchEmail = email && r.correo && r.correo.toLowerCase() === email.toLowerCase();
+          const matchNombre = nombre && r.nombre && r.nombre.toLowerCase() === nombre.toLowerCase();
+          return !matchEmail && !matchNombre;
+        });
+        localStorage.setItem('granjaRespuestasQuiz', JSON.stringify(resps));
+
+        // 3. Filtrar de perfiles guardados
+        try {
+          const raw = localStorage.getItem('granja_b13_state_v3.profiles');
+          if (raw) {
+            const profiles = JSON.parse(raw);
+            Object.keys(profiles).forEach(k => {
+              if (profiles[k] && profiles[k].studentName && profiles[k].studentName.toLowerCase() === (nombre || '').toLowerCase()) {
+                delete profiles[k];
+              }
+            });
+            localStorage.setItem('granja_b13_state_v3.profiles', JSON.stringify(profiles));
+          }
+        } catch (e) {}
+
+        // 4. Servidor backend si está conectado
+        try {
+          if (typeof fetch === 'function') {
+            fetch('/api/students/' + encodeURIComponent(email || nombre), { method: 'DELETE' }).catch(() => {});
+          }
+        } catch (e) {}
+
+        renderizarEstadisticasAdmin();
+        const banner = document.getElementById('portalAdminNotif');
+        if (banner) {
+          banner.textContent = `✅ Estudiante "${nombre}" y sus registros fueron eliminados.`;
+          banner.hidden = false;
+          setTimeout(() => { banner.hidden = true; }, 4000);
+        }
+      };
+    });
   }
 
   document.addEventListener('DOMContentLoaded', inyectarPantallas);

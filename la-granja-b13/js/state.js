@@ -215,19 +215,22 @@ function resetState() {
     localStorage.removeItem(LEGACY_STORAGE_KEY);
     localStorage.removeItem('granja_b13_state');
     localStorage.removeItem('granja_b13_state_v2');
+    localStorage.setItem('granjaEstudiantes', '[]');
+    localStorage.setItem('granjaRespuestasQuiz', '[]');
+    localStorage.setItem('granjaVisitasZonas', '{}');
+    localStorage.setItem('granjaVisitasAnimales', '{}');
+    localStorage.setItem('granjaActividadPorDia', '{}');
+    localStorage.removeItem('granjaSesion');
+    localStorage.removeItem('granjaSesionActiva');
+    if (typeof fetch === 'function') {
+      fetch('/api/reset', { method: 'POST' }).catch(() => {});
+    }
   } catch (e) {}
   location.reload();
 }
 
 function clearAllProfiles() {
-  try {
-    localStorage.removeItem(STORAGE_KEY);
-    localStorage.removeItem(STORAGE_KEY + '.profiles');
-    localStorage.removeItem(LEGACY_STORAGE_KEY);
-    localStorage.removeItem('granja_b13_state');
-    localStorage.removeItem('granja_b13_state_v2');
-  } catch (e) {}
-  location.reload();
+  resetState();
 }
 
 // Estado global de la sesión

@@ -51,16 +51,13 @@ const QUIZZES_INICIALES = {
 
 const Auth = {
   init() {
-    // Inicializar listas en localStorage si no existen
-    if (!localStorage.getItem(CLAVE_ESTUDIANTES)) {
+    // Inicializar listas en localStorage sólo si es la primera vez (null)
+    if (localStorage.getItem(CLAVE_ESTUDIANTES) === null) {
       localStorage.setItem(CLAVE_ESTUDIANTES, JSON.stringify([CUENTA_DEMO_ESTUDIANTE]));
     }
-    if (!localStorage.getItem(CLAVE_QUIZZES_ZONA)) {
+    if (localStorage.getItem(CLAVE_QUIZZES_ZONA) === null) {
       localStorage.setItem(CLAVE_QUIZZES_ZONA, JSON.stringify(QUIZZES_INICIALES));
     }
-
-    // Registrar actividad de hoy
-    Auth.registrarActividadDelDia();
 
     // Sincronizar estado global con la sesión activa
     const sesion = Auth.getSesion();
@@ -117,9 +114,13 @@ const Auth = {
 
   getEstudiantes() {
     try {
-      return JSON.parse(localStorage.getItem(CLAVE_ESTUDIANTES)) || [];
-    } catch (e) {
+      const raw = localStorage.getItem(CLAVE_ESTUDIANTES);
+      if (raw !== null) {
+        return JSON.parse(raw) || [];
+      }
       return [CUENTA_DEMO_ESTUDIANTE];
+    } catch (e) {
+      return [];
     }
   },
 
