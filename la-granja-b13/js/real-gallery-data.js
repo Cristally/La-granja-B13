@@ -205,7 +205,7 @@ const REAL_GALLERY_ITEMS = [
     specs: [
       { k: 'Cubierta', v: 'Malla Rachel / Toldo a rayas para protección solar del desierto' },
       { k: 'Mobiliario', v: 'Bancas de madera para observación y toma de notas' },
-      { k: 'Propósito', v: 'Taller práctico de botánica y bioalfabetización' }
+      { k: 'Propósito', v: 'Taller práctico de botánica y educación ambiental' }
     ],
     desc: 'Área de sombra e invernadero donde los estudiantes asisten a clases prácticas sobre cultivo de hortalizas en el clima árido de Antofagasta.',
     pedagogy: '💡 Ejemplo concreto de adaptación climática y agricultura urbana escolar en el norte de Chile.'

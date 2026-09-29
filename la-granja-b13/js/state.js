@@ -2,7 +2,7 @@
   state.js — Guarda y recupera el progreso de los estudiantes en el
   navegador (localStorage), para que el panel docente pueda mostrar
   un resumen por estudiante, calcular décimas y asegurar que cada
-  alumno/a tenga su evaluación individual sin mezclar respuestas.
+  alumno/a tenga su registro individual de actividades sin mezclar respuestas.
 
   El progreso se comparte entre index.html (Potrero) y mapa.html
   (Mapa de la Granja) mediante la misma clave de localStorage.

@@ -1544,63 +1544,112 @@ body.rol-admin .badges-bar {
   transform: translateX(4px);
 }
 
-/* Barras superiores de navegación (sin superposición) */
+/* Barras superiores de navegación (pantalla completa y responsive) */
+.screen-top-bar,
 .panel-header-bar,
 .modern-auth-header-bar {
   width: 100%;
+  max-width: 1100px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 10px;
-  margin-bottom: 0.6rem;
-  z-index: 5;
+  gap: 12px;
+  padding: 0.6rem 1.2rem;
+  margin-bottom: 1rem;
+  box-sizing: border-box;
+  z-index: 10;
+  flex-shrink: 0;
+}
+
+.modern-auth-container {
+  width: 100%;
+  max-width: 480px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.1rem;
+  margin: auto;
+  box-sizing: border-box;
 }
 
 .modern-back-btn {
   display: inline-flex;
   align-items: center;
-  gap: 7px;
-  background: rgba(255, 255, 255, 0.12);
-  border: 1.5px solid rgba(255, 216, 61, 0.55);
-  color: #fff6de;
-  font-family: 'Karla', sans-serif;
-  font-size: 0.88rem;
-  font-weight: 700;
-  padding: 8px 16px;
-  border-radius: 24px;
+  gap: 8px;
+  background: rgba(40, 6, 16, 0.65);
+  border: 1.5px solid rgba(255, 216, 61, 0.65);
+  color: #fff8e7;
+  font-family: 'Fredoka', 'Karla', sans-serif;
+  font-size: clamp(0.82rem, 1.6vw, 0.94rem);
+  font-weight: 600;
+  padding: 8px 18px;
+  border-radius: 30px;
   cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  backdrop-filter: blur(8px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.15);
   text-decoration: none;
+  white-space: nowrap;
 }
 .modern-back-btn .back-arrow {
-  font-size: 1.1rem;
+  font-size: 1.15rem;
   line-height: 1;
-  transition: transform 0.2s ease;
+  color: #ffd83d;
+  transition: transform 0.25s ease;
 }
 .modern-back-btn:hover {
-  background: linear-gradient(135deg, rgba(255, 216, 61, 0.3) 0%, rgba(255, 216, 61, 0.15) 100%);
+  background: linear-gradient(135deg, rgba(255, 216, 61, 0.32) 0%, rgba(130, 20, 50, 0.75) 100%);
   color: #ffd83d;
   border-color: #ffd83d;
-  transform: translateX(-3px);
-  box-shadow: 0 6px 16px rgba(255, 216, 61, 0.28);
+  transform: translateX(-4px);
+  box-shadow: 0 6px 20px rgba(255, 216, 61, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.3);
 }
 .modern-back-btn:hover .back-arrow {
-  transform: translateX(-2px);
+  transform: translateX(-3px) scale(1.1);
 }
 .modern-back-btn:active {
   transform: scale(0.97);
 }
 
 .auth-school-badge {
-  font-size: 0.74rem;
+  font-size: clamp(0.72rem, 1.4vw, 0.82rem);
   color: #ffd83d;
-  background: rgba(0, 0, 0, 0.3);
-  padding: 4px 10px;
-  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.45);
+  padding: 6px 14px;
+  border-radius: 20px;
   font-weight: 600;
-  border: 1px solid rgba(255, 216, 61, 0.25);
+  letter-spacing: 0.02em;
+  border: 1px solid rgba(255, 216, 61, 0.35);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  white-space: nowrap;
+  max-width: 55%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@media (max-width: 600px) {
+  .screen-top-bar,
+  .panel-header-bar,
+  .modern-auth-header-bar {
+    padding: 0.4rem 0.5rem;
+    margin-bottom: 0.75rem;
+    gap: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .modern-back-btn {
+    padding: 6px 12px;
+    font-size: 0.8rem;
+    gap: 5px;
+  }
+  .auth-school-badge {
+    padding: 4px 8px;
+    font-size: 0.7rem;
+  }
 }
 
 /* Cabecera del Brand */

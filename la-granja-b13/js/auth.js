@@ -293,7 +293,7 @@ const Auth = {
         changeBtn.title = 'Abrir Panel Docente';
       }
       if (pill) {
-        pill.title = 'Docente: toca para abrir el panel de evaluación';
+        pill.title = 'Docente: toca para abrir el panel docente';
       }
 
       // El profesor SÍ ve el panel docente; se oculta barra de insignias de estudiante
@@ -302,7 +302,7 @@ const Auth = {
       if (badgesBar) badgesBar.style.display = 'none';
 
       if (scorebox) {
-        scorebox.innerHTML = `<span style="color:#ffd83d;font-weight:700;">🍎 DOCENTE</span><br><span style="font-size:0.75rem;color:var(--hay);">Evaluación y Quizzes</span>`;
+        scorebox.innerHTML = `<span style="color:#ffd83d;font-weight:700;">🍎 DOCENTE</span><br><span style="font-size:0.75rem;color:var(--hay);">Desafíos y Quizzes</span>`;
       }
     } else if (rol === 'admin') {
       if (iconEl) iconEl.textContent = '🔧';
@@ -327,12 +327,18 @@ const Auth = {
   },
 
   abrirSelectorRoles() {
-    const modal = document.getElementById('roleSelectModal');
-    if (modal) modal.classList.add('active');
+    if (typeof window.volverAlEspacioModos === 'function') {
+      window.volverAlEspacioModos();
+    } else if (typeof window.volverAlInicio === 'function') {
+      window.volverAlInicio();
+    }
   },
 
   cerrarModales() {
-    document.querySelectorAll('.role-modal').forEach(m => m.classList.remove('active'));
+    document.querySelectorAll('.role-modal, .role-modal-overlay').forEach(m => {
+      m.classList.remove('active');
+      m.style.display = 'none';
+    });
   },
 
   mostrarNotificacion(texto) {

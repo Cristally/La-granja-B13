@@ -80,11 +80,10 @@ function updateStudentUI() {
 function openStudentModal() {
   const sesion = (typeof Auth !== 'undefined' && typeof Auth.getSesion === 'function') ? Auth.getSesion() : { rol: 'visita' };
   if (sesion.rol === 'visita') {
-    // Un visitante no tiene cuaderno de campo; se le ofrece identificarse o cambiar de rol
-    if (typeof volverAlInicio === 'function') {
+    if (typeof volverAlEspacioModos === 'function') {
+      volverAlEspacioModos();
+    } else if (typeof volverAlInicio === 'function') {
       volverAlInicio();
-    } else if (typeof Auth !== 'undefined' && typeof Auth.abrirSelectorRoles === 'function') {
-      Auth.abrirSelectorRoles();
     }
     return;
   }
@@ -203,7 +202,7 @@ const BADGE_HINTS = {
   guardian: 'Requisito: Completa con éxito los quizzes de los 5 animales del Potrero.',
   precision: 'Requisito: Responde todas las preguntas de un quiz correctamente a la primera (100% de precisión).',
   zoologo: 'Requisito: Recorre el Mapa de la Granja y abre las fichas de los 10 animales reales.',
-  veterinario: 'Requisito: Completa los quizzes de evaluación de los 10 animales del Mapa de la Granja.'
+  veterinario: 'Requisito: Completa los quizzes de los 10 animales del Mapa de la Granja.'
 };
 
 function renderAchievementsList() {
@@ -580,7 +579,7 @@ function renderPersonalizar(a) {
   });
 }
 
-/* ============ Quiz de Evaluación Formativa ============ */
+/* ============ Desafíos y Quizzes de Aprendizaje ============ */
 
 function getQuizBucket(a) {
   const key = a.store === 'mapQuiz' ? 'mapQuiz' : 'quiz';
@@ -722,7 +721,7 @@ function renderQuiz(a) {
         <div style="font-size:2.2rem;">🏆</div>
         <div>
           <h3 style="margin:0;font-family:'Fraunces',serif;color:var(--grass-dark);">¡Quiz completado con éxito!</h3>
-          <div style="font-size:0.85rem;margin-top:2px;">Evaluación registrada para <b>${state.studentName}</b> ${dateStr ? `· ${dateStr}` : ''}</div>
+          <div style="font-size:0.85rem;margin-top:2px;">Desafío registrado para <b>${state.studentName}</b> ${dateStr ? `· ${dateStr}` : ''}</div>
         </div>
       </div>
       <div class="teacher-chip" style="margin:10px 0 14px;background:#fff;">
@@ -735,7 +734,7 @@ function renderQuiz(a) {
         ${reviewHtml}
       </div>
       <div class="quiz-done-actions" style="margin-top:14px;display:flex;gap:8px;">
-        <button class="tool-btn" id="repasoQuizBtn" type="button" style="font-size:0.8rem;">🔄 Repetir evaluación (Nuevo intento)</button>
+        <button class="tool-btn" id="repasoQuizBtn" type="button" style="font-size:0.8rem;">🔄 Repetir desafío (Nuevo intento)</button>
       </div>
     `;
 
@@ -921,7 +920,7 @@ function renderTeacherPanel() {
       <div class="save-note" style="margin-top:14px;font-size:0.8rem;"><b>Mapa de la Granja:</b> ${mapDiscoveredSet.size}/${mapAnimals.length} descubiertos · ${mapCompleted}/${mapAnimals.length} quizzes completados.</div>
       <div class="teacher-table-wrap">
         <table class="teacher-table">
-          <thead><tr><th>Animal (Mapa Real)</th><th>Descubierto</th><th>Evaluación Formativa</th></tr></thead>
+          <thead><tr><th>Animal (Mapa Real)</th><th>Descubierto</th><th>Quiz / Desafío</th></tr></thead>
           <tbody>${mapRows}</tbody>
         </table>
       </div>`;
@@ -1023,7 +1022,7 @@ function renderTeacherPanel() {
 
       <div class="teacher-table-wrap">
         <table class="teacher-table">
-          <thead><tr><th>Animal (Potrero)</th><th>Descubierto</th><th>Evaluación Formativa</th></tr></thead>
+          <thead><tr><th>Animal (Potrero)</th><th>Descubierto</th><th>Quiz / Desafío</th></tr></thead>
           <tbody>${rows}</tbody>
         </table>
       </div>
@@ -1032,7 +1031,7 @@ function renderTeacherPanel() {
       ${profilesListHtml}
 
       <div class="save-note" style="margin-top:12px;">
-        <b>Nota pedagógica:</b> Los puntajes y décimas corresponden a la evaluación formativa individual según la rúbrica de Go Innova.
+        <b>Nota pedagógica:</b> Los puntajes y décimas corresponden a las actividades de aprendizaje práctico según la rúbrica de Go Innova.
         Última actualización: ${updated}.
       </div>
 
@@ -1241,7 +1240,7 @@ function exportReport() {
 
   const lines = [];
   lines.push('===============================================================');
-  lines.push('        LA GRANJA B13 — INFORME DE EVALUACIÓN FORMATIVA        ');
+  lines.push('        LA GRANJA B13 — INFORME DE ACTIVIDADES Y LOGROS        ');
   lines.push('             Liceo Domingo Herrera Rivera B-13                ');
   lines.push('          Go Innova — Vinculado a ODS 4 y ODS 15              ');
   lines.push('===============================================================');
@@ -1252,11 +1251,11 @@ function exportReport() {
   lines.push('  Fecha:      ' + new Date().toLocaleString());
   lines.push('');
   lines.push('RESUMEN DE RENDIMIENTO:');
-  lines.push('  Puntaje Total Acumulado:   ' + state.score + ' pts');
-  lines.push('  Décimas Formativas Sugeridas: ' + decimasSugeridas + ' décimas');
-  lines.push('  Insignias de Logro:        ' + state.badges.length + ' / ' + BADGES.length);
+  lines.push('  Puntaje Total Acumulado:      ' + state.score + ' pts');
+  lines.push('  Décimas de Aprendizaje:       ' + decimasSugeridas + ' décimas');
+  lines.push('  Insignias de Logro:           ' + state.badges.length + ' / ' + BADGES.length);
   lines.push('');
-  lines.push('DETALLE DE EVALUACIÓN — POTRERO:');
+  lines.push('DETALLE DE ACTIVIDADES — POTRERO:');
   potreroAnimals.forEach(a => {
     const q = state.quiz[a.id] || { results: [], completed: false };
     const correct = (q.results || []).filter(Boolean).length;
@@ -1266,7 +1265,7 @@ function exportReport() {
 
   if (mapAnimals.length > 0) {
     lines.push('');
-    lines.push('DETALLE DE EVALUACIÓN — MAPA REAL DE LA GRANJA:');
+    lines.push('DETALLE DE ACTIVIDADES — MAPA REAL DE LA GRANJA:');
     mapAnimals.forEach(a => {
       const q = state.mapQuiz[a.id] || { results: [], completed: false };
       const correct = (q.results || []).filter(Boolean).length;
@@ -1296,7 +1295,7 @@ function exportReport() {
   const aTag = document.createElement('a');
   aTag.href = url;
   const fileNameClean = (state.studentName || 'estudiante').replace(/[^a-zA-Z0-9]/g, '_');
-  aTag.download = `evaluacion-granja-b13-${fileNameClean}.txt`;
+  aTag.download = `informe-granja-b13-${fileNameClean}.txt`;
   document.body.appendChild(aTag);
   aTag.click();
   aTag.remove();
@@ -1318,10 +1317,10 @@ function onStudentPillClick() {
   if (sesion.rol === 'estudiante') {
     openStudentModal();
   } else if (sesion.rol === 'visita') {
-    if (typeof volverAlInicio === 'function') {
+    if (typeof volverAlEspacioModos === 'function') {
+      volverAlEspacioModos();
+    } else if (typeof volverAlInicio === 'function') {
       volverAlInicio();
-    } else if (typeof Auth !== 'undefined' && typeof Auth.abrirSelectorRoles === 'function') {
-      Auth.abrirSelectorRoles();
     }
   } else if (sesion.rol === 'profesor') {
     renderTeacherPanel();

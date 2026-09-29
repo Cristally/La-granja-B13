@@ -21,7 +21,7 @@
             <span class="title-line1">Bienvenidos a la</span>
             <span class="title-line2">Granjita B13</span>
           </h1>
-          <p class="start-subtitle">Bioalfabetización y Evaluación Formativa Interactiva</p>
+          <p class="start-subtitle">Exploración Interactiva y Aprendizaje en Terreno</p>
 
           <button class="enter-btn" id="portalEnterBtn" type="button">
             <span>Comenzar Experiencia</span>
@@ -41,15 +41,15 @@
 
       <!-- PANTALLA 2: Selección de Modo -->
       <div class="mode-screen" id="modeScreen" hidden>
-        <div class="mode-content">
-          <div class="panel-header-bar">
-            <button class="modern-back-btn" id="portalModeBackBtn" type="button" title="Volver a la bienvenida">
-              <span class="back-arrow">←</span>
-              <span>Inicio</span>
-            </button>
-            <span class="auth-school-badge">Liceo B-13</span>
-          </div>
+        <div class="screen-top-bar">
+          <button class="modern-back-btn" id="portalModeBackBtn" type="button" title="Volver a la bienvenida">
+            <span class="back-arrow">←</span>
+            <span>Volver a Inicio</span>
+          </button>
+          <span class="auth-school-badge">Liceo Domingo Herrera Rivera B-13</span>
+        </div>
 
+        <div class="mode-content">
           <img src="assets/img/logo.png" alt="Escudo Oficial Granja B13" class="auth-logo">
           <h2 class="mode-title">¿Cómo quieres entrar?</h2>
           <p class="mode-subtitle">Selecciona tu perfil de acceso para comenzar</p>
@@ -90,18 +90,19 @@
 
       <!-- PANTALLA 3: Portal de Acceso Estudiante (Moderno & Separado) -->
       <div class="auth-screen" id="authScreen" hidden>
-        <div class="modern-auth-container">
-          <div class="modern-auth-header-bar">
-            <button class="modern-back-btn" id="portalAuthBackBtn" type="button">
-              <span>←</span> Volver a Selección de Modo
-            </button>
-            <span class="auth-school-badge">Liceo B-13 Antofagasta</span>
-          </div>
+        <div class="screen-top-bar">
+          <button class="modern-back-btn" id="portalAuthBackBtn" type="button" title="Volver a seleccionar modo">
+            <span class="back-arrow">←</span>
+            <span>Volver a Selección de Modo</span>
+          </button>
+          <span class="auth-school-badge">Liceo Domingo Herrera Rivera B-13</span>
+        </div>
 
+        <div class="modern-auth-container">
           <div class="modern-auth-brand">
             <img src="assets/img/logo.png" alt="Escudo Oficial Granja B13" class="auth-logo">
             <h1>La Granjita B13</h1>
-            <p>Bioalfabetización y Evaluación Formativa</p>
+            <p>Exploración de la Granja y Cuaderno de Campo</p>
           </div>
 
           <div class="modern-auth-card">
@@ -236,15 +237,15 @@
 
       <!-- PANTALLA 4: Estadísticas de Administrador -->
       <div class="admin-screen" id="adminScreen" hidden>
-        <div class="admin-content">
-          <div class="panel-header-bar">
-            <button class="modern-back-btn" id="portalAdminBackBtn" type="button" title="Volver a selección de modo">
-              <span class="back-arrow">←</span>
-              <span>Salir a Modos</span>
-            </button>
-            <span class="auth-school-badge">Panel Administrativo</span>
-          </div>
+        <div class="screen-top-bar">
+          <button class="modern-back-btn" id="portalAdminBackBtn" type="button" title="Volver a selección de modo">
+            <span class="back-arrow">←</span>
+            <span>Volver a Selección de Modo</span>
+          </button>
+          <span class="auth-school-badge">Panel Administrativo B-13</span>
+        </div>
 
+        <div class="admin-content">
           <h2 class="brand-heading">📊 Estadísticas y Control de la Granjita B13</h2>
           <div id="portalAdminNotif" class="admin-notif-banner" hidden></div>
           <div class="admin-stats" id="portalAdminStats"></div>
@@ -255,7 +256,7 @@
               <h3 style="color:#ffb3b3;margin:0;">Limpieza y Control de Registros</h3>
             </div>
             <p class="auth-hint" style="text-align:left;color:#ffe6e6;margin:8px 0 14px;line-height:1.4;">
-              Gestiona o vacía la base de datos de estudiantes, puntuaciones y respuestas para iniciar un nuevo ciclo o sesión de evaluación limpia.
+              Gestiona o vacía la base de datos de estudiantes, puntuaciones y respuestas para iniciar un nuevo ciclo de actividades escolares.
             </p>
             <div class="admin-action-buttons">
               <button class="admin-btn-action admin-btn-warning" id="portalResetRespuestasBtn" type="button">
@@ -271,19 +272,19 @@
 
       <!-- PANTALLA 5: Panel del Profesor -->
       <div class="admin-screen" id="profesorScreen" hidden>
-        <div class="admin-content">
-          <div class="panel-header-bar">
-            <button class="modern-back-btn" id="portalProfesorBackBtn" type="button" title="Volver a selección de modo">
-              <span class="back-arrow">←</span>
-              <span>Salir a Modos</span>
-            </button>
-            <span class="auth-school-badge">Área Docente</span>
-          </div>
+        <div class="screen-top-bar">
+          <button class="modern-back-btn" id="portalProfesorBackBtn" type="button" title="Volver a selección de modo">
+            <span class="back-arrow">←</span>
+            <span>Volver a Selección de Modo</span>
+          </button>
+          <span class="auth-school-badge">Portal Docente Liceo B-13</span>
+        </div>
 
+        <div class="admin-content">
           <h2 class="brand-heading">🍎 Panel del Profesor</h2>
 
           <div class="stat-card">
-            <h3>📋 Evaluación y Registro</h3>
+            <h3>📋 Seguimiento y Registro de Actividades</h3>
             <div class="admin-action-buttons" style="margin-top:10px;">
               <button class="admin-btn-action admin-btn-gold" id="btnProfesorEntrarJuego" type="button">
                 <span>🌾</span> Entrar a la Granja (Modo Docente)
@@ -519,7 +520,13 @@
     if (typeof Auth !== 'undefined') {
       Auth.setSesion({ rol, ...datos });
       Auth.aplicarRestriccionesRol();
+      if (typeof Auth.cerrarModales === 'function') Auth.cerrarModales();
     }
+    if (typeof closeAllModals === 'function') closeAllModals();
+    document.querySelectorAll('.overlay, .role-modal-overlay').forEach(ov => {
+      ov.classList.remove('active');
+      ov.style.display = 'none';
+    });
     ocultarTodasLasPantallas();
     const appContainer = document.querySelector('.app') || document.querySelector('.wrap');
     if (appContainer) appContainer.style.display = '';
@@ -527,8 +534,12 @@
 
   window.volverAlEspacioModos = function() {
     localStorage.removeItem(CLAVE_SESION_ACTIVA);
-    // Cerrar cualquier overlay del juego que pudiera estar abierto
-    document.querySelectorAll('.overlay').forEach(ov => {
+    // Cerrar cualquier overlay o modal del juego que pudiera estar abierto
+    if (typeof Auth !== 'undefined' && typeof Auth.cerrarModales === 'function') {
+      Auth.cerrarModales();
+    }
+    if (typeof closeAllModals === 'function') closeAllModals();
+    document.querySelectorAll('.overlay, .role-modal-overlay').forEach(ov => {
       ov.classList.remove('active');
       ov.style.display = 'none';
     });
