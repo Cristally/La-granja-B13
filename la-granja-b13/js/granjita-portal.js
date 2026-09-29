@@ -49,42 +49,148 @@
         </div>
       </div>
 
-      <!-- PANTALLA 3: Login y Registro Obligatorio de Estudiante -->
+      <!-- PANTALLA 3: Portal de Acceso Estudiante (Moderno & Separado) -->
       <div class="auth-screen" id="authScreen" hidden>
-        <div class="auth-content">
-          <button class="auth-back" id="portalAuthBackBtn" type="button">← Volver</button>
-
-          <img src="assets/img/logo.png" alt="Escudo DHR Antofagasta" class="auth-logo">
-
-          <div class="auth-card" id="portalLoginCard">
-            <h2 class="auth-title">Iniciar sesión</h2>
-            <form class="auth-form" id="portalLoginForm">
-              <input class="auth-input" type="email" id="portalLoginCorreo" placeholder="Correo" autocomplete="username" value="demo@granja.cl" required>
-              <input class="auth-input" type="password" id="portalLoginClave" placeholder="Contraseña" autocomplete="current-password" value="demo1234" required>
-              <p class="auth-error" id="portalLoginError" hidden></p>
-              <button class="auth-submit" type="submit">Entrar</button>
-            </form>
-            <p class="auth-hint">Prueba: demo@granja.cl / demo1234</p>
-            <button class="auth-switch" id="portalShowRegisterBtn" type="button">¿No tienes cuenta? Regístrate</button>
+        <div class="modern-auth-container">
+          <div class="modern-auth-header-bar">
+            <button class="modern-back-btn" id="portalAuthBackBtn" type="button">
+              <span>←</span> Volver a Selección de Modo
+            </button>
+            <span class="auth-school-badge">Liceo B-13 Antofagasta</span>
           </div>
 
-          <div class="auth-card" id="portalRegisterCard" hidden>
-            <h2 class="auth-title">Registro de estudiante</h2>
-            <form class="auth-form" id="portalRegisterForm">
-              <input class="auth-input" type="text" id="portalRegNombre" placeholder="Nombre completo" autocomplete="name" required>
-              <input class="auth-input" type="text" id="portalRegCurso" placeholder="Curso (ej: 7°A, 2°B)" required>
-              <select class="auth-input" id="portalRegGenero" required>
-                <option value="" disabled selected>Género</option>
-                <option value="Femenino">Femenino</option>
-                <option value="Masculino">Masculino</option>
-                <option value="Prefiero no decirlo">Prefiero no decirlo</option>
-              </select>
-              <input class="auth-input" type="email" id="portalRegCorreo" placeholder="Correo" autocomplete="username" required>
-              <input class="auth-input" type="password" id="portalRegClave" placeholder="Contraseña" autocomplete="new-password" required>
-              <p class="auth-error" id="portalRegisterError" hidden></p>
-              <button class="auth-submit" type="submit">Crear cuenta</button>
-            </form>
-            <button class="auth-switch" id="portalShowLoginBtn" type="button">¿Ya tienes cuenta? Inicia sesión</button>
+          <div class="modern-auth-brand">
+            <img src="assets/img/logo.png" alt="Escudo Oficial Granja B13" class="auth-logo">
+            <h1>La Granjita B13</h1>
+            <p>Bioalfabetización y Evaluación Formativa</p>
+          </div>
+
+          <div class="modern-auth-card">
+            <!-- Pestañas Segmentadas para alternar entre Iniciar Sesión y Crear Cuenta -->
+            <div class="auth-segmented-nav" role="tablist">
+              <button type="button" class="auth-nav-pill active" id="authTabLoginBtn" role="tab" aria-selected="true">
+                <span>🔑</span> Iniciar Sesión
+              </button>
+              <button type="button" class="auth-nav-pill" id="authTabRegisterBtn" role="tab" aria-selected="false">
+                <span>✨</span> Crear Cuenta
+              </button>
+            </div>
+
+            <!-- Panel 1: INICIAR SESIÓN -->
+            <div class="auth-pane" id="paneLogin">
+              <div class="auth-pane-header">
+                <h2 class="auth-pane-title">¡Bienvenido/a de nuevo!</h2>
+                <p class="auth-pane-sub">Ingresa a tu sesión para guardar tus décimas, puntaje y logros de campo.</p>
+              </div>
+
+              <!-- Botón de prueba rápida con un solo toque -->
+              <button type="button" class="demo-quick-fill-btn" id="btnFillDemoCreds" title="Toca para rellenar los datos de prueba">
+                <span class="demo-flash">⚡</span>
+                <span class="demo-txt">Cuenta demo: <b>demo@granja.cl</b> (demo1234)</span>
+                <span class="demo-action">Rellenar</span>
+              </button>
+
+              <form class="modern-form" id="portalLoginForm">
+                <div class="form-field">
+                  <label for="portalLoginCorreo">Correo institucional o registrado</label>
+                  <div class="input-box">
+                    <span class="input-ic">✉️</span>
+                    <input type="email" id="portalLoginCorreo" placeholder="ejemplo@granja.cl" autocomplete="username" value="demo@granja.cl" required>
+                  </div>
+                </div>
+
+                <div class="form-field">
+                  <label for="portalLoginClave">Contraseña</label>
+                  <div class="input-box">
+                    <span class="input-ic">🔒</span>
+                    <input type="password" id="portalLoginClave" placeholder="Ingresa tu contraseña" autocomplete="current-password" value="demo1234" required>
+                    <button type="button" class="toggle-pass-btn" id="toggleLoginPass" aria-label="Mostrar contraseña">👁️</button>
+                  </div>
+                </div>
+
+                <div class="auth-error-box" id="portalLoginError" hidden></div>
+
+                <button type="submit" class="modern-btn-submit" id="portalLoginSubmitBtn">
+                  <span>Ingresar a la Granja</span>
+                  <span class="btn-ic">➤</span>
+                </button>
+              </form>
+
+              <div class="auth-footer-switch">
+                ¿Aún no tienes cuenta creada?
+                <button type="button" class="switch-link-btn" id="btnGoToRegister">Regístrate gratis aquí</button>
+              </div>
+            </div>
+
+            <!-- Panel 2: CREAR CUENTA -->
+            <div class="auth-pane" id="paneRegister" hidden>
+              <div class="auth-pane-header">
+                <h2 class="auth-pane-title">Registro de Estudiante</h2>
+                <p class="auth-pane-sub">Crea tu cuenta escolar para activar tu Cuaderno de Campo individual.</p>
+              </div>
+
+              <form class="modern-form" id="portalRegisterForm">
+                <div class="form-field">
+                  <label for="portalRegNombre">Nombre completo</label>
+                  <div class="input-box">
+                    <span class="input-ic">👤</span>
+                    <input type="text" id="portalRegNombre" placeholder="Tu nombre y apellido" autocomplete="name" required>
+                  </div>
+                </div>
+
+                <div class="form-row-2col">
+                  <div class="form-field">
+                    <label for="portalRegCurso">Curso / Nivel</label>
+                    <div class="input-box">
+                      <span class="input-ic">🏫</span>
+                      <input type="text" id="portalRegCurso" placeholder="Ej: 1° Medio A" required>
+                    </div>
+                  </div>
+
+                  <div class="form-field">
+                    <label for="portalRegGenero">Género</label>
+                    <div class="input-box">
+                      <span class="input-ic">🚻</span>
+                      <select id="portalRegGenero" required>
+                        <option value="" disabled selected>Selecciona...</option>
+                        <option value="Femenino">Femenino</option>
+                        <option value="Masculino">Masculino</option>
+                        <option value="Prefiero no decirlo">Prefiero no decirlo</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="form-field">
+                  <label for="portalRegCorreo">Correo electrónico</label>
+                  <div class="input-box">
+                    <span class="input-ic">✉️</span>
+                    <input type="email" id="portalRegCorreo" placeholder="estudiante@granja.cl" autocomplete="username" required>
+                  </div>
+                </div>
+
+                <div class="form-field">
+                  <label for="portalRegClave">Crear contraseña</label>
+                  <div class="input-box">
+                    <span class="input-ic">🔒</span>
+                    <input type="password" id="portalRegClave" placeholder="Mínimo 6 caracteres" autocomplete="new-password" minlength="6" required>
+                    <button type="button" class="toggle-pass-btn" id="toggleRegPass" aria-label="Mostrar contraseña">👁️</button>
+                  </div>
+                </div>
+
+                <div class="auth-error-box" id="portalRegisterError" hidden></div>
+
+                <button type="submit" class="modern-btn-submit modern-btn-gold" id="portalRegSubmitBtn">
+                  <span>Crear mi Cuenta de Estudiante</span>
+                  <span class="btn-ic">✨</span>
+                </button>
+              </form>
+
+              <div class="auth-footer-switch">
+                ¿Ya tienes una cuenta creada?
+                <button type="button" class="switch-link-btn" id="btnGoToLogin">Inicia sesión aquí</button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -184,21 +290,26 @@
   }
 
   function inyectarBotonInicioEnJuego() {
-    const existing = document.getElementById('btnPortalRegresarInicio');
-    if (existing) {
-      existing.onclick = () => volverAlInicio();
-      return;
-    }
+    // Vincular todos los botones de cambio de modo o salida si existen
+    document.querySelectorAll('#btnPortalRegresarInicio, .btn-portal-inicio, .nav-switch-btn, #navBtnCambiarModo, #btnOverlayCambiarModo').forEach(btn => {
+      btn.onclick = (e) => {
+        e.preventDefault();
+        window.volverAlEspacioModos();
+      };
+    });
+
+    // Si no existe en la barra de herramientas, agregarlo
     const toolButtons = document.querySelector('.tool-buttons');
-    if (toolButtons) {
+    if (toolButtons && !document.getElementById('btnPortalRegresarInicio')) {
       const btn = document.createElement('button');
       btn.id = 'btnPortalRegresarInicio';
       btn.type = 'button';
       btn.className = 'tool-btn btn-portal-inicio';
-      btn.innerHTML = '🚪 Salir / Modo';
-      btn.title = 'Regresar a la selección de rol o inicio';
-      btn.addEventListener('click', () => {
-        volverAlInicio();
+      btn.innerHTML = '🚪 Cambiar Modo';
+      btn.title = 'Regresar a la selección de rol o modo';
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        window.volverAlEspacioModos();
       });
       toolButtons.appendChild(btn);
     }
@@ -206,7 +317,10 @@
 
   function cambiarPantalla(origen, destino, alTerminar) {
     if (origen) origen.hidden = true;
-    if (destino) destino.hidden = false;
+    if (destino) {
+      destino.hidden = false;
+      destino.scrollTop = 0;
+    }
     if (alTerminar) alTerminar();
   }
 
@@ -248,19 +362,29 @@
     if (appContainer) appContainer.style.display = '';
   }
 
-  window.volverAlInicio = function() {
+  window.volverAlEspacioModos = function() {
     localStorage.removeItem(CLAVE_SESION_ACTIVA);
+    // Cerrar cualquier overlay del juego que pudiera estar abierto
+    document.querySelectorAll('.overlay').forEach(ov => {
+      ov.classList.remove('active');
+      ov.style.display = 'none';
+    });
     const appContainer = document.querySelector('.app') || document.querySelector('.wrap');
     if (appContainer) appContainer.style.display = 'none';
     ocultarTodasLasPantallas();
     const modeScreen = document.getElementById('modeScreen');
     if (modeScreen) {
       modeScreen.hidden = false;
+      modeScreen.scrollTop = 0;
     } else {
       const startScreen = document.getElementById('startScreen');
-      if (startScreen) startScreen.hidden = false;
+      if (startScreen) {
+        startScreen.hidden = false;
+        startScreen.scrollTop = 0;
+      }
     }
   };
+  window.volverAlInicio = window.volverAlEspacioModos;
 
   function inicializarEventos() {
     const startScreen = document.getElementById('startScreen');
@@ -270,87 +394,185 @@
     const profesorScreen = document.getElementById('profesorScreen');
 
     // 1. Start Screen -> Mode Screen
-    document.getElementById('portalEnterBtn').onclick = () => {
-      cambiarPantalla(startScreen, modeScreen);
-    };
+    const portalEnterBtn = document.getElementById('portalEnterBtn');
+    if (portalEnterBtn) {
+      portalEnterBtn.onclick = () => cambiarPantalla(startScreen, modeScreen);
+    }
 
     // 2. Mode Screen -> Start Screen
-    document.getElementById('portalModeBackBtn').onclick = () => {
-      cambiarPantalla(modeScreen, startScreen);
-    };
+    const portalModeBackBtn = document.getElementById('portalModeBackBtn');
+    if (portalModeBackBtn) {
+      portalModeBackBtn.onclick = () => cambiarPantalla(modeScreen, startScreen);
+    }
 
     // 3. Modo Visitas
-    document.getElementById('portalModeVisitaBtn').onclick = () => {
-      entrarAlJuego('visita', { nombre: 'Visitante' });
-      if (typeof Auth !== 'undefined') Auth.mostrarNotificacion('¡Entraste en Modo Visitas!');
-    };
+    const portalModeVisitaBtn = document.getElementById('portalModeVisitaBtn');
+    if (portalModeVisitaBtn) {
+      portalModeVisitaBtn.onclick = () => {
+        entrarAlJuego('visita', { nombre: 'Visitante' });
+        if (typeof Auth !== 'undefined') Auth.mostrarNotificacion('¡Entraste en Modo Visitas!');
+      };
+    }
 
-    // 4. Modo Estudiante -> Auth Screen
-    document.getElementById('portalModeEstudianteBtn').onclick = () => {
-      cambiarPantalla(modeScreen, authScreen, () => {
-        document.getElementById('portalLoginCard').hidden = false;
-        document.getElementById('portalRegisterCard').hidden = true;
-      });
-    };
+    // Manejo de Pestañas y Vistas en Auth Screen (Login vs Registro)
+    const tabLoginBtn = document.getElementById('authTabLoginBtn');
+    const tabRegBtn = document.getElementById('authTabRegisterBtn');
+    const paneLogin = document.getElementById('paneLogin');
+    const paneRegister = document.getElementById('paneRegister');
 
-    // 5. Auth Screen -> Mode Screen
-    document.getElementById('portalAuthBackBtn').onclick = () => {
-      cambiarPantalla(authScreen, modeScreen);
-    };
+    function mostrarLogin() {
+      if (tabLoginBtn) {
+        tabLoginBtn.classList.add('active');
+        tabLoginBtn.setAttribute('aria-selected', 'true');
+      }
+      if (tabRegBtn) {
+        tabRegBtn.classList.remove('active');
+        tabRegBtn.setAttribute('aria-selected', 'false');
+      }
+      if (paneLogin) {
+        paneLogin.hidden = false;
+        paneLogin.style.display = 'flex';
+      }
+      if (paneRegister) {
+        paneRegister.hidden = true;
+        paneRegister.style.display = 'none';
+      }
+      const err = document.getElementById('portalLoginError');
+      if (err) err.hidden = true;
+    }
 
-    // Switch Login <-> Registro
-    document.getElementById('portalShowRegisterBtn').onclick = () => {
-      document.getElementById('portalLoginCard').hidden = true;
-      document.getElementById('portalRegisterCard').hidden = false;
+    function mostrarRegistro() {
+      if (tabRegBtn) {
+        tabRegBtn.classList.add('active');
+        tabRegBtn.setAttribute('aria-selected', 'true');
+      }
+      if (tabLoginBtn) {
+        tabLoginBtn.classList.remove('active');
+        tabLoginBtn.setAttribute('aria-selected', 'false');
+      }
+      if (paneRegister) {
+        paneRegister.hidden = false;
+        paneRegister.style.display = 'flex';
+      }
+      if (paneLogin) {
+        paneLogin.hidden = true;
+        paneLogin.style.display = 'none';
+      }
+      const err = document.getElementById('portalRegisterError');
+      if (err) err.hidden = true;
+    }
+
+    if (tabLoginBtn) tabLoginBtn.onclick = mostrarLogin;
+    if (tabRegBtn) tabRegBtn.onclick = mostrarRegistro;
+
+    const btnGoToReg = document.getElementById('btnGoToRegister');
+    if (btnGoToReg) btnGoToReg.onclick = mostrarRegistro;
+
+    const btnGoToLog = document.getElementById('btnGoToLogin');
+    if (btnGoToLog) btnGoToLog.onclick = mostrarLogin;
+
+    // Rellenar credenciales de prueba con un clic
+    const btnDemo = document.getElementById('btnFillDemoCreds');
+    if (btnDemo) {
+      btnDemo.onclick = () => {
+        const emailInput = document.getElementById('portalLoginCorreo');
+        const passInput = document.getElementById('portalLoginClave');
+        if (emailInput) emailInput.value = 'demo@granja.cl';
+        if (passInput) passInput.value = 'demo1234';
+      };
+    }
+
+    // Toggle de visibilidad de contraseñas
+    const setupPassToggle = (btnId, inputId) => {
+      const btn = document.getElementById(btnId);
+      const inp = document.getElementById(inputId);
+      if (btn && inp) {
+        btn.onclick = () => {
+          const isPass = inp.getAttribute('type') === 'password';
+          inp.setAttribute('type', isPass ? 'text' : 'password');
+          btn.textContent = isPass ? '🙈' : '👁️';
+          btn.setAttribute('aria-label', isPass ? 'Ocultar contraseña' : 'Mostrar contraseña');
+        };
+      }
     };
-    document.getElementById('portalShowLoginBtn').onclick = () => {
-      document.getElementById('portalRegisterCard').hidden = true;
-      document.getElementById('portalLoginCard').hidden = false;
-    };
+    setupPassToggle('toggleLoginPass', 'portalLoginClave');
+    setupPassToggle('toggleRegPass', 'portalRegClave');
+
+    // 4. Modo Estudiante -> Auth Screen (Inicia en vista de login)
+    const portalModeEstudianteBtn = document.getElementById('portalModeEstudianteBtn');
+    if (portalModeEstudianteBtn) {
+      portalModeEstudianteBtn.onclick = () => {
+        cambiarPantalla(modeScreen, authScreen, () => {
+          mostrarLogin();
+        });
+      };
+    }
+
+    // 5. Auth Screen -> Mode Screen (Regresar a seleccionar cómo entrar)
+    const portalAuthBackBtn = document.getElementById('portalAuthBackBtn');
+    if (portalAuthBackBtn) {
+      portalAuthBackBtn.onclick = () => {
+        cambiarPantalla(authScreen, modeScreen);
+      };
+    }
+
+    // Botones globales de volver a cambiar de modo
+    document.querySelectorAll('#navBtnCambiarModo, .nav-switch-btn, #btnPortalRegresarInicio').forEach(btn => {
+      btn.onclick = (e) => {
+        e.preventDefault();
+        window.volverAlEspacioModos();
+      };
+    });
 
     // Submit Login Estudiante
-    document.getElementById('portalLoginForm').onsubmit = (e) => {
-      e.preventDefault();
-      const correo = document.getElementById('portalLoginCorreo').value.trim();
-      const clave = document.getElementById('portalLoginClave').value;
-      const errEl = document.getElementById('portalLoginError');
+    const portalLoginForm = document.getElementById('portalLoginForm');
+    if (portalLoginForm) {
+      portalLoginForm.onsubmit = (e) => {
+        e.preventDefault();
+        const correo = document.getElementById('portalLoginCorreo').value.trim();
+        const clave = document.getElementById('portalLoginClave').value;
+        const errEl = document.getElementById('portalLoginError');
 
-      if (typeof Auth !== 'undefined') {
-        const res = Auth.loginEstudiante(correo, clave);
-        if (!res.ok) {
-          errEl.textContent = res.error;
-          errEl.hidden = false;
-          return;
+        if (typeof Auth !== 'undefined') {
+          const res = Auth.loginEstudiante(correo, clave);
+          if (!res.ok) {
+            errEl.textContent = res.error;
+            errEl.hidden = false;
+            return;
+          }
+          errEl.hidden = true;
+          const sesion = Auth.getSesion();
+          entrarAlJuego('estudiante', sesion);
+          Auth.mostrarNotificacion(`¡Bienvenido/a, ${sesion.nombre}!`);
         }
-        errEl.hidden = true;
-        const sesion = Auth.getSesion();
-        entrarAlJuego('estudiante', sesion);
-        Auth.mostrarNotificacion(`¡Bienvenido/a, ${sesion.nombre}!`);
-      }
-    };
+      };
+    }
 
     // Submit Registro Estudiante
-    document.getElementById('portalRegisterForm').onsubmit = (e) => {
-      e.preventDefault();
-      const nombre = document.getElementById('portalRegNombre').value.trim();
-      const curso = document.getElementById('portalRegCurso').value.trim();
-      const genero = document.getElementById('portalRegGenero').value;
-      const correo = document.getElementById('portalRegCorreo').value.trim();
-      const clave = document.getElementById('portalRegClave').value;
-      const errEl = document.getElementById('portalRegisterError');
+    const portalRegisterForm = document.getElementById('portalRegisterForm');
+    if (portalRegisterForm) {
+      portalRegisterForm.onsubmit = (e) => {
+        e.preventDefault();
+        const nombre = document.getElementById('portalRegNombre').value.trim();
+        const curso = document.getElementById('portalRegCurso').value.trim();
+        const genero = document.getElementById('portalRegGenero').value;
+        const correo = document.getElementById('portalRegCorreo').value.trim();
+        const clave = document.getElementById('portalRegClave').value;
+        const errEl = document.getElementById('portalRegisterError');
 
-      if (typeof Auth !== 'undefined') {
-        const res = Auth.registroEstudiante(nombre, curso, genero, correo, clave);
-        if (!res.ok) {
-          errEl.textContent = res.error;
-          errEl.hidden = false;
-          return;
+        if (typeof Auth !== 'undefined') {
+          const res = Auth.registroEstudiante(nombre, curso, genero, correo, clave);
+          if (!res.ok) {
+            errEl.textContent = res.error;
+            errEl.hidden = false;
+            return;
+          }
+          errEl.hidden = true;
+          entrarAlJuego('estudiante', { nombre, curso, genero, correo });
+          Auth.mostrarNotificacion(`¡Cuenta creada con éxito! Bienvenido/a, ${nombre}.`);
         }
-        errEl.hidden = true;
-        entrarAlJuego('estudiante', { nombre, curso, genero, correo });
-        Auth.mostrarNotificacion(`¡Cuenta creada con éxito! Bienvenido/a, ${nombre}.`);
-      }
-    };
+      };
+    }
 
     // Botones Admin
     const pinModal = document.getElementById('portalAdminPinModal');

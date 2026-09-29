@@ -1350,6 +1350,19 @@ if (studentPill) {
   studentPill.addEventListener('click', onStudentPillClick);
 }
 
+const btnOverlayCambiarModo = document.getElementById('btnOverlayCambiarModo');
+if (btnOverlayCambiarModo) {
+  btnOverlayCambiarModo.addEventListener('click', (e) => {
+    e.preventDefault();
+    closeAllModals();
+    if (typeof volverAlEspacioModos === 'function') {
+      volverAlEspacioModos();
+    } else if (typeof volverAlInicio === 'function') {
+      volverAlInicio();
+    }
+  });
+}
+
 const saveStudentBtn = document.getElementById('saveStudentBtn');
 if (saveStudentBtn) {
   saveStudentBtn.addEventListener('click', handleSaveStudent);
