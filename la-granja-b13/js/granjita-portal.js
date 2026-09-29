@@ -21,31 +21,70 @@
             <span class="title-line1">Bienvenidos a la</span>
             <span class="title-line2">Granjita B13</span>
           </h1>
+          <p class="start-subtitle">Bioalfabetización y Evaluación Formativa Interactiva</p>
 
-          <button class="enter-btn" id="portalEnterBtn" type="button">Entrar</button>
-        </div>
+          <button class="enter-btn" id="portalEnterBtn" type="button">
+            <span>Comenzar Experiencia</span>
+            <span class="btn-ic">🌾</span>
+          </button>
 
-        <div class="corner-buttons">
-          <button class="admin-btn" id="portalStartAdminBtn" type="button">🔧 Admin</button>
-          <button class="admin-btn" id="portalStartProfesorBtn" type="button">🍎 Profesor</button>
+          <div class="start-bottom-roles">
+            <button class="modern-chip-btn" id="portalStartAdminBtn" type="button">
+              <span>🔧</span> Admin
+            </button>
+            <button class="modern-chip-btn" id="portalStartProfesorBtn" type="button">
+              <span>🍎</span> Profesor
+            </button>
+          </div>
         </div>
       </div>
 
       <!-- PANTALLA 2: Selección de Modo -->
       <div class="mode-screen" id="modeScreen" hidden>
-        <button class="auth-back mode-back" id="portalModeBackBtn" type="button">← Inicio</button>
-
         <div class="mode-content">
+          <div class="panel-header-bar">
+            <button class="modern-back-btn" id="portalModeBackBtn" type="button" title="Volver a la bienvenida">
+              <span class="back-arrow">←</span>
+              <span>Inicio</span>
+            </button>
+            <span class="auth-school-badge">Liceo B-13</span>
+          </div>
+
           <img src="assets/img/logo.png" alt="Escudo Oficial Granja B13" class="auth-logo">
           <h2 class="mode-title">¿Cómo quieres entrar?</h2>
+          <p class="mode-subtitle">Selecciona tu perfil de acceso para comenzar</p>
 
-          <button class="mode-btn" id="portalModeVisitaBtn" type="button">🧭 Modo Visitas</button>
-          <button class="mode-btn" id="portalModeEstudianteBtn" type="button">🎓 Modo Estudiante</button>
-        </div>
+          <div class="mode-cards-grid">
+            <button class="modern-mode-card" id="portalModeVisitaBtn" type="button">
+              <span class="mode-card-ic">🧭</span>
+              <div class="mode-card-info">
+                <span class="mode-card-title">Modo Visitas</span>
+                <span class="mode-card-desc">Exploración libre de potrero, mapa y galería</span>
+              </div>
+              <span class="mode-card-arrow">➤</span>
+            </button>
 
-        <div class="corner-buttons">
-          <button class="admin-btn" id="portalModeAdminBtn" type="button">🔧 Admin</button>
-          <button class="admin-btn" id="portalModeProfesorBtn" type="button">🍎 Profesor</button>
+            <button class="modern-mode-card modern-mode-student" id="portalModeEstudianteBtn" type="button">
+              <span class="mode-card-ic">🎓</span>
+              <div class="mode-card-info">
+                <span class="mode-card-title">Modo Estudiante</span>
+                <span class="mode-card-desc">Guarda décimas, insignias y progreso formativo</span>
+              </div>
+              <span class="mode-card-arrow">➤</span>
+            </button>
+          </div>
+
+          <div class="mode-quick-access">
+            <span class="mode-quick-label">Acceso administrativo y docente</span>
+            <div class="mode-quick-buttons">
+              <button class="modern-chip-btn" id="portalModeAdminBtn" type="button">
+                <span>🔧</span> Administrador
+              </button>
+              <button class="modern-chip-btn" id="portalModeProfesorBtn" type="button">
+                <span>🍎</span> Profesor / Docente
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -198,22 +237,32 @@
       <!-- PANTALLA 4: Estadísticas de Administrador -->
       <div class="admin-screen" id="adminScreen" hidden>
         <div class="admin-content">
-          <button class="auth-back" id="portalAdminBackBtn" type="button">← Salir</button>
+          <div class="panel-header-bar">
+            <button class="modern-back-btn" id="portalAdminBackBtn" type="button" title="Volver a selección de modo">
+              <span class="back-arrow">←</span>
+              <span>Salir a Modos</span>
+            </button>
+            <span class="auth-school-badge">Panel Administrativo</span>
+          </div>
+
           <h2 class="brand-heading">📊 Estadísticas y Control de la Granjita B13</h2>
           <div id="portalAdminNotif" class="admin-notif-banner" hidden></div>
           <div class="admin-stats" id="portalAdminStats"></div>
           
-          <div class="stat-card" style="margin-top:14px;border:1.5px solid #ff6b6b;background:rgba(70,10,25,0.92);text-align:left;">
-            <h3 style="color:#ffb3b3;margin-top:0;">⚙️ Limpieza y Control de Registros</h3>
-            <p class="auth-hint" style="text-align:left;color:#ffe6e6;margin-bottom:12px;line-height:1.4;">
+          <div class="stat-card stat-card-danger">
+            <div class="stat-card-header">
+              <span class="danger-ic">⚙️</span>
+              <h3 style="color:#ffb3b3;margin:0;">Limpieza y Control de Registros</h3>
+            </div>
+            <p class="auth-hint" style="text-align:left;color:#ffe6e6;margin:8px 0 14px;line-height:1.4;">
               Gestiona o vacía la base de datos de estudiantes, puntuaciones y respuestas para iniciar un nuevo ciclo o sesión de evaluación limpia.
             </p>
-            <div style="display:flex;flex-direction:column;gap:10px;">
-              <button class="admin-btn" id="portalResetRespuestasBtn" type="button" style="background:#8c4400;border-color:#ffa94d;color:#fff;padding:10px;font-size:0.88rem;cursor:pointer;">
-                📝 Borrar solo respuestas y actividad (conservar lista de estudiantes)
+            <div class="admin-action-buttons">
+              <button class="admin-btn-action admin-btn-warning" id="portalResetRespuestasBtn" type="button">
+                <span>📝</span> Borrar solo respuestas y actividad (conservar estudiantes)
               </button>
-              <button class="admin-btn admin-reset-btn" id="portalResetDatosBtn" type="button" style="background:#a31626;border-color:#ff8787;color:#fff;font-weight:700;padding:11px;font-size:0.92rem;cursor:pointer;">
-                🗑️ Borrar TODOS los registros (Estudiantes, Respuestas, Puntuaciones y Perfiles)
+              <button class="admin-btn-action admin-btn-danger" id="portalResetDatosBtn" type="button">
+                <span>🗑️</span> Borrar TODOS los registros (Alumnos, Respuestas y Perfiles)
               </button>
             </div>
           </div>
@@ -223,40 +272,115 @@
       <!-- PANTALLA 5: Panel del Profesor -->
       <div class="admin-screen" id="profesorScreen" hidden>
         <div class="admin-content">
-          <button class="auth-back" id="portalProfesorBackBtn" type="button">← Salir</button>
+          <div class="panel-header-bar">
+            <button class="modern-back-btn" id="portalProfesorBackBtn" type="button" title="Volver a selección de modo">
+              <span class="back-arrow">←</span>
+              <span>Salir a Modos</span>
+            </button>
+            <span class="auth-school-badge">Área Docente</span>
+          </div>
+
           <h2 class="brand-heading">🍎 Panel del Profesor</h2>
 
           <div class="stat-card">
-            <h3>Crear quiz para una zona del mapa</h3>
-            <p class="auth-hint">Máximo 10 preguntas por zona con puntaje en décimas.</p>
-            <form class="auth-form" id="portalQuizEditorForm">
-              <input class="auth-input" type="text" id="portalQuizAutor" placeholder="Tu nombre (profesor/a)" value="Profesor Demo" required>
-              <select class="auth-input" id="portalQuizZona" required></select>
-              <input class="auth-input" type="text" id="portalQuizPregunta" placeholder="Pregunta" required>
-              <input class="auth-input" type="text" id="portalQuizOpcion0" placeholder="Alternativa 1" required>
-              <input class="auth-input" type="text" id="portalQuizOpcion1" placeholder="Alternativa 2" required>
-              <input class="auth-input" type="text" id="portalQuizOpcion2" placeholder="Alternativa 3" required>
-              <input class="auth-input" type="text" id="portalQuizOpcion3" placeholder="Alternativa 4" required>
-              <select class="auth-input" id="portalQuizCorrecta" required>
-                <option value="" disabled selected>¿Cuál alternativa es correcta?</option>
-                <option value="0">Alternativa 1</option>
-                <option value="1">Alternativa 2</option>
-                <option value="2">Alternativa 3</option>
-                <option value="3">Alternativa 4</option>
-              </select>
-              <input class="auth-input" type="number" id="portalQuizDecimas" placeholder="Décimas si acierta (ej: 0.5)" step="0.1" min="0" max="1" value="0.3" required>
-              <p class="auth-error" id="portalQuizEditorError" hidden></p>
-              <button class="auth-submit" type="submit">➕ Agregar quiz al mapa</button>
-            </form>
+            <h3>📋 Evaluación y Registro</h3>
+            <div class="admin-action-buttons" style="margin-top:10px;">
+              <button class="admin-btn-action admin-btn-gold" id="btnProfesorEntrarJuego" type="button">
+                <span>🌾</span> Entrar a la Granja (Modo Docente)
+              </button>
+              <button class="admin-btn-action admin-btn-info" id="btnProfesorAbrirPlanilla" type="button">
+                <span>📋</span> Ver Calificaciones del Curso en el Juego
+              </button>
+              <a href="/api/export-csv" class="admin-btn-action admin-btn-success" style="text-decoration:none;">
+                <span>📊</span> Descargar Planilla Excel / CSV
+              </a>
+            </div>
           </div>
 
           <div class="stat-card">
-            <h3>📋 Evaluación y Registro</h3>
-            <div style="display:flex;flex-direction:column;gap:8px;margin-top:6px;">
-              <button class="admin-btn" id="btnProfesorAbrirPlanilla" type="button" style="text-align:center;padding:10px;">📋 Ver Calificaciones del Curso en el Juego</button>
-              <button class="admin-btn" id="btnProfesorEntrarJuego" type="button" style="text-align:center;padding:10px;background:#ffd83d;color:#4a0d1f;font-weight:700;">🌾 Entrar a la Granja (Modo Docente)</button>
-              <a href="/api/export-csv" class="admin-btn" style="text-align:center;padding:10px;text-decoration:none;display:block;background:#1e4d2b;border-color:#5ac57a;color:#fff;">📊 Descargar Planilla Excel / CSV</a>
-            </div>
+            <h3>➕ Crear quiz para una zona del mapa</h3>
+            <p class="auth-hint" style="text-align:left;color:#ffeed1;margin-bottom:12px;">Máximo 10 preguntas por zona con puntaje en décimas.</p>
+            <form class="auth-form modern-form" id="portalQuizEditorForm">
+              <div class="form-field">
+                <label for="portalQuizAutor">Tu nombre (profesor/a)</label>
+                <div class="input-box">
+                  <span class="input-ic">👤</span>
+                  <input type="text" id="portalQuizAutor" placeholder="Tu nombre (profesor/a)" value="Profesor Demo" required>
+                </div>
+              </div>
+              <div class="form-field">
+                <label for="portalQuizZona">Zona del mapa</label>
+                <div class="input-box">
+                  <span class="input-ic">📍</span>
+                  <select id="portalQuizZona" required></select>
+                </div>
+              </div>
+              <div class="form-field">
+                <label for="portalQuizPregunta">Pregunta formativa</label>
+                <div class="input-box">
+                  <span class="input-ic">❓</span>
+                  <input type="text" id="portalQuizPregunta" placeholder="Escribe la pregunta" required>
+                </div>
+              </div>
+              <div class="form-row-2col">
+                <div class="form-field">
+                  <label for="portalQuizOpcion0">Alternativa 1</label>
+                  <div class="input-box">
+                    <span class="input-ic">A</span>
+                    <input type="text" id="portalQuizOpcion0" placeholder="Alternativa 1" required>
+                  </div>
+                </div>
+                <div class="form-field">
+                  <label for="portalQuizOpcion1">Alternativa 2</label>
+                  <div class="input-box">
+                    <span class="input-ic">B</span>
+                    <input type="text" id="portalQuizOpcion1" placeholder="Alternativa 2" required>
+                  </div>
+                </div>
+              </div>
+              <div class="form-row-2col">
+                <div class="form-field">
+                  <label for="portalQuizOpcion2">Alternativa 3</label>
+                  <div class="input-box">
+                    <span class="input-ic">C</span>
+                    <input type="text" id="portalQuizOpcion2" placeholder="Alternativa 3" required>
+                  </div>
+                </div>
+                <div class="form-field">
+                  <label for="portalQuizOpcion3">Alternativa 4</label>
+                  <div class="input-box">
+                    <span class="input-ic">D</span>
+                    <input type="text" id="portalQuizOpcion3" placeholder="Alternativa 4" required>
+                  </div>
+                </div>
+              </div>
+              <div class="form-row-2col">
+                <div class="form-field">
+                  <label for="portalQuizCorrecta">¿Cuál alternativa es correcta?</label>
+                  <div class="input-box">
+                    <span class="input-ic">✅</span>
+                    <select id="portalQuizCorrecta" required>
+                      <option value="" disabled selected>Alternativa correcta...</option>
+                      <option value="0">Alternativa 1 (A)</option>
+                      <option value="1">Alternativa 2 (B)</option>
+                      <option value="2">Alternativa 3 (C)</option>
+                      <option value="3">Alternativa 4 (D)</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="form-field">
+                  <label for="portalQuizDecimas">Décimas asignadas</label>
+                  <div class="input-box">
+                    <span class="input-ic">📐</span>
+                    <input type="number" id="portalQuizDecimas" placeholder="0.3" step="0.1" min="0" max="1" value="0.3" required>
+                  </div>
+                </div>
+              </div>
+              <p class="auth-error-box" id="portalQuizEditorError" hidden></p>
+              <button class="modern-btn-submit modern-btn-gold" type="submit">
+                <span>➕ Publicar Quiz en el Mapa</span>
+              </button>
+            </form>
           </div>
 
           <div class="admin-stats" id="portalQuizListaProfesor"></div>
@@ -266,28 +390,52 @@
       <!-- MODALES DE PIN ADMIN Y LOGIN PROFESOR -->
       <div class="granjita-modal" id="portalAdminPinModal" hidden>
         <div class="granjita-modal-card">
-          <button class="granjita-modal-close" id="closePortalAdminPin" type="button">✕</button>
-          <h3 class="brand-heading brand-heading-sm">Acceso administrador</h3>
-          <form class="auth-form" id="portalAdminPinForm">
-            <input class="auth-input auth-pin" type="tel" inputmode="numeric" pattern="[0-9]*" maxlength="4" id="portalInputAdminPin" placeholder="PIN" autocomplete="off" required>
-            <p class="auth-error" id="portalAdminPinError" hidden></p>
-            <button class="auth-submit" type="submit">Entrar</button>
+          <button class="granjita-modal-close" id="closePortalAdminPin" type="button" aria-label="Cerrar modal">✕</button>
+          <div class="modal-card-icon">🔐</div>
+          <h3 class="brand-heading brand-heading-sm">Acceso Administrador</h3>
+          <p class="auth-hint" style="margin-bottom:12px;">Ingresa el código PIN de 4 dígitos para acceder al panel de control.</p>
+          <form class="auth-form modern-form" id="portalAdminPinForm">
+            <div class="input-box" style="justify-content:center;">
+              <input class="auth-pin" type="tel" inputmode="numeric" pattern="[0-9]*" maxlength="4" id="portalInputAdminPin" placeholder="••••" autocomplete="off" required>
+            </div>
+            <p class="auth-error-box" id="portalAdminPinError" hidden></p>
+            <button class="modern-btn-submit modern-btn-gold" type="submit">
+              <span>Ingresar al Panel</span>
+              <span class="btn-ic">🔓</span>
+            </button>
           </form>
-          <p class="auth-hint">PIN de prueba: 1234</p>
+          <p class="auth-hint" style="margin-top:10px;opacity:0.85;">PIN de prueba: <b>1234</b></p>
         </div>
       </div>
 
       <div class="granjita-modal" id="portalProfesorLoginModal" hidden>
         <div class="granjita-modal-card">
-          <button class="granjita-modal-close" id="closePortalProfesorLogin" type="button">✕</button>
+          <button class="granjita-modal-close" id="closePortalProfesorLogin" type="button" aria-label="Cerrar modal">✕</button>
+          <div class="modal-card-icon">🍎</div>
           <h3 class="brand-heading brand-heading-sm">Acceso Profesor</h3>
-          <form class="auth-form" id="portalProfesorLoginForm">
-            <input class="auth-input" type="email" id="portalProfesorEmail" placeholder="Correo" autocomplete="username" value="profesor@granja.cl" required>
-            <input class="auth-input" type="password" id="portalProfesorPass" placeholder="Contraseña" autocomplete="current-password" value="profesor1234" required>
-            <p class="auth-error" id="portalProfesorError" hidden></p>
-            <button class="auth-submit" type="submit">Entrar</button>
+          <p class="auth-hint" style="margin-bottom:12px;">Ingresa con tus credenciales docentes para administrar quizzes y notas.</p>
+          <form class="auth-form modern-form" id="portalProfesorLoginForm">
+            <div class="form-field">
+              <label for="portalProfesorEmail">Correo Institucional</label>
+              <div class="input-box">
+                <span class="input-ic">✉️</span>
+                <input type="email" id="portalProfesorEmail" placeholder="profesor@granja.cl" autocomplete="username" value="profesor@granja.cl" required>
+              </div>
+            </div>
+            <div class="form-field">
+              <label for="portalProfesorPass">Contraseña</label>
+              <div class="input-box">
+                <span class="input-ic">🔒</span>
+                <input type="password" id="portalProfesorPass" placeholder="Contraseña" autocomplete="current-password" value="profesor1234" required>
+              </div>
+            </div>
+            <p class="auth-error-box" id="portalProfesorError" hidden></p>
+            <button class="modern-btn-submit modern-btn-gold" type="submit">
+              <span>Ingresar como Profesor</span>
+              <span class="btn-ic">➤</span>
+            </button>
           </form>
-          <p class="auth-hint">Datos de prueba: profesor@granja.cl / profesor1234</p>
+          <p class="auth-hint" style="margin-top:10px;opacity:0.85;">Docente demo: <b>profesor@granja.cl</b> / <b>profesor1234</b></p>
         </div>
       </div>
     `;
