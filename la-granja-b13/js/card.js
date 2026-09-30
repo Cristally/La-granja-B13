@@ -36,7 +36,13 @@ function openOverlayId(id) {
 
 function closeOverlayId(id) {
   const el = document.getElementById(id);
-  if (el) el.classList.remove('open');
+  if (el) {
+    el.classList.remove('open');
+    if (id === 'victoryOverlay') {
+      el.style.display = 'none';
+      if (typeof AudioFX !== 'undefined' && AudioFX.stopAll) AudioFX.stopAll();
+    }
+  }
 }
 
 function spawnStarBurst(el) {
@@ -2125,7 +2131,7 @@ document.querySelectorAll('.overlay').forEach(el => {
 window.addEventListener('keydown', e => {
   if (e.key === 'Escape') {
     closeFichaOverlay();
-    ['studentOverlay', 'rulesOverlay', 'teacherOverlay', 'finalOverlay', 'miniVistaOverlay', 'zoneInfoOverlay', 'badgeOverlay', 'achievementsOverlay', 'logoOverlay'].forEach(closeOverlayId);
+    ['studentOverlay', 'rulesOverlay', 'teacherOverlay', 'finalOverlay', 'miniVistaOverlay', 'zoneInfoOverlay', 'badgeOverlay', 'achievementsOverlay', 'logoOverlay', 'victoryOverlay'].forEach(closeOverlayId);
   }
 });
 

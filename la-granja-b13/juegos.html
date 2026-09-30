@@ -92,8 +92,27 @@
       </div>
     </div>
 
-    <!-- Tablero de cartas numeradas (como en la imagen del usuario) -->
-    <div class="memory-board" id="memoryBoard"></div>
+    <!-- Tablero de cartas con overlay de inicio parejo -->
+    <div class="memory-board-wrap game-board-wrap">
+      <div class="memory-board" id="memoryBoard"></div>
+
+      <!-- Pantalla previa de configuración e inicio de Memoria -->
+      <div class="game-start-overlay" id="memStartOverlay">
+        <div class="game-start-card">
+          <div class="game-start-icon">🃏✨</div>
+          <h3 class="game-start-title">Parejas de Curiosidades Zootécnicas</h3>
+          <p class="game-start-desc">Pon a prueba tu agilidad mental emparejando cada animal oficial de La Granja B-13 con su ficha biológica y cuidado zootécnico.</p>
+          <div class="game-start-tips">
+            <div>⏱️ <b>Tiempo parejo:</b> El cronómetro arrancará a contar exactamente cuando presiones el botón.</div>
+            <div style="margin-top:6px;">🃏 <b>Formato:</b> 12 cartas numeradas (6 animales ↔ 6 datos de campo).</div>
+            <div style="margin-top:6px;">🎯 <b>Objetivo:</b> Lograr las 6 parejas en el menor tiempo e intentos posibles.</div>
+          </div>
+          <button type="button" class="game-start-play-btn" id="memStartPlayBtn">
+            <span>▶</span> ¡Empezar a Jugar!
+          </button>
+        </div>
+      </div>
+    </div>
   </section>
 
   <!-- ============================================================
@@ -109,19 +128,41 @@
         <div class="game-stat-chip">
           <span>🎯 Encontradas:</span> <b id="wsCountVal">0/10</b>
         </div>
+        <div class="game-stat-chip">
+          <span>⏱️ Tiempo:</span> <b id="wsTimeVal">00:00</b>
+        </div>
         <button type="button" class="game-action-btn" id="wsResetBtn">🔄 Nueva Sopa de Letras</button>
       </div>
     </div>
 
-    <div class="wordsearch-layout">
-      <!-- Cuadrícula 12x12 -->
-      <div class="wordsearch-grid-box">
-        <div class="wordsearch-grid" id="wsGrid"></div>
+    <div class="wordsearch-wrap game-board-wrap">
+      <div class="wordsearch-layout">
+        <!-- Cuadrícula 12x12 -->
+        <div class="wordsearch-grid-box">
+          <div class="wordsearch-grid" id="wsGrid"></div>
+        </div>
+
+        <!-- Tarjetas de pistas (como en la imagen del usuario) -->
+        <div class="clues-container">
+          <div class="clues-grid" id="wsCluesList"></div>
+        </div>
       </div>
 
-      <!-- Tarjetas de pistas (como en la imagen del usuario) -->
-      <div class="clues-container">
-        <div class="clues-grid" id="wsCluesList"></div>
+      <!-- Pantalla previa de configuración e inicio de Sopa de Letras -->
+      <div class="game-start-overlay" id="wsStartOverlay">
+        <div class="game-start-card">
+          <div class="game-start-icon">🔤📜</div>
+          <h3 class="game-start-title">Sopa de Letras Agroecológica</h3>
+          <p class="game-start-desc">Encuentra los 10 conceptos fundamentales de nutrición, anatomía y bienestar de los animales del Liceo B-13.</p>
+          <div class="game-start-tips">
+            <div>⏱️ <b>Tiempo parejo:</b> Revisa las pistas con tranquilidad; el tiempo empezará a correr al presionar jugar.</div>
+            <div style="margin-top:6px;">🖱️ <b>Cómo jugar:</b> Haz clic en la primera letra y arrastra hasta la última de la palabra.</div>
+            <div style="margin-top:6px;">🔍 <b>Términos:</b> <i>Cecotrofia, Molleja, Cresta, Heno, Incubación, Agapornis, Patos, Forraje, Bienestar, Gallinero.</i></div>
+          </div>
+          <button type="button" class="game-start-play-btn" id="wsStartPlayBtn">
+            <span>▶</span> ¡Empezar a Jugar!
+          </button>
+        </div>
       </div>
     </div>
   </section>
@@ -142,6 +183,9 @@
         <div class="game-stat-chip">
           <span>❤️ Vidas:</span> <b id="platLivesVal">❤️❤️❤️</b>
         </div>
+        <div class="game-stat-chip">
+          <span>⏱️ Tiempo:</span> <b id="platTimeVal">00:00</b>
+        </div>
         <button type="button" class="game-action-btn" id="platResetBtn">🔄 Reiniciar Carrera</button>
       </div>
     </div>
@@ -161,7 +205,7 @@
       <span style="margin-left:auto;font-size:0.78rem;color:#444;">Controles: <b>A/D o Flechas</b> correr · <b>Espacio o W</b> saltar</span>
     </div>
 
-    <div class="platformer-wrap">
+    <div class="platformer-wrap game-board-wrap">
       <canvas id="platformerCanvas" width="860" height="400"></canvas>
       
       <!-- Controles táctiles en pantalla para móviles y tablets -->
@@ -171,6 +215,38 @@
           <button type="button" class="touch-btn" id="touchBtnRight" aria-label="Mover a la derecha">▶</button>
         </div>
         <button type="button" class="touch-btn touch-btn-jump" id="touchBtnJump" aria-label="Saltar">🦘 SALTO</button>
+      </div>
+
+      <!-- Pantalla previa de configuración e inicio de Plataformas -->
+      <div class="game-start-overlay" id="platStartOverlay">
+        <div class="game-start-card" style="max-width:540px;">
+          <div class="game-start-icon">🏃‍♂️🌾</div>
+          <h3 class="game-start-title">Carrera hacia el Granero B-13</h3>
+          <p class="game-start-desc">Configuración previa para una partida justa y pareja entre todos los estudiantes.</p>
+          
+          <div style="margin-bottom:14px;background:var(--paper-dark,#f5efe1);padding:12px 14px;border-radius:8px;border:1.5px solid var(--ink);text-align:left;">
+            <div style="font-size:0.85rem;font-weight:700;margin-bottom:8px;color:var(--grass-dark);">1. Confirma tu Corredor y Accesorio:</div>
+            <div class="runner-selector-group" id="modalRunnerSelector" style="justify-content:center;margin-bottom:8px;">
+              <button type="button" class="runner-pick-btn active" data-animal="conejo">🐰 Conejo</button>
+              <button type="button" class="runner-pick-btn" data-animal="gallo">🐓 Gallo</button>
+              <button type="button" class="runner-pick-btn" data-animal="gallina">🐔 Gallina</button>
+              <button type="button" class="runner-pick-btn" data-animal="pato">🦆 Pato</button>
+              <button type="button" class="runner-pick-btn" data-animal="agapornis">🦜 Agapornis</button>
+              <button type="button" class="runner-pick-btn" data-animal="catita">🐦 Catita</button>
+            </div>
+            <div style="font-size:0.82rem;color:#444;text-align:center;" id="modalCharPreview">Corredor activo: <b>🐰 Conejo</b></div>
+          </div>
+
+          <div class="game-start-tips">
+            <div>⏱️ <b>Salida Limpia:</b> La física y el cronómetro arrancarán exactamente al presionar el botón de inicio.</div>
+            <div style="margin-top:6px;">🎮 <b>Controles:</b> Teclas <b>A/D</b> o <b>Flechas</b> para correr · <b>Espacio</b> o <b>W</b> para saltar. En móvil usa los botones táctiles en pantalla.</div>
+            <div style="margin-top:6px;">🌾 <b>Misión:</b> Recolecta alimentos (🥕 Choclos, Zanahorias, Trigo) y llega a la meta con vida.</div>
+          </div>
+
+          <button type="button" class="game-start-play-btn" id="platStartPlayBtn">
+            <span>▶</span> ¡Empezar la Carrera!
+          </button>
+        </div>
       </div>
     </div>
   </section>
@@ -279,7 +355,7 @@
 </div>
 
 <!-- Modal de Victoria en Minijuegos -->
-<div class="overlay" id="victoryOverlay">
+<div class="overlay" id="victoryOverlay" style="display:none;">
   <div class="card small-card" style="text-align:center;">
     <button class="close-btn" id="victoryCloseBtn" data-close="victoryOverlay" aria-label="Cerrar">✕</button>
     <div class="card-head" style="justify-content:center;text-align:center;">

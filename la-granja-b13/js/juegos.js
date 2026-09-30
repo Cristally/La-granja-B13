@@ -12,6 +12,7 @@
   const AudioFX = {
     ctx: null,
     activeNodes: new Set(),
+    activeTimeouts: new Set(),
 
     init() {
       if (!this.ctx && (window.AudioContext || window.webkitAudioContext)) {
@@ -25,9 +26,21 @@
     },
 
     stopAll() {
+      // Limpiar todos los timeouts programados de melodías
+      this.activeTimeouts.forEach(tid => clearTimeout(tid));
+      this.activeTimeouts.clear();
+
+      // Silenciar y desconectar de inmediato todos los osciladores y nodos de ganancia
       this.activeNodes.forEach(node => {
         try {
           if (node.stop) node.stop();
+        } catch (e) {}
+        try {
+          if (node.gain && this.ctx) {
+            node.gain.setValueAtTime(0, this.ctx.currentTime);
+          }
+        } catch (e) {}
+        try {
           if (node.disconnect) node.disconnect();
         } catch (e) {}
       });
@@ -38,7 +51,8 @@
       this.init();
       if (!this.ctx) return;
 
-      setTimeout(() => {
+      const tid = setTimeout(() => {
+        this.activeTimeouts.delete(tid);
         try {
           if (!this.ctx) return;
           const now = this.ctx.currentTime;
@@ -70,7 +84,8 @@
           osc.stop(now + duration);
 
           // Fallback estricto para nunca dejar un sonido colgado en el navegador
-          setTimeout(() => {
+          const cleanupTid = setTimeout(() => {
+            this.activeTimeouts.delete(cleanupTid);
             try {
               osc.stop();
               osc.disconnect();
@@ -79,9 +94,11 @@
             this.activeNodes.delete(osc);
             this.activeNodes.delete(gain);
           }, (duration + 0.08) * 1000);
+          this.activeTimeouts.add(cleanupTid);
 
         } catch (err) {}
       }, delay);
+      this.activeTimeouts.add(tid);
     },
 
     flip() { this.playTone(320, 'sine', 0.08); },
@@ -141,6 +158,7 @@
         e.stopPropagation();
       }
       overlay.classList.remove('open');
+      overlay.style.display = 'none';
       AudioFX.stopAll();
     };
 
@@ -160,6 +178,7 @@
       }
     };
 
+    overlay.style.display = 'flex';
     overlay.classList.add('open');
   }
 
@@ -167,8 +186,9 @@
   window.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
       const vOverlay = document.getElementById('victoryOverlay');
-      if (vOverlay && vOverlay.classList.contains('open')) {
+      if (vOverlay) {
         vOverlay.classList.remove('open');
+        vOverlay.style.display = 'none';
         AudioFX.stopAll();
       }
     }
@@ -192,13 +212,22 @@
         const panel = document.getElementById(targetId);
         if (panel) {
           panel.classList.add('active');
-          if (targetId === 'game-memory' && !MemoryGame.initialized) MemoryGame.start();
-          if (targetId === 'game-wordsearch' && !WordSearchGame.initialized) WordSearchGame.start();
+          if (targetId === 'game-memory') {
+            if (!MemoryGame.initialized) MemoryGame.start();
+          }
+          if (targetId === 'game-wordsearch') {
+            if (!WordSearchGame.initialized) WordSearchGame.start();
+          }
           if (targetId === 'game-platformer') {
             if (!PlatformerGame.initialized) PlatformerGame.start();
-            else PlatformerGame.reset();
+            else {
+              if (!PlatformerGame.isRunning) PlatformerGame.draw();
+            }
           } else {
-            if (PlatformerGame.reqId) cancelAnimationFrame(PlatformerGame.reqId);
+            // Pausar física si el jugador navega a otra pestaña
+            if (PlatformerGame.isRunning) {
+              PlatformerGame.pauseRun();
+            }
           }
         }
       });
@@ -210,6 +239,7 @@
      ============================================================ */
   const MemoryGame = {
     initialized: false,
+    isStarted: false,
     pairsData: [
       { id: 'conejo', name: 'Conejo', emoji: '🐰', fact: 'Sus incisivos crecen durante toda la vida y practica cecotrofia.' },
       { id: 'gallo', name: 'Gallo', emoji: '🐓', fact: 'Cresta vascularizada que disipa calor y canto por reloj circadiano.' },
@@ -227,17 +257,57 @@
 
     start() {
       this.initialized = true;
-      this.reset();
+      this.initStartScreen();
+      this.showStartScreen();
     },
 
-    reset() {
+    initStartScreen() {
+      const playBtn = document.getElementById('memStartPlayBtn');
+      if (playBtn) {
+        playBtn.onclick = () => this.startPlaying();
+      }
+    },
+
+    showStartScreen() {
       clearInterval(this.timerInterval);
+      this.isStarted = false;
       this.flippedCards = [];
       this.matchedCount = 0;
       this.moves = 0;
       this.timerSeconds = 0;
       this.updateStats();
 
+      const overlay = document.getElementById('memStartOverlay');
+      if (overlay) overlay.classList.remove('hidden');
+
+      this.buildDeckAndRender();
+    },
+
+    startPlaying() {
+      const overlay = document.getElementById('memStartOverlay');
+      if (overlay) overlay.classList.add('hidden');
+
+      this.isStarted = true;
+      this.timerSeconds = 0;
+      this.moves = 0;
+      this.matchedCount = 0;
+      this.flippedCards = [];
+      this.updateStats();
+
+      clearInterval(this.timerInterval);
+      this.timerInterval = setInterval(() => {
+        this.timerSeconds++;
+        this.updateStats();
+      }, 1000);
+
+      AudioFX.jump();
+    },
+
+    reset() {
+      this.showStartScreen();
+    },
+
+    buildDeckAndRender() {
       // Construir baraja de 12 cartas (6 animales y 6 curiosidades)
       const deck = [];
       this.pairsData.forEach(p => {
@@ -255,11 +325,6 @@
 
       this.cards = deck;
       this.render();
-
-      this.timerInterval = setInterval(() => {
-        this.timerSeconds++;
-        this.updateStats();
-      }, 1000);
     },
 
     render() {
@@ -305,6 +370,7 @@
     },
 
     handleCardClick(cardEl, idx) {
+      if (!this.isStarted) return;
       if (cardEl.classList.contains('flipped') || cardEl.classList.contains('matched')) return;
       if (this.flippedCards.length >= 2) return;
 
@@ -338,7 +404,7 @@
                   stamp: 'EXCELENCIA BIOLÓGICA',
                   msg: 'Has emparejado correctamente cada curiosidad científica y de campo con su correspondiente especie animal del liceo.',
                   stats: `⏱️ <b>Tiempo empleado:</b> ${this.timerSeconds}s &nbsp;|&nbsp; 🔄 <b>Intentos realizados:</b> ${this.moves} movimientos`,
-                  onRestart: () => this.reset()
+                  onRestart: () => this.showStartScreen()
                 });
               }, 350);
             }
@@ -374,6 +440,9 @@
      ============================================================ */
   const WordSearchGame = {
     initialized: false,
+    isStarted: false,
+    timerSeconds: 0,
+    timerInterval: null,
     size: 12,
     words: [
       { word: 'CECOTROFIA', desc: 'Heces blandas ricas en nutrientes que el conejo vuelve a ingerir.' },
@@ -394,8 +463,50 @@
 
     start() {
       this.initialized = true;
+      this.initStartScreen();
+      this.showStartScreen();
+    },
+
+    initStartScreen() {
+      const playBtn = document.getElementById('wsStartPlayBtn');
+      if (playBtn) {
+        playBtn.onclick = () => this.startPlaying();
+      }
+    },
+
+    showStartScreen() {
+      clearInterval(this.timerInterval);
+      this.isStarted = false;
+      this.timerSeconds = 0;
+      this.clearSelection();
+
+      const overlay = document.getElementById('wsStartOverlay');
+      if (overlay) overlay.classList.remove('hidden');
+
       this.generateGrid();
       this.render();
+      this.updateProgress();
+    },
+
+    startPlaying() {
+      const overlay = document.getElementById('wsStartOverlay');
+      if (overlay) overlay.classList.add('hidden');
+
+      this.isStarted = true;
+      this.timerSeconds = 0;
+      this.updateProgress();
+
+      clearInterval(this.timerInterval);
+      this.timerInterval = setInterval(() => {
+        this.timerSeconds++;
+        this.updateProgress();
+      }, 1000);
+
+      AudioFX.jump();
+    },
+
+    reset() {
+      this.showStartScreen();
     },
 
     generateGrid() {
@@ -489,6 +600,7 @@
     },
 
     handleCellDown(r, c) {
+      if (!this.isStarted) return;
       this.isSelecting = true;
       this.startCell = { r, c };
       this.clearSelection();
@@ -528,7 +640,11 @@
         this.updateProgress();
 
         if (this.foundWords.size === this.words.length) {
+          clearInterval(this.timerInterval);
           AudioFX.win();
+          const mins = Math.floor(this.timerSeconds / 60);
+          const secs = this.timerSeconds % 60;
+          const timeStr = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
           setTimeout(() => {
             showGameVictory({
               icon: '🔍📜',
@@ -536,8 +652,8 @@
               subtitle: 'Vocabulario y Bienestar Animal Liceo B-13',
               stamp: 'ZOOTECNIA COMUNITARIA',
               msg: 'Encontraste los 10 conceptos fundamentales de nutrición, anatomía, manejo avícola y compromiso sustentable de la granja escolar.',
-              stats: `🎯 <b>Palabras identificadas:</b> ${this.words.length}/${this.words.length} conceptos zootécnicos clave`,
-              onRestart: () => this.start()
+              stats: `🎯 <b>Palabras identificadas:</b> ${this.words.length}/${this.words.length} conceptos &nbsp;|&nbsp; ⏱️ <b>Tiempo:</b> ${timeStr}`,
+              onRestart: () => this.showStartScreen()
             });
           }, 300);
         }
@@ -572,6 +688,13 @@
     updateProgress() {
       const countEl = document.getElementById('wsCountVal');
       if (countEl) countEl.textContent = `${this.foundWords.size}/${this.words.length}`;
+
+      const timeEl = document.getElementById('wsTimeVal');
+      if (timeEl) {
+        const mins = Math.floor(this.timerSeconds / 60);
+        const secs = this.timerSeconds % 60;
+        timeEl.textContent = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+      }
     }
   };
 
@@ -580,11 +703,15 @@
      ============================================================ */
   const PlatformerGame = {
     initialized: false,
+    isRunning: false,
+    isFinished: false,
     canvas: null,
     ctx: null,
     reqId: null,
     score: 0,
     lives: 3,
+    timerSeconds: 0,
+    timerInterval: null,
     keys: { left: false, right: false, jump: false },
     selectedAnimal: 'conejo',
     animalEmojis: {
@@ -630,23 +757,84 @@
       this.ctx = this.canvas.getContext('2d');
 
       this.initRunnerSelector();
+      this.initStartScreen();
       this.setupControls();
-      this.reset();
+      this.showStartScreen();
     },
 
     initRunnerSelector() {
-      const group = document.getElementById('runnerSelectorGroup');
-      if (!group) return;
-
-      const buttons = group.querySelectorAll('.runner-pick-btn');
-      buttons.forEach(btn => {
+      const allButtons = document.querySelectorAll('.runner-pick-btn');
+      allButtons.forEach(btn => {
         btn.onclick = () => {
-          buttons.forEach(b => b.classList.remove('active'));
-          btn.classList.add('active');
           const animalId = btn.dataset.animal || 'conejo';
           this.setAnimalRunner(animalId);
+          allButtons.forEach(b => {
+            if (b.dataset.animal === animalId) b.classList.add('active');
+            else b.classList.remove('active');
+          });
         };
       });
+    },
+
+    initStartScreen() {
+      const playBtn = document.getElementById('platStartPlayBtn');
+      if (playBtn) {
+        playBtn.onclick = () => this.startRun();
+      }
+    },
+
+    showStartScreen() {
+      this.isRunning = false;
+      this.isFinished = false;
+      if (this.reqId) {
+        cancelAnimationFrame(this.reqId);
+        this.reqId = null;
+      }
+      clearInterval(this.timerInterval);
+      AudioFX.stopAll();
+
+      const overlay = document.getElementById('platStartOverlay');
+      if (overlay) overlay.classList.remove('hidden');
+
+      this.score = 0;
+      this.lives = 3;
+      this.timerSeconds = 0;
+      this.resetWorld();
+      this.updateHud();
+      this.draw();
+    },
+
+    startRun() {
+      const overlay = document.getElementById('platStartOverlay');
+      if (overlay) overlay.classList.add('hidden');
+
+      this.resetWorld();
+      this.score = 0;
+      this.lives = 3;
+      this.timerSeconds = 0;
+      this.isRunning = true;
+      this.isFinished = false;
+      this.updateHud();
+
+      clearInterval(this.timerInterval);
+      this.timerInterval = setInterval(() => {
+        this.timerSeconds++;
+        this.updateHud();
+      }, 1000);
+
+      this.lastTime = performance.now();
+      AudioFX.jump();
+      this.loop(this.lastTime);
+    },
+
+    pauseRun() {
+      this.isRunning = false;
+      if (this.reqId) {
+        cancelAnimationFrame(this.reqId);
+        this.reqId = null;
+      }
+      clearInterval(this.timerInterval);
+      AudioFX.stopAll();
     },
 
     setAnimalRunner(animalId) {
@@ -654,6 +842,16 @@
       this.player.emoji = this.animalEmojis[animalId] || '🐰';
       this.loadAccessory();
       this.updateCharPreview();
+      this.updateModalCharPreview();
+      if (!this.isRunning) this.draw();
+    },
+
+    updateModalCharPreview() {
+      const modalPreview = document.getElementById('modalCharPreview');
+      if (modalPreview) {
+        const nameCap = this.selectedAnimal.charAt(0).toUpperCase() + this.selectedAnimal.slice(1);
+        modalPreview.innerHTML = `Corredor activo: <b>${this.player.emoji} ${nameCap}</b>${this.player.accEmoji ? ` (Accesorio: ${this.player.accEmoji})` : ''}`;
+      }
     },
 
     loadAccessory() {
@@ -718,10 +916,10 @@
     },
 
     reset() {
-      cancelAnimationFrame(this.reqId);
-      AudioFX.stopAll();
-      this.score = 0;
-      this.lives = 3;
+      this.showStartScreen();
+    },
+
+    resetWorld() {
       this.cameraX = 0;
       this.particles = [];
       this.floatingTexts = [];
@@ -793,20 +991,26 @@
         { x: 2870, y: 155, emoji: '⭐', val: 50, name: 'Estrella Dorada', taken: false },
         { x: 3060, y: 215, emoji: '🥕', val: 10, name: 'Zanahoria', taken: false }
       ];
-
-      this.updateHud();
-      this.lastTime = performance.now();
-      this.loop(this.lastTime);
     },
 
     loop(timestamp) {
+      if (!this.isRunning || this.isFinished) {
+        if (this.reqId) {
+          cancelAnimationFrame(this.reqId);
+          this.reqId = null;
+        }
+        return;
+      }
       const dt = Math.min(32, timestamp - (this.lastTime || timestamp));
       this.lastTime = timestamp;
       this.animTime += dt * 0.001;
 
       this.update(dt);
       this.draw();
-      this.reqId = requestAnimationFrame((t) => this.loop(t));
+
+      if (this.isRunning && !this.isFinished) {
+        this.reqId = requestAnimationFrame((t) => this.loop(t));
+      }
     },
 
     spawnDust(x, y, count = 3) {
@@ -958,7 +1162,17 @@
         AudioFX.wrong();
 
         if (this.lives <= 0) {
-          cancelAnimationFrame(this.reqId);
+          if (this.isFinished) return;
+          this.isFinished = true;
+          this.isRunning = false;
+          if (this.reqId) {
+            cancelAnimationFrame(this.reqId);
+            this.reqId = null;
+          }
+          clearInterval(this.timerInterval);
+          AudioFX.stopAll();
+          AudioFX.wrong();
+
           setTimeout(() => {
             showGameVictory({
               icon: '🐾🌱',
@@ -967,7 +1181,7 @@
               stamp: 'INTÉNTALO OTRA VEZ',
               msg: 'Tu animalito se agotó al saltar entre los fardos. ¡Vuelve a intentarlo para llegar con honor al Granero B-13!',
               stats: `⭐ <b>Puntaje alcanzado:</b> ${this.score} pts`,
-              onRestart: () => this.reset()
+              onRestart: () => this.showStartScreen()
             });
           }, 150);
           return;
@@ -995,7 +1209,15 @@
 
       // Llegada a la meta: El Granero B-13
       if (p.x >= this.goal.x - 30) {
-        cancelAnimationFrame(this.reqId);
+        if (this.isFinished) return;
+        this.isFinished = true;
+        this.isRunning = false;
+        if (this.reqId) {
+          cancelAnimationFrame(this.reqId);
+          this.reqId = null;
+        }
+        clearInterval(this.timerInterval);
+        AudioFX.stopAll();
         AudioFX.win();
 
         // Sumar al puntaje del alumno si existe state
@@ -1004,6 +1226,10 @@
           if (typeof saveState === 'function') saveState();
         }
 
+        const mins = Math.floor(this.timerSeconds / 60);
+        const secs = this.timerSeconds % 60;
+        const timeStr = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+
         setTimeout(() => {
           showGameVictory({
             icon: '🏁🌾',
@@ -1011,8 +1237,8 @@
             subtitle: 'Aventura de Campo Completada',
             stamp: 'MISIÓN CUMPLIDA',
             msg: `¡Tu corredor ${this.player.emoji} superó todos los fardos y puentes de la granja, recolectó provisiones y alcanzó el granero con maestría deportiva!`,
-            stats: `⭐ <b>Puntaje cosechado:</b> ${this.score} pts &nbsp;|&nbsp; ❤️ <b>Vidas restantes:</b> ${'❤️'.repeat(Math.max(1, this.lives))}`,
-            onRestart: () => this.reset()
+            stats: `⭐ <b>Puntaje:</b> ${this.score} pts &nbsp;|&nbsp; ❤️ <b>Vidas:</b> ${'❤️'.repeat(Math.max(1, this.lives))} &nbsp;|&nbsp; ⏱️ <b>Tiempo:</b> ${timeStr}`,
+            onRestart: () => this.showStartScreen()
           });
         }, 220);
         return;
@@ -1449,8 +1675,14 @@
     updateHud() {
       const scoreEl = document.getElementById('platScoreVal');
       const livesEl = document.getElementById('platLivesVal');
+      const timeEl = document.getElementById('platTimeVal');
       if (scoreEl) scoreEl.textContent = this.score;
       if (livesEl) livesEl.textContent = '❤️'.repeat(Math.max(0, this.lives));
+      if (timeEl) {
+        const mins = Math.floor(this.timerSeconds / 60);
+        const secs = this.timerSeconds % 60;
+        timeEl.textContent = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+      }
     }
   };
 
@@ -1458,15 +1690,17 @@
   document.addEventListener('DOMContentLoaded', () => {
     initGameTabs();
     MemoryGame.start();
+    WordSearchGame.start();
+    PlatformerGame.start();
 
     const memResetBtn = document.getElementById('memResetBtn');
-    if (memResetBtn) memResetBtn.addEventListener('click', () => MemoryGame.reset());
+    if (memResetBtn) memResetBtn.addEventListener('click', () => MemoryGame.showStartScreen());
 
     const wsResetBtn = document.getElementById('wsResetBtn');
-    if (wsResetBtn) wsResetBtn.addEventListener('click', () => WordSearchGame.start());
+    if (wsResetBtn) wsResetBtn.addEventListener('click', () => WordSearchGame.showStartScreen());
 
     const platResetBtn = document.getElementById('platResetBtn');
-    if (platResetBtn) platResetBtn.addEventListener('click', () => PlatformerGame.reset());
+    if (platResetBtn) platResetBtn.addEventListener('click', () => PlatformerGame.showStartScreen());
   });
 
 })();
