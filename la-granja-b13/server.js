@@ -179,6 +179,14 @@ app.post('/api/sync', (req, res) => {
     const rawScore = parseInt(studentData.score, 10);
     const validScore = Number.isFinite(rawScore) && rawScore >= 0 && rawScore <= 100000 ? rawScore : 0;
 
+    const rawPureScore = parseInt(studentData.pureScore, 10);
+    const validPureScore = Number.isFinite(rawPureScore) && rawPureScore >= 0 && rawPureScore <= 100000
+      ? rawPureScore
+      : validScore;
+
+    const rawAvatar = String(studentData.avatarIcon || studentData.avatar || '🧑‍🌾');
+    const cleanAvatar = sanitizeForSecurity(rawAvatar, 12) || '🧑‍🌾';
+
     const db = readDatabase();
     
     // Asignación segura sin riesgo de contaminar el prototipo
@@ -186,7 +194,9 @@ app.post('/api/sync', (req, res) => {
       id: key,
       studentName: cleanName,
       studentGrade: cleanGrade,
-      score: validScore,
+      score: validPureScore,
+      pureScore: validPureScore,
+      avatarIcon: cleanAvatar,
       discoveredCount: Array.isArray(studentData.discovered) ? studentData.discovered.length : 0,
       mapDiscoveredCount: Array.isArray(studentData.mapDiscovered) ? studentData.mapDiscovered.length : 0,
       potreroQuizCompleted: studentData.quiz && typeof studentData.quiz === 'object'
@@ -198,7 +208,9 @@ app.post('/api/sync', (req, res) => {
       badgesCount: Array.isArray(studentData.badges) ? studentData.badges.length : 0,
       updatedAt: new Date().toISOString(),
       stateData: {
-        score: validScore,
+        score: validPureScore,
+        pureScore: validPureScore,
+        avatarIcon: cleanAvatar,
         badges: Array.isArray(studentData.badges) ? studentData.badges.slice(0, 20) : [],
         discovered: Array.isArray(studentData.discovered) ? studentData.discovered.slice(0, 50) : [],
         mapDiscovered: Array.isArray(studentData.mapDiscovered) ? studentData.mapDiscovered.slice(0, 50) : []
@@ -220,7 +232,9 @@ app.get('/api/students', (req, res) => {
       id: s.id,
       studentName: s.studentName,
       studentGrade: s.studentGrade,
-      score: s.score,
+      score: Number.isFinite(s.pureScore) ? s.pureScore : (s.score || 0),
+      pureScore: Number.isFinite(s.pureScore) ? s.pureScore : (s.score || 0),
+      avatarIcon: s.avatarIcon || '🧑‍🌾',
       potreroQuizCompleted: s.potreroQuizCompleted || 0,
       mapQuizCompleted: s.mapQuizCompleted || 0,
       badgesCount: s.badgesCount || 0,
@@ -229,6 +243,32 @@ app.get('/api/students', (req, res) => {
     res.json({ success: true, total: list.length, students: list });
   } catch (err) {
     res.status(500).json({ error: 'Error al consultar estudiantes.' });
+  }
+});
+
+// Obtener ranking oficial de estudiantes ordenados por puntaje puro (sin repetición)
+app.get('/api/ranking', (req, res) => {
+  try {
+    const db = readDatabase();
+    const studentsList = Object.values(db.students || {});
+    const ranking = studentsList.map(s => {
+      const pure = Number.isFinite(s.pureScore) ? s.pureScore : (Number.isFinite(s.score) ? s.score : 0);
+      return {
+        id: s.id,
+        studentName: s.studentName,
+        studentGrade: s.studentGrade,
+        avatarIcon: s.avatarIcon || '🧑‍🌾',
+        score: pure,
+        pureScore: pure,
+        quizzesCount: (s.potreroQuizCompleted || 0) + (s.mapQuizCompleted || 0),
+        badgesCount: s.badgesCount || 0,
+        updatedAt: s.updatedAt
+      };
+    }).sort((a, b) => b.pureScore - a.pureScore);
+
+    res.json({ success: true, total: ranking.length, ranking });
+  } catch (err) {
+    res.status(500).json({ error: 'Error al consultar ranking.' });
   }
 });
 

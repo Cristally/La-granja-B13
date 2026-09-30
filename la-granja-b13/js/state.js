@@ -158,8 +158,43 @@ function loadState() {
   }
 }
 
+function computePureScore(st) {
+  if (!st) return 0;
+  let total = 0;
+  // 1. Quizzes de animales en el Mapa 3D (cada especie cuenta máx 1 vez con su mejor puntaje)
+  if (st.mapQuiz && typeof st.mapQuiz === 'object') {
+    for (const key of Object.keys(st.mapQuiz)) {
+      const q = st.mapQuiz[key];
+      if (q && q.completed) {
+        let pts = Number(q.scoreEarned);
+        if (!Number.isFinite(pts) || pts <= 0) {
+          pts = Array.isArray(q.results) ? q.results.filter(Boolean).length * 10 : 0;
+        }
+        total += Math.min(90, Math.max(0, pts));
+      }
+    }
+  }
+  // 2. Quizzes de profesor por zona (máx 1 vez por zona)
+  if (st.teacherQuizzes && typeof st.teacherQuizzes === 'object') {
+    for (const key of Object.keys(st.teacherQuizzes)) {
+      const tq = st.teacherQuizzes[key];
+      if (tq && tq.completed) {
+        total += Math.max(0, Number(tq.scoreEarned || 0));
+      }
+    }
+  }
+  // Si no hay quizzes detallados pero tiene un score numérico válido asignado
+  if (total === 0 && Number.isFinite(st.score) && st.score > 0) {
+    total = st.score;
+  }
+  return total;
+}
+window.computePureScore = computePureScore;
+
 function saveState() {
   try {
+    state.pureScore = computePureScore(state);
+    state.score = state.pureScore; // Puntaje oficial del juego es el puntaje puro sin repetición
     state.updatedAt = Date.now();
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
 
@@ -173,7 +208,8 @@ function saveState() {
         avatarIcon: state.avatarIcon || '🧑‍🌾',
         avatarColor: state.avatarColor || '#ffd83d',
         studentTitle: state.studentTitle || 'Explorador/a de Campo',
-        score: state.score,
+        score: state.pureScore,
+        pureScore: state.pureScore,
         discoveredCount: state.discovered.length,
         mapDiscoveredCount: state.mapDiscovered.length,
         potreroQuizCompleted: Object.keys(state.quiz).filter(k => state.quiz[k] && state.quiz[k].completed).length,
@@ -188,6 +224,9 @@ function saveState() {
     }
     // Sincronización transparente con el servidor / base de datos en segundo plano si está disponible
     syncWithServer();
+    if (typeof window.refreshRankingWidget === 'function') {
+      window.refreshRankingWidget();
+    }
   } catch (e) {
     // localStorage en modo incógnito o lleno
   }

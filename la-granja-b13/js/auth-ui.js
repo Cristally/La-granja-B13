@@ -193,7 +193,16 @@
           Acumulaste un bono de <b>+${totalDecimasGanadas.toFixed(1)} décimas</b> sugeridas para tu calificación de ciencias.
         `;
         if (typeof state !== 'undefined' && typeof saveState === 'function') {
-          state.score += (correctCount * 10);
+          if (!state.teacherQuizzes) state.teacherQuizzes = {};
+          const prevScore = (state.teacherQuizzes[zonaId] && state.teacherQuizzes[zonaId].scoreEarned) || 0;
+          const newScore = correctCount * 10;
+          state.teacherQuizzes[zonaId] = {
+            completed: true,
+            scoreEarned: Math.max(prevScore, newScore),
+            correctCount,
+            totalCount: preguntas.length,
+            completedAt: new Date().toISOString()
+          };
           saveState();
         }
       }

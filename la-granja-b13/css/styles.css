@@ -2867,6 +2867,716 @@ body.rol-admin .badges-bar {
   transform: translateY(-1px);
 }
 
+/* ============================================================
+   SALÓN DE HONOR B-13 (Leaderboard con Efectos de Videojuego)
+   ============================================================ */
+
+/* Contenedor principal del sidebar en PC */
+.ranking-sidebar {
+  position: fixed;
+  top: 76px;
+  right: 16px;
+  width: 320px;
+  max-height: calc(100vh - 96px);
+  z-index: 950;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+  pointer-events: auto;
+}
+
+.ranking-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  max-height: calc(100vh - 96px);
+  background: rgba(255, 253, 247, 0.96);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 2.5px solid var(--ink);
+  border-radius: 16px;
+  box-shadow: 0 12px 32px rgba(40, 49, 27, 0.22), 4px 4px 0 var(--ink);
+  overflow: hidden;
+}
+
+/* Pestaña lateral para colapsar / expandir en PC */
+.ranking-tab-handle {
+  position: absolute;
+  left: -44px;
+  top: 16px;
+  width: 44px;
+  height: 84px;
+  background: linear-gradient(135deg, #ffd83d, #e8a838);
+  border: 2.5px solid var(--ink);
+  border-right: none;
+  border-radius: 12px 0 0 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  cursor: pointer;
+  box-shadow: -3px 4px 10px rgba(0, 0, 0, 0.15);
+  transition: all 0.2s ease;
+  padding: 0;
+  color: var(--ink);
+}
+
+.ranking-tab-handle:hover {
+  background: linear-gradient(135deg, #ffe566, #f3b54a);
+  transform: translateX(-2px);
+}
+
+.ranking-tab-handle .handle-icon {
+  font-size: 1.25rem;
+  line-height: 1;
+}
+
+.ranking-tab-handle .handle-label {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+}
+
+.ranking-tab-handle .handle-arrow {
+  font-size: 0.85rem;
+  font-weight: 800;
+  margin-top: 2px;
+}
+
+/* Estado colapsado en PC */
+.ranking-sidebar.collapsed {
+  transform: translateX(calc(100% - 10px));
+}
+
+.ranking-sidebar.collapsed:hover {
+  transform: translateX(calc(100% - 18px));
+}
+
+/* Encabezado */
+.ranking-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 14px 10px;
+  background: linear-gradient(180deg, #2b3a1d, #1c2713);
+  color: #fff;
+  border-bottom: 2px solid var(--ink);
+}
+
+.ranking-header-title-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.ranking-trophy-vfx {
+  font-size: 1.8rem;
+  line-height: 1;
+  filter: drop-shadow(0 0 8px rgba(255, 216, 61, 0.7));
+  animation: trophyShine 2.5s infinite alternate ease-in-out;
+}
+
+.ranking-title {
+  margin: 0;
+  font-family: 'Fraunces', serif;
+  font-size: 1.08rem;
+  font-weight: 700;
+  color: #ffd83d;
+  letter-spacing: 0.2px;
+}
+
+.ranking-subtitle-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 2px;
+}
+
+.pure-badge {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.65rem;
+  font-weight: 700;
+  background: rgba(255, 216, 61, 0.2);
+  color: #ffd83d;
+  border: 1px solid rgba(255, 216, 61, 0.4);
+  padding: 1px 6px;
+  border-radius: 4px;
+}
+
+.ranking-info-trigger {
+  background: none;
+  border: none;
+  color: #ffd83d;
+  font-size: 0.78rem;
+  cursor: pointer;
+  padding: 0;
+  opacity: 0.85;
+}
+
+.ranking-info-trigger:hover {
+  opacity: 1;
+  transform: scale(1.15);
+}
+
+.ranking-header-close {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 1.15rem;
+  cursor: pointer;
+  padding: 4px;
+  line-height: 1;
+  opacity: 0.7;
+}
+
+.ranking-header-close:hover {
+  opacity: 1;
+  color: #ffd83d;
+}
+
+/* Filtros de ranking */
+.ranking-filter-bar {
+  display: flex;
+  gap: 6px;
+  padding: 8px 12px;
+  background: #f1ebd8;
+  border-bottom: 1.5px solid var(--ink);
+}
+
+.ranking-filter-btn {
+  flex: 1;
+  padding: 5px 8px;
+  font-family: 'Karla', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 700;
+  border: 1.5px solid var(--ink);
+  border-radius: 6px;
+  background: #fff;
+  color: var(--ink);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  transition: all 0.15s ease;
+}
+
+.ranking-filter-btn:hover {
+  background: #fff5db;
+}
+
+.ranking-filter-btn.active {
+  background: var(--grass-dark, #2b5329);
+  color: #ffffff;
+  border-color: var(--grass-dark, #2b5329);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+}
+
+/* Lista de posiciones */
+.ranking-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 10px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ranking-loading,
+.ranking-empty-msg {
+  text-align: center;
+  padding: 24px 12px;
+  color: #666;
+  font-size: 0.84rem;
+}
+
+.ranking-empty-msg span {
+  font-size: 2.2rem;
+  display: block;
+  margin-bottom: 6px;
+}
+
+/* Tarjeta estándar de estudiante */
+.ranking-card {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1.5px solid #dcd7c5;
+  background: #ffffff;
+  transition: transform 0.2s cubic-bezier(0.2, 0.9, 0.3, 1), box-shadow 0.2s ease;
+  overflow: hidden;
+}
+
+.ranking-card:hover {
+  transform: translateX(-3px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.ranking-card-left {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-width: 0;
+  flex: 1;
+}
+
+.ranking-avatar-wrap {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.ranking-avatar-box {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #f5f2e6;
+  border: 2px solid var(--ink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.45rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+}
+
+.ranking-user-info {
+  min-width: 0;
+  flex: 1;
+}
+
+.ranking-name-row {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.ranking-name {
+  font-weight: 700;
+  font-size: 0.84rem;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 120px;
+}
+
+.ranking-grade-tag {
+  font-size: 0.68rem;
+  color: #666;
+  margin-top: 1px;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ranking-card-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.ranking-pts-box {
+  text-align: right;
+  line-height: 1.1;
+}
+
+.ranking-pts-val {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--grass-dark, #2b5329);
+}
+
+.ranking-pts-lbl {
+  font-size: 0.62rem;
+  color: #777;
+  display: block;
+}
+
+/* ============================================================
+   EFECTOS ESPECIALES DE VIDEOJUEGO PARA EL TOP 3
+   ============================================================ */
+
+/* Shimmer beam que cruza la tarjeta */
+.vfx-shimmer {
+  position: absolute;
+  top: 0;
+  left: -120%;
+  width: 70%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.75), transparent);
+  transform: skewX(-25deg);
+  pointer-events: none;
+}
+
+.gold-shimmer {
+  animation: shimmerSweep 3.2s infinite ease-in-out;
+}
+
+.silver-shimmer {
+  animation: shimmerSweep 4.2s infinite 1.2s ease-in-out;
+}
+
+/* Partículas */
+.vfx-sparkle {
+  position: absolute;
+  pointer-events: none;
+  font-size: 0.85rem;
+  animation: sparkTwinkle 2.4s infinite ease-in-out alternate;
+}
+
+.vfx-sparkle.s1 { top: 4px; right: 28px; }
+.vfx-sparkle.s2 { bottom: 4px; right: 80px; animation-delay: 1.2s; }
+.silver-spark { top: 4px; right: 30px; font-size: 0.8rem; }
+
+/* Corona del Top 1 */
+.vfx-crown {
+  position: absolute;
+  top: -14px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 1.3rem;
+  line-height: 1;
+  filter: drop-shadow(0 2px 4px rgba(217, 119, 6, 0.6));
+  animation: crownBob 2.2s ease-in-out infinite alternate;
+  z-index: 2;
+}
+
+/* --- #1 LUGAR: ORO (Gran Campeón Zootécnico) --- */
+.ranking-card.rank-1 {
+  background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 45%, #fde68a 100%);
+  border: 2px solid #d97706;
+  box-shadow: 0 4px 16px rgba(217, 119, 6, 0.3), inset 0 0 12px rgba(251, 191, 36, 0.35);
+  animation: goldPulse 3.5s infinite alternate ease-in-out;
+}
+
+.ranking-card.rank-1 .ranking-avatar-box {
+  background: linear-gradient(135deg, #fff, #fef08a);
+  border-color: #d97706;
+  box-shadow: 0 0 10px rgba(217, 119, 6, 0.5);
+}
+
+.ranking-card.rank-1 .ranking-name {
+  color: #92400e;
+  font-weight: 800;
+}
+
+.ranking-card.rank-1 .ranking-pts-val {
+  color: #b45309;
+  font-size: 0.95rem;
+}
+
+.gold-badge {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: #ffffff;
+  border: 1.5px solid #92400e;
+  box-shadow: 0 2px 4px rgba(180, 83, 9, 0.35);
+}
+
+/* --- #2 LUGAR: PLATA (Subcampeón de Campo) --- */
+.ranking-card.rank-2 {
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 45%, #e2e8f0 100%);
+  border: 2px solid #64748b;
+  box-shadow: 0 3px 12px rgba(100, 116, 139, 0.25), inset 0 0 8px rgba(255, 255, 255, 0.8);
+}
+
+.ranking-card.rank-2 .ranking-avatar-box {
+  background: linear-gradient(135deg, #ffffff, #e2e8f0);
+  border-color: #64748b;
+  box-shadow: 0 0 8px rgba(100, 116, 139, 0.35);
+}
+
+.ranking-card.rank-2 .ranking-name {
+  color: #334155;
+}
+
+.ranking-card.rank-2 .ranking-pts-val {
+  color: #475569;
+}
+
+.silver-badge {
+  background: linear-gradient(135deg, #94a3b8, #64748b);
+  color: #ffffff;
+  border: 1.5px solid #334155;
+  box-shadow: 0 2px 4px rgba(51, 65, 85, 0.25);
+}
+
+/* --- #3 LUGAR: BRONCE (Podio de Campo) --- */
+.ranking-card.rank-3 {
+  background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 45%, #fed7aa 100%);
+  border: 2px solid #ea580c;
+  box-shadow: 0 3px 10px rgba(234, 88, 12, 0.2);
+}
+
+.ranking-card.rank-3 .ranking-avatar-box {
+  background: linear-gradient(135deg, #ffffff, #fed7aa);
+  border-color: #ea580c;
+}
+
+.ranking-card.rank-3 .ranking-name {
+  color: #9a3412;
+}
+
+.ranking-card.rank-3 .ranking-pts-val {
+  color: #c2410c;
+}
+
+.bronze-badge {
+  background: linear-gradient(135deg, #f97316, #ea580c);
+  color: #ffffff;
+  border: 1.5px solid #7c2d12;
+  box-shadow: 0 2px 4px rgba(124, 45, 18, 0.25);
+}
+
+/* Badges de puesto general */
+.rank-pos-badge {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 6px;
+  letter-spacing: 0.3px;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.other-badge {
+  background: #f1f5f9;
+  color: #475569;
+  border: 1px solid #cbd5e1;
+}
+
+/* --- ESTUDIANTE ACTUAL (TÚ) --- */
+.ranking-card.is-me {
+  border: 2.5px solid #2b5329 !important;
+  box-shadow: 0 0 0 2px rgba(43, 83, 41, 0.35), 0 4px 14px rgba(43, 83, 41, 0.25) !important;
+  background: #f0fdf4 !important;
+}
+
+.me-tag {
+  background: var(--grass-dark, #2b5329);
+  color: #ffffff;
+  font-size: 0.62rem;
+  font-weight: 800;
+  padding: 1px 6px;
+  border-radius: 4px;
+  animation: meGlow 2s infinite alternate;
+}
+
+/* Pie fijo con el estado del usuario */
+.ranking-my-status {
+  padding: 8px 10px;
+  background: #f5f0e1;
+  border-top: 2px solid var(--ink);
+}
+
+.my-status-box {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1.5px solid var(--ink);
+  background: #ffffff;
+}
+
+.my-status-avatar-box {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #eef6ea;
+  border: 2px solid var(--grass-dark);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.35rem;
+  flex-shrink: 0;
+}
+
+.my-status-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.my-status-top-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.my-status-name {
+  font-weight: 800;
+  font-size: 0.8rem;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.my-status-rank-pill {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.68rem;
+  font-weight: 700;
+  background: var(--grass-dark);
+  color: #fff;
+  padding: 1px 7px;
+  border-radius: 12px;
+}
+
+.my-status-bottom-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  margin-top: 2px;
+}
+
+.my-status-pts {
+  font-size: 0.72rem;
+  color: var(--grass-dark);
+}
+
+.my-status-motto {
+  font-size: 0.65rem;
+  color: #555;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 140px;
+}
+
+.my-status-box.guest {
+  font-size: 0.75rem;
+  line-height: 1.35;
+  color: #555;
+}
+
+.my-status-box.guest .my-status-ic {
+  font-size: 1.5rem;
+}
+
+/* Botón flotante para dispositivos móviles */
+.mobile-ranking-float-btn {
+  display: none;
+  position: fixed;
+  bottom: 20px;
+  right: 18px;
+  z-index: 920;
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ffd83d 0%, #e8a838 100%);
+  border: 2.5px solid var(--ink);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.28), 0 0 12px rgba(255, 216, 61, 0.6);
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--ink);
+  animation: floatPulse 2.8s infinite alternate ease-in-out;
+}
+
+.mobile-ranking-float-btn .float-trophy {
+  font-size: 1.35rem;
+  line-height: 1;
+}
+
+.mobile-ranking-float-btn .float-txt {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.58rem;
+  font-weight: 800;
+  margin-top: 1px;
+}
+
+/* ============================================================
+   RESPONSIVE DESIGN (Móvil vs PC)
+   ============================================================ */
+
+@media (max-width: 1023px) {
+  .mobile-ranking-float-btn {
+    display: flex;
+  }
+
+  .ranking-sidebar {
+    top: 0;
+    right: 0;
+    width: 100%;
+    max-width: 380px;
+    height: 100vh;
+    max-height: 100vh;
+    transform: translateX(110%);
+    box-shadow: -8px 0 30px rgba(0, 0, 0, 0.35);
+    z-index: 9999;
+  }
+
+  .ranking-sidebar.mobile-open {
+    transform: translateX(0);
+  }
+
+  .ranking-tab-handle {
+    display: none;
+  }
+
+  .ranking-container {
+    border-radius: 0;
+    border-right: none;
+    border-top: none;
+    border-bottom: none;
+    height: 100%;
+    max-height: 100vh;
+  }
+}
+
+/* Animaciones del videojuego */
+@keyframes shimmerSweep {
+  0% { left: -120%; }
+  35% { left: 140%; }
+  100% { left: 140%; }
+}
+
+@keyframes crownBob {
+  0% { transform: translateX(-50%) translateY(0) rotate(-3deg); }
+  100% { transform: translateX(-50%) translateY(-4px) rotate(3deg); }
+}
+
+@keyframes goldPulse {
+  0% { box-shadow: 0 4px 14px rgba(217, 119, 6, 0.28), inset 0 0 10px rgba(251, 191, 36, 0.3); }
+  100% { box-shadow: 0 4px 20px rgba(217, 119, 6, 0.45), inset 0 0 16px rgba(251, 191, 36, 0.5); }
+}
+
+@keyframes sparkTwinkle {
+  0% { opacity: 0.3; transform: scale(0.85); }
+  100% { opacity: 1; transform: scale(1.18); }
+}
+
+@keyframes meGlow {
+  0% { box-shadow: 0 0 4px rgba(43, 83, 41, 0.4); }
+  100% { box-shadow: 0 0 10px rgba(43, 83, 41, 0.8); }
+}
+
+@keyframes floatPulse {
+  0% { transform: translateY(0) scale(1); }
+  100% { transform: translateY(-5px) scale(1.04); }
+}
+
+@keyframes trophyShine {
+  0% { transform: rotate(-5deg) scale(0.95); filter: drop-shadow(0 0 6px rgba(255, 216, 61, 0.5)); }
+  100% { transform: rotate(5deg) scale(1.06); filter: drop-shadow(0 0 12px rgba(255, 216, 61, 0.9)); }
+}
+
 /* Reglas de impresión para PDF / papel */
 @media print {
   body {
