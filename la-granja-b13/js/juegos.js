@@ -112,6 +112,29 @@
       this.playTone(180, 'sawtooth', 0.18, 90);
     },
     jump() { this.playTone(420, 'square', 0.09); },
+    dash() {
+      // Efecto de ráfaga y aceleración estilo Celeste
+      this.playTone(580, 'sine', 0.06, 0);
+      this.playTone(880, 'triangle', 0.10, 30);
+    },
+    parry() {
+      // Campanazo agudo y brillante estilo Cuphead Parry Slap
+      this.playTone(1174, 'triangle', 0.12, 0);
+      this.playTone(1760, 'sine', 0.16, 50);
+    },
+    pogo() {
+      // Golpe metálico de aguijón sobre seta estilo Hollow Knight
+      this.playTone(740, 'square', 0.06, 0);
+      this.playTone(1320, 'triangle', 0.10, 40);
+    },
+    crystal() {
+      // Destello de cristal Celeste para recarga de Dash
+      this.playTone(1046, 'sine', 0.08, 0);
+      this.playTone(1568, 'sine', 0.12, 60);
+    },
+    crumble() {
+      this.playTone(110, 'sawtooth', 0.15, 0);
+    },
     spring() {
       this.playTone(330, 'sine', 0.08, 0);
       this.playTone(660, 'triangle', 0.14, 60);
@@ -805,9 +828,10 @@
     reqId: null,
     score: 0,
     lives: 3,
+    maxLives: 3,
     timerSeconds: 0,
     timerInterval: null,
-    keys: { left: false, right: false, jump: false },
+    keys: { left: false, right: false, jump: false, dash: false },
     selectedAnimal: 'conejo',
     animalEmojis: {
       conejo: '🐰',
@@ -816,6 +840,54 @@
       pato: '🦆',
       agapornis: '🦜',
       catita: '🐦'
+    },
+    difficulty: 'facil',
+    unlockedDifficulties: ['facil', 'media', 'dificil'],
+    diffConfig: {
+      facil: {
+        name: '🟢 Fácil',
+        title: 'Granja Campestre (Stardew Valley)',
+        subtitle: 'Paseo tranquilo, fardos amplios y trampolines de heno generosos. 3 Vidas.',
+        lives: 3,
+        speed: 4.8,
+        gravity: 0.62,
+        jumpStrength: 10.5,
+        theme: 'facil',
+        dashEnabled: false
+      },
+      media: {
+        name: '🟡 Media',
+        title: 'Huerto de Zarzas y Viento',
+        subtitle: 'Plataformas móviles y fardos quebradizos con ráfagas de viento otoñal. 3 Vidas.',
+        lives: 3,
+        speed: 5.0,
+        gravity: 0.62,
+        jumpStrength: 10.5,
+        theme: 'media',
+        dashEnabled: false
+      },
+      dificil: {
+        name: '🔴 Difícil',
+        title: 'Cavernas Huecas (Hollow Knight)',
+        subtitle: 'Aguijón Pogo sobre setas bioluminiscentes, fosos de ácido y 2 Vidas. ¡Vence este nivel para desbloquear el Modo Extremo!',
+        lives: 2,
+        speed: 5.2,
+        gravity: 0.64,
+        jumpStrength: 10.6,
+        theme: 'dificil',
+        dashEnabled: false
+      },
+      extrema: {
+        name: '🟣 Extrema',
+        title: 'La Gran Pesadilla (Celeste & Cuphead)',
+        subtitle: 'Air Dash estilo Celeste (Shift/X), Pink Parries estilo Cuphead (💖), sierras giratorias y muerte súbita (1 Vida).',
+        lives: 1,
+        speed: 5.4,
+        gravity: 0.65,
+        jumpStrength: 10.8,
+        theme: 'extrema',
+        dashEnabled: true
+      }
     },
     player: {
       x: 50,
@@ -832,23 +904,38 @@
       facing: 1,
       runCycle: 0,
       landSquash: 0,
-      invulnerableTime: 0
+      invulnerableTime: 0,
+      hasAirDash: true,
+      dashCooldown: 0,
+      isDashing: false,
+      dashTimer: 0,
+      currentPlatform: null
     },
     cameraX: 0,
     worldWidth: 4200,
     platforms: [],
     trampolines: [],
+    mushrooms: [],
+    dashCrystals: [],
+    parryOrbs: [],
+    sawblades: [],
     mudPuddles: [],
+    acidPuddles: [],
     thorns: [],
     quizScrolls: [],
     items: [],
     particles: [],
+    dashTrails: [],
+    slashEffects: [],
     ambientLeaves: [],
     floatingTexts: [],
     unlockedClues: [],
     goal: { x: 3960, y: 150, w: 180, h: 190 },
     lastTime: 0,
     animTime: 0,
+    screenShake: 0,
+    hitFreeze: 0,
+    wallopBannerTimer: 0,
 
     start() {
       this.initialized = true;
@@ -856,10 +943,113 @@
       if (!this.canvas) return;
       this.ctx = this.canvas.getContext('2d');
 
+      this.loadUnlockedDifficulties();
       this.initRunnerSelector();
+      this.initDifficultySelectors();
       this.initStartScreen();
       this.setupControls();
       this.showStartScreen();
+    },
+
+    loadUnlockedDifficulties() {
+      if (typeof state !== 'undefined') {
+        state.minigames = state.minigames || {};
+        state.minigames.platformer = state.minigames.platformer || {};
+        if (!Array.isArray(state.minigames.platformer.unlockedDifficulties)) {
+          state.minigames.platformer.unlockedDifficulties = ['facil', 'media', 'dificil'];
+        }
+        this.unlockedDifficulties = state.minigames.platformer.unlockedDifficulties;
+      }
+      this.updateDifficultyUI();
+    },
+
+    setDifficulty(diffId) {
+      if (!this.unlockedDifficulties.includes(diffId)) {
+        AudioFX.wrong();
+        showQuizClueToast('🔒 El Modo Extremo está bloqueado. ¡Completa el nivel Difícil (Cavernas Huecas) para desbloquear la Pesadilla Arcade!', '🏆');
+        return;
+      }
+      this.difficulty = diffId;
+      this.updateDifficultyUI();
+      if (!this.isRunning) {
+        this.showStartScreen();
+      }
+    },
+
+    updateDifficultyUI() {
+      const cfg = this.diffConfig[this.difficulty] || this.diffConfig.facil;
+      const diffValEl = document.getElementById('platDiffVal');
+      if (diffValEl) {
+        diffValEl.textContent = cfg.name;
+        diffValEl.style.color = (this.difficulty === 'facil') ? '#16a34a'
+          : (this.difficulty === 'media') ? '#d97706'
+          : (this.difficulty === 'dificil') ? '#dc2626'
+          : '#9333ea';
+      }
+
+      // Actualizar botones en la barra rápida
+      document.querySelectorAll('#quickDiffPillGroup .diff-pill-btn').forEach(btn => {
+        const d = btn.dataset.diff;
+        if (d === this.difficulty) btn.classList.add('active');
+        else btn.classList.remove('active');
+
+        if (d === 'extrema') {
+          const isUnlocked = this.unlockedDifficulties.includes('extrema');
+          btn.classList.toggle('locked', !isUnlocked);
+          const icon = document.getElementById('pillLockIcon');
+          if (icon) icon.textContent = isUnlocked ? '🔥' : '🔒';
+        }
+      });
+
+      // Actualizar botones en el modal previo
+      document.querySelectorAll('#modalDiffSelector .diff-card-btn').forEach(btn => {
+        const d = btn.dataset.diff;
+        if (d === this.difficulty) btn.classList.add('active');
+        else btn.classList.remove('active');
+
+        if (d === 'extrema') {
+          const isUnlocked = this.unlockedDifficulties.includes('extrema');
+          btn.classList.toggle('locked', !isUnlocked);
+          const icon = document.getElementById('modalLockIcon');
+          if (icon) icon.textContent = isUnlocked ? '🔥' : '🔒';
+        }
+      });
+
+      // Controles táctiles móviles y recordatorio de Dash
+      const touchDash = document.getElementById('touchBtnDash');
+      const dashHint = document.getElementById('dashControlsQuickHint');
+      if (touchDash) {
+        touchDash.style.display = cfg.dashEnabled ? 'inline-flex' : 'none';
+      }
+      if (dashHint) {
+        dashHint.style.display = cfg.dashEnabled ? 'inline' : 'none';
+      }
+
+      // Títulos del start overlay
+      const pill = document.getElementById('platStagePill');
+      const title = document.getElementById('platStageTitle');
+      const sub = document.getElementById('platStageSubtitle');
+      if (pill) pill.textContent = `🏃‍♂️🌾 NIVEL: ${cfg.name.toUpperCase()} — B-13`;
+      if (title) title.textContent = `${cfg.title}`;
+      if (sub) sub.textContent = cfg.subtitle;
+    },
+
+    initDifficultySelectors() {
+      // Pills en la barra rápida exterior
+      document.querySelectorAll('#quickDiffPillGroup .diff-pill-btn').forEach(btn => {
+        btn.onclick = () => {
+          const diff = btn.dataset.diff || 'facil';
+          this.setDifficulty(diff);
+        };
+      });
+
+      // Cards en el modal de inicio
+      document.querySelectorAll('#modalDiffSelector .diff-card-btn').forEach(btn => {
+        btn.onclick = () => {
+          const diff = btn.dataset.diff || 'facil';
+          this.setDifficulty(diff);
+        };
+      });
     },
 
     initRunnerSelector() {
@@ -896,8 +1086,10 @@
       const overlay = document.getElementById('platStartOverlay');
       if (overlay) overlay.classList.remove('hidden');
 
+      const cfg = this.diffConfig[this.difficulty] || this.diffConfig.facil;
       this.score = 0;
-      this.lives = 3;
+      this.lives = cfg.lives;
+      this.maxLives = cfg.lives;
       this.timerSeconds = 0;
       this.resetWorld();
       this.updateHud();
@@ -908,12 +1100,15 @@
       const overlay = document.getElementById('platStartOverlay');
       if (overlay) overlay.classList.add('hidden');
 
+      const cfg = this.diffConfig[this.difficulty] || this.diffConfig.facil;
       this.resetWorld();
       this.score = 0;
-      this.lives = 3;
+      this.lives = cfg.lives;
+      this.maxLives = cfg.lives;
       this.timerSeconds = 0;
       this.isRunning = true;
       this.isFinished = false;
+      this.wallopBannerTimer = (this.difficulty === 'extrema') ? 1.8 : 0;
       this.updateHud();
 
       clearInterval(this.timerInterval);
@@ -985,17 +1180,23 @@
           this.keys.jump = true;
           e.preventDefault();
         }
+        if (['ShiftLeft', 'ShiftRight', 'KeyX', 'KeyK'].includes(e.code)) {
+          this.keys.dash = true;
+          e.preventDefault();
+        }
       });
 
       window.addEventListener('keyup', (e) => {
         if (['ArrowLeft', 'KeyA'].includes(e.code)) this.keys.left = false;
         if (['ArrowRight', 'KeyD'].includes(e.code)) this.keys.right = false;
         if (['ArrowUp', 'KeyW', 'Space'].includes(e.code)) this.keys.jump = false;
+        if (['ShiftLeft', 'ShiftRight', 'KeyX', 'KeyK'].includes(e.code)) this.keys.dash = false;
       });
 
       const btnLeft = document.getElementById('touchBtnLeft');
       const btnRight = document.getElementById('touchBtnRight');
       const btnJump = document.getElementById('touchBtnJump');
+      const btnDash = document.getElementById('touchBtnDash');
 
       if (btnLeft) {
         btnLeft.onpointerdown = (e) => { e.preventDefault(); this.keys.left = true; };
@@ -1012,6 +1213,11 @@
         btnJump.onpointerup = (e) => { e.preventDefault(); this.keys.jump = false; };
         btnJump.onpointerleave = () => { this.keys.jump = false; };
       }
+      if (btnDash) {
+        btnDash.onpointerdown = (e) => { e.preventDefault(); this.keys.dash = true; };
+        btnDash.onpointerup = (e) => { e.preventDefault(); this.keys.dash = false; };
+        btnDash.onpointerleave = () => { this.keys.dash = false; };
+      }
     },
 
     reset() {
@@ -1021,34 +1227,51 @@
     resetWorld() {
       this.cameraX = 0;
       this.particles = [];
+      this.dashTrails = [];
+      this.slashEffects = [];
       this.floatingTexts = [];
       this.unlockedClues = [];
       this.animTime = 0;
+      this.screenShake = 0;
+      this.hitFreeze = 0;
 
+      const cfg = this.diffConfig[this.difficulty] || this.diffConfig.facil;
       this.setAnimalRunner(this.selectedAnimal || 'conejo');
 
-      // Jugador arranca sobre el porche elevado inicial (y = 150 -> aterriza en y = 200)
+      // Jugador arranca en porche elevado
       this.player.x = 50;
       this.player.y = 150;
       this.player.vx = 0;
       this.player.vy = 0;
+      this.player.speed = cfg.speed;
+      this.player.jumpStrength = cfg.jumpStrength;
       this.player.grounded = false;
       this.player.facing = 1;
       this.player.landSquash = 0;
       this.player.invulnerableTime = 0;
+      this.player.hasAirDash = true;
+      this.player.dashCooldown = 0;
+      this.player.isDashing = false;
+      this.player.dashTimer = 0;
+      this.player.currentPlatform = null;
 
-      // Hojas y pétalos flotantes estilo Stardew Valley
+      // Hojas/esporas según dificultad
       this.ambientLeaves = [];
-      for (let i = 0; i < 26; i++) {
+      const leafCount = (this.difficulty === 'dificil') ? 35 : 26;
+      for (let i = 0; i < leafCount; i++) {
         this.ambientLeaves.push({
           x: Math.random() * 4200,
           y: Math.random() * 340,
           size: 3 + Math.random() * 3.5,
-          speedX: 0.8 + Math.random() * 0.9,
-          speedY: 0.35 + Math.random() * 0.5,
+          speedX: 0.7 + Math.random() * 0.9,
+          speedY: 0.3 + Math.random() * 0.5,
           phase: Math.random() * Math.PI * 2,
           rot: Math.random() * Math.PI * 2,
-          color: ['#fbcfe8', '#f472b6', '#fed7aa', '#fde047', '#a7f3d0'][Math.floor(Math.random() * 5)]
+          color: (this.difficulty === 'dificil')
+            ? ['#38bdf8', '#818cf8', '#c084fc', '#a5f3fc'][Math.floor(Math.random() * 4)] // Esporas luminosas Hollow Knight
+            : (this.difficulty === 'extrema')
+            ? ['#f472b6', '#a855f7', '#fbbf24', '#f43f5e', '#38bdf8'][Math.floor(Math.random() * 5)] // Neón Celeste / Cuphead
+            : ['#fbcfe8', '#f472b6', '#fed7aa', '#fde047', '#a7f3d0'][Math.floor(Math.random() * 5)] // Pétalos Stardew
         });
       }
 
@@ -1058,67 +1281,142 @@
         { x: 20, y: 200, w: 150, h: 28, type: 'wood', label: 'Porche Salida' }
       ];
 
-      // Variación sutil garantizando que todas las plataformas elevadas permanezcan entre y = 175 e y = 210
-      // NINGUNA plataforma elevada está al alcance del salto normal desde el suelo (340 - 210 = 130px > 88.9px)
-      const rOffset = () => (Math.random() - 0.5) * 20;
+      // Variación sutil garantizando que plataformas elevadas estén en y ≤ 210
+      const rOffset = () => (Math.random() - 0.5) * 16;
+      const isExtrema = this.difficulty === 'extrema';
+      const isDificil = this.difficulty === 'dificil' || isExtrema;
+      const isMedia = this.difficulty === 'media';
 
-      // Sección 1: Potrero Inicial Elevado (x: 250 - 950)
+      // Sección 1 (x: 250 - 950)
       this.platforms.push(
-        { x: 250 + rOffset(), y: 205, w: 110, h: 42, type: 'straw', label: 'Fardo 1' },
+        { x: 250 + rOffset(), y: 205, w: isExtrema ? 85 : 110, h: 40, type: isMedia ? 'crumbling' : 'straw', crumbleTimer: 0.6, maxCrumble: 0.6, label: 'Fardo 1' },
         { x: 430 + rOffset(), y: 185, w: 135, h: 26, type: 'wood', label: 'Pasarela 1', lantern: true },
-        { x: 635 + rOffset(), y: 198, w: 115, h: 42, type: 'straw', label: 'Fardo 2' },
-        { x: 820 + rOffset(), y: 180, w: 130, h: 26, type: 'wood', label: 'Terraza 1' }
+        { x: 635 + rOffset(), y: 198, w: isDificil ? 85 : 115, h: 40, type: isExtrema ? 'crumbling' : 'straw', crumbleTimer: 0.45, maxCrumble: 0.45, label: 'Fardo 2' },
+        { x: 820 + rOffset(), y: 180, w: isExtrema ? 95 : 130, h: 26, type: 'wood', label: 'Terraza 1' }
       );
 
-      // Sección 2: El Silo y Pasarelas Elevadas (x: 1040 - 1760)
+      // Sección 2 (x: 1040 - 1760)
       this.platforms.push(
-        { x: 1040 + rOffset(), y: 205, w: 115, h: 42, type: 'straw', label: 'Fardo 3' },
-        { x: 1230 + rOffset(), y: 180, w: 140, h: 26, type: 'wood', label: 'Puente Roble 2', lantern: true },
-        { x: 1445 + rOffset(), y: 200, w: 110, h: 42, type: 'straw', label: 'Fardo 4' },
-        { x: 1625 + rOffset(), y: 185, w: 135, h: 26, type: 'wood', label: 'Andamio 2' }
+        { x: 1040 + rOffset(), y: 205, w: isDificil ? 85 : 115, h: 40, type: isDificil ? 'crumbling' : 'straw', crumbleTimer: 0.5, maxCrumble: 0.5, label: 'Fardo 3' },
+        {
+          x: 1230 + rOffset(), y: 180, w: isExtrema ? 100 : 135, h: 26,
+          type: (isMedia || isExtrema) ? 'moving' : 'wood',
+          baseX: 1230, rangeX: 65, speed: 1.8,
+          label: 'Puente Móvil 2', lantern: true
+        },
+        { x: 1445 + rOffset(), y: 200, w: isExtrema ? 80 : 110, h: 40, type: isMedia ? 'crumbling' : 'straw', crumbleTimer: 0.6, maxCrumble: 0.6, label: 'Fardo 4' },
+        { x: 1625 + rOffset(), y: 185, w: isDificil ? 90 : 135, h: 26, type: 'wood', label: 'Andamio 2' }
       );
 
-      // Sección 3: Huerto y Terrazas Colgantes (x: 1860 - 2580)
+      // Sección 3 (x: 1860 - 2580)
       this.platforms.push(
-        { x: 1860 + rOffset(), y: 195, w: 120, h: 42, type: 'straw', label: 'Fardo 5' },
-        { x: 2055 + rOffset(), y: 175, w: 140, h: 26, type: 'wood', label: 'Pasarela Huerto', lantern: true },
-        { x: 2265 + rOffset(), y: 205, w: 115, h: 42, type: 'straw', label: 'Fardo 6' },
-        { x: 2450 + rOffset(), y: 180, w: 135, h: 26, type: 'wood', label: 'Terraza Central' }
+        { x: 1860 + rOffset(), y: 195, w: isExtrema ? 85 : 120, h: 40, type: isExtrema ? 'crumbling' : 'straw', crumbleTimer: 0.4, maxCrumble: 0.4, label: 'Fardo 5' },
+        {
+          x: 2055 + rOffset(), y: 175, w: isExtrema ? 95 : 135, h: 26,
+          type: (isMedia || isExtrema) ? 'moving' : 'wood',
+          baseX: 2055, rangeX: 70, speed: 2.1,
+          label: 'Pasarela Huerto', lantern: true
+        },
+        { x: 2265 + rOffset(), y: 205, w: isDificil ? 85 : 115, h: 40, type: isDificil ? 'crumbling' : 'straw', crumbleTimer: 0.5, maxCrumble: 0.5, label: 'Fardo 6' },
+        { x: 2450 + rOffset(), y: 180, w: isExtrema ? 95 : 135, h: 26, type: 'wood', label: 'Terraza Central' }
       );
 
-      // Sección 4: El Gran Desfiladero Campestre (x: 2690 - 3410)
+      // Sección 4 (x: 2690 - 3410)
       this.platforms.push(
-        { x: 2690 + rOffset(), y: 200, w: 125, h: 42, type: 'straw', label: 'Fardo 7' },
-        { x: 2885 + rOffset(), y: 180, w: 140, h: 26, type: 'wood', label: 'Puente Rústico', lantern: true },
-        { x: 3095 + rOffset(), y: 195, w: 115, h: 42, type: 'straw', label: 'Fardo 8' },
-        { x: 3280 + rOffset(), y: 180, w: 130, h: 26, type: 'wood', label: 'Terraza Alta' }
+        { x: 2690 + rOffset(), y: 200, w: isExtrema ? 85 : 125, h: 40, type: isMedia ? 'crumbling' : 'straw', crumbleTimer: 0.6, maxCrumble: 0.6, label: 'Fardo 7' },
+        {
+          x: 2885 + rOffset(), y: 180, w: isExtrema ? 100 : 140, h: 26,
+          type: (isMedia || isExtrema) ? 'moving' : 'wood',
+          baseX: 2885, rangeX: 75, speed: 2.2,
+          label: 'Puente Rústico', lantern: true
+        },
+        { x: 3095 + rOffset(), y: 195, w: isDificil ? 85 : 115, h: 40, type: isExtrema ? 'crumbling' : 'straw', crumbleTimer: 0.4, maxCrumble: 0.4, label: 'Fardo 8' },
+        { x: 3280 + rOffset(), y: 180, w: isExtrema ? 95 : 130, h: 26, type: 'wood', label: 'Terraza Alta' }
       );
 
-      // Sección 5: Llegada y Porche de Entrada al Granero (x: 3510 - 3960)
+      // Sección 5: Llegada al Granero (x: 3510 - 3960)
       this.platforms.push(
-        { x: 3510 + rOffset(), y: 205, w: 120, h: 42, type: 'straw', label: 'Fardo Final' },
+        { x: 3510 + rOffset(), y: 205, w: isExtrema ? 90 : 120, h: 40, type: isDificil ? 'crumbling' : 'straw', crumbleTimer: 0.5, maxCrumble: 0.5, label: 'Fardo Final' },
         { x: 3700 + rOffset(), y: 190, w: 140, h: 26, type: 'wood', label: 'Pasarela Granero', lantern: true },
         { x: 3885, y: 210, w: 110, h: 30, type: 'wood', label: 'Porche Granero' }
       );
 
-      // Trampolines de heno elásticos en el suelo (ÚNICA forma de subir desde la zanja inferior)
-      this.trampolines = [
-        { x: 890, y: 324, w: 56, h: 16, cooldown: 0 },
-        { x: 1690, y: 324, w: 56, h: 16, cooldown: 0 },
-        { x: 2500, y: 324, w: 56, h: 16, cooldown: 0 },
-        { x: 3320, y: 324, w: 56, h: 16, cooldown: 0 }
-      ];
+      // Trampolines de heno (Fácil y Media)
+      this.trampolines = [];
+      if (!isDificil) {
+        this.trampolines = [
+          { x: 890, y: 324, w: 56, h: 16, cooldown: 0 },
+          { x: 1690, y: 324, w: 56, h: 16, cooldown: 0 },
+          { x: 2500, y: 324, w: 56, h: 16, cooldown: 0 },
+          { x: 3320, y: 324, w: 56, h: 16, cooldown: 0 }
+        ];
+      }
 
-      // Charcos de barro viscoso en el suelo (causan daño y frenan fuertemente)
-      this.mudPuddles = [
-        { x: 500, y: 338, w: 105, h: 12 },
-        { x: 1290, y: 338, w: 110, h: 12 },
-        { x: 2100, y: 338, w: 115, h: 12 },
-        { x: 2920, y: 338, w: 110, h: 12 },
-        { x: 3600, y: 338, w: 95, h: 12 }
-      ];
+      // Setas rebotadoras Pogo (Hollow Knight) en Difícil y Extrema
+      this.mushrooms = [];
+      if (isDificil) {
+        this.mushrooms = [
+          { x: 890, y: 318, w: 52, h: 22, cooldown: 0 },
+          { x: 1690, y: 318, w: 52, h: 22, cooldown: 0 },
+          { x: 2500, y: 318, w: 52, h: 22, cooldown: 0 },
+          { x: 3320, y: 318, w: 52, h: 22, cooldown: 0 }
+        ];
+      }
 
-      // Zarzas espinosas de campo en el suelo (causan daño al tocarlas)
+      // Cristales de recarga de Dash Celeste (solo en Extrema)
+      this.dashCrystals = [];
+      if (isExtrema) {
+        this.dashCrystals = [
+          { x: 740, y: 150, taken: false, respawnTimer: 0 },
+          { x: 1540, y: 145, taken: false, respawnTimer: 0 },
+          { x: 2360, y: 140, taken: false, respawnTimer: 0 },
+          { x: 3180, y: 145, taken: false, respawnTimer: 0 }
+        ];
+      }
+
+      // Pink Parry Orbs estilo Cuphead (solo en Extrema)
+      this.parryOrbs = [];
+      if (isExtrema) {
+        this.parryOrbs = [
+          { x: 530, y: 140, cooldown: 0, emoji: '💖' },
+          { x: 1330, y: 130, cooldown: 0, emoji: '🦋' },
+          { x: 2160, y: 135, cooldown: 0, emoji: '💖' },
+          { x: 2990, y: 130, cooldown: 0, emoji: '🦋' }
+        ];
+      }
+
+      // Sierras giratorias mecánicas patrullando en vertical (solo en Extrema)
+      this.sawblades = [];
+      if (isExtrema) {
+        this.sawblades = [
+          { x: 990, y: 210, baseY: 210, rangeY: 55, speed: 2.5, rad: 16 },
+          { x: 1810, y: 200, baseY: 200, rangeY: 50, speed: 2.8, rad: 16 },
+          { x: 2630, y: 210, baseY: 210, rangeY: 55, speed: 2.6, rad: 16 }
+        ];
+      }
+
+      // Charcos de barro / ácido según dificultad
+      this.mudPuddles = [];
+      this.acidPuddles = [];
+      if (isDificil) {
+        this.acidPuddles = [
+          { x: 500, y: 338, w: 110, h: 12 },
+          { x: 1290, y: 338, w: 115, h: 12 },
+          { x: 2100, y: 338, w: 120, h: 12 },
+          { x: 2920, y: 338, w: 115, h: 12 },
+          { x: 3600, y: 338, w: 100, h: 12 }
+        ];
+      } else {
+        this.mudPuddles = [
+          { x: 500, y: 338, w: 105, h: 12 },
+          { x: 1290, y: 338, w: 110, h: 12 },
+          { x: 2100, y: 338, w: 115, h: 12 },
+          { x: 2920, y: 338, w: 110, h: 12 },
+          { x: 3600, y: 338, w: 95, h: 12 }
+        ];
+      }
+
+      // Zarzas espinosas
       this.thorns = [
         { x: 710, y: 318, w: 34, h: 22 },
         { x: 1510, y: 318, w: 34, h: 22 },
@@ -1126,7 +1424,7 @@
         { x: 3130, y: 318, w: 34, h: 22 }
       ];
 
-      // 3 Pergaminos Dorados con pistas para Quizzes distribuidos a lo largo de las rutas altas
+      // 3 Pergaminos de Quiz
       const shuffledClues = [...CLUES_BANK].sort(() => Math.random() - 0.5);
       this.quizScrolls = [
         { x: 495, y: 145, taken: false, clue: shuffledClues[0] },
@@ -1134,7 +1432,7 @@
         { x: 2955, y: 140, taken: false, clue: shuffledClues[2] }
       ];
 
-      // Items nutritivos recolectables y estrellas doradas
+      // Items nutritivos
       this.items = [
         { x: 290, y: 165, emoji: '🥕', val: 10, name: 'Zanahoria', taken: false },
         { x: 480, y: 145, emoji: '🌽', val: 15, name: 'Choclo', taken: false },
@@ -1173,7 +1471,13 @@
       this.lastTime = timestamp;
       this.animTime += dt * 0.001;
 
-      this.update(dt);
+      // Hit-stop micro freeze para impacto visceral estilo Cuphead / Hollow Knight
+      if (this.hitFreeze > 0) {
+        this.hitFreeze--;
+      } else {
+        this.update(dt);
+      }
+
       this.draw();
 
       if (this.isRunning && !this.isFinished) {
@@ -1189,14 +1493,14 @@
           vx: (Math.random() - 0.5) * 2 - (this.player.vx * 0.3),
           vy: -Math.random() * 1.5 - 0.5,
           rad: 3 + Math.random() * 3,
-          color: 'rgba(215, 195, 150, 0.75)',
+          color: (this.difficulty === 'dificil') ? 'rgba(56, 189, 248, 0.5)' : 'rgba(215, 195, 150, 0.75)',
           life: 1.0,
           decay: 0.04 + Math.random() * 0.03
         });
       }
     },
 
-    spawnMudSplash(x, y, count = 8) {
+    spawnMudSplash(x, y, count = 8, isAcid = false) {
       for (let i = 0; i < count; i++) {
         this.particles.push({
           x: x + (Math.random() - 0.5) * 20,
@@ -1204,14 +1508,17 @@
           vx: (Math.random() - 0.5) * 4.5,
           vy: -Math.random() * 3.5 - 1.5,
           rad: 3 + Math.random() * 3.5,
-          color: ['#3e2410', '#543217', '#251408'][Math.floor(Math.random() * 3)],
+          color: isAcid
+            ? ['#22c55e', '#16a34a', '#86efac'][Math.floor(Math.random() * 3)]
+            : ['#3e2410', '#543217', '#251408'][Math.floor(Math.random() * 3)],
           life: 1.0,
           decay: 0.045
         });
       }
     },
 
-    spawnSparkles(x, y, count = 8) {
+    spawnSparkles(x, y, count = 8, customColors = null) {
+      const palette = customColors || ['#ffd83d', '#ff9f1c', '#ffffff', '#4ade80'];
       for (let i = 0; i < count; i++) {
         const ang = Math.random() * Math.PI * 2;
         const spd = 1.5 + Math.random() * 3.5;
@@ -1221,26 +1528,36 @@
           vx: Math.cos(ang) * spd,
           vy: Math.sin(ang) * spd,
           rad: 2 + Math.random() * 2.5,
-          color: ['#ffd83d', '#ff9f1c', '#ffffff', '#4ade80'][Math.floor(Math.random() * 4)],
+          color: palette[Math.floor(Math.random() * palette.length)],
           life: 1.0,
           decay: 0.035 + Math.random() * 0.02
         });
       }
     },
 
+    spawnSlashParticle(x, y) {
+      this.slashEffects.push({
+        x,
+        y,
+        life: 1.0,
+        decay: 0.12,
+        rot: Math.random() * Math.PI
+      });
+    },
+
     spawnVictoryFireworks() {
-      for (let i = 0; i < 40; i++) {
+      for (let i = 0; i < 48; i++) {
         const ang = Math.random() * Math.PI * 2;
-        const spd = 2 + Math.random() * 5.5;
+        const spd = 2 + Math.random() * 6;
         this.particles.push({
           x: this.goal.x + 90,
           y: this.goal.y + 40,
           vx: Math.cos(ang) * spd,
           vy: Math.sin(ang) * spd,
           rad: 3 + Math.random() * 4,
-          color: ['#ffd83d', '#ff4757', '#2ed573', '#1e90ff', '#f59e0b', '#a855f7'][Math.floor(Math.random() * 6)],
+          color: ['#ffd83d', '#ff4757', '#2ed573', '#1e90ff', '#f59e0b', '#a855f7', '#ec4899'][Math.floor(Math.random() * 7)],
           life: 1.3,
-          decay: 0.025
+          decay: 0.022
         });
       }
     },
@@ -1252,7 +1569,7 @@
         text,
         color,
         life: 1.0,
-        decay: 0.025
+        decay: 0.024
       });
     },
 
@@ -1261,10 +1578,11 @@
       this.lives = Math.max(0, this.lives - amount);
       this.player.invulnerableTime = 1.35;
       this.player.vy = -6.0;
-      this.player.vx = -this.player.facing * 2.8;
+      this.player.vx = -this.player.facing * 3.0;
+      this.screenShake = 7;
       AudioFX.splash();
       AudioFX.wrong();
-      this.spawnMudSplash(this.player.x + this.player.w / 2, this.player.y + this.player.h);
+      this.spawnMudSplash(this.player.x + this.player.w / 2, this.player.y + this.player.h, 8, this.difficulty === 'dificil');
       this.spawnFloatingText(this.player.x + this.player.w / 2, this.player.y - 16, reason || '-1 VIDA 💔', '#ef4444');
       this.updateHud();
 
@@ -1285,13 +1603,38 @@
       AudioFX.stopAll();
       AudioFX.wrong();
 
+      const p = this.player;
+      const pct = Math.min(99, Math.max(1, Math.round((p.x / (this.worldWidth - 200)) * 100)));
+
+      // Tarjeta de progreso y quote estilo Cuphead
+      const cupheadBarHtml = `
+        <div class="cuphead-progress-card">
+          <div style="font-family:'Fraunces',serif;font-size:0.88rem;font-weight:700;color:#292524;display:flex;justify-content:space-between;margin-bottom:4px;">
+            <span>🏁 Progreso del Recorrido</span>
+            <span><b>${pct}%</b> completado</span>
+          </div>
+          <div class="cuphead-progress-track">
+            <div class="cuphead-progress-fill" style="width:${pct}%;"></div>
+            <div class="cuphead-runner-pin" style="left:${pct}%;">${this.player.emoji}</div>
+          </div>
+          <div style="font-size:0.75rem;color:#78716c;margin-top:6px;line-height:1.35;">
+            ${(this.difficulty === 'extrema')
+              ? `💀 <i>"¡Un cálculo en falso en el dash! En la Pesadilla Arcade cada milímetro cuenta."</i>`
+              : (this.difficulty === 'dificil')
+              ? `🍄 <i>"¡El ácido de las cavernas no perdona! Domina el pogo sobre las setas elásticas."</i>`
+              : `🌾 <i>"¡Cuidado con el fango! Recuerda que solo los trampolines te impulsan de vuelta a las alturas."</i>`
+            }
+          </div>
+        </div>
+      `;
+
       setTimeout(() => {
         showGameVictory({
-          icon: '🌧️',
-          title: '¡El Fango Atrapó a tu Corredor!',
-          subtitle: 'Recorrido Interrumpido — Sin Vidas',
-          stamp: 'INTÉNTALO OTRA VEZ',
-          msg: 'Tu animalito cayó en el lodo resbaloso y se agotó. Recuerda que no puedes saltar a las plataformas altas directamente desde el suelo: ¡debes usar los trampolines de heno elásticos para impulsarte hacia arriba!',
+          icon: (this.difficulty === 'extrema') ? '💀⚡' : '🌧️',
+          title: (this.difficulty === 'extrema') ? '¡YOU DIED! — Muerte Súbita' : '¡El Fango Atrapó a tu Corredor!',
+          subtitle: `Nivel: ${this.diffConfig[this.difficulty].name} — Recorrido Interrumpido`,
+          stamp: (this.difficulty === 'extrema') ? 'PRACTICE MAKES PERFECT' : 'INTÉNTALO OTRA VEZ',
+          msg: `${cupheadBarHtml}Tu corredor no logró alcanzar la meta con vida en esta ocasión. ¡Vuelve a intentarlo!`,
           stats: `⭐ <b>Puntaje:</b> ${this.score} pts &nbsp;|&nbsp; ⏱️ <b>Tiempo:</b> ${this.timerSeconds}s &nbsp;|&nbsp; 💡 <b>Pistas descubiertas:</b> ${this.unlockedClues.length}`,
           onRestart: () => this.showStartScreen()
         });
@@ -1300,39 +1643,91 @@
 
     update(dt) {
       const p = this.player;
+      const cfg = this.diffConfig[this.difficulty] || this.diffConfig.facil;
+
+      // Tiempo de banner Cuphead al inicio de Extrema
+      if (this.wallopBannerTimer > 0) {
+        this.wallopBannerTimer -= dt * 0.001;
+      }
 
       // Decrementar tiempo de invulnerabilidad tras daño
       if (p.invulnerableTime > 0) {
         p.invulnerableTime -= dt * 0.001;
       }
 
+      // Cooldown de Air Dash
+      if (p.dashCooldown > 0) {
+        p.dashCooldown--;
+      }
+
+      // Mecánica Celeste Air Dash
+      if (cfg.dashEnabled) {
+        if (this.keys.dash && p.hasAirDash && p.dashCooldown <= 0) {
+          p.hasAirDash = false;
+          p.dashCooldown = 22;
+          p.isDashing = true;
+          p.dashTimer = 14;
+          p.vx = p.facing * 13.5;
+          p.vy = -1.6;
+          AudioFX.dash();
+          this.screenShake = 6;
+          this.hitFreeze = 2;
+
+          for (let i = 0; i < 5; i++) {
+            this.dashTrails.push({
+              x: p.x - p.vx * (i * 0.28),
+              y: p.y,
+              facing: p.facing,
+              emoji: p.emoji,
+              accEmoji: p.accEmoji,
+              color: ['#38bdf8', '#c084fc', '#f472b6', '#fbbf24', '#4ade80'][i],
+              life: 1.0,
+              decay: 0.08
+            });
+          }
+        }
+      }
+
       // Movimiento horizontal
-      if (this.keys.left) {
-        p.vx = -p.speed;
-        p.facing = -1;
-        p.runCycle += 0.22;
-        if (p.grounded && Math.random() < 0.25) this.spawnDust(p.x + p.w * 0.7, p.y + p.h);
-      } else if (this.keys.right) {
-        p.vx = p.speed;
-        p.facing = 1;
-        p.runCycle += 0.22;
-        if (p.grounded && Math.random() < 0.25) this.spawnDust(p.x + p.w * 0.3, p.y + p.h);
+      if (p.isDashing) {
+        p.dashTimer--;
+        if (p.dashTimer <= 0) {
+          p.isDashing = false;
+        }
       } else {
-        p.vx *= 0.76;
+        if (this.keys.left) {
+          p.vx = -p.speed;
+          p.facing = -1;
+          p.runCycle += 0.22;
+          if (p.grounded && Math.random() < 0.25) this.spawnDust(p.x + p.w * 0.7, p.y + p.h);
+        } else if (this.keys.right) {
+          p.vx = p.speed;
+          p.facing = 1;
+          p.runCycle += 0.22;
+          if (p.grounded && Math.random() < 0.25) this.spawnDust(p.x + p.w * 0.3, p.y + p.h);
+        } else {
+          p.vx *= 0.76;
+        }
+
+        // Salto normal
+        if (this.keys.jump && p.grounded) {
+          AudioFX.jump();
+          p.vy = -p.jumpStrength;
+          p.grounded = false;
+          p.landSquash = -0.22;
+          this.spawnDust(p.x + p.w / 2, p.y + p.h, 5);
+        }
+
+        // Gravedad
+        p.vy += cfg.gravity;
+        if (p.vy > 14) p.vy = 14;
       }
 
-      // Salto normal (jumpStrength: 10.5, altura máx ≈ 88.9px, incapaz de llegar a y ≤ 210 desde el suelo y = 340)
-      if (this.keys.jump && p.grounded) {
-        AudioFX.jump();
-        p.vy = -p.jumpStrength;
-        p.grounded = false;
-        p.landSquash = -0.22;
-        this.spawnDust(p.x + p.w / 2, p.y + p.h, 5);
+      // Ráfagas de viento otoñal en dificultad Media
+      if (this.difficulty === 'media') {
+        const windDrift = Math.sin(this.animTime * 1.5) * 0.45;
+        p.x += windDrift;
       }
-
-      // Gravedad calibrada (0.62)
-      p.vy += 0.62;
-      if (p.vy > 14) p.vy = 14;
 
       p.x += p.vx;
       p.y += p.vy;
@@ -1341,11 +1736,43 @@
       if (p.x < 10) p.x = 10;
       if (p.x > this.worldWidth - p.w) p.x = this.worldWidth - p.w;
 
+      // Actualizar plataformas móviles y quebradizas
+      for (const plat of this.platforms) {
+        if (plat.type === 'moving') {
+          plat.x = plat.baseX + Math.sin(this.animTime * plat.speed) * plat.rangeX;
+          if (p.grounded && p.currentPlatform === plat) {
+            p.x += Math.cos(this.animTime * plat.speed) * plat.rangeX * plat.speed * 0.016;
+          }
+        } else if (plat.type === 'crumbling') {
+          if (plat.isShaking) {
+            plat.crumbleTimer -= dt * 0.001;
+            if (plat.crumbleTimer <= 0) {
+              plat.collapsed = true;
+              plat.respawnTimer = 2.8;
+              plat.isShaking = false;
+              AudioFX.crumble();
+              this.spawnDust(plat.x + plat.w / 2, plat.y + plat.h / 2, 10);
+            }
+          }
+          if (plat.collapsed) {
+            plat.respawnTimer -= dt * 0.001;
+            if (plat.respawnTimer <= 0) {
+              plat.collapsed = false;
+              plat.crumbleTimer = plat.maxCrumble;
+              this.spawnSparkles(plat.x + plat.w / 2, plat.y + plat.h / 2, 8);
+            }
+          }
+        }
+      }
+
       // Colisiones con plataformas sólidas
       const wasGrounded = p.grounded;
       p.grounded = false;
+      p.currentPlatform = null;
 
       for (const plat of this.platforms) {
+        if (plat.collapsed) continue;
+
         if (
           p.x + p.w * 0.8 > plat.x &&
           p.x + p.w * 0.2 < plat.x + plat.w &&
@@ -1356,6 +1783,13 @@
           p.y = plat.y - p.h;
           p.vy = 0;
           p.grounded = true;
+          p.currentPlatform = plat;
+          p.hasAirDash = true; // Recarga de Air Dash al tocar suelo sólido
+
+          if (plat.type === 'crumbling' && !plat.isShaking) {
+            plat.isShaking = true;
+          }
+
           if (!wasGrounded) {
             p.landSquash = 0.25;
             this.spawnDust(p.x + p.w / 2, p.y + p.h, 4);
@@ -1365,7 +1799,7 @@
 
       p.landSquash *= 0.82;
 
-      // Interacción con trampolines de heno elásticos (ÚNICA forma de subir desde la zanja inferior)
+      // Trampolines de heno elásticos (Fácil y Media)
       for (const t of this.trampolines) {
         if (t.cooldown > 0) t.cooldown--;
         if (
@@ -1377,15 +1811,87 @@
           p.vy >= 0
         ) {
           AudioFX.spring();
-          p.vy = -18.6; // Catapulta 279px hacia arriba hasta y ≈ 61px, permitiendo aterrizar en plataformas altas
+          p.vy = -18.6;
           p.grounded = false;
+          p.hasAirDash = true;
           t.cooldown = 24;
           this.spawnSparkles(t.x + t.w / 2, t.y, 14);
           this.spawnFloatingText(t.x + t.w / 2, t.y - 12, '¡SÚPER SALTO! 🦘', '#fbbf24');
         }
       }
 
-      // Interacción con charcos de barro (dañan 1 vida y ralentizan fuertemente)
+      // Setas rebotadoras Pogo estilo Hollow Knight (Difícil y Extrema)
+      for (const m of this.mushrooms) {
+        if (m.cooldown > 0) m.cooldown--;
+        if (
+          m.cooldown === 0 &&
+          p.x + p.w > m.x &&
+          p.x < m.x + m.w &&
+          p.y + p.h >= m.y &&
+          p.y + p.h <= m.y + m.h + 12 &&
+          p.vy >= 0
+        ) {
+          AudioFX.pogo();
+          p.vy = -18.8;
+          p.grounded = false;
+          p.hasAirDash = true;
+          m.cooldown = 24;
+          this.spawnSlashParticle(m.x + m.w / 2, m.y);
+          this.spawnSparkles(m.x + m.w / 2, m.y, 14, ['#38bdf8', '#818cf8', '#c084fc']);
+          this.spawnFloatingText(m.x + m.w / 2, m.y - 12, '🗡️ POGO BOUNCE!', '#38bdf8');
+        }
+      }
+
+      // Cristales de recarga de Dash estilo Celeste (Extrema)
+      for (const dc of this.dashCrystals) {
+        if (!dc.taken) {
+          const dist = Math.hypot((p.x + p.w / 2) - dc.x, (p.y + p.h / 2) - dc.y);
+          if (dist < 32) {
+            dc.taken = true;
+            dc.respawnTimer = 2.5;
+            p.hasAirDash = true;
+            AudioFX.crystal();
+            this.spawnSparkles(dc.x, dc.y, 12, ['#38bdf8', '#a855f7', '#ffffff']);
+            this.spawnFloatingText(dc.x, dc.y - 12, '💎 DASH REFILL!', '#38bdf8');
+          }
+        } else {
+          dc.respawnTimer -= dt * 0.001;
+          if (dc.respawnTimer <= 0) {
+            dc.taken = false;
+            this.spawnSparkles(dc.x, dc.y, 6, ['#38bdf8', '#ffffff']);
+          }
+        }
+      }
+
+      // Pink Parry Orbs estilo Cuphead (Extrema)
+      for (const po of this.parryOrbs) {
+        if (po.cooldown > 0) po.cooldown -= dt * 0.001;
+        const dist = Math.hypot((p.x + p.w / 2) - po.x, (p.y + p.h / 2) - po.y);
+        if (dist < 34 && po.cooldown <= 0) {
+          po.cooldown = 1.8;
+          p.vy = -19.4;
+          p.hasAirDash = true;
+          p.isDashing = false;
+          this.hitFreeze = 4;
+          this.screenShake = 8;
+          AudioFX.parry();
+          this.score += 100;
+          this.updateHud();
+          this.spawnSparkles(po.x, po.y, 18, ['#ec4899', '#f472b6', '#ffd83d']);
+          this.spawnFloatingText(po.x, po.y - 16, '💥 PARRY SLAP! +100', '#ec4899');
+        }
+      }
+
+      // Sierras mecánicas en vertical (Extrema)
+      for (const s of this.sawblades) {
+        s.y = s.baseY + Math.sin(this.animTime * s.speed) * s.rangeY;
+        const dist = Math.hypot((p.x + p.w / 2) - s.x, (p.y + p.h / 2) - s.y);
+        if (dist < s.rad + 14 && p.invulnerableTime <= 0) {
+          this.takeDamage(1, '⚙️ ¡Sierra mecánica! -1 VIDA 💔');
+        }
+      }
+
+      // Charcos de barro (Fácil y Media)
       for (const m of this.mudPuddles) {
         if (
           p.x + p.w * 0.75 > m.x &&
@@ -1400,7 +1906,22 @@
         }
       }
 
-      // Interacción con zarzas espinosas (dañan 1 vida)
+      // Fosos de ácido fosforescente (Difícil y Extrema)
+      for (const a of this.acidPuddles) {
+        if (
+          p.x + p.w * 0.75 > a.x &&
+          p.x + p.w * 0.25 < a.x + a.w &&
+          p.y + p.h >= a.y &&
+          p.y + p.h <= a.y + a.h + 16
+        ) {
+          p.vx *= 0.35;
+          if (p.invulnerableTime <= 0) {
+            this.takeDamage(1, '🧪 ¡Ácido de las cavernas! -1 VIDA 💔');
+          }
+        }
+      }
+
+      // Zarzas espinosas
       for (const z of this.thorns) {
         if (
           p.x + p.w * 0.7 > z.x &&
@@ -1416,7 +1937,7 @@
 
       // Caída al vacío fuera del mapa
       if (p.y > 420) {
-        this.takeDamage(1, '¡Caída al vacío! -1 VIDA 💔');
+        this.takeDamage(1, '¡Caída al abismo! -1 VIDA 💔');
         if (this.lives > 0) {
           p.x = Math.max(50, p.x - 300);
           p.y = 170;
@@ -1424,7 +1945,7 @@
         }
       }
 
-      // Recolección de pergaminos de pistas de quiz
+      // Recolección de pergaminos de quiz
       for (const scroll of this.quizScrolls) {
         if (!scroll.taken) {
           const dist = Math.hypot((p.x + p.w / 2) - scroll.x, (p.y + p.h / 2) - scroll.y);
@@ -1472,15 +1993,18 @@
         AudioFX.stopAll();
         AudioFX.win();
 
-        if (typeof state !== 'undefined') {
-          state.minigames = state.minigames || {};
-          const prevBest = state.minigames.platformer?.bestScore || 0;
-          state.minigames.platformer = {
-            bestScore: Math.max(prevBest, this.score),
-            bestTime: Math.min(state.minigames.platformer?.bestTime || 9999, this.timerSeconds),
-            runsCompleted: (state.minigames.platformer?.runsCompleted || 0) + 1
-          };
-          if (typeof saveState === 'function') saveState();
+        // Desbloquear Modo Extrema al vencer Difícil
+        let unlockedExtremaNotice = false;
+        if (this.difficulty === 'dificil' && !this.unlockedDifficulties.includes('extrema')) {
+          this.unlockedDifficulties.push('extrema');
+          unlockedExtremaNotice = true;
+          if (typeof state !== 'undefined') {
+            state.minigames = state.minigames || {};
+            state.minigames.platformer = state.minigames.platformer || {};
+            state.minigames.platformer.unlockedDifficulties = this.unlockedDifficulties;
+            if (typeof saveState === 'function') saveState();
+          }
+          this.updateDifficultyUI();
         }
 
         const mins = Math.floor(this.timerSeconds / 60);
@@ -1493,13 +2017,25 @@
           ? `<div style="margin-top:10px;text-align:left;background:rgba(255,255,255,0.9);padding:10px 14px;border-radius:10px;border:1px solid #cbd5e1;font-size:0.82rem;color:#1e293b;"><b>💡 Pistas Clave Desbloqueadas para los Quizzes (${this.unlockedClues.length}):</b><ul style="margin:6px 0 0 16px;padding:0;">${this.unlockedClues.map(c => `<li>${c}</li>`).join('')}</ul></div>`
           : '';
 
+        const extremaUnlockBanner = unlockedExtremaNotice
+          ? `<div style="margin:12px 0;background:linear-gradient(135deg,#581c87,#3b0764);color:#ffffff;padding:12px 16px;border-radius:12px;border:2px solid #ec4899;box-shadow:0 0 18px rgba(236,72,153,0.5);text-align:center;">
+              <div style="font-size:1.15rem;font-weight:900;">🔥 ¡MODO EXTREMO DESBLOQUEADO! 🔥</div>
+              <p style="margin:4px 0 0;font-size:0.82rem;color:#fbcfe8;">¡Has dominado las Cavernas Huecas! Ahora puedes jugar la <b>Pesadilla Arcade</b> con <b>Air Dash estilo Celeste</b>, <b>Pink Parries estilo Cuphead</b> y muerte súbita (1 ❤️).</p>
+            </div>`
+          : '';
+
+        const winIcon = (this.difficulty === 'extrema') ? '🏆👑' : (this.difficulty === 'dificil') ? '🗡️🏆' : '🏆';
+        const winTitle = (this.difficulty === 'extrema') ? '¡A+ GRADE! ¡KNOCKOUT!' : '¡Llegaste al Granero B-13!';
+        const winSubtitle = (this.difficulty === 'extrema') ? '¡Has Conquistado la Pesadilla Arcade!' : `¡Carrera Campestre Completada (${cfg.name})!`;
+        const winStamp = (this.difficulty === 'extrema') ? 'LEYENDA SUPREMA B-13' : 'MISIÓN CUMPLIDA';
+
         setTimeout(() => {
           showGameVictory({
-            icon: '🏆',
-            title: '¡Llegaste al Granero B-13!',
-            subtitle: '¡Carrera Campestre Completada!',
-            stamp: 'MISIÓN CUMPLIDA',
-            msg: `¡Tu corredor ${this.player.emoji} superó los charcos de lodo, escaló los fardos y alcanzó la meta con vida! Recuerda usar las pistas descubiertas para responder los Quizzes en el Mapa y ganar décimas.`,
+            icon: winIcon,
+            title: winTitle,
+            subtitle: winSubtitle,
+            stamp: winStamp,
+            msg: `${extremaUnlockBanner}¡Tu corredor ${this.player.emoji} superó los obstáculos y alcanzó la meta con vida! Recuerda usar las pistas descubiertas para responder los Quizzes en el Mapa y ganar décimas.`,
             stats: `⭐ <b>Puntos de Carrera:</b> ${this.score} pts &nbsp;|&nbsp; ❤️ <b>Vidas restantes:</b> ${'❤️'.repeat(Math.max(1, this.lives))} &nbsp;|&nbsp; ⏱️ <b>Tiempo:</b> ${timeStr}${cluesListHtml}`,
             onRestart: () => this.showStartScreen()
           });
@@ -1516,7 +2052,21 @@
         if (pt.life <= 0) this.particles.splice(i, 1);
       }
 
-      // Actualizar hojas y pétalos ambientales
+      // Actualizar estelas fantasma Celeste Air Dash
+      for (let i = this.dashTrails.length - 1; i >= 0; i--) {
+        const dtPart = this.dashTrails[i];
+        dtPart.life -= dtPart.decay;
+        if (dtPart.life <= 0) this.dashTrails.splice(i, 1);
+      }
+
+      // Actualizar efectos de corte slash
+      for (let i = this.slashEffects.length - 1; i >= 0; i--) {
+        const sl = this.slashEffects[i];
+        sl.life -= sl.decay;
+        if (sl.life <= 0) this.slashEffects.splice(i, 1);
+      }
+
+      // Actualizar hojas y esporas ambientales
       for (const leaf of this.ambientLeaves) {
         leaf.x += leaf.speedX;
         leaf.y += leaf.speedY + Math.sin(this.animTime * 2.5 + leaf.phase) * 0.45;
@@ -1535,7 +2085,7 @@
         if (ft.life <= 0) this.floatingTexts.splice(i, 1);
       }
 
-      // Cámara de seguimiento horizontal suave
+      // Cámara suave de seguimiento
       this.cameraX = p.x - 260;
       if (this.cameraX < 0) this.cameraX = 0;
       if (this.cameraX > this.worldWidth - 860) this.cameraX = this.worldWidth - 860;
@@ -1549,49 +2099,130 @@
 
       ctx.clearRect(0, 0, w, h);
 
-      // 1. Cielo degradado estilo Stardew Valley (mañana campestre cálida)
-      const skyGrad = ctx.createLinearGradient(0, 0, 0, h);
-      skyGrad.addColorStop(0, '#3a7bd5');   // azul cerúleo profundo
-      skyGrad.addColorStop(0.38, '#68a691'); // turquesa de montaña
-      skyGrad.addColorStop(0.72, '#f4d06f'); // resplandor dorado
-      skyGrad.addColorStop(1, '#ffe8d6');   // luz melocotón suave de horizonte
-      ctx.fillStyle = skyGrad;
-      ctx.fillRect(0, 0, w, h);
+      // Efecto Screen Shake
+      ctx.save();
+      if (this.screenShake > 0) {
+        const sx = (Math.random() - 0.5) * this.screenShake;
+        const sy = (Math.random() - 0.5) * this.screenShake;
+        ctx.translate(sx, sy);
+        this.screenShake *= 0.82;
+        if (this.screenShake < 0.3) this.screenShake = 0;
+      }
 
-      // Sol radiante con halo cálido y destello suave
+      // 1. Cielo según dificultad
+      if (this.difficulty === 'extrema') {
+        // Estética Synthwave / Retro Cuphead Celeste
+        const skyGrad = ctx.createLinearGradient(0, 0, 0, h);
+        skyGrad.addColorStop(0, '#180326');
+        skyGrad.addColorStop(0.4, '#3b0764');
+        skyGrad.addColorStop(0.75, '#581c87');
+        skyGrad.addColorStop(1, '#831843');
+        ctx.fillStyle = skyGrad;
+        ctx.fillRect(0, 0, w, h);
+      } else if (this.difficulty === 'dificil') {
+        // Estética Cavernas Huecas (Hollow Knight)
+        const skyGrad = ctx.createLinearGradient(0, 0, 0, h);
+        skyGrad.addColorStop(0, '#020617');
+        skyGrad.addColorStop(0.5, '#0f172a');
+        skyGrad.addColorStop(1, '#1e1b4b');
+        ctx.fillStyle = skyGrad;
+        ctx.fillRect(0, 0, w, h);
+      } else if (this.difficulty === 'media') {
+        // Atardecer otoñal con viento
+        const skyGrad = ctx.createLinearGradient(0, 0, 0, h);
+        skyGrad.addColorStop(0, '#9a3412');
+        skyGrad.addColorStop(0.38, '#ea580c');
+        skyGrad.addColorStop(0.72, '#f59e0b');
+        skyGrad.addColorStop(1, '#fef08a');
+        ctx.fillStyle = skyGrad;
+        ctx.fillRect(0, 0, w, h);
+      } else {
+        // Mañana campestre Stardew Valley
+        const skyGrad = ctx.createLinearGradient(0, 0, 0, h);
+        skyGrad.addColorStop(0, '#3a7bd5');
+        skyGrad.addColorStop(0.38, '#68a691');
+        skyGrad.addColorStop(0.72, '#f4d06f');
+        skyGrad.addColorStop(1, '#ffe8d6');
+        ctx.fillStyle = skyGrad;
+        ctx.fillRect(0, 0, w, h);
+      }
+
+      // Sol o Luna según dificultad
       ctx.save();
       const sunX = w - 100;
       const sunY = 70;
-      const sunGlow = ctx.createRadialGradient(sunX, sunY, 15, sunX, sunY, 90);
-      sunGlow.addColorStop(0, 'rgba(254, 240, 138, 0.45)');
-      sunGlow.addColorStop(0.5, 'rgba(253, 224, 71, 0.18)');
-      sunGlow.addColorStop(1, 'rgba(253, 224, 71, 0)');
-      ctx.fillStyle = sunGlow;
-      ctx.beginPath();
-      ctx.arc(sunX, sunY, 90, 0, Math.PI * 2);
-      ctx.fill();
-
-      ctx.fillStyle = '#fef08a';
-      ctx.beginPath();
-      ctx.arc(sunX, sunY, 32, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.restore();
-
-      // Nubes suaves con parallax
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
-      for (let i = 0; i < 9; i++) {
-        const cloudX = ((i * 380) - (this.cameraX * 0.10) + (this.animTime * 10)) % (w + 420) - 100;
-        const cloudY = 48 + (i % 3) * 24;
+      if (this.difficulty === 'dificil') {
+        // Luna espectral de caverna
+        ctx.fillStyle = 'rgba(56, 189, 248, 0.25)';
         ctx.beginPath();
-        ctx.arc(cloudX, cloudY, 24, 0, Math.PI * 2);
-        ctx.arc(cloudX + 20, cloudY - 7, 28, 0, Math.PI * 2);
-        ctx.arc(cloudX + 44, cloudY, 22, 0, Math.PI * 2);
+        ctx.arc(sunX, sunY, 55, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = '#bae6fd';
+        ctx.beginPath();
+        ctx.arc(sunX, sunY, 26, 0, Math.PI * 2);
+        ctx.fill();
+      } else if (this.difficulty === 'extrema') {
+        // Sol neón con halo magenta
+        ctx.fillStyle = 'rgba(236, 72, 153, 0.35)';
+        ctx.beginPath();
+        ctx.arc(sunX, sunY, 70, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = '#f472b6';
+        ctx.beginPath();
+        ctx.arc(sunX, sunY, 28, 0, Math.PI * 2);
+        ctx.fill();
+      } else {
+        // Sol cálido campestre
+        const sunGlow = ctx.createRadialGradient(sunX, sunY, 15, sunX, sunY, 90);
+        sunGlow.addColorStop(0, 'rgba(254, 240, 138, 0.45)');
+        sunGlow.addColorStop(0.5, 'rgba(253, 224, 71, 0.18)');
+        sunGlow.addColorStop(1, 'rgba(253, 224, 71, 0)');
+        ctx.fillStyle = sunGlow;
+        ctx.beginPath();
+        ctx.arc(sunX, sunY, 90, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = '#fef08a';
+        ctx.beginPath();
+        ctx.arc(sunX, sunY, 32, 0, Math.PI * 2);
         ctx.fill();
       }
+      ctx.restore();
 
-      // 2. Capa 1 de montañas lejanas (picos alpinos pizarra) con parallax
+      // Parallax de fondo
+      if (this.difficulty === 'dificil') {
+        // Estalactitas y rocas de caverna
+        ctx.fillStyle = '#0f172a';
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        for (let x = 0; x <= w; x += 40) {
+          const sy = 35 + Math.sin(x * 0.05 + this.cameraX * 0.02) * 20;
+          ctx.lineTo(x, sy);
+        }
+        ctx.lineTo(w, 0);
+        ctx.closePath();
+        ctx.fill();
+      } else {
+        // Nubes suaves
+        ctx.fillStyle = (this.difficulty === 'extrema') ? 'rgba(236, 72, 153, 0.25)' : 'rgba(255, 255, 255, 0.85)';
+        for (let i = 0; i < 9; i++) {
+          const cloudX = ((i * 380) - (this.cameraX * 0.10) + (this.animTime * 10)) % (w + 420) - 100;
+          const cloudY = 48 + (i % 3) * 24;
+          ctx.beginPath();
+          ctx.arc(cloudX, cloudY, 24, 0, Math.PI * 2);
+          ctx.arc(cloudX + 20, cloudY - 7, 28, 0, Math.PI * 2);
+          ctx.arc(cloudX + 44, cloudY, 22, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+
+      // Capas montañosas
       ctx.save();
-      ctx.fillStyle = '#3d5a80';
+      const mColor1 = (this.difficulty === 'extrema') ? '#3b0764' : (this.difficulty === 'dificil') ? '#090d16' : (this.difficulty === 'media') ? '#7c2d12' : '#3d5a80';
+      const mColor2 = (this.difficulty === 'extrema') ? '#581c87' : (this.difficulty === 'dificil') ? '#1e293b' : (this.difficulty === 'media') ? '#9a3412' : '#204e3b';
+      const mColor3 = (this.difficulty === 'extrema') ? '#701a75' : (this.difficulty === 'dificil') ? '#334155' : (this.difficulty === 'media') ? '#c2410c' : '#40916c';
+
+      ctx.fillStyle = mColor1;
       ctx.beginPath();
       ctx.moveTo(0, h);
       for (let x = 0; x <= w; x += 40) {
@@ -1603,8 +2234,7 @@
       ctx.closePath();
       ctx.fill();
 
-      // Capa 2 de colinas de pinos (verde bosque profundo) con copas triangulares
-      ctx.fillStyle = '#204e3b';
+      ctx.fillStyle = mColor2;
       ctx.beginPath();
       ctx.moveTo(0, h);
       for (let x = 0; x <= w; x += 30) {
@@ -1616,21 +2246,7 @@
       ctx.closePath();
       ctx.fill();
 
-      // Siluetas de pinos en la cresta de las colinas
-      ctx.fillStyle = '#16382a';
-      for (let x = 15; x <= w; x += 38) {
-        const wx = x + (this.cameraX * 0.14);
-        const hy = 215 + Math.sin(wx * 0.0042) * 28 + Math.sin(wx * 0.012) * 12;
-        ctx.beginPath();
-        ctx.moveTo(x, hy - 16);
-        ctx.lineTo(x - 7, hy);
-        ctx.lineTo(x + 7, hy);
-        ctx.closePath();
-        ctx.fill();
-      }
-
-      // Capa 3: lomas de pastoreo cercanas (verde pradera cálida)
-      ctx.fillStyle = '#40916c';
+      ctx.fillStyle = mColor3;
       ctx.beginPath();
       ctx.moveTo(0, h);
       for (let x = 0; x <= w; x += 50) {
@@ -1643,15 +2259,17 @@
       ctx.fill();
       ctx.restore();
 
-      // Coordenadas del mundo con traslación de la cámara
+      // Coordenadas relativas de mundo
       ctx.save();
       ctx.translate(-this.cameraX, 0);
 
-      // Molino rústico de viento campestre animado a mitad de trayecto
-      this.drawWindmill(ctx, 1850, 240);
+      // Molino rústico animado a mitad de camino
+      if (this.difficulty !== 'dificil') {
+        this.drawWindmill(ctx, 1850, 240);
+      }
 
-      // Cercas de madera campestres en el fondo a lo largo del camino
-      ctx.strokeStyle = '#5a3d1e';
+      // Cercas de madera campestres en el fondo
+      ctx.strokeStyle = (this.difficulty === 'dificil') ? '#334155' : '#5a3d1e';
       ctx.lineWidth = 2.5;
       for (let fx = 100; fx < 4000; fx += 160) {
         ctx.strokeRect(fx, 316, 6, 24);
@@ -1664,7 +2282,7 @@
         ctx.stroke();
       }
 
-      // Dibujar pétalos y hojas flotantes ambientales estilo Stardew Valley
+      // Hojas/esporas ambientales
       for (const leaf of this.ambientLeaves) {
         ctx.save();
         ctx.translate(leaf.x, leaf.y);
@@ -1676,137 +2294,119 @@
         ctx.restore();
       }
 
-      // Dibujar plataformas (suelo, fardos de heno, puentes de roble)
+      // Estelas fantasma del Air Dash estilo Celeste
+      for (const dtPart of this.dashTrails) {
+        ctx.save();
+        ctx.translate(dtPart.x + this.player.w / 2, dtPart.y + this.player.h / 2);
+        if (dtPart.facing < 0) ctx.scale(-1, 1);
+        ctx.globalAlpha = Math.max(0, dtPart.life * 0.55);
+        ctx.fillStyle = dtPart.color;
+        ctx.beginPath();
+        ctx.arc(0, 0, 18, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.font = '30px Arial';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(dtPart.emoji, 0, 0);
+        ctx.restore();
+      }
+      ctx.globalAlpha = 1.0;
+
+      // Efectos de corte Nail Slash sobre setas (Hollow Knight)
+      for (const sl of this.slashEffects) {
+        ctx.save();
+        ctx.translate(sl.x, sl.y);
+        ctx.rotate(sl.rot);
+        ctx.strokeStyle = '#38bdf8';
+        ctx.lineWidth = 3.5;
+        ctx.globalAlpha = Math.max(0, sl.life);
+        ctx.beginPath();
+        ctx.arc(0, 0, 24, -Math.PI * 0.3, Math.PI * 0.3);
+        ctx.stroke();
+        ctx.restore();
+      }
+      ctx.globalAlpha = 1.0;
+
+      // Dibujar plataformas
       for (const p of this.platforms) {
+        if (p.collapsed) continue;
+
+        let drawX = p.x;
+        let drawY = p.y;
+        if (p.isShaking) {
+          drawX += (Math.random() - 0.5) * 4;
+          drawY += (Math.random() - 0.5) * 4;
+        }
+
         if (p.type === 'ground') {
-          // Suelo de labranza estilo Stardew: césped frondoso + tierra de cultivo
-          ctx.fillStyle = '#3a2414';
-          ctx.fillRect(p.x, p.y, p.w, p.h);
+          // Zanja inferior
+          ctx.fillStyle = (this.difficulty === 'dificil') ? '#090d16' : '#3a2414';
+          ctx.fillRect(drawX, drawY, p.w, p.h);
 
-          // Franja de césped fértil
-          ctx.fillStyle = '#4f772d';
-          ctx.fillRect(p.x, p.y, p.w, 14);
+          ctx.fillStyle = (this.difficulty === 'dificil') ? '#1e293b' : '#4f772d';
+          ctx.fillRect(drawX, drawY, p.w, 14);
 
-          // Puntas de hierba pixelada
-          ctx.fillStyle = '#74c69d';
-          for (let gx = p.x; gx < p.x + p.w; gx += 16) {
+          ctx.fillStyle = (this.difficulty === 'dificil') ? '#38bdf8' : '#74c69d';
+          for (let gx = drawX; gx < drawX + p.w; gx += 16) {
             ctx.beginPath();
-            ctx.moveTo(gx, p.y);
-            ctx.lineTo(gx + 3, p.y - 6);
-            ctx.lineTo(gx + 6, p.y);
+            ctx.moveTo(gx, drawY);
+            ctx.lineTo(gx + 3, drawY - 6);
+            ctx.lineTo(gx + 6, drawY);
             ctx.fill();
           }
 
-          // Flores silvestres salpicadas (amapolas, margaritas, tréboles)
-          const flowers = ['#f43f5e', '#facc15', '#ffffff', '#22c55e'];
-          for (let fx = p.x + 12; fx < p.x + p.w; fx += 52) {
-            const fColor = flowers[(fx * 13) % flowers.length];
-            ctx.fillStyle = fColor;
-            ctx.beginPath();
-            ctx.arc(fx, p.y - 3, 2.5, 0, Math.PI * 2);
-            ctx.fill();
-          }
-
-          // Estrato de tierra con textura y piedras de río
-          ctx.fillStyle = '#27150a';
-          ctx.fillRect(p.x, p.y + 14, p.w, p.h - 14);
-
-          ctx.fillStyle = '#5c3c26';
-          for (let px = p.x + 8; px < p.x + p.w; px += 36) {
-            ctx.fillRect(px, p.y + 22 + ((px * 7) % 20), 7, 4);
-          }
-        } else if (p.type === 'straw') {
-          // Fardo de heno estilo Stardew Valley con detalle artesanal
-          ctx.fillStyle = '#eab308';
-          ctx.fillRect(p.x, p.y, p.w, p.h);
+          ctx.fillStyle = (this.difficulty === 'dificil') ? '#020617' : '#27150a';
+          ctx.fillRect(drawX, drawY + 14, p.w, p.h - 14);
+        } else if (p.type === 'straw' || p.type === 'crumbling') {
+          // Fardos de heno / plataformas quebradizas
+          ctx.fillStyle = (p.type === 'crumbling') ? '#d97706' : '#eab308';
+          ctx.fillRect(drawX, drawY, p.w, p.h);
           ctx.strokeStyle = '#28311b';
           ctx.lineWidth = 2.5;
-          ctx.strokeRect(p.x, p.y, p.w, p.h);
+          ctx.strokeRect(drawX, drawY, p.w, p.h);
 
-          // Sombra inferior del fardo
-          ctx.fillStyle = '#ca8a04';
-          ctx.fillRect(p.x + 2, p.y + p.h - 8, p.w - 4, 6);
-
-          // Puntas y briznas de paja dorada
-          ctx.strokeStyle = '#fef08a';
-          ctx.lineWidth = 1.5;
-          for (let sy = p.y + 7; sy < p.y + p.h - 6; sy += 8) {
-            ctx.beginPath();
-            ctx.moveTo(p.x + 5, sy);
-            ctx.lineTo(p.x + p.w - 5, sy);
-            ctx.stroke();
-          }
-
-          // Pajas sueltas que sobresalen en los bordes
-          ctx.strokeStyle = '#eab308';
-          ctx.lineWidth = 2;
-          for (let wx = p.x + 10; wx < p.x + p.w - 10; wx += 18) {
-            ctx.beginPath();
-            ctx.moveTo(wx, p.y);
-            ctx.lineTo(wx + ((wx % 2 === 0) ? 3 : -3), p.y - 4);
-            ctx.stroke();
-          }
-
-          // Cuerdas dobles de cáñamo rústico
+          // Cuerdas de cáñamo
           ctx.strokeStyle = '#78350f';
-          ctx.lineWidth = 3.5;
+          ctx.lineWidth = 3;
           ctx.beginPath();
-          ctx.moveTo(p.x + p.w * 0.28, p.y);
-          ctx.lineTo(p.x + p.w * 0.28, p.y + p.h);
-          ctx.moveTo(p.x + p.w * 0.72, p.y);
-          ctx.lineTo(p.x + p.w * 0.72, p.y + p.h);
+          ctx.moveTo(drawX + p.w * 0.28, drawY);
+          ctx.lineTo(drawX + p.w * 0.28, drawY + p.h);
+          ctx.moveTo(drawX + p.w * 0.72, drawY);
+          ctx.lineTo(drawX + p.w * 0.72, drawY + p.h);
           ctx.stroke();
-        } else if (p.type === 'wood') {
-          // Pasarela de roble estilo carpintería de Robin (Stardew Valley)
-          ctx.fillStyle = '#451a03';
-          ctx.fillRect(p.x + 10, p.y + p.h, 12, 340 - (p.y + p.h));
-          ctx.fillRect(p.x + p.w - 22, p.y + p.h, 12, 340 - (p.y + p.h));
 
-          // Enredaderas verdes que trepan por los postes
-          ctx.fillStyle = '#22c55e';
-          for (let py = p.y + p.h + 8; py < 330; py += 24) {
-            ctx.beginPath();
-            ctx.arc(p.x + 10, py, 3, 0, Math.PI * 2);
-            ctx.arc(p.x + p.w - 10, py + 10, 3, 0, Math.PI * 2);
-            ctx.fill();
+          if (p.type === 'crumbling') {
+            ctx.font = 'bold 9px "Space Mono", monospace';
+            ctx.fillStyle = '#ffffff';
+            ctx.textAlign = 'center';
+            ctx.fillText('⏳ FRÁGIL', drawX + p.w / 2, drawY + p.h / 2 + 3);
           }
+        } else if (p.type === 'wood' || p.type === 'moving') {
+          // Pasarela de madera / plataforma móvil
+          ctx.fillStyle = '#451a03';
+          ctx.fillRect(drawX + 10, drawY + p.h, 12, 340 - (drawY + p.h));
+          ctx.fillRect(drawX + p.w - 22, drawY + p.h, 12, 340 - (drawY + p.h));
 
-          // Tablón principal de madera
-          ctx.fillStyle = '#854d0e';
-          ctx.fillRect(p.x, p.y, p.w, p.h);
-
-          // Veteado cálido de la madera
-          ctx.fillStyle = '#a16207';
-          ctx.fillRect(p.x + 2, p.y + 3, p.w - 4, p.h * 0.35);
-
+          ctx.fillStyle = (p.type === 'moving') ? '#b45309' : '#854d0e';
+          ctx.fillRect(drawX, drawY, p.w, p.h);
           ctx.strokeStyle = '#28311b';
           ctx.lineWidth = 2.5;
-          ctx.strokeRect(p.x, p.y, p.w, p.h);
+          ctx.strokeRect(drawX, drawY, p.w, p.h);
 
-          // Clavos de hierro forjado y junturas de tablones
-          ctx.strokeStyle = '#3b1e08';
-          ctx.lineWidth = 1.5;
-          for (let bx = p.x + 26; bx < p.x + p.w - 12; bx += 30) {
-            ctx.beginPath();
-            ctx.moveTo(bx, p.y);
-            ctx.lineTo(bx, p.y + p.h);
-            ctx.stroke();
-
-            // Cabezas de clavos
-            ctx.fillStyle = '#334155';
-            ctx.fillRect(bx - 5, p.y + 4, 2.5, 2.5);
-            ctx.fillRect(bx - 5, p.y + p.h - 6, 2.5, 2.5);
+          if (p.type === 'moving') {
+            ctx.font = 'bold 9px "Space Mono", monospace';
+            ctx.fillStyle = '#fef08a';
+            ctx.textAlign = 'center';
+            ctx.fillText('◀ MÓVIL ▶', drawX + p.w / 2, drawY + p.h / 2 + 3);
           }
 
-          // Farol rústico colgante con halo cálido de luz en plataformas seleccionadas
           if (p.lantern) {
-            const lx = p.x + p.w - 8;
-            const ly = p.y + p.h + 12;
-
+            const lx = drawX + p.w - 8;
+            const ly = drawY + p.h + 12;
             ctx.strokeStyle = '#1e293b';
             ctx.lineWidth = 2;
             ctx.beginPath();
-            ctx.moveTo(lx, p.y + p.h);
+            ctx.moveTo(lx, drawY + p.h);
             ctx.lineTo(lx, ly);
             ctx.stroke();
 
@@ -1825,48 +2425,10 @@
         }
       }
 
-      // Dibujar charcos de barro viscoso con burbujas y cartel de peligro
-      for (const m of this.mudPuddles) {
-        ctx.fillStyle = '#201205';
-        ctx.beginPath();
-        ctx.ellipse(m.x + m.w / 2, m.y + m.h / 2, m.w / 2, m.h / 2, 0, 0, Math.PI * 2);
-        ctx.fill();
-
-        ctx.fillStyle = '#3a210d';
-        ctx.beginPath();
-        ctx.ellipse(m.x + m.w / 2, m.y + m.h / 2 + 1, m.w * 0.38, m.h * 0.38, 0, 0, Math.PI * 2);
-        ctx.fill();
-
-        // Burbujas de lodo viscoso animadas
-        const b1Y = m.y + Math.sin(this.animTime * 5 + m.x) * 3;
-        const b2Y = m.y + Math.sin(this.animTime * 4.5 + m.x * 2) * 2.5;
-        ctx.fillStyle = '#543217';
-        ctx.beginPath();
-        ctx.arc(m.x + m.w * 0.32, b1Y, 4, 0, Math.PI * 2);
-        ctx.arc(m.x + m.w * 0.68, b2Y, 3, 0, Math.PI * 2);
-        ctx.fill();
-
-        // Estaca con cartel de precaución
-        ctx.font = '15px Arial';
-        ctx.textAlign = 'center';
-        ctx.fillText('⚠️', m.x + m.w / 2, m.y - 7);
-      }
-
-      // Dibujar zarzas espinosas de campo
-      for (const z of this.thorns) {
-        ctx.font = '22px Arial';
-        ctx.textAlign = 'center';
-        ctx.fillText('🌵', z.x + z.w / 2, z.y + z.h - 2);
-      }
-
-      // Dibujar trampolines de heno elásticos (los únicos impulsores hacia arriba)
+      // Dibujar trampolines de heno (Fácil y Media)
       for (const t of this.trampolines) {
         ctx.fillStyle = '#78350f';
         ctx.fillRect(t.x + 4, t.y + 8, t.w - 8, t.h - 8);
-        ctx.strokeStyle = '#28311b';
-        ctx.lineWidth = 1.5;
-        ctx.strokeRect(t.x + 4, t.y + 8, t.w - 8, t.h - 8);
-
         ctx.strokeStyle = '#94a3b8';
         ctx.lineWidth = 3;
         ctx.beginPath();
@@ -1881,16 +2443,127 @@
         ctx.lineWidth = 1.5;
         ctx.strokeRect(t.x, t.y, t.w, 7);
 
-        ctx.fillStyle = '#fef08a';
-        ctx.fillRect(t.x + t.w / 2 - 8, t.y + 1, 16, 5);
-
         ctx.font = 'bold 9px "Space Mono", monospace';
         ctx.fillStyle = '#166534';
         ctx.textAlign = 'center';
         ctx.fillText('▲ SALTO', t.x + t.w / 2, t.y - 6);
       }
 
-      // Dibujar Pergaminos Dorados de Quiz con halo celestial
+      // Dibujar setas bioluminiscentes Pogo (Hollow Knight)
+      for (const m of this.mushrooms) {
+        const glow = ctx.createRadialGradient(m.x + m.w / 2, m.y + 6, 2, m.x + m.w / 2, m.y + 6, 28);
+        glow.addColorStop(0, 'rgba(56, 189, 248, 0.6)');
+        glow.addColorStop(1, 'rgba(56, 189, 248, 0)');
+        ctx.fillStyle = glow;
+        ctx.beginPath();
+        ctx.arc(m.x + m.w / 2, m.y + 6, 28, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.font = '26px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText('🍄', m.x + m.w / 2, m.y + m.h - 2);
+
+        ctx.font = 'bold 9px "Space Mono", monospace';
+        ctx.fillStyle = '#38bdf8';
+        ctx.fillText('🗡️ POGO', m.x + m.w / 2, m.y - 6);
+      }
+
+      // Dibujar Cristales de Dash Celeste (Extrema)
+      for (const dc of this.dashCrystals) {
+        if (!dc.taken) {
+          const hoverY = dc.y + Math.sin(this.animTime * 5 + dc.x) * 4;
+          const glow = ctx.createRadialGradient(dc.x, hoverY, 4, dc.x, hoverY, 24);
+          glow.addColorStop(0, 'rgba(56, 189, 248, 0.7)');
+          glow.addColorStop(1, 'rgba(56, 189, 248, 0)');
+          ctx.fillStyle = glow;
+          ctx.beginPath();
+          ctx.arc(dc.x, hoverY, 24, 0, Math.PI * 2);
+          ctx.fill();
+
+          ctx.font = '24px Arial';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText('💎', dc.x, hoverY);
+        } else {
+          ctx.strokeStyle = 'rgba(56, 189, 248, 0.35)';
+          ctx.lineWidth = 1.5;
+          ctx.beginPath();
+          ctx.arc(dc.x, dc.y, 10, 0, Math.PI * 2);
+          ctx.stroke();
+        }
+      }
+
+      // Dibujar Pink Parry Orbs estilo Cuphead (Extrema)
+      for (const po of this.parryOrbs) {
+        const hoverY = po.y + Math.sin(this.animTime * 4.5 + po.x) * 4.5;
+        const glow = ctx.createRadialGradient(po.x, hoverY, 6, po.x, hoverY, 30);
+        glow.addColorStop(0, 'rgba(236, 72, 153, 0.7)');
+        glow.addColorStop(1, 'rgba(236, 72, 153, 0)');
+        ctx.fillStyle = glow;
+        ctx.beginPath();
+        ctx.arc(po.x, hoverY, 30, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.font = '26px Arial';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(po.emoji, po.x, hoverY);
+
+        ctx.font = 'bold 9px "Space Mono", monospace';
+        ctx.fillStyle = '#ec4899';
+        ctx.fillText('PARRY!', po.x, hoverY - 18);
+      }
+
+      // Dibujar Sierras mecánicas giratorias (Extrema)
+      for (const s of this.sawblades) {
+        ctx.save();
+        ctx.translate(s.x, s.y);
+        ctx.rotate(this.animTime * 12);
+        ctx.font = '30px Arial';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('⚙️', 0, 0);
+        ctx.restore();
+      }
+
+      // Charcos de barro / fosos de ácido
+      for (const m of this.mudPuddles) {
+        ctx.fillStyle = '#201205';
+        ctx.beginPath();
+        ctx.ellipse(m.x + m.w / 2, m.y + m.h / 2, m.w / 2, m.h / 2, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.font = '15px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText('⚠️', m.x + m.w / 2, m.y - 7);
+      }
+
+      for (const a of this.acidPuddles) {
+        ctx.fillStyle = '#14532d';
+        ctx.beginPath();
+        ctx.ellipse(a.x + a.w / 2, a.y + a.h / 2, a.w / 2, a.h / 2, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        const bY = a.y + Math.sin(this.animTime * 6 + a.x) * 3;
+        ctx.fillStyle = '#22c55e';
+        ctx.beginPath();
+        ctx.arc(a.x + a.w * 0.35, bY, 4, 0, Math.PI * 2);
+        ctx.arc(a.x + a.w * 0.65, bY - 1, 3, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.font = '15px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText('🧪', a.x + a.w / 2, a.y - 7);
+      }
+
+      // Zarzas espinosas
+      for (const z of this.thorns) {
+        ctx.font = '22px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText('🌵', z.x + z.w / 2, z.y + z.h - 2);
+      }
+
+      // Pergaminos Dorados de Quiz
       for (const scroll of this.quizScrolls) {
         if (!scroll.taken) {
           const hoverY = scroll.y + Math.sin(this.animTime * 5 + scroll.x) * 5;
@@ -1905,12 +2578,12 @@
           ctx.fill();
 
           ctx.font = 'bold 10px "Space Mono", monospace';
-          ctx.fillStyle = '#78350f';
+          ctx.fillStyle = (this.difficulty === 'dificil') ? '#38bdf8' : '#78350f';
           ctx.fillText('PISTA QUIZ', scroll.x, hoverY - 22);
         }
       }
 
-      // Dibujar items nutritivos y estrellas
+      // Items nutritivos
       for (const item of this.items) {
         if (!item.taken) {
           const hoverY = item.y + Math.sin(this.animTime * 4 + item.x) * 4.5;
@@ -1918,15 +2591,10 @@
           ctx.textAlign = 'center';
           ctx.textBaseline = 'middle';
           ctx.fillText(item.emoji, item.x, hoverY);
-
-          ctx.fillStyle = 'rgba(255, 216, 61, 0.35)';
-          ctx.beginPath();
-          ctx.arc(item.x, hoverY, 14, 0, Math.PI * 2);
-          ctx.fill();
         }
       }
 
-      // Dibujar partículas
+      // Partículas
       for (const pt of this.particles) {
         ctx.fillStyle = pt.color;
         ctx.globalAlpha = Math.max(0, pt.life);
@@ -1936,8 +2604,8 @@
       }
       ctx.globalAlpha = 1.0;
 
-      // Dibujar textos flotantes
-      ctx.font = 'bold 15px "Space Mono", monospace';
+      // Textos flotantes
+      ctx.font = 'bold 14px "Space Mono", monospace';
       ctx.textAlign = 'center';
       for (const ft of this.floatingTexts) {
         ctx.fillStyle = ft.color;
@@ -1946,11 +2614,37 @@
       }
       ctx.globalAlpha = 1.0;
 
-      // Dibujar Granero de Meta B-13 estilo Deluxe Stardew
+      // Meta: Granero B-13
       this.drawGoal(ctx);
 
-      // Dibujar Jugador
+      // Jugador
       this.drawPlayer(ctx);
+
+      ctx.restore();
+
+      // Banner "READY? WALLOP!" estilo Cuphead al inicio de Extrema
+      if (this.wallopBannerTimer > 0) {
+        ctx.save();
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.45)';
+        ctx.fillRect(0, h / 2 - 45, w, 90);
+        ctx.fillStyle = '#ffd83d';
+        ctx.font = '900 2.2rem "Fraunces", serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.shadowColor = '#000000';
+        ctx.shadowBlur = 10;
+        ctx.fillText('READY? WALLOP!', w / 2, h / 2);
+        ctx.restore();
+      }
+
+      // Viñeta retro en modo Extrema (estilo 1930s Cuphead / Celeste)
+      if (this.difficulty === 'extrema') {
+        const vig = ctx.createRadialGradient(w / 2, h / 2, w * 0.35, w / 2, h / 2, w * 0.6);
+        vig.addColorStop(0, 'rgba(0, 0, 0, 0)');
+        vig.addColorStop(1, 'rgba(15, 3, 25, 0.45)');
+        ctx.fillStyle = vig;
+        ctx.fillRect(0, 0, w, h);
+      }
 
       ctx.restore();
     },
@@ -1976,7 +2670,8 @@
 
       ctx.save();
       ctx.translate(wx, wy);
-      ctx.rotate(this.animTime * 1.6);
+      const rotSpeed = (this.difficulty === 'media') ? 3.5 : 1.6;
+      ctx.rotate(this.animTime * rotSpeed);
       for (let i = 0; i < 4; i++) {
         ctx.rotate(Math.PI / 2);
         ctx.strokeStyle = '#78350f';
@@ -1998,24 +2693,14 @@
     drawGoal(ctx) {
       const g = this.goal;
 
-      // Cuerpo principal del Granero Rojo B-13 (Robin's Deluxe Barn)
-      ctx.fillStyle = '#8b261e';
+      // Cuerpo del granero
+      ctx.fillStyle = (this.difficulty === 'dificil') ? '#1e293b' : '#8b261e';
       ctx.fillRect(g.x, g.y, g.w, g.h);
       ctx.strokeStyle = '#28311b';
       ctx.lineWidth = 3;
       ctx.strokeRect(g.x, g.y, g.w, g.h);
 
-      // Tablones horizontales de revestimiento
-      ctx.strokeStyle = '#681b14';
-      ctx.lineWidth = 1.5;
-      for (let ly = g.y + 14; ly < g.y + g.h; ly += 14) {
-        ctx.beginPath();
-        ctx.moveTo(g.x, ly);
-        ctx.lineTo(g.x + g.w, ly);
-        ctx.stroke();
-      }
-
-      // Molduras esquineras blancas de granero
+      // Molduras
       ctx.fillStyle = '#fef3c7';
       ctx.fillRect(g.x, g.y, 8, g.h);
       ctx.fillRect(g.x + g.w - 8, g.y, 8, g.h);
@@ -2024,7 +2709,7 @@
       ctx.strokeRect(g.x, g.y, 8, g.h);
       ctx.strokeRect(g.x + g.w - 8, g.y, 8, g.h);
 
-      // Puertas dobles centrales con clásica X blanca
+      // Puertas con X blanca
       const dw = 60;
       const dh = 80;
       const dx = g.x + (g.w - dw) / 2;
@@ -2043,8 +2728,8 @@
       ctx.lineTo(dx, dy + dh);
       ctx.stroke();
 
-      // Ventana circular del pajar con luz dorada
-      ctx.fillStyle = '#fef08a';
+      // Ventana circular del pajar
+      ctx.fillStyle = (this.difficulty === 'dificil') ? '#38bdf8' : '#fef08a';
       ctx.beginPath();
       ctx.arc(g.x + g.w / 2, g.y + 44, 18, 0, Math.PI * 2);
       ctx.fill();
@@ -2052,18 +2737,8 @@
       ctx.lineWidth = 2.5;
       ctx.stroke();
 
-      // Heno que cuelga de la ventana del pajar
-      ctx.strokeStyle = '#eab308';
-      ctx.lineWidth = 3;
-      for (let hx = -10; hx <= 10; hx += 5) {
-        ctx.beginPath();
-        ctx.moveTo(g.x + g.w / 2 + hx, g.y + 58);
-        ctx.lineTo(g.x + g.w / 2 + hx + ((hx % 2 === 0) ? 3 : -3), g.y + 68);
-        ctx.stroke();
-      }
-
-      // Techo campestre a dos aguas con alero
-      ctx.fillStyle = '#551511';
+      // Techo campestre
+      ctx.fillStyle = (this.difficulty === 'dificil') ? '#0f172a' : '#551511';
       ctx.beginPath();
       ctx.moveTo(g.x - 16, g.y);
       ctx.lineTo(g.x + g.w / 2, g.y - 50);
@@ -2085,7 +2760,7 @@
       ctx.textAlign = 'center';
       ctx.fillText('🐓', g.x + g.w / 2, g.y - 74);
 
-      // Mástil y Bandera ondeante de Meta
+      // Bandera de Meta
       const flagWave = Math.sin(this.animTime * 6) * 4;
       ctx.fillStyle = '#1e293b';
       ctx.fillRect(g.x + g.w / 2 - 2, g.y - 115, 4, 45);
@@ -2093,7 +2768,7 @@
       ctx.font = '28px Arial';
       ctx.fillText('🏁', g.x + g.w / 2 + 18, g.y - 114 + flagWave);
 
-      // Cartel de madera tallada: "GRANERO B-13"
+      // Cartel luminoso
       ctx.fillStyle = '#fde68a';
       ctx.fillRect(g.x + 12, g.y - 20, g.w - 24, 20);
       ctx.strokeStyle = '#28311b';
@@ -2111,21 +2786,24 @@
       ctx.save();
       ctx.translate(p.x + p.w / 2, p.y + p.h / 2);
 
-      // Parpadeo durante tiempo de invulnerabilidad tras ser dañado
+      // Parpadeo de invulnerabilidad
       if (p.invulnerableTime > 0) {
         if (Math.floor(this.animTime * 14) % 2 === 0) {
           ctx.globalAlpha = 0.35;
         }
       }
 
-      // Volteo horizontal según dirección
+      // Volteo horizontal
       if (p.facing < 0) ctx.scale(-1, 1);
 
-      // Deformación física suave: squash al caer, stretch al saltar
+      // Deformación física suave
       let sx = 1 + p.landSquash;
       let sy = 1 - p.landSquash;
 
-      if (!p.grounded) {
+      if (p.isDashing) {
+        sx = 1.35;
+        sy = 0.75;
+      } else if (!p.grounded) {
         if (p.vy < -2) {
           sx = 0.88;
           sy = 1.15;
@@ -2140,7 +2818,7 @@
 
       ctx.scale(sx, sy);
 
-      // Sombra proyectada en la plataforma
+      // Sombra proyectada
       if (p.grounded) {
         ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
         ctx.beginPath();
@@ -2154,10 +2832,19 @@
       ctx.textBaseline = 'middle';
       ctx.fillText(p.emoji, 0, 0);
 
-      // Accesorio oficial posicionado sobre la cabeza
+      // Accesorio oficial
       if (p.accEmoji) {
         ctx.font = '18px Arial';
         ctx.fillText(p.accEmoji, 0, -20);
+      }
+
+      // Aura de Air Dash lista en Extrema
+      if (this.diffConfig[this.difficulty]?.dashEnabled && p.hasAirDash) {
+        ctx.strokeStyle = 'rgba(56, 189, 248, 0.65)';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(0, 0, 24, 0, Math.PI * 2);
+        ctx.stroke();
       }
 
       ctx.restore();

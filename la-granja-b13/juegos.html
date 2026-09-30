@@ -200,9 +200,12 @@
     <div class="game-header-box">
       <div class="game-title-group">
         <h2>🏃‍♂️ Aventura en la Granja B-13</h2>
-        <p>Corre, salta sobre fardos de paja, recoge alimento nutritivo y llega al Granero Rojo con tu animalito personalizado.</p>
+        <p>Corre, salta sobre fardos de paja, sortea desafíos según la dificultad y llega al Granero Rojo con tu animalito personalizado.</p>
       </div>
       <div class="game-scoreboard">
+        <div class="game-stat-chip" id="platDiffChip" title="Dificultad actual">
+          <span>🎯 Dificultad:</span> <b id="platDiffVal" style="color:#16a34a;">🟢 Fácil</b>
+        </div>
         <div class="game-stat-chip">
           <span>🌾 Puntos:</span> <b id="platScoreVal">0</b>
         </div>
@@ -228,7 +231,18 @@
       </div>
       <div class="char-avatar-preview" id="charPreviewIcon" title="Tu animal con su accesorio">🐰</div>
       <span style="font-size:0.78rem;color:#555;">(Lleva el accesorio que elegiste en el Potrero)</span>
-      <span style="margin-left:auto;font-size:0.78rem;color:#444;">Controles: <b>A/D o Flechas</b> correr · <b>Espacio o W</b> saltar</span>
+      <span style="margin-left:auto;font-size:0.78rem;color:#444;">Controles: <b>A/D</b> correr · <b>Espacio</b> saltar · <b id="dashControlsQuickHint" style="display:none;color:#9333ea;">Shift/X Dash ⚡</b></span>
+    </div>
+
+    <!-- Barra de selección rápida de dificultad -->
+    <div class="diff-selection-bar" id="diffSelectionBar">
+      <span class="diff-bar-title">🎮 <b>Dificultad de Juego:</b></span>
+      <div class="diff-pill-group" id="quickDiffPillGroup">
+        <button type="button" class="diff-pill-btn active" data-diff="facil">🟢 Fácil (Campestre)</button>
+        <button type="button" class="diff-pill-btn" data-diff="media">🟡 Media (Huerto)</button>
+        <button type="button" class="diff-pill-btn" data-diff="dificil">🔴 Difícil (Caverna Hollow)</button>
+        <button type="button" class="diff-pill-btn locked" data-diff="extrema" id="pillDiffExtrema" title="Completa el nivel Difícil para desbloquear este modo">🟣 Extrema <span id="pillLockIcon">🔒</span></button>
+      </div>
     </div>
 
     <div class="platformer-wrap game-board-wrap">
@@ -240,41 +254,72 @@
           <button type="button" class="touch-btn" id="touchBtnLeft" aria-label="Mover a la izquierda">◀</button>
           <button type="button" class="touch-btn" id="touchBtnRight" aria-label="Mover a la derecha">▶</button>
         </div>
-        <button type="button" class="touch-btn touch-btn-jump" id="touchBtnJump" aria-label="Saltar">🦘 SALTO</button>
+        <div style="display:flex;gap:8px;">
+          <button type="button" class="touch-btn touch-btn-dash" id="touchBtnDash" style="display:none;" aria-label="Dash">⚡ DASH</button>
+          <button type="button" class="touch-btn touch-btn-jump" id="touchBtnJump" aria-label="Saltar">🦘 SALTO</button>
+        </div>
       </div>
 
       <!-- Pantalla previa moderna de inicio de Plataformas (ocupa todo el área del canvas) -->
       <div class="game-start-overlay" id="platStartOverlay">
         <div class="stage-content-wrap">
-          <div class="stage-badge-pill">🏃‍♂️🌾 AVENTURA EN LA GRANJA B-13</div>
-          <h3 class="stage-title">Carrera hacia el Granero B-13</h3>
-          <p class="stage-subtitle">Configuración previa para una competencia limpia y pareja entre todos los estudiantes.</p>
+          <div class="stage-badge-pill" id="platStagePill">🏃‍♂️🌾 AVENTURA EN LA GRANJA B-13</div>
+          <h3 class="stage-title" id="platStageTitle">Carrera hacia el Granero B-13</h3>
+          <p class="stage-subtitle" id="platStageSubtitle">Configuración previa para una competencia limpia y pareja entre todos los estudiantes.</p>
 
-          <div class="stage-grid">
+          <div class="stage-grid" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));">
             <!-- Tarjeta 1: Corredor y Accesorio -->
             <div class="stage-card">
               <div class="stage-card-icon">🐾</div>
               <div class="stage-card-body" style="width: 100%;">
-                <h4>Elige tu Corredor Oficial</h4>
+                <h4>Elige tu Corredor</h4>
                 <div class="runner-selector-group" id="modalRunnerSelector" style="margin: 6px 0;">
-                  <button type="button" class="runner-pick-btn active" data-animal="conejo">🐰 Conejo</button>
-                  <button type="button" class="runner-pick-btn" data-animal="gallo">🐓 Gallo</button>
-                  <button type="button" class="runner-pick-btn" data-animal="gallina">🐔 Gallina</button>
-                  <button type="button" class="runner-pick-btn" data-animal="pato">🦆 Pato</button>
-                  <button type="button" class="runner-pick-btn" data-animal="agapornis">🦜 Agapornis</button>
-                  <button type="button" class="runner-pick-btn" data-animal="catita">🐦 Catita</button>
+                  <button type="button" class="runner-pick-btn active" data-animal="conejo">🐰</button>
+                  <button type="button" class="runner-pick-btn" data-animal="gallo">🐓</button>
+                  <button type="button" class="runner-pick-btn" data-animal="gallina">🐔</button>
+                  <button type="button" class="runner-pick-btn" data-animal="pato">🦆</button>
+                  <button type="button" class="runner-pick-btn" data-animal="agapornis">🦜</button>
+                  <button type="button" class="runner-pick-btn" data-animal="catita">🐦</button>
                 </div>
                 <div class="stage-runner-preview" id="modalCharPreview">Corredor activo: <b>🐰 Conejo</b></div>
               </div>
             </div>
 
-            <!-- Tarjeta 2: Controles & Fair Play -->
+            <!-- Tarjeta 2: Nivel de Desafío -->
+            <div class="stage-card">
+              <div class="stage-card-icon">🎯</div>
+              <div class="stage-card-body" style="width: 100%;">
+                <h4>Nivel de Desafío</h4>
+                <div class="diff-modal-grid" id="modalDiffSelector">
+                  <button type="button" class="diff-card-btn active" data-diff="facil">
+                    <span class="diff-badge">🟢 FÁCIL</span>
+                    <span class="diff-desc">Stardew · 3 ❤️</span>
+                  </button>
+                  <button type="button" class="diff-card-btn" data-diff="media">
+                    <span class="diff-badge">🟡 MEDIA</span>
+                    <span class="diff-desc">Huerto · 3 ❤️</span>
+                  </button>
+                  <button type="button" class="diff-card-btn" data-diff="dificil">
+                    <span class="diff-badge">🔴 DIFÍCIL</span>
+                    <span class="diff-desc">Caverna Hollow · 2 ❤️</span>
+                  </button>
+                  <button type="button" class="diff-card-btn locked" data-diff="extrema" id="modalDiffExtrema">
+                    <span class="diff-badge">🟣 EXTREMA <span class="lock-icon" id="modalLockIcon">🔒</span></span>
+                    <span class="diff-desc">Celeste/Cuphead · 1 ❤️</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tarjeta 3: Controles & Mecánicas Especiales -->
             <div class="stage-card">
               <div class="stage-card-icon">🎮</div>
               <div class="stage-card-body">
-                <h4>Controles & Salida Limpia</h4>
-                <p>Teclas <kbd class="kbd-chip">A</kbd> <kbd class="kbd-chip">D</kbd> o <kbd class="kbd-chip">◀</kbd> <kbd class="kbd-chip">▶</kbd> para correr · <kbd class="kbd-chip">Espacio</kbd> o <kbd class="kbd-chip">W</kbd> para saltar.</p>
-                <p style="margin-top: 5px;">⏱️ La física y el cronómetro arrancarán exactamente al pulsar iniciar. ¡Llega al Granero con vida!</p>
+                <h4>Controles y Salida</h4>
+                <p>Teclas <kbd class="kbd-chip">A</kbd> <kbd class="kbd-chip">D</kbd> correr · <kbd class="kbd-chip">Espacio</kbd> saltar.</p>
+                <p id="modalControlsProHint" style="margin-top: 5px; font-size: 0.78rem; color: #4338ca; line-height: 1.35;">
+                  💡 <b>Pistas:</b> Úsalas para los Quizzes. En <b>Extrema</b> se activa el <b>Air Dash Celeste</b> (<kbd class="kbd-chip">Shift</kbd> / <kbd class="kbd-chip">X</kbd>) y los <b>Parry Orbs</b> de Cuphead (💖).
+                </p>
               </div>
             </div>
           </div>
