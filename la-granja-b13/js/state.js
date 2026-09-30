@@ -151,9 +151,13 @@ function loadState() {
     }
 
     ensureMapQuizEntries(base);
+    base.pureScore = computePureScore(base);
+    base.score = base.pureScore; // El puntaje oficial de la plataforma siempre es el puntaje academico puro de quizzes
     return base;
   } catch (e) {
     ensureMapQuizEntries(base);
+    base.pureScore = computePureScore(base);
+    base.score = base.pureScore;
     return base;
   }
 }
@@ -174,7 +178,20 @@ function computePureScore(st) {
       }
     }
   }
-  // 2. Quizzes de profesor por zona (máx 1 vez por zona)
+  // 2. Quizzes de animales en el Potrero (si existen en st.quiz)
+  if (st.quiz && typeof st.quiz === 'object') {
+    for (const key of Object.keys(st.quiz)) {
+      const q = st.quiz[key];
+      if (q && q.completed) {
+        let pts = Number(q.scoreEarned);
+        if (!Number.isFinite(pts) || pts <= 0) {
+          pts = Array.isArray(q.results) ? q.results.filter(Boolean).length * 10 : 0;
+        }
+        total += Math.min(90, Math.max(0, pts));
+      }
+    }
+  }
+  // 3. Quizzes de profesor por zona (máx 1 vez por zona)
   if (st.teacherQuizzes && typeof st.teacherQuizzes === 'object') {
     for (const key of Object.keys(st.teacherQuizzes)) {
       const tq = st.teacherQuizzes[key];
@@ -182,10 +199,6 @@ function computePureScore(st) {
         total += Math.max(0, Number(tq.scoreEarned || 0));
       }
     }
-  }
-  // Si no hay quizzes detallados pero tiene un score numérico válido asignado
-  if (total === 0 && Number.isFinite(st.score) && st.score > 0) {
-    total = st.score;
   }
   return total;
 }

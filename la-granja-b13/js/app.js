@@ -305,9 +305,8 @@ function updateHeader() {
     }
     return;
   }
-  const scoreEl = document.getElementById('score');
-  const discEl = document.getElementById('discovered');
-  if (scoreEl) scoreEl.textContent = state.score;
+  const purePts = (typeof computePureScore === 'function') ? computePureScore(state) : (state.pureScore || 0);
+  if (scoreEl) scoreEl.textContent = purePts;
   if (discEl) discEl.textContent = discoveredSet.size;
 }
 

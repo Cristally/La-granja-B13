@@ -130,6 +130,25 @@
     }
   };
 
+  /* Toast flotante de pistas pedagógicas para Quizzes */
+  let clueToastTimeout = null;
+  function showQuizClueToast(text, icon = '💡') {
+    let toast = document.getElementById('quizClueToast');
+    if (!toast) {
+      toast = document.createElement('div');
+      toast.id = 'quizClueToast';
+      toast.className = 'quiz-clue-toast';
+      document.body.appendChild(toast);
+    }
+    toast.innerHTML = `<span class="clue-icon">${icon}</span> <span>${text}</span>`;
+    toast.classList.add('active');
+    clearTimeout(clueToastTimeout);
+    clueToastTimeout = setTimeout(() => {
+      toast.classList.remove('active');
+    }, 5000);
+  }
+  window.showQuizClueToast = showQuizClueToast;
+
   /* Helper para modal de victoria enriquecido y de cierre garantizado */
   function showGameVictory({ icon, title, subtitle, msg, stats, stamp, onRestart }) {
     const overlay = document.getElementById('victoryOverlay');
@@ -236,24 +255,40 @@
 
   /* ============================================================
      JUEGO 1: BUSCA LAS PAREJAS (MEMORIA CURIOSIDAD ↔ ANIMAL)
+     Pool de 18 parejas maestras: Cada partida elige al azar 6 parejas
+     y ofrece pistas directas para responder los Quizzes del liceo
      ============================================================ */
   const MemoryGame = {
     initialized: false,
     isStarted: false,
-    pairsData: [
-      { id: 'conejo', name: 'Conejo', emoji: '🐰', fact: 'Sus incisivos crecen durante toda la vida y practica cecotrofia.' },
-      { id: 'gallo', name: 'Gallo', emoji: '🐓', fact: 'Cresta vascularizada que disipa calor y canto por reloj circadiano.' },
-      { id: 'gallina', name: 'Gallina', emoji: '🐔', fact: 'Ave social que toma baños de tierra y emite más de 24 vocalizaciones.' },
-      { id: 'pato', name: 'Pato', emoji: '🦆', fact: 'Plumaje impermeable gracias a la glándula uropígea y patas palmeadas.' },
-      { id: 'agapornis', name: 'Agapornis', emoji: '🦜', fact: 'Llamados inseparables porque forman lazos afectivos monógamos de por vida.' },
-      { id: 'catita', name: 'Catita', emoji: '🐦', fact: 'Originaria de Australia, consume semillas de mijo y brotes tiernos.' }
+    masterPairs: [
+      { id: 'conejo', name: 'Conejo', emoji: '🐰', fact: 'Sus incisivos crecen toda la vida y practica cecotrofia (reingerir heces blandas con vitamina B).' },
+      { id: 'gallo', name: 'Gallo', emoji: '🐓', fact: 'Cresta vascularizada que actúa como radiador térmico y espolones para proteger el orden de picoteo.' },
+      { id: 'gallina', name: 'Gallina', emoji: '🐔', fact: 'Toma baños de tierra para eliminar ácaros y usa la molleja con grit (piedrecillas) para moler granos.' },
+      { id: 'pato', name: 'Pato', emoji: '🦆', fact: 'Glándula uropígea que impermeabiliza su plumaje; el pan blanco les provoca la deformación ala de ángel.' },
+      { id: 'agapornis', name: 'Agapornis', emoji: '🦜', fact: 'Aves monógamas de por vida con patas zigodáctilas (2 dedos adelante y 2 atrás) para trepar.' },
+      { id: 'catita', name: 'Catita Australiana', emoji: '🐦', fact: 'El céreo azul indica macho adulto y marrón hembra; la palta y el chocolate son toxinas letales.' },
+      { id: 'gallito_japones', name: 'Gallito Chabo', emoji: '🐓', fact: 'Raza japonesa pequeña con tarsos emplumados que exigen suelos secos para no acumular barro ni hongos.' },
+      { id: 'cecotrofia', name: 'Cecotrofia', emoji: '🌱', fact: 'Estrategia digestiva del conejo para reasimilar aminoácidos, celulosa fermentada y complejo B.' },
+      { id: 'molleja', name: 'Molleja Muscular', emoji: '⚙️', fact: 'Estómago mecánico de las aves donde piedrecillas ingeridas trituran alimentos duros en vez de dientes.' },
+      { id: 'heno', name: 'Heno Seco', emoji: '🌾', fact: 'Debe constituir el 80% de la dieta del conejo para el desgaste dental y la motilidad del ciego.' },
+      { id: 'incubacion', name: 'Incubación (21 Días)', emoji: '🥚', fact: 'Período en que la gallina provee 37.5°C y humedad precisa para el desarrollo embrionario del pollito.' },
+      { id: 'buche', name: 'El Buche', emoji: '🥣', fact: 'Dilatación esofágica en aves que almacena y reblandece el grano antes de pasar al proventrículo.' },
+      { id: 'espolon', name: 'Espolones', emoji: '⚔️', fact: 'Defensa ósea córnea en las patas del gallo usada en la jerarquía del gallinero.' },
+      { id: 'grit', name: 'Grit y Calcio', emoji: '🪨', fact: 'Piedritas y conchuelas molidas indispensables para moler granos y formar la cáscara del huevo.' },
+      { id: 'uropigea', name: 'Glándula Uropígea', emoji: '💧', fact: 'Ubicada sobre la rabadilla de las aves acuáticas para untar cera repelente al agua con el pico.' },
+      { id: 'banos_tierra', name: 'Baño de Ceniza', emoji: '🏜️', fact: 'Comportamiento natural donde las aves se revuelcan en polvo para asfixiar ectoparásitos.' },
+      { id: 'monogamia', name: 'Lazos de Pareja', emoji: '💞', fact: 'Los agapornis fortalecen su bienestar mediante el acicalamiento mutuo (allopreening) permanente.' },
+      { id: 'altricial', name: 'Gazapos Altriciales', emoji: '🍼', fact: 'Las crías de conejo nacen ciegas, sin pelaje y termorregulación, a diferencia de los precociales.' }
     ],
+    currentPairs: [],
     cards: [],
     flippedCards: [],
     matchedCount: 0,
     moves: 0,
     timerSeconds: 0,
     timerInterval: null,
+    learnedClues: [],
 
     start() {
       this.initialized = true;
@@ -275,6 +310,7 @@
       this.matchedCount = 0;
       this.moves = 0;
       this.timerSeconds = 0;
+      this.learnedClues = [];
       this.updateStats();
 
       const overlay = document.getElementById('memStartOverlay');
@@ -292,6 +328,7 @@
       this.moves = 0;
       this.matchedCount = 0;
       this.flippedCards = [];
+      this.learnedClues = [];
       this.updateStats();
 
       clearInterval(this.timerInterval);
@@ -308,13 +345,15 @@
     },
 
     buildDeckAndRender() {
+      // Elegir 6 parejas al azar del banco maestro para que cada intento sea único
+      const shuffledMaster = [...this.masterPairs].sort(() => Math.random() - 0.5);
+      this.currentPairs = shuffledMaster.slice(0, 6);
+
       // Construir baraja de 12 cartas (6 animales y 6 curiosidades)
       const deck = [];
-      this.pairsData.forEach(p => {
-        // Carta A: Animal
-        deck.push({ pairId: p.id, type: 'animal', name: p.name, emoji: p.emoji });
-        // Carta B: Curiosidad
-        deck.push({ pairId: p.id, type: 'curiosity', text: p.fact });
+      this.currentPairs.forEach(p => {
+        deck.push({ pairId: p.id, type: 'animal', name: p.name, emoji: p.emoji, fact: p.fact });
+        deck.push({ pairId: p.id, type: 'curiosity', text: p.fact, pairName: p.name, emoji: p.emoji });
       });
 
       // Barajar aleatoriamente (Fisher-Yates)
@@ -348,7 +387,7 @@
         } else {
           backContent = `
             <div class="memory-card-face memory-card-back card-curiosity">
-              <div class="card-curiosity-tag">💡 Curiosidad de Campo:</div>
+              <div class="card-curiosity-tag">💡 Pista de Quiz:</div>
               <div class="card-curiosity-text">${card.text}</div>
             </div>
           `;
@@ -383,9 +422,15 @@
         this.updateStats();
 
         const [c1, c2] = this.flippedCards;
-        // Comprobar coincidencia: mismo animal y tipos distintos (uno animal y otro curiosidad)
+        // Comprobar coincidencia: mismo animal y tipos distintos
         if (c1.data.pairId === c2.data.pairId && c1.data.type !== c2.data.type) {
           AudioFX.match();
+          const clueFact = c1.data.fact || c2.data.text;
+          if (clueFact && !this.learnedClues.includes(clueFact)) {
+            this.learnedClues.push(clueFact);
+          }
+          showQuizClueToast(`💡 Pista Quiz Desbloqueada: ${clueFact}`, '🧠');
+
           setTimeout(() => {
             c1.el.classList.add('matched');
             c2.el.classList.add('matched');
@@ -393,17 +438,25 @@
             this.matchedCount++;
             this.updateStats();
 
-            if (this.matchedCount === this.pairsData.length) {
+            if (this.matchedCount === this.currentPairs.length) {
               clearInterval(this.timerInterval);
               AudioFX.win();
+              const mins = Math.floor(this.timerSeconds / 60);
+              const secs = this.timerSeconds % 60;
+              const timeStr = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+
+              const cluesListHtml = this.learnedClues.length > 0
+                ? `<div style="margin-top:10px;text-align:left;background:rgba(255,255,255,0.9);padding:10px 14px;border-radius:10px;border:1px solid #cbd5e1;font-size:0.82rem;color:#1e293b;"><b>💡 Pistas Clave para tus Quizzes:</b><ul style="margin:6px 0 0 16px;padding:0;">${this.learnedClues.map(c => `<li>${c}</li>`).join('')}</ul></div>`
+                : '';
+
               setTimeout(() => {
                 showGameVictory({
                   icon: '🧠✨',
                   title: '¡Memoria Zootécnica Completada!',
-                  subtitle: 'Curiosidades y Animales de La Granja B-13',
+                  subtitle: 'Pistas y Conceptos para Quizzes Desbloqueados',
                   stamp: 'EXCELENCIA BIOLÓGICA',
-                  msg: 'Has emparejado correctamente cada curiosidad científica y de campo con su correspondiente especie animal del liceo.',
-                  stats: `⏱️ <b>Tiempo empleado:</b> ${this.timerSeconds}s &nbsp;|&nbsp; 🔄 <b>Intentos realizados:</b> ${this.moves} movimientos`,
+                  msg: 'Has emparejado con éxito todos los conceptos clave de la granja. ¡Usa estas pistas en los Quizzes del Mapa 3D para asegurar tus décimas!',
+                  stats: `⏱️ <b>Tiempo empleado:</b> ${timeStr} &nbsp;|&nbsp; 🔄 <b>Intentos realizados:</b> ${this.moves} movimientos${cluesListHtml}`,
                   onRestart: () => this.showStartScreen()
                 });
               }, 350);
@@ -426,7 +479,7 @@
       const timeEl = document.getElementById('memTimeVal');
 
       if (movesEl) movesEl.textContent = this.moves;
-      if (matchesEl) matchesEl.textContent = `${this.matchedCount}/${this.pairsData.length}`;
+      if (matchesEl) matchesEl.textContent = `${this.matchedCount}/${this.currentPairs.length || 6}`;
       if (timeEl) {
         const mins = Math.floor(this.timerSeconds / 60);
         const secs = this.timerSeconds % 60;
@@ -437,6 +490,8 @@
 
   /* ============================================================
      JUEGO 2: SOPA DE LETRAS ZOOTÉCNICA
+     Pool de 24 palabras maestras: Cada partida elige al azar 8 palabras
+     y genera una cuadrícula 12x12 totalmente nueva con pistas de quiz
      ============================================================ */
   const WordSearchGame = {
     initialized: false,
@@ -444,18 +499,33 @@
     timerSeconds: 0,
     timerInterval: null,
     size: 12,
-    words: [
-      { word: 'CECOTROFIA', desc: 'Heces blandas ricas en nutrientes que el conejo vuelve a ingerir.' },
-      { word: 'MOLLEJA', desc: 'Estómago muscular de las aves que tritura granos con piedrecillas.' },
-      { word: 'CRESTA', desc: 'Estructura carnosa en la cabeza del gallo para disipar calor.' },
-      { word: 'HENO', desc: 'Alimento fibroso vital para el desgaste de los dientes de los conejos.' },
-      { word: 'INCUBACION', desc: 'Período de calor de 21 días para el desarrollo del pollito.' },
-      { word: 'AGAPORNIS', desc: 'Aves inseparables del aviario que forman lazos monógamos.' },
-      { word: 'PATOS', desc: 'Aves acuáticas con patas palmeadas y pico aplanado.' },
-      { word: 'FORRAJE', desc: 'Pasto fresco y vegetales nutritivos para los corrales.' },
-      { word: 'BIENESTAR', desc: 'Salud, espacio limpio y respeto hacia los animales.' },
-      { word: 'GALLINERO', desc: 'Espacio seco y ventilado donde duermen las gallinas.' }
+    masterWords: [
+      { word: 'CECOTROFIA', desc: 'Heces blandas ricas en vitamina B y aminoácidos que el conejo reingiere.' },
+      { word: 'MOLLEJA', desc: 'Estómago muscular de las aves que muele granos con ayuda de piedrecillas.' },
+      { word: 'CRESTA', desc: 'Estructura vascularizada del gallo que disipa calor como un radiador.' },
+      { word: 'HENO', desc: 'Fibra indispensable que forma el 80% de la dieta del conejo para desgaste dental.' },
+      { word: 'INCUBACION', desc: 'Período de calor de 21 días para el desarrollo del pollito en el huevo.' },
+      { word: 'AGAPORNIS', desc: 'Aves psitácidas africanas monógamas con patas zigodáctilas para trepar.' },
+      { word: 'PATOS', desc: 'Aves de plumaje impermeable con glándula uropígea y patas palmeadas.' },
+      { word: 'FORRAJE', desc: 'Pasto fresco y verde rico en carotenoides que pigmenta yemas de huevos.' },
+      { word: 'BIENESTAR', desc: 'Manejo respetuoso, agua fresca, alimento balanceado y enriquecimiento.' },
+      { word: 'GALLINERO', desc: 'Instalación seca y ventilada con perchas elevadas y nidales protegidos.' },
+      { word: 'UROPIGEA', desc: 'Glándula sebácea sobre la cola del pato que impermeabiliza su plumaje.' },
+      { word: 'BUCHE', desc: 'Bolsa esofágica de las aves donde humedecen y almacenan el alimento.' },
+      { word: 'CHABO', desc: 'Raza de gallito japonés ornamental de patas cortas y plumas sedosas.' },
+      { word: 'GRIT', desc: 'Piedrecillas silíceas que las aves tragan para triturar comida en la molleja.' },
+      { word: 'CEREO', desc: 'Zona carnosa sobre el pico de la catita que indica su sexo biológico.' },
+      { word: 'ZIGODACTILA', desc: 'Pata con dos dedos hacia adelante y dos hacia atrás para trepar ramas.' },
+      { word: 'ESPOLON', desc: 'Estructura córnea defensiva en los tarsos de los gallos del liceo.' },
+      { word: 'ALTRICIAL', desc: 'Tipo de cría que nace indefensa, ciega y sin pelo, como los gazapos.' },
+      { word: 'CAROTENO', desc: 'Pigmento natural del pasto que da color amarillo a la yema de huevo.' },
+      { word: 'GAZAPO', desc: 'Nombre que recibe la cría recién nacida del conejo de granja.' },
+      { word: 'NIDAL', desc: 'Cajón oscuro y acolchado con paja limpia donde las gallinas ponen huevos.' },
+      { word: 'PICOTEO', desc: 'Jerarquía social natural mediante la cual las aves organizan el gallinero.' },
+      { word: 'AUSTRALIA', desc: 'Continente de origen silvestre de las catitas o periquitos australianos.' },
+      { word: 'DESPARASITAR', desc: 'Cuidado sanitario contra ácaros y piojillos mediante baños de tierra.' }
     ],
+    words: [],
     grid: [],
     foundWords: new Set(),
     startCell: null,
@@ -513,13 +583,17 @@
       this.foundWords.clear();
       this.grid = Array(this.size).fill(null).map(() => Array(this.size).fill(''));
 
-      // Intentar colocar cada palabra en horizontal, vertical o diagonal
+      // Seleccionar 8 palabras aleatorias de la biblioteca maestra de 24 términos
+      const shuffled = [...this.masterWords].sort(() => Math.random() - 0.5);
+      this.words = shuffled.slice(0, 8);
+
+      // Colocar cada palabra en la matriz (horizontal, vertical o diagonal)
       this.words.forEach(wObj => {
         const word = wObj.word;
         let placed = false;
         let attempts = 0;
 
-        while (!placed && attempts < 100) {
+        while (!placed && attempts < 150) {
           attempts++;
           const dir = Math.floor(Math.random() * 3); // 0: horizontal, 1: vertical, 2: diagonal
           let r = Math.floor(Math.random() * this.size);
@@ -637,6 +711,7 @@
           clueEl.querySelector('.clue-check').textContent = '✅';
         }
 
+        showQuizClueToast(`💡 Concepto Descubierto: ${matchedWord.word} — ${matchedWord.desc}`, '🔤');
         this.updateProgress();
 
         if (this.foundWords.size === this.words.length) {
@@ -645,14 +720,17 @@
           const mins = Math.floor(this.timerSeconds / 60);
           const secs = this.timerSeconds % 60;
           const timeStr = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+
+          const conceptsListHtml = `<div style="margin-top:10px;text-align:left;background:rgba(255,255,255,0.9);padding:10px 14px;border-radius:10px;border:1px solid #cbd5e1;font-size:0.82rem;color:#1e293b;"><b>💡 Conceptos Dominados para tus Quizzes:</b><ul style="margin:6px 0 0 16px;padding:0;">${this.words.map(w => `<li><b>${w.word}:</b> ${w.desc}</li>`).join('')}</ul></div>`;
+
           setTimeout(() => {
             showGameVictory({
               icon: '🔍📜',
               title: '¡Sopa de Letras Agroecológica Superada!',
               subtitle: 'Vocabulario y Bienestar Animal Liceo B-13',
               stamp: 'ZOOTECNIA COMUNITARIA',
-              msg: 'Encontraste los 10 conceptos fundamentales de nutrición, anatomía, manejo avícola y compromiso sustentable de la granja escolar.',
-              stats: `🎯 <b>Palabras identificadas:</b> ${this.words.length}/${this.words.length} conceptos &nbsp;|&nbsp; ⏱️ <b>Tiempo:</b> ${timeStr}`,
+              msg: `¡Excelente trabajo! Has identificado los ${this.words.length} conceptos clave. Cada uno de estos términos aparece en las preguntas de los Quizzes del liceo.`,
+              stats: `🎯 <b>Palabras identificadas:</b> ${this.words.length}/${this.words.length} conceptos &nbsp;|&nbsp; ⏱️ <b>Tiempo:</b> ${timeStr}${conceptsListHtml}`,
               onRestart: () => this.showStartScreen()
             });
           }, 300);
@@ -700,7 +778,24 @@
 
   /* ============================================================
      JUEGO 3: PLATAFORMAS 2D (AVENTURA EN LA GRANJA B-13)
+     Generación procedural aleatoria por intento, daño real por lodo,
+     pergaminos coleccionables con pistas de quiz y llegada garantizada al granero
      ============================================================ */
+  const CLUES_BANK = [
+    '🐰 Cecotrofia: Los conejos reingieren heces blandas ricas en vitamina B y aminoácidos esenciales.',
+    '🐰 Dieta Conejo: El heno seco debe componer el 80% de su alimento para desgastar sus incisivos.',
+    '🐔 Molleja de Aves: No tienen dientes; la molleja tritura granos duros con piedrecillas (grit).',
+    '🐔 Baño de Ceniza: Las gallinas se revuelcan en tierra seca para asfixiar ácaros y piojillos.',
+    '🐓 Cresta del Gallo: Órgano vascularizado que disipa calor corporal en días de calor.',
+    '🐓 Espolón: Estructura córnea defensiva en los tarsos de los gallos para la jerarquía del gallinero.',
+    '🦆 Patos y Agua: La glándula uropígea secreta aceite con que impermeabilizan su plumaje al nadar.',
+    '🦆 Peligro de Pan Blanco: Alimenta patos solo con granos y vegetales; el pan les provoca «ala de ángel».',
+    '🦜 Psitácidos Trepadores: Catitas y agapornis tienen patas zigodáctilas (2 dedos adelante y 2 atrás).',
+    '🦜 Céreo de Catita: Céreo azul indica macho adulto y marrón o beige indica hembra.',
+    '🦜 Alimentos Prohibidos: La palta (aguacate) y el chocolate son toxinas letales para todas las aves.',
+    '🥚 Incubación: El pollito dentro del huevo requiere 21 días de calor continuo (37.5°C) para nacer.'
+  ];
+
   const PlatformerGame = {
     initialized: false,
     isRunning: false,
@@ -730,23 +825,27 @@
       vx: 0,
       vy: 0,
       speed: 5.2,
-      jumpStrength: 13.2,
+      jumpStrength: 13.5,
       grounded: false,
       emoji: '🐰',
       accEmoji: '',
       facing: 1,
       runCycle: 0,
-      landSquash: 0
+      landSquash: 0,
+      invulnerableTime: 0
     },
     cameraX: 0,
     worldWidth: 3400,
     platforms: [],
     trampolines: [],
     mudPuddles: [],
+    thorns: [],
+    quizScrolls: [],
     items: [],
     particles: [],
     floatingTexts: [],
-    goal: { x: 3180, y: 200, w: 120, h: 140 },
+    unlockedClues: [],
+    goal: { x: 3180, y: 170, w: 140, h: 170 },
     lastTime: 0,
     animTime: 0,
 
@@ -919,10 +1018,12 @@
       this.showStartScreen();
     },
 
+    /* Generación procedural aleatoria del circuito en cada intento */
     resetWorld() {
       this.cameraX = 0;
       this.particles = [];
       this.floatingTexts = [];
+      this.unlockedClues = [];
       this.animTime = 0;
 
       // Cargar animal activo y accesorio
@@ -935,61 +1036,93 @@
       this.player.grounded = false;
       this.player.facing = 1;
       this.player.landSquash = 0;
+      this.player.invulnerableTime = 0;
 
-      // Plataformas de pasto, fardos y pasarelas de madera
+      // Suelo continuo base
       this.platforms = [
-        // Suelo continuo de la granja
-        { x: 0, y: 340, w: 3400, h: 60, type: 'ground' },
-
-        // Sección 1: El Potrero Inicial
-        { x: 280, y: 280, w: 95, h: 60, type: 'straw', label: 'Fardo' },
-        { x: 440, y: 220, w: 100, h: 45, type: 'straw', label: 'Fardo Alto' },
-        { x: 640, y: 260, w: 130, h: 28, type: 'wood', label: 'Cerca' },
-        { x: 840, y: 200, w: 140, h: 28, type: 'wood', label: 'Puente' },
-
-        // Sección 2: El Aviario y Silo
-        { x: 1120, y: 260, w: 110, h: 55, type: 'straw', label: 'Fardo' },
-        { x: 1320, y: 200, w: 140, h: 28, type: 'wood', label: 'Andamio' },
-        { x: 1560, y: 240, w: 110, h: 45, type: 'straw', label: 'Fardo' },
-        { x: 1780, y: 180, w: 150, h: 28, type: 'wood', label: 'Puente Colgante' },
-
-        // Sección 3: Huerto y Cercanías del Granero
-        { x: 2080, y: 250, w: 120, h: 50, type: 'straw', label: 'Fardo' },
-        { x: 2320, y: 190, w: 140, h: 28, type: 'wood', label: 'Terraza' },
-        { x: 2580, y: 240, w: 120, h: 50, type: 'straw', label: 'Fardo' },
-        { x: 2820, y: 200, w: 130, h: 30, type: 'wood', label: 'Escalón Granero' },
-        { x: 3020, y: 260, w: 100, h: 50, type: 'straw', label: 'Llegada' }
+        { x: 0, y: 340, w: 3400, h: 60, type: 'ground' }
       ];
 
-      // Trampolines de heno elásticos que catapultan al jugador
+      // Variaciones aleatorias para plataformas dinámicas en cada reinicio
+      const randOffset = () => (Math.random() - 0.5) * 40;
+      const randH = () => Math.floor(Math.random() * 20);
+
+      // Sección 1: Potrero Inicial
+      this.platforms.push(
+        { x: 260 + randOffset(), y: 275 - randH(), w: 90, h: 65, type: 'straw', label: 'Fardo' },
+        { x: 420 + randOffset(), y: 215 - randH(), w: 100, h: 45, type: 'straw', label: 'Fardo Alto' },
+        { x: 620 + randOffset(), y: 255 - randH(), w: 130, h: 28, type: 'wood', label: 'Cerca' },
+        { x: 820 + randOffset(), y: 195 - randH(), w: 140, h: 28, type: 'wood', label: 'Puente' }
+      );
+
+      // Sección 2: El Silo y Pasarelas Elevadas
+      this.platforms.push(
+        { x: 1100 + randOffset(), y: 260 - randH(), w: 105, h: 55, type: 'straw', label: 'Fardo' },
+        { x: 1290 + randOffset(), y: 200 - randH(), w: 135, h: 28, type: 'wood', label: 'Andamio' },
+        { x: 1530 + randOffset(), y: 235 - randH(), w: 110, h: 45, type: 'straw', label: 'Fardo' },
+        { x: 1750 + randOffset(), y: 180 - randH(), w: 145, h: 28, type: 'wood', label: 'Puente Colgante' }
+      );
+
+      // Sección 3: Huerto, Terrazas y Aproximación
+      this.platforms.push(
+        { x: 2050 + randOffset(), y: 250 - randH(), w: 120, h: 50, type: 'straw', label: 'Fardo' },
+        { x: 2290 + randOffset(), y: 190 - randH(), w: 135, h: 28, type: 'wood', label: 'Terraza' },
+        { x: 2540 + randOffset(), y: 240 - randH(), w: 120, h: 50, type: 'straw', label: 'Fardo' },
+        { x: 2780 + randOffset(), y: 200 - randH(), w: 130, h: 30, type: 'wood', label: 'Escalón' }
+      );
+
+      // Escaleras sólidas de acceso al Granero
+      this.platforms.push(
+        { x: 2980, y: 260, w: 90, h: 50, type: 'straw', label: 'Llegada' },
+        { x: 3080, y: 215, w: 85, h: 35, type: 'wood', label: 'Porche' }
+      );
+
+      // Trampolines de heno elásticos que catapultan al jugador hacia rutas altas
       this.trampolines = [
-        { x: 990, y: 326, w: 50, h: 16, cooldown: 0 },
-        { x: 2240, y: 326, w: 50, h: 16, cooldown: 0 }
+        { x: 960 + randOffset(), y: 326, w: 52, h: 16, cooldown: 0 },
+        { x: 1900 + randOffset(), y: 326, w: 52, h: 16, cooldown: 0 },
+        { x: 2440 + randOffset(), y: 326, w: 52, h: 16, cooldown: 0 }
       ];
 
-      // Charcos de barro que salpican y enlentecen si se pisan
+      // Charcos de barro que ahora DAÑAN vidas al pisarlos y ralentizan
       this.mudPuddles = [
-        { x: 740, y: 340, w: 75, h: 10 },
-        { x: 1960, y: 340, w: 85, h: 10 }
+        { x: 720 + randOffset(), y: 338, w: 85, h: 12 },
+        { x: 1410 + randOffset(), y: 338, w: 90, h: 12 },
+        { x: 2160 + randOffset(), y: 338, w: 95, h: 12 }
       ];
 
-      // Items nutritivos recolectables con puntajes zootécnicos
+      // Zarzas espinosas de campo que también restan vida
+      this.thorns = [
+        { x: 535 + randOffset(), y: 318, w: 32, h: 22 },
+        { x: 1650 + randOffset(), y: 318, w: 32, h: 22 },
+        { x: 2670 + randOffset(), y: 318, w: 32, h: 22 }
+      ];
+
+      // Pergaminos Dorados con Pistas de Quizzes (3 coleccionables clave por partida)
+      const shuffledClues = [...CLUES_BANK].sort(() => Math.random() - 0.5);
+      this.quizScrolls = [
+        { x: 450 + randOffset(), y: 170, taken: false, clue: shuffledClues[0] },
+        { x: 1330 + randOffset(), y: 150, taken: false, clue: shuffledClues[1] },
+        { x: 2320 + randOffset(), y: 140, taken: false, clue: shuffledClues[2] }
+      ];
+
+      // Items nutritivos recolectables (zanahorias, choclos, trigo, estrellas)
       this.items = [
-        { x: 320, y: 235, emoji: '🥕', val: 10, name: 'Zanahoria', taken: false },
-        { x: 480, y: 180, emoji: '🌽', val: 15, name: 'Choclo', taken: false },
-        { x: 690, y: 215, emoji: '🌾', val: 20, name: 'Trigo', taken: false },
-        { x: 890, y: 155, emoji: '⭐', val: 50, name: 'Estrella Dorada', taken: false },
+        { x: 300, y: 230, emoji: '🥕', val: 10, name: 'Zanahoria', taken: false },
+        { x: 460, y: 170, emoji: '🌽', val: 15, name: 'Choclo', taken: false },
+        { x: 670, y: 210, emoji: '🌾', val: 20, name: 'Trigo', taken: false },
+        { x: 870, y: 150, emoji: '⭐', val: 50, name: 'Estrella Dorada', taken: false },
 
-        { x: 1170, y: 215, emoji: '🥕', val: 10, name: 'Zanahoria', taken: false },
-        { x: 1370, y: 155, emoji: '🌽', val: 15, name: 'Choclo', taken: false },
-        { x: 1610, y: 195, emoji: '🌾', val: 20, name: 'Trigo', taken: false },
-        { x: 1830, y: 135, emoji: '⭐', val: 50, name: 'Estrella Dorada', taken: false },
+        { x: 1140, y: 215, emoji: '🥕', val: 10, name: 'Zanahoria', taken: false },
+        { x: 1340, y: 150, emoji: '🌽', val: 15, name: 'Choclo', taken: false },
+        { x: 1580, y: 190, emoji: '🌾', val: 20, name: 'Trigo', taken: false },
+        { x: 1800, y: 135, emoji: '⭐', val: 50, name: 'Estrella Dorada', taken: false },
 
-        { x: 2120, y: 205, emoji: '🥕', val: 10, name: 'Zanahoria', taken: false },
-        { x: 2370, y: 145, emoji: '🌽', val: 15, name: 'Choclo', taken: false },
-        { x: 2630, y: 195, emoji: '🌾', val: 20, name: 'Trigo', taken: false },
-        { x: 2870, y: 155, emoji: '⭐', val: 50, name: 'Estrella Dorada', taken: false },
-        { x: 3060, y: 215, emoji: '🥕', val: 10, name: 'Zanahoria', taken: false }
+        { x: 2090, y: 205, emoji: '🥕', val: 10, name: 'Zanahoria', taken: false },
+        { x: 2340, y: 140, emoji: '🌽', val: 15, name: 'Choclo', taken: false },
+        { x: 2600, y: 190, emoji: '🌾', val: 20, name: 'Trigo', taken: false },
+        { x: 2840, y: 150, emoji: '⭐', val: 50, name: 'Estrella Dorada', taken: false },
+        { x: 3040, y: 210, emoji: '🥕', val: 10, name: 'Zanahoria', taken: false }
       ];
     },
 
@@ -1028,6 +1161,21 @@
       }
     },
 
+    spawnMudSplash(x, y, count = 8) {
+      for (let i = 0; i < count; i++) {
+        this.particles.push({
+          x: x + (Math.random() - 0.5) * 20,
+          y: y + (Math.random() - 0.5) * 4,
+          vx: (Math.random() - 0.5) * 4.5,
+          vy: -Math.random() * 3.5 - 1.5,
+          rad: 3 + Math.random() * 3.5,
+          color: ['#3e2410', '#543217', '#251408'][Math.floor(Math.random() * 3)],
+          life: 1.0,
+          decay: 0.045
+        });
+      }
+    },
+
     spawnSparkles(x, y, count = 8) {
       for (let i = 0; i < count; i++) {
         const ang = Math.random() * Math.PI * 2;
@@ -1045,6 +1193,23 @@
       }
     },
 
+    spawnVictoryFireworks() {
+      for (let i = 0; i < 40; i++) {
+        const ang = Math.random() * Math.PI * 2;
+        const spd = 2 + Math.random() * 5.5;
+        this.particles.push({
+          x: this.goal.x + 70,
+          y: this.goal.y + 40,
+          vx: Math.cos(ang) * spd,
+          vy: Math.sin(ang) * spd,
+          rad: 3 + Math.random() * 4,
+          color: ['#ffd83d', '#ff4757', '#2ed573', '#1e90ff', '#f59e0b', '#a855f7'][Math.floor(Math.random() * 6)],
+          life: 1.3,
+          decay: 0.025
+        });
+      }
+    },
+
     spawnFloatingText(x, y, text, color = '#ffd83d') {
       this.floatingTexts.push({
         x,
@@ -1056,8 +1221,56 @@
       });
     },
 
+    /* Mecánica de daño por lodo o espinas con tiempo de invulnerabilidad */
+    takeDamage(amount, reason) {
+      if (this.isFinished) return;
+      this.lives = Math.max(0, this.lives - amount);
+      this.player.invulnerableTime = 1.35;
+      this.player.vy = -6.5; // Rebote hacia arriba
+      this.player.vx = -this.player.facing * 3.2; // Retroceso
+      AudioFX.splash();
+      AudioFX.wrong();
+      this.spawnMudSplash(this.player.x + this.player.w / 2, this.player.y + this.player.h);
+      this.spawnFloatingText(this.player.x + this.player.w / 2, this.player.y - 16, reason || '-1 VIDA 💔', '#ef4444');
+      this.updateHud();
+
+      if (this.lives <= 0) {
+        this.gameOver();
+      }
+    },
+
+    gameOver() {
+      if (this.isFinished) return;
+      this.isFinished = true;
+      this.isRunning = false;
+      if (this.reqId) {
+        cancelAnimationFrame(this.reqId);
+        this.reqId = null;
+      }
+      clearInterval(this.timerInterval);
+      AudioFX.stopAll();
+      AudioFX.wrong();
+
+      setTimeout(() => {
+        showGameVictory({
+          icon: '🌧️💔',
+          title: '¡El Fango Atrapó a tu Corredor!',
+          subtitle: 'Recorrido Interrumpido — Sin Vidas',
+          stamp: 'INTÉNTALO OTRA VEZ',
+          msg: 'Tu animalito cayó en el lodo resbaloso y se agotó. ¡Recuerda que el lodo y las espinas restan vidas! Salta con precisión sobre los fardos elevados y trampolines.',
+          stats: `⭐ <b>Puntaje:</b> ${this.score} pts &nbsp;|&nbsp; ⏱️ <b>Tiempo:</b> ${this.timerSeconds}s &nbsp;|&nbsp; 💡 <b>Pistas descubiertas:</b> ${this.unlockedClues.length}`,
+          onRestart: () => this.showStartScreen()
+        });
+      }, 200);
+    },
+
     update(dt) {
       const p = this.player;
+
+      // Decrementar tiempo de invulnerabilidad
+      if (p.invulnerableTime > 0) {
+        p.invulnerableTime -= dt * 0.001;
+      }
 
       // Movimiento horizontal
       if (this.keys.left) {
@@ -1134,65 +1347,71 @@
           p.vy = -18.5;
           p.grounded = false;
           t.cooldown = 24;
-          this.spawnSparkles(t.x + t.w / 2, t.y, 10);
+          this.spawnSparkles(t.x + t.w / 2, t.y, 12);
           this.spawnFloatingText(t.x + t.w / 2, t.y - 12, '¡SÚPER SALTO! 🦘', '#fbbf24');
         }
       }
 
-      // Interacción con charcos de barro (hazards)
+      // Interacción con charcos de barro (AHORA DAÑAN 1 VIDA Y FRENAN)
       for (const m of this.mudPuddles) {
         if (
-          p.x + p.w > m.x &&
-          p.x < m.x + m.w &&
+          p.x + p.w * 0.8 > m.x &&
+          p.x + p.w * 0.2 < m.x + m.w &&
           p.y + p.h >= m.y &&
-          p.y + p.h <= m.y + m.h + 8
+          p.y + p.h <= m.y + m.h + 14
         ) {
-          if (Math.abs(p.vx) > 1.2) {
-            AudioFX.splash();
-            p.vx *= 0.42;
-            this.spawnDust(p.x + p.w / 2, m.y + 4, 2);
+          p.vx *= 0.46; // frena fuertemente
+          if (p.invulnerableTime <= 0) {
+            this.takeDamage(1, '¡Caíste al fango! -1 VIDA 💔');
           }
         }
       }
 
-      // Caída fuera del mundo
-      if (p.y > 420) {
-        this.lives--;
-        this.updateHud();
-        AudioFX.wrong();
-
-        if (this.lives <= 0) {
-          if (this.isFinished) return;
-          this.isFinished = true;
-          this.isRunning = false;
-          if (this.reqId) {
-            cancelAnimationFrame(this.reqId);
-            this.reqId = null;
+      // Interacción con zarzas espinosas
+      for (const z of this.thorns) {
+        if (
+          p.x + p.w * 0.7 > z.x &&
+          p.x + p.w * 0.3 < z.x + z.w &&
+          p.y + p.h >= z.y &&
+          p.y <= z.y + z.h
+        ) {
+          if (p.invulnerableTime <= 0) {
+            this.takeDamage(1, '¡Zarzas espinosas! -1 VIDA 💔');
           }
-          clearInterval(this.timerInterval);
-          AudioFX.stopAll();
-          AudioFX.wrong();
+        }
+      }
 
-          setTimeout(() => {
-            showGameVictory({
-              icon: '🐾🌱',
-              title: '¡Ánimo en el Potrero!',
-              subtitle: 'Recorrido Interrumpido',
-              stamp: 'INTÉNTALO OTRA VEZ',
-              msg: 'Tu animalito se agotó al saltar entre los fardos. ¡Vuelve a intentarlo para llegar con honor al Granero B-13!',
-              stats: `⭐ <b>Puntaje alcanzado:</b> ${this.score} pts`,
-              onRestart: () => this.showStartScreen()
-            });
-          }, 150);
-          return;
-        } else {
+      // Caída al vacío fuera del mapa
+      if (p.y > 420) {
+        this.takeDamage(1, '¡Caída al vacío! -1 VIDA 💔');
+        if (this.lives > 0) {
           p.x = Math.max(70, p.x - 320);
           p.y = 180;
           p.vy = 0;
         }
       }
 
-      // Recolección de items
+      // Recolección de pergaminos de pistas de quiz
+      for (const scroll of this.quizScrolls) {
+        if (!scroll.taken) {
+          const dist = Math.hypot((p.x + p.w / 2) - scroll.x, (p.y + p.h / 2) - scroll.y);
+          if (dist < 36) {
+            AudioFX.spring();
+            scroll.taken = true;
+            this.score += 35;
+            this.updateHud();
+            this.spawnSparkles(scroll.x, scroll.y, 14);
+            this.spawnFloatingText(scroll.x, scroll.y - 14, '+35 💡 ¡Pista Quiz!', '#fbbf24');
+            const clueText = scroll.clue || CLUES_BANK[Math.floor(Math.random() * CLUES_BANK.length)];
+            if (!this.unlockedClues.includes(clueText)) {
+              this.unlockedClues.push(clueText);
+            }
+            showQuizClueToast(clueText, '📜');
+          }
+        }
+      }
+
+      // Recolección de items nutritivos
       for (const item of this.items) {
         if (!item.taken) {
           const dist = Math.hypot((p.x + p.w / 2) - item.x, (p.y + p.h / 2) - item.y);
@@ -1207,8 +1426,8 @@
         }
       }
 
-      // Llegada a la meta: El Granero B-13
-      if (p.x >= this.goal.x - 30) {
+      // Llegada a la meta: El Granero B-13 (activación frontal garantizada)
+      if (p.x + p.w >= 3150) {
         if (this.isFinished) return;
         this.isFinished = true;
         this.isRunning = false;
@@ -1220,9 +1439,15 @@
         AudioFX.stopAll();
         AudioFX.win();
 
-        // Sumar al puntaje del alumno si existe state
+        // Guardar récord de minijuego de forma segura sin contaminar el puntaje puro de quizzes
         if (typeof state !== 'undefined') {
-          state.score = (state.score || 0) + this.score;
+          state.minigames = state.minigames || {};
+          const prevBest = state.minigames.platformer?.bestScore || 0;
+          state.minigames.platformer = {
+            bestScore: Math.max(prevBest, this.score),
+            bestTime: Math.min(state.minigames.platformer?.bestTime || 9999, this.timerSeconds),
+            runsCompleted: (state.minigames.platformer?.runsCompleted || 0) + 1
+          };
           if (typeof saveState === 'function') saveState();
         }
 
@@ -1230,17 +1455,23 @@
         const secs = this.timerSeconds % 60;
         const timeStr = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
 
+        this.spawnVictoryFireworks();
+
+        const cluesListHtml = this.unlockedClues.length > 0
+          ? `<div style="margin-top:10px;text-align:left;background:rgba(255,255,255,0.9);padding:10px 14px;border-radius:10px;border:1px solid #cbd5e1;font-size:0.82rem;color:#1e293b;"><b>💡 Pistas Clave Desbloqueadas para los Quizzes (${this.unlockedClues.length}):</b><ul style="margin:6px 0 0 16px;padding:0;">${this.unlockedClues.map(c => `<li>${c}</li>`).join('')}</ul></div>`
+          : '';
+
         setTimeout(() => {
           showGameVictory({
             icon: '🏁🌾',
             title: '¡Llegaste al Granero B-13!',
-            subtitle: 'Aventura de Campo Completada',
+            subtitle: '¡Carrera Campestre Completada!',
             stamp: 'MISIÓN CUMPLIDA',
-            msg: `¡Tu corredor ${this.player.emoji} superó todos los fardos y puentes de la granja, recolectó provisiones y alcanzó el granero con maestría deportiva!`,
-            stats: `⭐ <b>Puntaje:</b> ${this.score} pts &nbsp;|&nbsp; ❤️ <b>Vidas:</b> ${'❤️'.repeat(Math.max(1, this.lives))} &nbsp;|&nbsp; ⏱️ <b>Tiempo:</b> ${timeStr}`,
+            msg: `¡Tu corredor ${this.player.emoji} superó los charcos de lodo, escaló los fardos y alcanzó la meta con vida! Recuerda usar las pistas descubiertas para responder los Quizzes en el Mapa y ganar décimas.`,
+            stats: `⭐ <b>Puntos de Carrera:</b> ${this.score} pts &nbsp;|&nbsp; ❤️ <b>Vidas restantes:</b> ${'❤️'.repeat(Math.max(1, this.lives))} &nbsp;|&nbsp; ⏱️ <b>Tiempo:</b> ${timeStr}${cluesListHtml}`,
             onRestart: () => this.showStartScreen()
           });
-        }, 220);
+        }, 250);
         return;
       }
 
@@ -1423,19 +1654,40 @@
         }
       }
 
-      // Dibujar charcos de barro
+      // Dibujar charcos de barro con efecto de fango viscoso y aviso de peligro
       for (const m of this.mudPuddles) {
-        ctx.fillStyle = '#452c16';
+        ctx.fillStyle = '#3a210d';
         ctx.beginPath();
         ctx.ellipse(m.x + m.w / 2, m.y + m.h / 2, m.w / 2, m.h / 2, 0, 0, Math.PI * 2);
         ctx.fill();
-        ctx.fillStyle = '#2f1e0f';
+
+        ctx.fillStyle = '#241407';
         ctx.beginPath();
-        ctx.ellipse(m.x + m.w / 2, m.y + m.h / 2 + 2, m.w * 0.35, m.h * 0.35, 0, 0, Math.PI * 2);
+        ctx.ellipse(m.x + m.w / 2, m.y + m.h / 2 + 2, m.w * 0.38, m.h * 0.38, 0, 0, Math.PI * 2);
         ctx.fill();
+
+        // Burbujas de lodo animadas
+        const bubbleY = m.y + Math.sin(this.animTime * 5 + m.x) * 3;
+        ctx.fillStyle = '#543217';
+        ctx.beginPath();
+        ctx.arc(m.x + m.w * 0.35, bubbleY, 4, 0, Math.PI * 2);
+        ctx.arc(m.x + m.w * 0.65, bubbleY - 1, 3, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Cartelito de precaución lodo
+        ctx.font = '14px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText('⚠️', m.x + m.w / 2, m.y - 8);
       }
 
-      // Dibujar trampolines de heno
+      // Dibujar zarzas espinosas
+      for (const z of this.thorns) {
+        ctx.font = '22px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText('🌵', z.x + z.w / 2, z.y + z.h - 2);
+      }
+
+      // Dibujar trampolines de heno elásticos
       for (const t of this.trampolines) {
         ctx.fillStyle = '#78350f';
         ctx.fillRect(t.x + 6, t.y + 8, t.w - 12, t.h - 8);
@@ -1457,7 +1709,28 @@
         ctx.strokeRect(t.x, t.y, t.w, 6);
       }
 
-      // Dibujar items con animación de levitación y destello
+      // Dibujar Pergaminos Dorados de Quiz con aura brillante
+      for (const scroll of this.quizScrolls) {
+        if (!scroll.taken) {
+          const hoverY = scroll.y + Math.sin(this.animTime * 5 + scroll.x) * 5;
+          ctx.font = '30px Arial';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText('📜', scroll.x, hoverY);
+
+          // Resplandor dorado místico
+          ctx.fillStyle = 'rgba(251, 191, 36, 0.4)';
+          ctx.beginPath();
+          ctx.arc(scroll.x, hoverY, 18, 0, Math.PI * 2);
+          ctx.fill();
+
+          ctx.font = 'bold 10px "Space Mono", monospace';
+          ctx.fillStyle = '#78350f';
+          ctx.fillText('PISTA', scroll.x, hoverY - 22);
+        }
+      }
+
+      // Dibujar items nutritivos con animación de levitación y destello
       for (const item of this.items) {
         if (!item.taken) {
           const hoverY = item.y + Math.sin(this.animTime * 4 + item.x) * 4.5;
@@ -1484,7 +1757,7 @@
       }
       ctx.globalAlpha = 1.0;
 
-      // Dibujar textos flotantes (+10, +50, etc.)
+      // Dibujar textos flotantes (+10, -1 VIDA, etc.)
       ctx.font = 'bold 15px "Space Mono", monospace';
       ctx.textAlign = 'center';
       for (const ft of this.floatingTexts) {
@@ -1550,8 +1823,8 @@
       ctx.strokeRect(g.x, g.y, g.w, g.h);
 
       // Puertas dobles de granero con la clásica X blanca
-      const dw = 48;
-      const dh = 65;
+      const dw = 52;
+      const dh = 70;
       const dx = g.x + (g.w - dw) / 2;
       const dy = g.y + g.h - dh;
 
@@ -1626,6 +1899,13 @@
       ctx.save();
       ctx.translate(p.x + p.w / 2, p.y + p.h / 2);
 
+      // Parpadeo durante tiempo de invulnerabilidad tras ser dañado
+      if (p.invulnerableTime > 0) {
+        if (Math.floor(this.animTime * 14) % 2 === 0) {
+          ctx.globalAlpha = 0.35;
+        }
+      }
+
       // Volteo horizontal según dirección
       if (p.facing < 0) ctx.scale(-1, 1);
 
@@ -1686,8 +1966,19 @@
     }
   };
 
+  /* Función para refrescar el puntaje oficial de quizzes en el scorebox general */
+  function updateHeaderScore() {
+    const scoreEl = document.getElementById('score');
+    if (scoreEl) {
+      const purePts = (typeof computePureScore === 'function') ? computePureScore(state) : ((typeof state !== 'undefined' && state.pureScore) ? state.pureScore : 0);
+      scoreEl.textContent = purePts;
+    }
+  }
+  window.updateHeaderScore = updateHeaderScore;
+
   // Inicializar todos los minijuegos al cargar el DOM
   document.addEventListener('DOMContentLoaded', () => {
+    updateHeaderScore();
     initGameTabs();
     MemoryGame.start();
     WordSearchGame.start();

@@ -289,8 +289,7 @@ const Auth = {
         const count = isMap ? (typeof mapDiscoveredSet !== 'undefined' ? mapDiscoveredSet.size : 0) :
                       (typeof discoveredSet !== 'undefined' ? discoveredSet.size : 0);
         const total = isMap ? '10' : '5';
-        const unit = isMap ? 'ANIMALES' : 'FICHAS';
-        const scoreVal = (typeof state !== 'undefined') ? state.score : 0;
+        const scoreVal = (typeof computePureScore === 'function') ? computePureScore(state) : ((typeof state !== 'undefined' && state.pureScore) ? state.pureScore : 0);
         scorebox.innerHTML = `PUNTAJE: <b id="score">${scoreVal}</b><br>${unit}: <span id="discovered">${count}</span>/${total}`;
       }
     } else if (rol === 'profesor') {

@@ -189,9 +189,8 @@ function updateHeader() {
     refreshZonePinBadges();
     return;
   }
-  const scoreEl = document.getElementById('score');
-  const discEl = document.getElementById('discovered');
-  if (scoreEl) scoreEl.textContent = state.score;
+  const purePts = (typeof computePureScore === 'function') ? computePureScore(state) : ((typeof state !== 'undefined' && state.pureScore) ? state.pureScore : 0);
+  if (scoreEl) scoreEl.textContent = purePts;
   if (discEl) discEl.textContent = mapDiscoveredSet.size;
   refreshZonePinBadges();
 }

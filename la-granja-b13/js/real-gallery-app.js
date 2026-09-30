@@ -20,9 +20,8 @@ function updateGalleryHeader() {
     }
     return;
   }
-  const scoreEl = document.getElementById('score');
-  const countEl = document.getElementById('galleryCount');
-  if (scoreEl) scoreEl.textContent = (typeof state !== 'undefined' && state.score) ? state.score : 0;
+  const purePts = (typeof computePureScore === 'function') ? computePureScore(state) : ((typeof state !== 'undefined' && state.pureScore) ? state.pureScore : 0);
+  if (scoreEl) scoreEl.textContent = purePts;
   if (countEl) countEl.textContent = REAL_GALLERY_ITEMS.length;
 }
 
