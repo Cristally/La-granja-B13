@@ -2363,12 +2363,6 @@ body.rol-admin .badges-bar {
 /* 4. Certificado Oficial Digital Liceo B-13 */
 .cert-modal-card {
   max-width: 920px !important;
-  width: 96% !important;
-  max-height: 94vh !important;
-  overflow-y: auto !important;
-  padding: 0 !important;
-.cert-modal-card {
-  max-width: 920px !important;
   width: 95% !important;
   max-height: 90vh !important;
   overflow-y: auto !important;
