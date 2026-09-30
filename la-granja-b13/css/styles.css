@@ -283,10 +283,11 @@ header.top .sub{font-size:0.85rem;color:var(--grass-dark);margin-top:3px;font-we
 .stage.night .animal::after{background:rgba(5,10,5,0.5);}
 .animal .sprite{
   font-size:2.8rem;line-height:1;filter:drop-shadow(1px 3px 2px rgba(0,0,0,0.28));position:relative;
+  display:inline-block;
 }
 .animal .accessory{
-  position:absolute;font-size:1.25rem;top:-10px;left:50%;transform:translateX(-50%);
-  filter:drop-shadow(1px 1px 1px rgba(0,0,0,0.25));
+  position:absolute;font-size:1.3rem;top:-14px;left:50%;transform:translateX(-50%);
+  filter:drop-shadow(1px 1px 2px rgba(0,0,0,0.28));pointer-events:none;line-height:1;z-index:3;
 }
 .animal .tag{
   font-family:'Space Mono',monospace;font-size:0.65rem;font-weight:700;background:var(--paper-card);
@@ -2675,6 +2676,195 @@ body.rol-admin .badges-bar {
 .cert-date-tag {
   font-size: 0.68rem;
   color: #777;
+}
+
+/* ============================================================
+   Bocadillos de diálogo (Curiosidades y pistas en vivo - Potrero)
+   ============================================================ */
+.animal-speech-bubble {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-14px);
+  min-width: 170px;
+  max-width: 250px;
+  background: #ffffff;
+  color: var(--ink);
+  border: 2px solid var(--ink);
+  border-radius: 12px;
+  padding: 8px 12px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18), 0 2px 0 var(--ink);
+  z-index: 100;
+  pointer-events: auto;
+  cursor: pointer;
+  animation: bubblePop 0.28s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  user-select: none;
+}
+
+.animal-speech-bubble.fade-out {
+  opacity: 0;
+  transform: translateX(-50%) translateY(-22px) scale(0.92);
+}
+
+.animal-speech-bubble::before {
+  content: '';
+  position: absolute;
+  bottom: -9px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 9px solid transparent;
+  border-right: 9px solid transparent;
+  border-top: 9px solid var(--ink);
+}
+
+.animal-speech-bubble::after {
+  content: '';
+  position: absolute;
+  bottom: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 7px solid transparent;
+  border-right: 7px solid transparent;
+  border-top: 7px solid #ffffff;
+}
+
+.animal-speech-bubble .bubble-header {
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--grass-dark, #2b5329);
+  margin-bottom: 3px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.animal-speech-bubble .bubble-body {
+  font-size: 0.8rem;
+  line-height: 1.35;
+  color: #2e3421;
+  font-family: 'Karla', sans-serif;
+  font-weight: 600;
+}
+
+@keyframes bubblePop {
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(4px) scale(0.82);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(-14px) scale(1);
+  }
+}
+
+/* ============================================================
+   Accesorio en Ficha de Animal (#cardSprite)
+   ============================================================ */
+.card-head .big-sprite {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card-sprite-acc {
+  position: absolute;
+  top: -8px;
+  right: -6px;
+  font-size: 1.35rem;
+  line-height: 1;
+  filter: drop-shadow(1px 2px 2px rgba(0,0,0,0.3));
+  pointer-events: none;
+}
+
+/* ============================================================
+   Selector de Avatares (Estudiante: Categorías y botones)
+   ============================================================ */
+.avatar-cat-bar {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 8px;
+  background: var(--paper-dark, #e8ede3);
+  padding: 3px;
+  border-radius: 8px;
+  border: 1.5px solid var(--ink);
+  overflow-x: auto;
+}
+
+.avatar-cat-btn {
+  flex: 1;
+  padding: 6px 6px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  background: transparent;
+  color: var(--ink);
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.avatar-cat-btn:hover {
+  background: rgba(0,0,0,0.06);
+}
+
+.avatar-cat-btn.active {
+  background: var(--grass-dark, #2b5329) !important;
+  color: #ffffff !important;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+
+.avatar-picker-btn {
+  background: #ffffff;
+  border: 2px solid #ccc;
+  border-radius: 8px;
+  padding: 6px 2px;
+  font-size: 1.55rem;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: all 0.15s ease;
+}
+
+.avatar-picker-btn:hover {
+  transform: translateY(-2px);
+  border-color: var(--grass-dark, #2b5329);
+  box-shadow: 0 3px 6px rgba(0,0,0,0.12);
+}
+
+.avatar-picker-btn.selected {
+  border-color: var(--grass-dark, #2b5329) !important;
+  background: #f0f7ec !important;
+  box-shadow: 0 0 0 2px var(--grass-dark) !important;
+}
+
+/* ============================================================
+   Avisos pedagógicos & Potrero Quiz Gate
+   ============================================================ */
+.study-advice-banner {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.study-advice-banner:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+}
+
+.potrero-curiosity-box {
+  transition: transform 0.15s ease;
+}
+
+.potrero-curiosity-box:hover {
+  transform: translateY(-1px);
 }
 
 /* Reglas de impresión para PDF / papel */

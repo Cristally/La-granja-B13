@@ -87,7 +87,10 @@ if (stage) {
       <div class="tag"></div>
     `;
     
-    el.addEventListener('click', () => openCard(a.id));
+    el.addEventListener('click', () => {
+      showSpeechBubble(a.id);
+      openCard(a.id);
+    });
     el.addEventListener('mouseenter', () => { a.hovered = true; });
     el.addEventListener('mouseleave', () => { a.hovered = false; });
     el.addEventListener('touchstart', () => { a.hovered = true; }, { passive: true });
@@ -106,6 +109,50 @@ if (stage) {
   });
 }
 
+function showSpeechBubble(animalId, customText) {
+  const el = sprites[animalId];
+  if (!el || isNightMode) return;
+
+  const oldBubble = el.querySelector('.animal-speech-bubble');
+  if (oldBubble) oldBubble.remove();
+
+  const hints = (typeof CURIOSITIES !== 'undefined' && CURIOSITIES[animalId]) ? CURIOSITIES[animalId] : [];
+  const text = customText || (hints.length > 0 ? hints[Math.floor(Math.random() * hints.length)] : '¡Ven a descubrir mis secretos de campo!');
+
+  const bubble = document.createElement('div');
+  bubble.className = 'animal-speech-bubble';
+  bubble.innerHTML = `
+    <div class="bubble-header">💡 Dato de Campo:</div>
+    <div class="bubble-body">${text}</div>
+  `;
+
+  bubble.addEventListener('click', (e) => {
+    e.stopPropagation();
+    openCard(animalId);
+  });
+
+  el.appendChild(bubble);
+
+  clearTimeout(el._bubbleTimer);
+  el._bubbleTimer = setTimeout(() => {
+    bubble.classList.add('fade-out');
+    setTimeout(() => bubble.remove(), 400);
+  }, 4800);
+}
+window.showSpeechBubble = showSpeechBubble;
+
+function speakRandomCuriosity() {
+  if (isNightMode || !stage) return;
+  const overlayOpen = document.querySelector('.overlay.open');
+  if (overlayOpen) return;
+
+  const wakingAnimals = POTRERO_ANIMALS.filter(a => !a.paused);
+  if (wakingAnimals.length === 0) return;
+  const chosen = wakingAnimals[Math.floor(Math.random() * wakingAnimals.length)];
+  showSpeechBubble(chosen.id);
+}
+setInterval(speakRandomCuriosity, 8500);
+
 function refreshSprite(a) {
   const el = sprites[a.id];
   if (!el) return;
@@ -115,7 +162,7 @@ function refreshSprite(a) {
     tag.style.borderColor = a.color;
     tag.style.color = a.color;
   }
-  const accEmoji = ACCESSORIES.find(x => x.id === a.accessory)?.emoji || '';
+  const accEmoji = (typeof ACCESSORIES !== 'undefined' ? ACCESSORIES.find(x => x.id === a.accessory)?.emoji : '') || '';
   const acc = el.querySelector('.accessory');
   if (acc) acc.textContent = accEmoji;
 }

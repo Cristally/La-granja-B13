@@ -67,6 +67,28 @@
         });
       }
     });
+
+    // Cierre al hacer clic en el fondo oscuro (backdrop)
+    const tqModal = document.getElementById('teacherQuizModal');
+    if (tqModal) {
+      tqModal.addEventListener('click', (e) => {
+        if (e.target === tqModal) {
+          tqModal.classList.remove('active');
+          tqModal.style.display = 'none';
+        }
+      });
+    }
+
+    // Tecla Escape para cerrar
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        const m = document.getElementById('teacherQuizModal');
+        if (m && m.classList.contains('active')) {
+          m.classList.remove('active');
+          m.style.display = 'none';
+        }
+      }
+    });
   }
 
   // Desafío de Quiz del Profesor en una zona del mapa
@@ -178,6 +200,7 @@
     };
 
     renderQuestion();
+    modal.style.display = 'flex';
     modal.classList.add('active');
   };
 

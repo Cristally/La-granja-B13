@@ -192,13 +192,16 @@ function renderStudentProfileModal() {
       ` : `
         <div style="display:flex;align-items:center;gap:10px;">
           <span style="font-size:1.8rem;opacity:0.6;">🔒</span>
-          <div>
-            <div style="font-weight:700;color:#555;font-size:0.88rem;">Certificado Oficial B-13 (Pendiente)</div>
+          <div style="flex:1;">
+            <div style="font-weight:700;color:#555;font-size:0.88rem;">Certificado Oficial B-13 (En progreso)</div>
             <div style="font-size:0.76rem;color:#777;line-height:1.35;margin-top:2px;">
-              Completa los desafíos y quizzes de la granja para desbloquear tu diploma oficial firmado digitalmente por el Liceo.
+              Rinde los desafíos en el Mapa 3D para desbloquear tu diploma oficial firmado digitalmente por el Liceo.
             </div>
           </div>
         </div>
+        <button type="button" id="btnDemoCertModal" class="tool-btn" style="width:100%;margin-top:10px;padding:8px;background:var(--paper);color:var(--ink);font-weight:700;font-size:0.82rem;border:1.5px solid var(--ink);border-radius:6px;cursor:pointer;">
+          🔍 Ver Demostración de Certificado Oficial B-13
+        </button>
       `}
     </div>
 
@@ -221,14 +224,20 @@ function renderStudentProfileModal() {
         </select>
       </div>
 
-      <!-- Selector de Avatar -->
-      <div style="margin-bottom:12px;">
-        <label style="font-size:0.82rem;font-weight:700;display:block;margin-bottom:6px;">Elige tu Avatar (Estudiantes B-13)</label>
-        <div class="avatar-select-grid" id="avatarGrid" style="display:grid;grid-template-columns:repeat(5, 1fr);gap:6px;">
+      <!-- Selector de Avatar con pestañas de categoría -->
+      <div style="margin-bottom:14px;">
+        <label style="font-size:0.82rem;font-weight:700;display:block;margin-bottom:6px;">Elige tu Avatar o Accesorio (Estudiantes B-13)</label>
+        <div class="avatar-cat-bar" id="avatarCatBar" style="display:flex;gap:4px;margin-bottom:8px;background:var(--paper-dark);padding:3px;border-radius:6px;border:1.5px solid var(--ink);">
+          <button type="button" class="avatar-cat-btn active" data-cat="fauna" style="flex:1;padding:5px 4px;font-size:0.75rem;font-weight:700;border:none;border-radius:4px;cursor:pointer;background:var(--grass-dark);color:#fff;">🐾 Fauna Granja</button>
+          <button type="button" class="avatar-cat-btn" data-cat="fem" style="flex:1;padding:5px 4px;font-size:0.75rem;font-weight:700;border:none;border-radius:4px;cursor:pointer;background:transparent;color:var(--ink);">🌸 Flores & Moños</button>
+          <button type="button" class="avatar-cat-btn" data-cat="masc" style="flex:1;padding:5px 4px;font-size:0.75rem;font-weight:700;border:none;border-radius:4px;cursor:pointer;background:transparent;color:var(--ink);">🧢 Gorras & Aventura</button>
+          <button type="button" class="avatar-cat-btn" data-cat="all" style="padding:5px 8px;font-size:0.75rem;font-weight:700;border:none;border-radius:4px;cursor:pointer;background:transparent;color:var(--ink);">✨ Todos</button>
+        </div>
+        <div class="avatar-select-grid" id="avatarGrid" style="display:grid;grid-template-columns:repeat(5, 1fr);gap:6px;max-height:175px;overflow-y:auto;padding:2px;">
           ${(typeof STUDENT_AVATARS !== 'undefined' ? STUDENT_AVATARS : []).map(av => `
-            <button type="button" class="avatar-picker-btn ${av.icon === currentAvatar ? 'selected' : ''}" data-icon="${av.icon}" title="${av.name} — ${av.desc}" style="background:#fff;border:2px solid ${av.icon === currentAvatar ? 'var(--grass-dark)' : '#ccc'};border-radius:8px;padding:6px 2px;font-size:1.6rem;cursor:pointer;display:flex;flex-direction:column;align-items:center;transition:all 0.15s ease;">
+            <button type="button" class="avatar-picker-btn ${av.icon === currentAvatar ? 'selected' : ''}" data-icon="${av.icon}" data-cat="${av.category || 'fauna'}" title="${av.name} — ${av.desc}" style="background:#fff;border:2px solid ${av.icon === currentAvatar ? 'var(--grass-dark)' : '#ccc'};border-radius:8px;padding:6px 2px;font-size:1.55rem;cursor:pointer;display:flex;flex-direction:column;align-items:center;transition:all 0.15s ease;">
               <span>${av.icon}</span>
-              <span style="font-size:0.62rem;font-weight:600;color:#333;margin-top:2px;text-align:center;line-height:1;overflow:hidden;text-overflow:ellipsis;width:100%;">${av.name.split(' ')[0]}</span>
+              <span style="font-size:0.6rem;font-weight:600;color:#333;margin-top:2px;text-align:center;line-height:1;overflow:hidden;text-overflow:ellipsis;width:100%;">${av.name.split(' ')[0]}</span>
             </button>
           `).join('')}
         </div>
@@ -263,8 +272,31 @@ function renderStudentProfileModal() {
   let tempFrame = currentFrameColor;
   let tempTitle = currentTitle;
 
+  const catBar = document.getElementById('avatarCatBar');
   const avatarGrid = document.getElementById('avatarGrid');
-  if (avatarGrid) {
+  if (catBar && avatarGrid) {
+    function filterAvatars(cat) {
+      avatarGrid.querySelectorAll('.avatar-picker-btn').forEach(btn => {
+        const match = (cat === 'all' || btn.dataset.cat === cat);
+        btn.style.display = match ? 'flex' : 'none';
+      });
+    }
+    filterAvatars('fauna'); // Por defecto mostrar fauna oficial de la granja
+
+    catBar.querySelectorAll('.avatar-cat-btn').forEach(cBtn => {
+      cBtn.addEventListener('click', () => {
+        catBar.querySelectorAll('.avatar-cat-btn').forEach(b => {
+          b.classList.remove('active');
+          b.style.background = 'transparent';
+          b.style.color = 'var(--ink)';
+        });
+        cBtn.classList.add('active');
+        cBtn.style.background = 'var(--grass-dark)';
+        cBtn.style.color = '#fff';
+        filterAvatars(cBtn.dataset.cat);
+      });
+    });
+
     avatarGrid.querySelectorAll('.avatar-picker-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         avatarGrid.querySelectorAll('.avatar-picker-btn').forEach(b => {
@@ -336,7 +368,15 @@ function renderStudentProfileModal() {
   if (certBtn) {
     certBtn.addEventListener('click', () => {
       closeOverlayId('studentOverlay');
-      openCertificateModal();
+      openCertificateModal(false);
+    });
+  }
+
+  const demoCertBtn = document.getElementById('btnDemoCertModal');
+  if (demoCertBtn) {
+    demoCertBtn.addEventListener('click', () => {
+      closeOverlayId('studentOverlay');
+      openCertificateModal(true);
     });
   }
 
@@ -448,23 +488,24 @@ window.trackAnimalSound = trackAnimalSound;
 
 /* ============ Certificado Oficial Digital Liceo B-13 ============ */
 
-function openCertificateModal() {
-  renderCertificate();
+function openCertificateModal(isDemo = false) {
+  renderCertificate(isDemo);
   openOverlayId('certificateOverlay');
   setupCertificateEvents();
 }
 
-function renderCertificate() {
+function renderCertificate(isDemo = false) {
   const container = document.getElementById('certificateContent');
   if (!container) return;
 
-  const studentName = (state.studentName || 'Estudiante B-13').toUpperCase();
-  const studentGrade = state.studentGrade || 'Enseñanza Media';
+  const isSimulated = isDemo && (!state.studentName || state.studentName.trim() === '');
+  const studentName = isSimulated ? 'YEFRIN GONZÁLEZ (DEMO)' : (state.studentName || 'Estudiante B-13').toUpperCase();
+  const studentGrade = isSimulated ? '3° Medio F' : (state.studentGrade || 'Enseñanza Media');
   const studentTitle = state.studentTitle || 'Guardián/a de la Granja';
-  const studentScore = state.score || 0;
+  const studentScore = (state.score && state.score > 0) ? state.score : (isDemo ? 850 : 0);
   const badgesCount = (state.badges || []).length;
   const secretCount = (state.secretBadges || []).length;
-  const totalBadges = badgesCount + secretCount;
+  const totalBadges = (badgesCount + secretCount) || (isDemo ? 12 : 0);
 
   if (!state.certificateCode) {
     const rnd = Math.random().toString(36).substring(2, 7).toUpperCase();
@@ -819,11 +860,12 @@ function openFichaOverlay(a, opts) {
   activeAnimal = a;
 
   const spriteEl = document.getElementById('cardSprite');
+  const accEmoji = (typeof ACCESSORIES !== 'undefined' ? ACCESSORIES.find(x => x.id === a.accessory)?.emoji : '') || '';
   if (a.photo) {
-    spriteEl.innerHTML = `<img src="${a.photo}" alt="${a.name}">`;
+    spriteEl.innerHTML = `<img src="${a.photo}" alt="${a.name}">${accEmoji ? `<span class="card-sprite-acc">${accEmoji}</span>` : ''}`;
     spriteEl.classList.add('has-photo');
   } else {
-    spriteEl.textContent = a.emoji;
+    spriteEl.innerHTML = `${a.emoji}${accEmoji ? `<span class="card-sprite-acc">${accEmoji}</span>` : ''}`;
     spriteEl.classList.remove('has-photo');
   }
   document.getElementById('cardName').textContent = a.name;
@@ -1008,7 +1050,25 @@ function saveCustom(a) {
 
 function renderPersonalizar(a) {
   const panel = document.getElementById('panel-personalizar');
+  const currentAccEmoji = (typeof ACCESSORIES !== 'undefined' ? ACCESSORIES.find(x => x.id === a.accessory)?.emoji : '') || '';
+
   panel.innerHTML = `
+    <!-- Previsualización en vivo del espécimen personalizado -->
+    <div class="personalizar-live-box" style="display:flex;align-items:center;gap:16px;background:var(--paper-dark);border:2px solid var(--ink);border-radius:8px;padding:12px 14px;margin-bottom:14px;">
+      <div id="persoSpriteWrap" style="position:relative;width:56px;height:56px;display:flex;align-items:center;justify-content:center;background:#fff;border-radius:12px;border:2px solid var(--ink);font-size:2.2rem;box-shadow:0 2px 4px rgba(0,0,0,0.1);flex-shrink:0;">
+        <span id="persoEmoji">${a.emoji}</span>
+        <span id="persoAcc" style="position:absolute;top:-12px;left:50%;transform:translateX(-50%);font-size:1.3rem;line-height:1;">${currentAccEmoji}</span>
+      </div>
+      <div style="flex:1;min-width:0;">
+        <div id="persoTag" style="font-family:'Space Mono',monospace;font-size:0.78rem;font-weight:700;display:inline-block;padding:2px 8px;border-radius:4px;border:2px solid ${a.color};color:${a.color};background:#fff;margin-bottom:4px;">
+          ${a.name}
+        </div>
+        <div style="font-size:0.78rem;color:#555;">
+          Observación y personalización de campo B-13
+        </div>
+      </div>
+    </div>
+
     <div class="field-row">
       <label for="nameInput">Nombre personalizado del animal</label>
       <input type="text" id="nameInput" value="${a.name}" maxlength="18">
@@ -1018,17 +1078,32 @@ function renderPersonalizar(a) {
       <div class="swatches" id="swatches"></div>
     </div>
     <div class="field-row">
-      <label>Accesorio</label>
+      <label>Accesorio de campo</label>
       <div class="accessories" id="accBtns"></div>
     </div>
     <div class="save-note">Los cambios quedan guardados en el cuaderno de campo del/la estudiante.</div>
   `;
+
+  function updateHeaderSprite() {
+    const spriteEl = document.getElementById('cardSprite');
+    if (!spriteEl) return;
+    const accEmoji = (typeof ACCESSORIES !== 'undefined' ? ACCESSORIES.find(x => x.id === a.accessory)?.emoji : '') || '';
+    if (a.photo) {
+      spriteEl.innerHTML = `<img src="${a.photo}" alt="${a.name}">${accEmoji ? `<span class="card-sprite-acc">${accEmoji}</span>` : ''}`;
+    } else {
+      spriteEl.innerHTML = `${a.emoji}${accEmoji ? `<span class="card-sprite-acc">${accEmoji}</span>` : ''}`;
+    }
+  }
+
   document.getElementById('nameInput').addEventListener('input', e => {
     a.name = e.target.value || a.defaultName || a.name;
     document.getElementById('cardName').textContent = a.name;
+    const tag = document.getElementById('persoTag');
+    if (tag) tag.textContent = a.name;
     if (typeof refreshSprite === 'function') refreshSprite(a);
     saveCustom(a);
   });
+
   const sw = document.getElementById('swatches');
   COLORS.forEach(c => {
     const b = document.createElement('div');
@@ -1036,6 +1111,11 @@ function renderPersonalizar(a) {
     b.style.background = c;
     b.addEventListener('click', () => {
       a.color = c;
+      const tag = document.getElementById('persoTag');
+      if (tag) {
+        tag.style.borderColor = c;
+        tag.style.color = c;
+      }
       if (typeof refreshSprite === 'function') refreshSprite(a);
       sw.querySelectorAll('.swatch').forEach(s => s.classList.remove('sel'));
       b.classList.add('sel');
@@ -1043,6 +1123,7 @@ function renderPersonalizar(a) {
     });
     sw.appendChild(b);
   });
+
   const accBox = document.getElementById('accBtns');
   ACCESSORIES.forEach(acc => {
     const b = document.createElement('button');
@@ -1051,6 +1132,9 @@ function renderPersonalizar(a) {
     b.textContent = (acc.emoji || '—') + ' ' + acc.label;
     b.addEventListener('click', () => {
       a.accessory = acc.id;
+      const persoAcc = document.getElementById('persoAcc');
+      if (persoAcc) persoAcc.textContent = acc.emoji || '';
+      updateHeaderSprite();
       if (typeof refreshSprite === 'function') refreshSprite(a);
       accBox.querySelectorAll('.acc-btn').forEach(x => x.classList.remove('sel'));
       b.classList.add('sel');
@@ -1072,14 +1156,18 @@ function getQuizBucket(a) {
       results: [],
       completed: false,
       scoreEarned: 0,
-      completedAt: null
+      completedAt: null,
+      sampledQuestions: (typeof sampleQuestionsForAnimal === 'function') ? sampleQuestionsForAnimal(a.id, 6) : (a.quiz || [])
     };
+  } else if (!state[key][a.id].sampledQuestions || state[key][a.id].sampledQuestions.length === 0) {
+    state[key][a.id].sampledQuestions = (typeof sampleQuestionsForAnimal === 'function') ? sampleQuestionsForAnimal(a.id, 6) : (a.quiz || []);
   }
   return state[key][a.id];
 }
 
-function renderDots(a, qState) {
-  return a.quiz.map((_, i) => {
+function renderDots(questions, qState) {
+  const list = questions || [];
+  return list.map((_, i) => {
     let cls = 'quiz-dot';
     if (qState.results[i] === true) cls += ' correct';
     else if (qState.results[i] === false) cls += ' wrong';
@@ -1094,7 +1182,46 @@ function renderQuiz(a) {
 
   const sesionActual = (typeof Auth !== 'undefined' && typeof Auth.getSesion === 'function') ? Auth.getSesion() : { rol: 'visita' };
 
-  // Caso A: Modo Visita
+  // Detección estricta de la vista activa (Potrero vs Mapa 3D)
+  const isPotreroView = (typeof stage !== 'undefined' && stage !== null) ||
+    (document.getElementById('stage') !== null && document.getElementById('farmmap') === null);
+
+  // 1. RESTRICCIÓN PEDAGÓGICA: En el Potrero NO se rinden los quizzes; es para observación y curiosidades
+  if (isPotreroView) {
+    let poolKey = a.id;
+    if (['nesquik', 'vainilla', 'tasmi', 'quesito'].includes(poolKey)) poolKey = 'conejo';
+    const hints = (typeof CURIOSITIES !== 'undefined' && CURIOSITIES[poolKey]) ? CURIOSITIES[poolKey] : [];
+    const curiosityHint = hints.length > 0 ? hints[Math.floor(Math.random() * hints.length)] : 'Observa y escucha a este animal en el potrero para aprender sus hábitos y biología.';
+
+    panel.innerHTML = `
+      <div class="potrero-quiz-gate" style="text-align:center;padding:22px 16px;background:var(--paper-dark);border:2px dashed var(--grass-dark);border-radius:10px;">
+        <div style="font-size:2.8rem;margin-bottom:8px;">🌾🗺️</div>
+        <h3 style="margin:0 0 6px;font-family:'Fraunces',serif;color:var(--grass-dark);font-size:1.22rem;">
+          ¡Los Desafíos con Décimas se rinden en el Mapa 3D!
+        </h3>
+        <p style="font-size:0.88rem;line-height:1.45;color:var(--ink);max-width:440px;margin:0 auto 14px;">
+          El <b>Potrero</b> es tu espacio de observación en vivo, convivencia y estudio de curiosidades de campo.
+          Aquí los animalitos te enseñan sus secretos al pasar.
+          <br><br>
+          Cuando te sientas preparado/a, ve al <b>Mapa de la Granja 3D</b> para rendir tus desafíos oficiales y acumular décimas para tu nota de Ciencias.
+        </p>
+        <div class="potrero-curiosity-box" style="background:#fff;border:2px solid var(--ink);border-radius:8px;padding:12px 14px;margin:0 auto 16px;max-width:440px;text-align:left;box-shadow:0 2px 4px rgba(0,0,0,0.06);">
+          <div style="font-weight:700;font-size:0.84rem;color:var(--grass-dark);margin-bottom:4px;display:flex;align-items:center;gap:6px;">
+            <span>💡</span> Pista de Campo de ${a.name}:
+          </div>
+          <div style="font-size:0.84rem;color:#333;line-height:1.4;">
+            ${curiosityHint}
+          </div>
+        </div>
+        <a href="mapa.html" class="tool-btn" style="display:inline-block;text-decoration:none;padding:11px 22px;background:var(--hay);color:var(--ink);font-weight:700;font-size:0.92rem;border:2px solid var(--ink);border-radius:6px;box-shadow:0 3px 0 var(--ink);">
+          🚀 Ir al Mapa 3D a Rendir Desafíos ➤
+        </a>
+      </div>
+    `;
+    return;
+  }
+
+  // Caso A: Modo Visita en Mapa 3D
   if (sesionActual.rol === 'visita') {
     panel.innerHTML = `
       <div class="quiz-auth-gate">
@@ -1127,8 +1254,13 @@ function renderQuiz(a) {
   }
 
   // Caso B: Modo Docente (Vista Previa Formativa)
+  const qState = getQuizBucket(a);
+  const questions = (qState.sampledQuestions && qState.sampledQuestions.length > 0)
+    ? qState.sampledQuestions
+    : (qState.sampledQuestions = (typeof sampleQuestionsForAnimal === 'function' ? sampleQuestionsForAnimal(a.id, 6) : (a.quiz || [])));
+
   if (sesionActual.rol === 'profesor' || sesionActual.rol === 'admin') {
-    let previewHtml = a.quiz.map((q, i) => {
+    let previewHtml = questions.map((q, i) => {
       const diffBadge = q.difficulty === 'dificil'
         ? '<span class="diff-badge diff-dificil">🔴 Avanzado (20 pts)</span>'
         : (q.difficulty === 'medio'
@@ -1152,7 +1284,7 @@ function renderQuiz(a) {
           🍎 Vista Previa Docente — ${a.name}
         </div>
         <p style="font-size:0.82rem;color:#555;margin:6px 0 12px;">
-          Como docente, aquí puedes revisar las preguntas formativas y explicaciones pedagógicas de este animal.
+          Como docente, aquí puedes revisar las preguntas formativas aleatorias y explicaciones pedagógicas generadas para este animal.
         </p>
         ${previewHtml}
       </div>
@@ -1181,16 +1313,14 @@ function renderQuiz(a) {
     return;
   }
 
-  const qState = getQuizBucket(a);
-
   // 2. Si el quiz ya está completado para este estudiante
   if (qState.completed) {
     const correct = (qState.results || []).filter(Boolean).length;
-    const total = a.quiz.length;
+    const total = questions.length;
     const scoreVal = qState.scoreEarned || (correct * 10);
     const dateStr = qState.completedAt ? new Date(qState.completedAt).toLocaleDateString() : '';
 
-    let reviewHtml = a.quiz.map((q, i) => {
+    let reviewHtml = questions.map((q, i) => {
       const isRight = qState.results[i] === true;
       const chosenIdx = qState.answers ? qState.answers[i] : null;
       const chosenText = chosenIdx !== null && chosenIdx !== undefined ? q.options[chosenIdx] : '—';
@@ -1231,12 +1361,12 @@ function renderQuiz(a) {
         ${reviewHtml}
       </div>
       <div class="quiz-done-actions" style="margin-top:14px;display:flex;gap:8px;">
-        <button class="tool-btn" id="repasoQuizBtn" type="button" style="font-size:0.8rem;">🔄 Repetir desafío (Nuevo intento)</button>
+        <button class="tool-btn" id="repasoQuizBtn" type="button" style="font-size:0.8rem;">🔄 Repetir desafío (Nuevas preguntas)</button>
       </div>
     `;
 
     document.getElementById('repasoQuizBtn').addEventListener('click', () => {
-      if (confirm('¿Deseas reiniciar este quiz para un nuevo intento? Tu puntaje anterior de este quiz se actualizará con el nuevo resultado.')) {
+      if (confirm('¿Deseas reiniciar este quiz para un nuevo intento? Tu puntaje anterior de este quiz se actualizará y recibirás nuevas preguntas aleatorias del banco para seguir aprendiendo.')) {
         if (qState.scoreEarned) {
           state.score = Math.max(0, state.score - qState.scoreEarned);
         }
@@ -1246,6 +1376,10 @@ function renderQuiz(a) {
         qState.completed = false;
         qState.scoreEarned = 0;
         qState.completedAt = null;
+        // Muestrear preguntas frescas del banco (anti-copia)
+        qState.sampledQuestions = (typeof sampleQuestionsForAnimal === 'function')
+          ? sampleQuestionsForAnimal(a.id, 6)
+          : (a.quiz || []);
         if (typeof updateHeader === 'function') updateHeader();
         saveState();
         renderQuiz(a);
@@ -1254,9 +1388,9 @@ function renderQuiz(a) {
     return;
   }
 
-  // 3. Quiz en progreso
+  // 3. Quiz en progreso en el Mapa 3D
   const idx = qState.index;
-  if (idx >= a.quiz.length) {
+  if (idx >= questions.length) {
     qState.completed = true;
     qState.completedAt = Date.now();
     checkBadges();
@@ -1265,7 +1399,7 @@ function renderQuiz(a) {
     return;
   }
 
-  const q = a.quiz[idx];
+  const q = questions[idx];
   const isAnswered = qState.results[idx] !== undefined && qState.results[idx] !== null;
 
   const diffLabel = q.difficulty === 'dificil'
@@ -1275,11 +1409,15 @@ function renderQuiz(a) {
         : '<span class="diff-badge diff-facil">🟢 Básico (+10 pts)</span>');
 
   panel.innerHTML = `
+    <div style="font-size:0.78rem;background:var(--paper-dark);border-left:3px solid var(--grass-dark);padding:6px 10px;border-radius:4px;margin-bottom:10px;color:var(--grass-dark);display:flex;align-items:center;gap:6px;">
+      <span>💡</span>
+      <span><b>Consejo de campo:</b> ¿Observaste a este animal en el Potrero? ¡Allí revelan secretos que entran en este desafío!</span>
+    </div>
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-      <div class="quiz-progress">${renderDots(a, qState)}</div>
+      <div class="quiz-progress">${renderDots(questions, qState)}</div>
       ${diffLabel}
     </div>
-    <div class="quiz-q"><b>Pregunta ${idx + 1} de ${a.quiz.length}:</b><br>${q.q}</div>
+    <div class="quiz-q"><b>Pregunta ${idx + 1} de ${questions.length}:</b><br>${q.q}</div>
     <div id="opts" class="quiz-opts-box"></div>
     <div id="quizFeedback" class="quiz-feedback-slot"></div>
   `;
@@ -1360,15 +1498,16 @@ function drawFeedbackAndNext(a, qState, idx, q, isCorrect, container, ptsVal) {
     container.appendChild(pts);
   }
 
-  const isLast = (idx + 1 >= a.quiz.length);
+  const questions = qState.sampledQuestions || a.quiz || [];
+  const isLast = (idx + 1 >= questions.length);
   const next = document.createElement('button');
   next.className = 'quiz-next';
   next.type = 'button';
   next.textContent = isLast ? '🏁 Finalizar y Ver Resultado' : '➡️ Siguiente pregunta';
-  
+
   next.addEventListener('click', () => {
     qState.index++;
-    if (qState.index >= a.quiz.length) {
+    if (qState.index >= questions.length) {
       qState.completed = true;
       qState.completedAt = Date.now();
       playVictory();

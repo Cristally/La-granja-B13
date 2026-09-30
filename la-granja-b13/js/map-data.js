@@ -130,10 +130,10 @@ const MAP_ANIMALS = [
   },
   {
     id: 'm_matias_vicente', name: 'Matías y Vicente', store: 'mapQuiz', zoneId: 'gallinas',
-    photo: 'assets/img/animals/matias_vicente.png', emoji: '🐔',
+    photo: 'assets/img/animals/matias_vicente.png', emoji: '🐓',
     color: COLORS[0], accessory: 'none',
     blurb: 'Dos gallitos japoneses muy amorosos de plumaje blanco sedoso, patas emplumadas y carácter sociable.',
-    ...speciesFacts('gallo'),
+    ...speciesFacts('matias_vicente'),
     sound: 'assets/audio/gallina.mp3'
   },
   {
@@ -141,7 +141,7 @@ const MAP_ANIMALS = [
     photo: 'assets/img/animals/farm_chickens.png', emoji: '🐔',
     color: COLORS[5], accessory: 'none',
     blurb: 'Representa al resto de las gallinas del gallinero.',
-    ...speciesFacts('gallo'),
+    ...speciesFacts('gallina'),
     sound: 'assets/audio/gallina.mp3'
   },
   {
