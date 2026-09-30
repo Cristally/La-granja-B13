@@ -1024,6 +1024,7 @@
       if (dashHint) {
         dashHint.style.display = cfg.dashEnabled ? 'inline' : 'none';
       }
+      this.updateDashUI();
 
       // Títulos del start overlay
       const pill = document.getElementById('platStagePill');
@@ -1182,6 +1183,7 @@
         }
         if (['ShiftLeft', 'ShiftRight', 'KeyX', 'KeyK'].includes(e.code)) {
           this.keys.dash = true;
+          this.triggerDash();
           e.preventDefault();
         }
       });
@@ -1214,9 +1216,56 @@
         btnJump.onpointerleave = () => { this.keys.jump = false; };
       }
       if (btnDash) {
-        btnDash.onpointerdown = (e) => { e.preventDefault(); this.keys.dash = true; };
+        btnDash.onpointerdown = (e) => {
+          e.preventDefault();
+          this.keys.dash = true;
+          this.triggerDash();
+        };
         btnDash.onpointerup = (e) => { e.preventDefault(); this.keys.dash = false; };
         btnDash.onpointerleave = () => { this.keys.dash = false; };
+      }
+    },
+
+    triggerDash() {
+      const cfg = this.diffConfig[this.difficulty] || this.diffConfig.facil;
+      if (!cfg.dashEnabled) return;
+      const p = this.player;
+      if (!p.hasAirDash || p.dashCooldown > 0) return;
+
+      p.hasAirDash = false;
+      p.dashCooldown = 22;
+      p.isDashing = true;
+      p.dashTimer = 14;
+      p.vx = p.facing * 13.5;
+      p.vy = -1.6;
+      AudioFX.dash();
+      this.screenShake = 6;
+      this.hitFreeze = 2;
+
+      for (let i = 0; i < 5; i++) {
+        this.dashTrails.push({
+          x: p.x - p.vx * (i * 0.28),
+          y: p.y,
+          facing: p.facing,
+          emoji: p.emoji,
+          accEmoji: p.accEmoji,
+          color: ['#38bdf8', '#c084fc', '#f472b6', '#fbbf24', '#4ade80'][i],
+          life: 1.0,
+          decay: 0.08
+        });
+      }
+      this.updateDashUI();
+    },
+
+    updateDashUI() {
+      const dashBtn = document.getElementById('touchBtnDash');
+      const cfg = this.diffConfig[this.difficulty] || this.diffConfig.facil;
+      if (dashBtn && cfg.dashEnabled) {
+        if (this.player.hasAirDash && this.player.dashCooldown <= 0) {
+          dashBtn.classList.remove('spent');
+        } else {
+          dashBtn.classList.add('spent');
+        }
       }
     },
 
@@ -1254,6 +1303,7 @@
       this.player.isDashing = false;
       this.player.dashTimer = 0;
       this.player.currentPlatform = null;
+      this.updateDashUI();
 
       // Hojas/esporas según dificultad
       this.ambientLeaves = [];
@@ -1658,33 +1708,13 @@
       // Cooldown de Air Dash
       if (p.dashCooldown > 0) {
         p.dashCooldown--;
+        if (p.dashCooldown === 0) this.updateDashUI();
       }
 
       // Mecánica Celeste Air Dash
       if (cfg.dashEnabled) {
         if (this.keys.dash && p.hasAirDash && p.dashCooldown <= 0) {
-          p.hasAirDash = false;
-          p.dashCooldown = 22;
-          p.isDashing = true;
-          p.dashTimer = 14;
-          p.vx = p.facing * 13.5;
-          p.vy = -1.6;
-          AudioFX.dash();
-          this.screenShake = 6;
-          this.hitFreeze = 2;
-
-          for (let i = 0; i < 5; i++) {
-            this.dashTrails.push({
-              x: p.x - p.vx * (i * 0.28),
-              y: p.y,
-              facing: p.facing,
-              emoji: p.emoji,
-              accEmoji: p.accEmoji,
-              color: ['#38bdf8', '#c084fc', '#f472b6', '#fbbf24', '#4ade80'][i],
-              life: 1.0,
-              decay: 0.08
-            });
-          }
+          this.triggerDash();
         }
       }
 
@@ -1785,6 +1815,7 @@
           p.grounded = true;
           p.currentPlatform = plat;
           p.hasAirDash = true; // Recarga de Air Dash al tocar suelo sólido
+          this.updateDashUI();
 
           if (plat.type === 'crumbling' && !plat.isShaking) {
             plat.isShaking = true;
@@ -1814,6 +1845,7 @@
           p.vy = -18.6;
           p.grounded = false;
           p.hasAirDash = true;
+          this.updateDashUI();
           t.cooldown = 24;
           this.spawnSparkles(t.x + t.w / 2, t.y, 14);
           this.spawnFloatingText(t.x + t.w / 2, t.y - 12, '¡SÚPER SALTO! 🦘', '#fbbf24');
@@ -1835,6 +1867,7 @@
           p.vy = -18.8;
           p.grounded = false;
           p.hasAirDash = true;
+          this.updateDashUI();
           m.cooldown = 24;
           this.spawnSlashParticle(m.x + m.w / 2, m.y);
           this.spawnSparkles(m.x + m.w / 2, m.y, 14, ['#38bdf8', '#818cf8', '#c084fc']);
@@ -1850,6 +1883,7 @@
             dc.taken = true;
             dc.respawnTimer = 2.5;
             p.hasAirDash = true;
+            this.updateDashUI();
             AudioFX.crystal();
             this.spawnSparkles(dc.x, dc.y, 12, ['#38bdf8', '#a855f7', '#ffffff']);
             this.spawnFloatingText(dc.x, dc.y - 12, '💎 DASH REFILL!', '#38bdf8');
@@ -1872,6 +1906,7 @@
           p.vy = -19.4;
           p.hasAirDash = true;
           p.isDashing = false;
+          this.updateDashUI();
           this.hitFreeze = 4;
           this.screenShake = 8;
           AudioFX.parry();

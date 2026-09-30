@@ -846,49 +846,175 @@
   }
 }
 
-/* Barra de controles táctiles para móvil */
+/* ============================================================
+   BARRA DE CONTROLES ARCADE (GAMEPAD RETRO MODERNO)
+   ============================================================ */
 .arcade-touch-bar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: #f8fafc;
-  border-top: 1.5px solid #e2e8f0;
-  padding: 10px 16px;
+  background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+  border-top: 2px solid #334155;
+  padding: 8px 16px;
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.4);
+  gap: 12px;
+  box-sizing: border-box;
 }
 
 .touch-dpad {
   display: flex;
+  gap: 6px;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.arcade-center-hint {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'Space Mono', monospace;
+  font-size: 0.72rem;
+  color: #94a3b8;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.arcade-action-group {
+  display: flex;
+  align-items: center;
   gap: 8px;
+  flex-shrink: 0;
 }
 
 .touch-btn {
-  width: 54px;
-  height: 54px;
-  border-radius: 14px;
-  background: #ffffff;
-  border: 1.5px solid #cbd5e1;
-  font-size: 1.3rem;
-  color: #1e293b;
+  height: 42px;
+  border-radius: 10px;
+  background: #334155;
+  border: 1.5px solid #475569;
+  font-family: 'Space Mono', monospace;
+  font-size: 1.05rem;
+  color: #f8fafc;
   cursor: pointer;
   user-select: none;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-  transition: all 0.1s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.touch-btn-dir {
+  width: 44px;
+}
+
+.touch-btn:hover {
+  background: #475569;
+  border-color: #64748b;
+  transform: translateY(-1px);
 }
 
 .touch-btn:active {
-  background: #e2e8f0;
-  transform: translateY(2px);
+  background: #1e293b;
+  transform: translateY(1px);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
+/* Botón de Salto: Verde esmeralda arcade moderno */
 .touch-btn-jump {
   width: auto;
-  padding: 0 20px;
-  font-family: 'Fraunces', serif;
-  font-size: 0.95rem;
+  padding: 0 16px;
+  font-family: 'Space Mono', monospace;
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  border: 1.5px solid #34d399;
+  color: #ffffff;
+  border-radius: 999px;
+  box-shadow: 0 2px 10px rgba(16, 185, 129, 0.35);
+  gap: 6px;
+}
+
+.touch-btn-jump:hover {
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  border-color: #6ee7b7;
+  box-shadow: 0 3px 14px rgba(16, 185, 129, 0.5);
+  transform: translateY(-1px);
+}
+
+.touch-btn-jump:active {
+  background: #047857;
+  transform: translateY(1px);
+}
+
+/* Botón de Dash: Neón morado / magenta Celeste/Cuphead */
+.touch-btn-dash {
+  width: auto;
+  padding: 0 16px;
+  font-family: 'Space Mono', monospace;
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  background: linear-gradient(135deg, #a855f7 0%, #6366f1 100%);
+  border: 1.5px solid #c084fc;
+  color: #ffffff;
+  border-radius: 999px;
+  box-shadow: 0 0 14px rgba(168, 85, 247, 0.45);
+  gap: 6px;
+  animation: pulseTouchDash 2s infinite alternate;
+}
+
+.touch-btn-dash.spent {
+  opacity: 0.5;
+  filter: grayscale(0.5);
+  box-shadow: none;
+  animation: none;
+}
+
+@keyframes pulseTouchDash {
+  from { box-shadow: 0 0 6px rgba(168, 85, 247, 0.4); }
+  to { box-shadow: 0 0 16px rgba(168, 85, 247, 0.8), 0 0 22px rgba(236, 72, 153, 0.4); }
+}
+
+.touch-btn-dash:hover:not(.spent) {
+  background: linear-gradient(135deg, #9333ea 0%, #4f46e5 100%);
+  border-color: #e9d5ff;
+  transform: translateY(-1px);
+}
+
+.touch-btn-dash:active:not(.spent) {
+  background: #7e22ce;
+  transform: translateY(1px);
+}
+
+.touch-kbd-pill {
+  display: inline-block;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 4px;
+  padding: 1px 6px;
+  font-family: 'Space Mono', monospace;
+  font-size: 0.68rem;
   font-weight: 700;
-  background: linear-gradient(135deg, #ffd83d, #f59e0b);
-  border-color: #d97706;
-  color: #1a1a1a;
+  color: #ffffff;
+  margin-left: 4px;
+  letter-spacing: 0;
+}
+
+@media (max-width: 640px) {
+  .arcade-center-hint {
+    display: none;
+  }
+  .touch-kbd-pill {
+    display: none;
+  }
+  .touch-btn-jump, .touch-btn-dash {
+    padding: 0 12px;
+    font-size: 0.75rem;
+  }
 }
 
 /* ============================================================
@@ -1226,24 +1352,6 @@
   background: #f8fafc;
   border-style: dashed;
   cursor: not-allowed;
-}
-
-/* Botón de Dash táctil para móvil */
-.touch-btn-dash {
-  width: auto;
-  padding: 0 18px;
-  font-family: 'Fraunces', serif;
-  font-size: 0.90rem;
-  font-weight: 700;
-  background: linear-gradient(135deg, #a855f7, #6366f1);
-  border-color: #7c3aed;
-  color: #ffffff;
-  box-shadow: 0 2px 8px rgba(124, 58, 237, 0.3);
-}
-
-.touch-btn-dash:active {
-  background: #7c3aed;
-  transform: translateY(2px);
 }
 
 /* Barra de progreso estilo Cuphead para Game Over */

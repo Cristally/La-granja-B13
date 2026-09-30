@@ -248,15 +248,23 @@
     <div class="platformer-wrap game-board-wrap">
       <canvas id="platformerCanvas" width="860" height="400"></canvas>
       
-      <!-- Controles táctiles en pantalla para móviles y tablets -->
+      <!-- Barra de controles arcade integrada -->
       <div class="arcade-touch-bar">
         <div class="touch-dpad">
-          <button type="button" class="touch-btn" id="touchBtnLeft" aria-label="Mover a la izquierda">◀</button>
-          <button type="button" class="touch-btn" id="touchBtnRight" aria-label="Mover a la derecha">▶</button>
+          <button type="button" class="touch-btn touch-btn-dir" id="touchBtnLeft" aria-label="Mover a la izquierda">◀</button>
+          <button type="button" class="touch-btn touch-btn-dir" id="touchBtnRight" aria-label="Mover a la derecha">▶</button>
         </div>
-        <div style="display:flex;gap:8px;">
-          <button type="button" class="touch-btn touch-btn-dash" id="touchBtnDash" style="display:none;" aria-label="Dash">⚡ DASH</button>
-          <button type="button" class="touch-btn touch-btn-jump" id="touchBtnJump" aria-label="Saltar">🦘 SALTO</button>
+        <div class="arcade-center-hint">
+          <span class="arcade-hint-icon">🎮</span>
+          <span class="arcade-hint-text">Controles Arcade</span>
+        </div>
+        <div class="arcade-action-group">
+          <button type="button" class="touch-btn touch-btn-dash" id="touchBtnDash" style="display:none;" aria-label="Dash">
+            <span class="btn-emoji">⚡</span> DASH <kbd class="touch-kbd-pill">Shift / X</kbd>
+          </button>
+          <button type="button" class="touch-btn touch-btn-jump" id="touchBtnJump" aria-label="Saltar">
+            <span class="btn-emoji">🦘</span> SALTO <kbd class="touch-kbd-pill">Espacio</kbd>
+          </button>
         </div>
       </div>
 
