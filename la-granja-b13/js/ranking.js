@@ -416,11 +416,9 @@
       if (isTop1) {
         crownVfx = `<span class="vfx-crown" title="Gran Campeón/a B-13">👑</span>`;
         shimmerVfx = `<div class="shimmer-wrapper"><div class="vfx-shimmer gold-shimmer"></div></div>`;
-        particleVfx = `<span class="vfx-sparkle s1">✨</span><span class="vfx-sparkle s2">⭐</span>`;
         badgeHtml = `<span class="rank-pos-badge gold-badge"><span class="badge-num">1°</span> ORO</span>`;
       } else if (isTop2) {
         shimmerVfx = `<div class="shimmer-wrapper"><div class="vfx-shimmer silver-shimmer"></div></div>`;
-        particleVfx = `<span class="vfx-sparkle silver-spark">✨</span>`;
         badgeHtml = `<span class="rank-pos-badge silver-badge"><span class="badge-num">2°</span> PLATA</span>`;
       } else if (isTop3) {
         badgeHtml = `<span class="rank-pos-badge bronze-badge"><span class="badge-num">3°</span> BRONCE</span>`;
@@ -431,7 +429,6 @@
       html += `
         <div class="${cardClass}" data-rank="${rankNum}">
           ${shimmerVfx}
-          ${particleVfx}
           <div class="ranking-card-left">
             <div class="ranking-avatar-wrap">
               ${crownVfx}
@@ -442,7 +439,7 @@
             <div class="ranking-user-info">
               <div class="ranking-name-row">
                 <span class="ranking-name" title="${st.studentName}">${st.studentName}</span>
-                ${isMe ? '<span class="me-tag">¡TÚ! 🌟</span>' : ''}
+                ${isMe ? '<span class="me-tag">Tú</span>' : ''}
               </div>
               <div class="ranking-grade-tag">
                 <span>🏫</span> ${st.studentGrade || 'Enseñanza Media'}

@@ -602,7 +602,7 @@ function renderCertificate(isDemo = false) {
           <div class="cert-merits-grid">
             <div class="cert-merit-box">
               <div class="cert-merit-val">${studentScore} PTS</div>
-              <div class="cert-merit-lbl">PUNTAJE PURO ACUMULADO</div>
+              <div class="cert-merit-lbl">PUNTAJE TOTAL ACUMULADO</div>
             </div>
             <div class="cert-merit-box">
               <div class="cert-merit-val">+0.5 DÉCIMAS</div>
