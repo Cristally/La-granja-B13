@@ -392,27 +392,27 @@
 
 <!-- Modal de Victoria en Minijuegos -->
 <div class="overlay" id="victoryOverlay" style="display:none;">
-  <div class="card small-card" style="text-align:center;">
+  <div class="card small-card victory-card" style="text-align:center;max-width:520px;padding:24px 20px;">
     <button class="close-btn" id="victoryCloseBtn" data-close="victoryOverlay" aria-label="Cerrar">✕</button>
-    <div class="card-head" style="justify-content:center;text-align:center;">
-      <div class="big-sprite" id="victoryIcon" style="font-size:3.2rem;">🏆</div>
+    <div class="card-head victory-card-head" style="flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:6px;padding-bottom:12px;">
+      <div class="big-sprite" id="victoryIcon" style="font-size:3rem;line-height:1;margin-bottom:4px;">🏆</div>
       <div>
-        <h2 id="victoryTitle" style="font-family:'Fraunces',serif;color:var(--grass-dark);">¡Felicitaciones!</h2>
-        <div class="lat" id="victorySubtitle">Desafío Recreativo Superado</div>
+        <h2 id="victoryTitle" style="font-family:'Fraunces',serif;color:#1b4332;font-size:1.45rem;margin:0 0 4px;">¡Felicitaciones!</h2>
+        <div class="lat" id="victorySubtitle" style="color:#64748b;font-size:0.86rem;font-weight:600;">Desafío Recreativo Superado</div>
       </div>
     </div>
-    <div class="card-body">
+    <div class="card-body" style="padding-top:8px;">
       <div class="stamp" id="victoryStamp">MISIÓN CUMPLIDA</div>
-      <p id="victoryMsg" style="font-size:0.94rem;line-height:1.5;margin:12px 0 16px;"></p>
-      <div id="victoryStats" style="background:var(--paper-dark);padding:10px 14px;border-radius:8px;font-size:0.88rem;margin-bottom:16px;font-weight:700;color:var(--ink);"></div>
-      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
-        <button class="tool-btn" id="victoryPlayAgainBtn" type="button" style="padding:10px 16px;background:var(--hay);color:var(--ink);font-weight:700;border:2px solid var(--ink);border-radius:6px;cursor:pointer;">
+      <p id="victoryMsg" style="font-size:0.95rem;line-height:1.5;margin:12px 0 16px;color:#334155;"></p>
+      <div id="victoryStats" style="background:#f8fafc;border:1.5px solid #e2e8f0;padding:12px 16px;border-radius:12px;font-size:0.88rem;margin-bottom:18px;font-weight:700;color:#1e293b;"></div>
+      <div class="victory-actions-row" style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
+        <button class="tool-btn victory-btn-again" id="victoryPlayAgainBtn" type="button">
           🔁 Jugar otra versión
         </button>
-        <a href="mapa.html" class="tool-btn" style="text-decoration:none;display:inline-flex;align-items:center;padding:10px 16px;background:var(--grass);color:#ffffff;font-weight:700;border:2px solid var(--ink);border-radius:6px;cursor:pointer;">
+        <a href="mapa.html" class="tool-btn victory-btn-quiz">
           🎯 Quizzes por Décimas
         </a>
-        <button class="tool-btn" id="victoryAcceptBtn" data-close="victoryOverlay" type="button" style="padding:10px 16px;background:var(--paper);color:var(--ink);font-weight:700;border:2px solid var(--ink);border-radius:6px;cursor:pointer;">
+        <button class="tool-btn victory-btn-accept" id="victoryAcceptBtn" data-close="victoryOverlay" type="button">
           ✓ Aceptar
         </button>
       </div>

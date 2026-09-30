@@ -451,7 +451,7 @@
 
               setTimeout(() => {
                 showGameVictory({
-                  icon: '🧠✨',
+                  icon: '🧠',
                   title: '¡Memoria Zootécnica Completada!',
                   subtitle: 'Pistas y Conceptos para Quizzes Desbloqueados',
                   stamp: 'EXCELENCIA BIOLÓGICA',
@@ -725,7 +725,7 @@
 
           setTimeout(() => {
             showGameVictory({
-              icon: '🔍📜',
+              icon: '🔍',
               title: '¡Sopa de Letras Agroecológica Superada!',
               subtitle: 'Vocabulario y Bienestar Animal Liceo B-13',
               stamp: 'ZOOTECNIA COMUNITARIA',
@@ -818,14 +818,14 @@
       catita: '🐦'
     },
     player: {
-      x: 60,
-      y: 280,
-      w: 40,
-      h: 40,
+      x: 50,
+      y: 150,
+      w: 38,
+      h: 38,
       vx: 0,
       vy: 0,
-      speed: 5.2,
-      jumpStrength: 13.5,
+      speed: 4.8,
+      jumpStrength: 10.5,
       grounded: false,
       emoji: '🐰',
       accEmoji: '',
@@ -835,7 +835,7 @@
       invulnerableTime: 0
     },
     cameraX: 0,
-    worldWidth: 3400,
+    worldWidth: 4200,
     platforms: [],
     trampolines: [],
     mudPuddles: [],
@@ -843,9 +843,10 @@
     quizScrolls: [],
     items: [],
     particles: [],
+    ambientLeaves: [],
     floatingTexts: [],
     unlockedClues: [],
-    goal: { x: 3180, y: 170, w: 140, h: 170 },
+    goal: { x: 3960, y: 150, w: 180, h: 190 },
     lastTime: 0,
     animTime: 0,
 
@@ -992,7 +993,6 @@
         if (['ArrowUp', 'KeyW', 'Space'].includes(e.code)) this.keys.jump = false;
       });
 
-      // Botones táctiles para pantallas móviles
       const btnLeft = document.getElementById('touchBtnLeft');
       const btnRight = document.getElementById('touchBtnRight');
       const btnJump = document.getElementById('touchBtnJump');
@@ -1018,7 +1018,6 @@
       this.showStartScreen();
     },
 
-    /* Generación procedural aleatoria del circuito en cada intento */
     resetWorld() {
       this.cameraX = 0;
       this.particles = [];
@@ -1026,11 +1025,11 @@
       this.unlockedClues = [];
       this.animTime = 0;
 
-      // Cargar animal activo y accesorio
       this.setAnimalRunner(this.selectedAnimal || 'conejo');
 
-      this.player.x = 70;
-      this.player.y = 280;
+      // Jugador arranca sobre el porche elevado inicial (y = 150 -> aterriza en y = 200)
+      this.player.x = 50;
+      this.player.y = 150;
       this.player.vx = 0;
       this.player.vy = 0;
       this.player.grounded = false;
@@ -1038,91 +1037,127 @@
       this.player.landSquash = 0;
       this.player.invulnerableTime = 0;
 
-      // Suelo continuo base
+      // Hojas y pétalos flotantes estilo Stardew Valley
+      this.ambientLeaves = [];
+      for (let i = 0; i < 26; i++) {
+        this.ambientLeaves.push({
+          x: Math.random() * 4200,
+          y: Math.random() * 340,
+          size: 3 + Math.random() * 3.5,
+          speedX: 0.8 + Math.random() * 0.9,
+          speedY: 0.35 + Math.random() * 0.5,
+          phase: Math.random() * Math.PI * 2,
+          rot: Math.random() * Math.PI * 2,
+          color: ['#fbcfe8', '#f472b6', '#fed7aa', '#fde047', '#a7f3d0'][Math.floor(Math.random() * 5)]
+        });
+      }
+
+      // Suelo continuo en la zanja inferior (y = 340) + porche inicial de madera
       this.platforms = [
-        { x: 0, y: 340, w: 3400, h: 60, type: 'ground' }
+        { x: 0, y: 340, w: 4200, h: 60, type: 'ground' },
+        { x: 20, y: 200, w: 150, h: 28, type: 'wood', label: 'Porche Salida' }
       ];
 
-      // Variaciones aleatorias para plataformas dinámicas en cada reinicio
-      const randOffset = () => (Math.random() - 0.5) * 40;
-      const randH = () => Math.floor(Math.random() * 20);
+      // Variación sutil garantizando que todas las plataformas elevadas permanezcan entre y = 175 e y = 210
+      // NINGUNA plataforma elevada está al alcance del salto normal desde el suelo (340 - 210 = 130px > 88.9px)
+      const rOffset = () => (Math.random() - 0.5) * 20;
 
-      // Sección 1: Potrero Inicial
+      // Sección 1: Potrero Inicial Elevado (x: 250 - 950)
       this.platforms.push(
-        { x: 260 + randOffset(), y: 275 - randH(), w: 90, h: 65, type: 'straw', label: 'Fardo' },
-        { x: 420 + randOffset(), y: 215 - randH(), w: 100, h: 45, type: 'straw', label: 'Fardo Alto' },
-        { x: 620 + randOffset(), y: 255 - randH(), w: 130, h: 28, type: 'wood', label: 'Cerca' },
-        { x: 820 + randOffset(), y: 195 - randH(), w: 140, h: 28, type: 'wood', label: 'Puente' }
+        { x: 250 + rOffset(), y: 205, w: 110, h: 42, type: 'straw', label: 'Fardo 1' },
+        { x: 430 + rOffset(), y: 185, w: 135, h: 26, type: 'wood', label: 'Pasarela 1', lantern: true },
+        { x: 635 + rOffset(), y: 198, w: 115, h: 42, type: 'straw', label: 'Fardo 2' },
+        { x: 820 + rOffset(), y: 180, w: 130, h: 26, type: 'wood', label: 'Terraza 1' }
       );
 
-      // Sección 2: El Silo y Pasarelas Elevadas
+      // Sección 2: El Silo y Pasarelas Elevadas (x: 1040 - 1760)
       this.platforms.push(
-        { x: 1100 + randOffset(), y: 260 - randH(), w: 105, h: 55, type: 'straw', label: 'Fardo' },
-        { x: 1290 + randOffset(), y: 200 - randH(), w: 135, h: 28, type: 'wood', label: 'Andamio' },
-        { x: 1530 + randOffset(), y: 235 - randH(), w: 110, h: 45, type: 'straw', label: 'Fardo' },
-        { x: 1750 + randOffset(), y: 180 - randH(), w: 145, h: 28, type: 'wood', label: 'Puente Colgante' }
+        { x: 1040 + rOffset(), y: 205, w: 115, h: 42, type: 'straw', label: 'Fardo 3' },
+        { x: 1230 + rOffset(), y: 180, w: 140, h: 26, type: 'wood', label: 'Puente Roble 2', lantern: true },
+        { x: 1445 + rOffset(), y: 200, w: 110, h: 42, type: 'straw', label: 'Fardo 4' },
+        { x: 1625 + rOffset(), y: 185, w: 135, h: 26, type: 'wood', label: 'Andamio 2' }
       );
 
-      // Sección 3: Huerto, Terrazas y Aproximación
+      // Sección 3: Huerto y Terrazas Colgantes (x: 1860 - 2580)
       this.platforms.push(
-        { x: 2050 + randOffset(), y: 250 - randH(), w: 120, h: 50, type: 'straw', label: 'Fardo' },
-        { x: 2290 + randOffset(), y: 190 - randH(), w: 135, h: 28, type: 'wood', label: 'Terraza' },
-        { x: 2540 + randOffset(), y: 240 - randH(), w: 120, h: 50, type: 'straw', label: 'Fardo' },
-        { x: 2780 + randOffset(), y: 200 - randH(), w: 130, h: 30, type: 'wood', label: 'Escalón' }
+        { x: 1860 + rOffset(), y: 195, w: 120, h: 42, type: 'straw', label: 'Fardo 5' },
+        { x: 2055 + rOffset(), y: 175, w: 140, h: 26, type: 'wood', label: 'Pasarela Huerto', lantern: true },
+        { x: 2265 + rOffset(), y: 205, w: 115, h: 42, type: 'straw', label: 'Fardo 6' },
+        { x: 2450 + rOffset(), y: 180, w: 135, h: 26, type: 'wood', label: 'Terraza Central' }
       );
 
-      // Escaleras sólidas de acceso al Granero
+      // Sección 4: El Gran Desfiladero Campestre (x: 2690 - 3410)
       this.platforms.push(
-        { x: 2980, y: 260, w: 90, h: 50, type: 'straw', label: 'Llegada' },
-        { x: 3080, y: 215, w: 85, h: 35, type: 'wood', label: 'Porche' }
+        { x: 2690 + rOffset(), y: 200, w: 125, h: 42, type: 'straw', label: 'Fardo 7' },
+        { x: 2885 + rOffset(), y: 180, w: 140, h: 26, type: 'wood', label: 'Puente Rústico', lantern: true },
+        { x: 3095 + rOffset(), y: 195, w: 115, h: 42, type: 'straw', label: 'Fardo 8' },
+        { x: 3280 + rOffset(), y: 180, w: 130, h: 26, type: 'wood', label: 'Terraza Alta' }
       );
 
-      // Trampolines de heno elásticos que catapultan al jugador hacia rutas altas
+      // Sección 5: Llegada y Porche de Entrada al Granero (x: 3510 - 3960)
+      this.platforms.push(
+        { x: 3510 + rOffset(), y: 205, w: 120, h: 42, type: 'straw', label: 'Fardo Final' },
+        { x: 3700 + rOffset(), y: 190, w: 140, h: 26, type: 'wood', label: 'Pasarela Granero', lantern: true },
+        { x: 3885, y: 210, w: 110, h: 30, type: 'wood', label: 'Porche Granero' }
+      );
+
+      // Trampolines de heno elásticos en el suelo (ÚNICA forma de subir desde la zanja inferior)
       this.trampolines = [
-        { x: 960 + randOffset(), y: 326, w: 52, h: 16, cooldown: 0 },
-        { x: 1900 + randOffset(), y: 326, w: 52, h: 16, cooldown: 0 },
-        { x: 2440 + randOffset(), y: 326, w: 52, h: 16, cooldown: 0 }
+        { x: 890, y: 324, w: 56, h: 16, cooldown: 0 },
+        { x: 1690, y: 324, w: 56, h: 16, cooldown: 0 },
+        { x: 2500, y: 324, w: 56, h: 16, cooldown: 0 },
+        { x: 3320, y: 324, w: 56, h: 16, cooldown: 0 }
       ];
 
-      // Charcos de barro que ahora DAÑAN vidas al pisarlos y ralentizan
+      // Charcos de barro viscoso en el suelo (causan daño y frenan fuertemente)
       this.mudPuddles = [
-        { x: 720 + randOffset(), y: 338, w: 85, h: 12 },
-        { x: 1410 + randOffset(), y: 338, w: 90, h: 12 },
-        { x: 2160 + randOffset(), y: 338, w: 95, h: 12 }
+        { x: 500, y: 338, w: 105, h: 12 },
+        { x: 1290, y: 338, w: 110, h: 12 },
+        { x: 2100, y: 338, w: 115, h: 12 },
+        { x: 2920, y: 338, w: 110, h: 12 },
+        { x: 3600, y: 338, w: 95, h: 12 }
       ];
 
-      // Zarzas espinosas de campo que también restan vida
+      // Zarzas espinosas de campo en el suelo (causan daño al tocarlas)
       this.thorns = [
-        { x: 535 + randOffset(), y: 318, w: 32, h: 22 },
-        { x: 1650 + randOffset(), y: 318, w: 32, h: 22 },
-        { x: 2670 + randOffset(), y: 318, w: 32, h: 22 }
+        { x: 710, y: 318, w: 34, h: 22 },
+        { x: 1510, y: 318, w: 34, h: 22 },
+        { x: 2320, y: 318, w: 34, h: 22 },
+        { x: 3130, y: 318, w: 34, h: 22 }
       ];
 
-      // Pergaminos Dorados con Pistas de Quizzes (3 coleccionables clave por partida)
+      // 3 Pergaminos Dorados con pistas para Quizzes distribuidos a lo largo de las rutas altas
       const shuffledClues = [...CLUES_BANK].sort(() => Math.random() - 0.5);
       this.quizScrolls = [
-        { x: 450 + randOffset(), y: 170, taken: false, clue: shuffledClues[0] },
-        { x: 1330 + randOffset(), y: 150, taken: false, clue: shuffledClues[1] },
-        { x: 2320 + randOffset(), y: 140, taken: false, clue: shuffledClues[2] }
+        { x: 495, y: 145, taken: false, clue: shuffledClues[0] },
+        { x: 1300, y: 140, taken: false, clue: shuffledClues[1] },
+        { x: 2955, y: 140, taken: false, clue: shuffledClues[2] }
       ];
 
-      // Items nutritivos recolectables (zanahorias, choclos, trigo, estrellas)
+      // Items nutritivos recolectables y estrellas doradas
       this.items = [
-        { x: 300, y: 230, emoji: '🥕', val: 10, name: 'Zanahoria', taken: false },
-        { x: 460, y: 170, emoji: '🌽', val: 15, name: 'Choclo', taken: false },
-        { x: 670, y: 210, emoji: '🌾', val: 20, name: 'Trigo', taken: false },
-        { x: 870, y: 150, emoji: '⭐', val: 50, name: 'Estrella Dorada', taken: false },
+        { x: 290, y: 165, emoji: '🥕', val: 10, name: 'Zanahoria', taken: false },
+        { x: 480, y: 145, emoji: '🌽', val: 15, name: 'Choclo', taken: false },
+        { x: 680, y: 155, emoji: '🌾', val: 20, name: 'Trigo', taken: false },
+        { x: 875, y: 140, emoji: '⭐', val: 50, name: 'Estrella Dorada', taken: false },
 
-        { x: 1140, y: 215, emoji: '🥕', val: 10, name: 'Zanahoria', taken: false },
-        { x: 1340, y: 150, emoji: '🌽', val: 15, name: 'Choclo', taken: false },
-        { x: 1580, y: 190, emoji: '🌾', val: 20, name: 'Trigo', taken: false },
-        { x: 1800, y: 135, emoji: '⭐', val: 50, name: 'Estrella Dorada', taken: false },
+        { x: 1090, y: 165, emoji: '🥕', val: 10, name: 'Zanahoria', taken: false },
+        { x: 1290, y: 140, emoji: '🌽', val: 15, name: 'Choclo', taken: false },
+        { x: 1495, y: 160, emoji: '🌾', val: 20, name: 'Trigo', taken: false },
+        { x: 1680, y: 145, emoji: '⭐', val: 50, name: 'Estrella Dorada', taken: false },
 
-        { x: 2090, y: 205, emoji: '🥕', val: 10, name: 'Zanahoria', taken: false },
-        { x: 2340, y: 140, emoji: '🌽', val: 15, name: 'Choclo', taken: false },
-        { x: 2600, y: 190, emoji: '🌾', val: 20, name: 'Trigo', taken: false },
-        { x: 2840, y: 150, emoji: '⭐', val: 50, name: 'Estrella Dorada', taken: false },
-        { x: 3040, y: 210, emoji: '🥕', val: 10, name: 'Zanahoria', taken: false }
+        { x: 1910, y: 155, emoji: '🥕', val: 10, name: 'Zanahoria', taken: false },
+        { x: 2110, y: 135, emoji: '🌽', val: 15, name: 'Choclo', taken: false },
+        { x: 2315, y: 165, emoji: '🌾', val: 20, name: 'Trigo', taken: false },
+        { x: 2510, y: 140, emoji: '⭐', val: 50, name: 'Estrella Dorada', taken: false },
+
+        { x: 2740, y: 160, emoji: '🥕', val: 10, name: 'Zanahoria', taken: false },
+        { x: 2945, y: 140, emoji: '🌽', val: 15, name: 'Choclo', taken: false },
+        { x: 3145, y: 155, emoji: '🌾', val: 20, name: 'Trigo', taken: false },
+        { x: 3340, y: 140, emoji: '⭐', val: 50, name: 'Estrella Dorada', taken: false },
+
+        { x: 3560, y: 165, emoji: '🥕', val: 10, name: 'Zanahoria', taken: false },
+        { x: 3760, y: 150, emoji: '⭐', val: 50, name: 'Estrella Dorada', taken: false }
       ];
     },
 
@@ -1198,7 +1233,7 @@
         const ang = Math.random() * Math.PI * 2;
         const spd = 2 + Math.random() * 5.5;
         this.particles.push({
-          x: this.goal.x + 70,
+          x: this.goal.x + 90,
           y: this.goal.y + 40,
           vx: Math.cos(ang) * spd,
           vy: Math.sin(ang) * spd,
@@ -1221,13 +1256,12 @@
       });
     },
 
-    /* Mecánica de daño por lodo o espinas con tiempo de invulnerabilidad */
     takeDamage(amount, reason) {
       if (this.isFinished) return;
       this.lives = Math.max(0, this.lives - amount);
       this.player.invulnerableTime = 1.35;
-      this.player.vy = -6.5; // Rebote hacia arriba
-      this.player.vx = -this.player.facing * 3.2; // Retroceso
+      this.player.vy = -6.0;
+      this.player.vx = -this.player.facing * 2.8;
       AudioFX.splash();
       AudioFX.wrong();
       this.spawnMudSplash(this.player.x + this.player.w / 2, this.player.y + this.player.h);
@@ -1253,11 +1287,11 @@
 
       setTimeout(() => {
         showGameVictory({
-          icon: '🌧️💔',
+          icon: '🌧️',
           title: '¡El Fango Atrapó a tu Corredor!',
           subtitle: 'Recorrido Interrumpido — Sin Vidas',
           stamp: 'INTÉNTALO OTRA VEZ',
-          msg: 'Tu animalito cayó en el lodo resbaloso y se agotó. ¡Recuerda que el lodo y las espinas restan vidas! Salta con precisión sobre los fardos elevados y trampolines.',
+          msg: 'Tu animalito cayó en el lodo resbaloso y se agotó. Recuerda que no puedes saltar a las plataformas altas directamente desde el suelo: ¡debes usar los trampolines de heno elásticos para impulsarte hacia arriba!',
           stats: `⭐ <b>Puntaje:</b> ${this.score} pts &nbsp;|&nbsp; ⏱️ <b>Tiempo:</b> ${this.timerSeconds}s &nbsp;|&nbsp; 💡 <b>Pistas descubiertas:</b> ${this.unlockedClues.length}`,
           onRestart: () => this.showStartScreen()
         });
@@ -1267,7 +1301,7 @@
     update(dt) {
       const p = this.player;
 
-      // Decrementar tiempo de invulnerabilidad
+      // Decrementar tiempo de invulnerabilidad tras daño
       if (p.invulnerableTime > 0) {
         p.invulnerableTime -= dt * 0.001;
       }
@@ -1287,7 +1321,7 @@
         p.vx *= 0.76;
       }
 
-      // Salto
+      // Salto normal (jumpStrength: 10.5, altura máx ≈ 88.9px, incapaz de llegar a y ≤ 210 desde el suelo y = 340)
       if (this.keys.jump && p.grounded) {
         AudioFX.jump();
         p.vy = -p.jumpStrength;
@@ -1296,8 +1330,8 @@
         this.spawnDust(p.x + p.w / 2, p.y + p.h, 5);
       }
 
-      // Gravedad
-      p.vy += 0.58;
+      // Gravedad calibrada (0.62)
+      p.vy += 0.62;
       if (p.vy > 14) p.vy = 14;
 
       p.x += p.vx;
@@ -1329,10 +1363,9 @@
         }
       }
 
-      // Amortiguación suave del squash
       p.landSquash *= 0.82;
 
-      // Interacción con trampolines de heno elásticos
+      // Interacción con trampolines de heno elásticos (ÚNICA forma de subir desde la zanja inferior)
       for (const t of this.trampolines) {
         if (t.cooldown > 0) t.cooldown--;
         if (
@@ -1344,30 +1377,30 @@
           p.vy >= 0
         ) {
           AudioFX.spring();
-          p.vy = -18.5;
+          p.vy = -18.6; // Catapulta 279px hacia arriba hasta y ≈ 61px, permitiendo aterrizar en plataformas altas
           p.grounded = false;
           t.cooldown = 24;
-          this.spawnSparkles(t.x + t.w / 2, t.y, 12);
+          this.spawnSparkles(t.x + t.w / 2, t.y, 14);
           this.spawnFloatingText(t.x + t.w / 2, t.y - 12, '¡SÚPER SALTO! 🦘', '#fbbf24');
         }
       }
 
-      // Interacción con charcos de barro (AHORA DAÑAN 1 VIDA Y FRENAN)
+      // Interacción con charcos de barro (dañan 1 vida y ralentizan fuertemente)
       for (const m of this.mudPuddles) {
         if (
-          p.x + p.w * 0.8 > m.x &&
-          p.x + p.w * 0.2 < m.x + m.w &&
+          p.x + p.w * 0.75 > m.x &&
+          p.x + p.w * 0.25 < m.x + m.w &&
           p.y + p.h >= m.y &&
-          p.y + p.h <= m.y + m.h + 14
+          p.y + p.h <= m.y + m.h + 16
         ) {
-          p.vx *= 0.46; // frena fuertemente
+          p.vx *= 0.38;
           if (p.invulnerableTime <= 0) {
-            this.takeDamage(1, '¡Caíste al fango! -1 VIDA 💔');
+            this.takeDamage(1, '¡Caíste al lodo! -1 VIDA 💔');
           }
         }
       }
 
-      // Interacción con zarzas espinosas
+      // Interacción con zarzas espinosas (dañan 1 vida)
       for (const z of this.thorns) {
         if (
           p.x + p.w * 0.7 > z.x &&
@@ -1385,8 +1418,8 @@
       if (p.y > 420) {
         this.takeDamage(1, '¡Caída al vacío! -1 VIDA 💔');
         if (this.lives > 0) {
-          p.x = Math.max(70, p.x - 320);
-          p.y = 180;
+          p.x = Math.max(50, p.x - 300);
+          p.y = 170;
           p.vy = 0;
         }
       }
@@ -1426,8 +1459,8 @@
         }
       }
 
-      // Llegada a la meta: El Granero B-13 (activación frontal garantizada)
-      if (p.x + p.w >= 3150) {
+      // Llegada a la meta: El Granero B-13
+      if (p.x + p.w >= 3940) {
         if (this.isFinished) return;
         this.isFinished = true;
         this.isRunning = false;
@@ -1439,7 +1472,6 @@
         AudioFX.stopAll();
         AudioFX.win();
 
-        // Guardar récord de minijuego de forma segura sin contaminar el puntaje puro de quizzes
         if (typeof state !== 'undefined') {
           state.minigames = state.minigames || {};
           const prevBest = state.minigames.platformer?.bestScore || 0;
@@ -1463,7 +1495,7 @@
 
         setTimeout(() => {
           showGameVictory({
-            icon: '🏁🌾',
+            icon: '🏆',
             title: '¡Llegaste al Granero B-13!',
             subtitle: '¡Carrera Campestre Completada!',
             stamp: 'MISIÓN CUMPLIDA',
@@ -1484,6 +1516,17 @@
         if (pt.life <= 0) this.particles.splice(i, 1);
       }
 
+      // Actualizar hojas y pétalos ambientales
+      for (const leaf of this.ambientLeaves) {
+        leaf.x += leaf.speedX;
+        leaf.y += leaf.speedY + Math.sin(this.animTime * 2.5 + leaf.phase) * 0.45;
+        leaf.rot += 0.02;
+        if (leaf.x > this.worldWidth + 100 || leaf.y > 400) {
+          leaf.x = Math.max(0, this.cameraX - 60 + Math.random() * 200);
+          leaf.y = -15 - Math.random() * 40;
+        }
+      }
+
       // Actualizar textos flotantes
       for (let i = this.floatingTexts.length - 1; i >= 0; i--) {
         const ft = this.floatingTexts[i];
@@ -1492,7 +1535,7 @@
         if (ft.life <= 0) this.floatingTexts.splice(i, 1);
       }
 
-      // Cámara suave de seguimiento horizontal
+      // Cámara de seguimiento horizontal suave
       this.cameraX = p.x - 260;
       if (this.cameraX < 0) this.cameraX = 0;
       if (this.cameraX > this.worldWidth - 860) this.cameraX = this.worldWidth - 860;
@@ -1506,210 +1549,348 @@
 
       ctx.clearRect(0, 0, w, h);
 
-      // 1. Cielo soleado degradado
+      // 1. Cielo degradado estilo Stardew Valley (mañana campestre cálida)
       const skyGrad = ctx.createLinearGradient(0, 0, 0, h);
-      skyGrad.addColorStop(0, '#5fa7f0');
-      skyGrad.addColorStop(0.65, '#bfe3fd');
-      skyGrad.addColorStop(1, '#e5f3ff');
+      skyGrad.addColorStop(0, '#3a7bd5');   // azul cerúleo profundo
+      skyGrad.addColorStop(0.38, '#68a691'); // turquesa de montaña
+      skyGrad.addColorStop(0.72, '#f4d06f'); // resplandor dorado
+      skyGrad.addColorStop(1, '#ffe8d6');   // luz melocotón suave de horizonte
       ctx.fillStyle = skyGrad;
       ctx.fillRect(0, 0, w, h);
 
-      // Sol radiante
+      // Sol radiante con halo cálido y destello suave
       ctx.save();
-      ctx.fillStyle = '#ffdf6d';
+      const sunX = w - 100;
+      const sunY = 70;
+      const sunGlow = ctx.createRadialGradient(sunX, sunY, 15, sunX, sunY, 90);
+      sunGlow.addColorStop(0, 'rgba(254, 240, 138, 0.45)');
+      sunGlow.addColorStop(0.5, 'rgba(253, 224, 71, 0.18)');
+      sunGlow.addColorStop(1, 'rgba(253, 224, 71, 0)');
+      ctx.fillStyle = sunGlow;
       ctx.beginPath();
-      ctx.arc(w - 90, 70, 38, 0, Math.PI * 2);
+      ctx.arc(sunX, sunY, 90, 0, Math.PI * 2);
       ctx.fill();
-      ctx.fillStyle = 'rgba(255, 223, 109, 0.25)';
+
+      ctx.fillStyle = '#fef08a';
       ctx.beginPath();
-      ctx.arc(w - 90, 70, 54, 0, Math.PI * 2);
+      ctx.arc(sunX, sunY, 32, 0, Math.PI * 2);
       ctx.fill();
       ctx.restore();
 
       // Nubes suaves con parallax
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.82)';
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
       for (let i = 0; i < 9; i++) {
-        const cloudX = ((i * 380) - (this.cameraX * 0.12) + (this.animTime * 12)) % (w + 400) - 100;
-        const cloudY = 55 + (i % 3) * 26;
+        const cloudX = ((i * 380) - (this.cameraX * 0.10) + (this.animTime * 10)) % (w + 420) - 100;
+        const cloudY = 48 + (i % 3) * 24;
         ctx.beginPath();
-        ctx.arc(cloudX, cloudY, 26, 0, Math.PI * 2);
-        ctx.arc(cloudX + 22, cloudY - 8, 30, 0, Math.PI * 2);
-        ctx.arc(cloudX + 46, cloudY, 24, 0, Math.PI * 2);
+        ctx.arc(cloudX, cloudY, 24, 0, Math.PI * 2);
+        ctx.arc(cloudX + 20, cloudY - 7, 28, 0, Math.PI * 2);
+        ctx.arc(cloudX + 44, cloudY, 22, 0, Math.PI * 2);
         ctx.fill();
       }
 
-      // Colinas lejanas con parallax
+      // 2. Capa 1 de montañas lejanas (picos alpinos pizarra) con parallax
       ctx.save();
-      ctx.fillStyle = '#487a38';
+      ctx.fillStyle = '#3d5a80';
       ctx.beginPath();
       ctx.moveTo(0, h);
-      for (let x = 0; x <= w; x += 60) {
-        const worldX = x + (this.cameraX * 0.18);
-        const y = 210 + Math.sin(worldX * 0.0032) * 35 + Math.cos(worldX * 0.008) * 18;
-        ctx.lineTo(x, y);
+      for (let x = 0; x <= w; x += 40) {
+        const wx = x + (this.cameraX * 0.06);
+        const my = 175 + Math.sin(wx * 0.0028) * 38 + Math.cos(wx * 0.007) * 22;
+        ctx.lineTo(x, my);
+      }
+      ctx.lineTo(w, h);
+      ctx.closePath();
+      ctx.fill();
+
+      // Capa 2 de colinas de pinos (verde bosque profundo) con copas triangulares
+      ctx.fillStyle = '#204e3b';
+      ctx.beginPath();
+      ctx.moveTo(0, h);
+      for (let x = 0; x <= w; x += 30) {
+        const wx = x + (this.cameraX * 0.14);
+        const hy = 215 + Math.sin(wx * 0.0042) * 28 + Math.sin(wx * 0.012) * 12;
+        ctx.lineTo(x, hy);
+      }
+      ctx.lineTo(w, h);
+      ctx.closePath();
+      ctx.fill();
+
+      // Siluetas de pinos en la cresta de las colinas
+      ctx.fillStyle = '#16382a';
+      for (let x = 15; x <= w; x += 38) {
+        const wx = x + (this.cameraX * 0.14);
+        const hy = 215 + Math.sin(wx * 0.0042) * 28 + Math.sin(wx * 0.012) * 12;
+        ctx.beginPath();
+        ctx.moveTo(x, hy - 16);
+        ctx.lineTo(x - 7, hy);
+        ctx.lineTo(x + 7, hy);
+        ctx.closePath();
+        ctx.fill();
+      }
+
+      // Capa 3: lomas de pastoreo cercanas (verde pradera cálida)
+      ctx.fillStyle = '#40916c';
+      ctx.beginPath();
+      ctx.moveTo(0, h);
+      for (let x = 0; x <= w; x += 50) {
+        const wx = x + (this.cameraX * 0.22);
+        const gy = 265 + Math.sin(wx * 0.005) * 18 + Math.cos(wx * 0.01) * 8;
+        ctx.lineTo(x, gy);
       }
       ctx.lineTo(w, h);
       ctx.closePath();
       ctx.fill();
       ctx.restore();
 
-      // Inicio de coordenadas relativas al mundo (cámara)
+      // Coordenadas del mundo con traslación de la cámara
       ctx.save();
       ctx.translate(-this.cameraX, 0);
 
-      // Molino de viento campestre animado a mitad de camino
-      this.drawWindmill(ctx, 1180, 240);
+      // Molino rústico de viento campestre animado a mitad de trayecto
+      this.drawWindmill(ctx, 1850, 240);
 
-      // Dibujar cercas de madera decorativas en el fondo
+      // Cercas de madera campestres en el fondo a lo largo del camino
       ctx.strokeStyle = '#5a3d1e';
       ctx.lineWidth = 2.5;
-      for (let fx = 120; fx < 3200; fx += 180) {
+      for (let fx = 100; fx < 4000; fx += 160) {
         ctx.strokeRect(fx, 316, 6, 24);
-        ctx.strokeRect(fx + 30, 316, 6, 24);
+        ctx.strokeRect(fx + 28, 316, 6, 24);
         ctx.beginPath();
         ctx.moveTo(fx, 322);
-        ctx.lineTo(fx + 36, 322);
-        ctx.moveTo(fx, 332);
-        ctx.lineTo(fx + 36, 332);
+        ctx.lineTo(fx + 34, 322);
+        ctx.moveTo(fx, 331);
+        ctx.lineTo(fx + 34, 331);
         ctx.stroke();
       }
 
-      // Dibujar plataformas
+      // Dibujar pétalos y hojas flotantes ambientales estilo Stardew Valley
+      for (const leaf of this.ambientLeaves) {
+        ctx.save();
+        ctx.translate(leaf.x, leaf.y);
+        ctx.rotate(leaf.rot);
+        ctx.fillStyle = leaf.color;
+        ctx.beginPath();
+        ctx.ellipse(0, 0, leaf.size * 1.5, leaf.size * 0.75, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      }
+
+      // Dibujar plataformas (suelo, fardos de heno, puentes de roble)
       for (const p of this.platforms) {
         if (p.type === 'ground') {
-          // Suelo fértil: pasto superior + tierra con piedras
-          ctx.fillStyle = '#4b7334';
+          // Suelo de labranza estilo Stardew: césped frondoso + tierra de cultivo
+          ctx.fillStyle = '#3a2414';
           ctx.fillRect(p.x, p.y, p.w, p.h);
 
-          // Franja verde brillante de pasto
-          ctx.fillStyle = '#659c43';
+          // Franja de césped fértil
+          ctx.fillStyle = '#4f772d';
           ctx.fillRect(p.x, p.y, p.w, 14);
 
-          // Mechones de hierba
-          ctx.fillStyle = '#7ebd4e';
-          for (let gx = p.x; gx < p.x + p.w; gx += 28) {
+          // Puntas de hierba pixelada
+          ctx.fillStyle = '#74c69d';
+          for (let gx = p.x; gx < p.x + p.w; gx += 16) {
             ctx.beginPath();
             ctx.moveTo(gx, p.y);
-            ctx.lineTo(gx + 4, p.y - 7);
-            ctx.lineTo(gx + 8, p.y);
+            ctx.lineTo(gx + 3, p.y - 6);
+            ctx.lineTo(gx + 6, p.y);
             ctx.fill();
           }
 
-          // Estrato de tierra con textura
-          ctx.fillStyle = '#342111';
+          // Flores silvestres salpicadas (amapolas, margaritas, tréboles)
+          const flowers = ['#f43f5e', '#facc15', '#ffffff', '#22c55e'];
+          for (let fx = p.x + 12; fx < p.x + p.w; fx += 52) {
+            const fColor = flowers[(fx * 13) % flowers.length];
+            ctx.fillStyle = fColor;
+            ctx.beginPath();
+            ctx.arc(fx, p.y - 3, 2.5, 0, Math.PI * 2);
+            ctx.fill();
+          }
+
+          // Estrato de tierra con textura y piedras de río
+          ctx.fillStyle = '#27150a';
           ctx.fillRect(p.x, p.y + 14, p.w, p.h - 14);
 
-          ctx.fillStyle = '#5c4028';
-          for (let px = p.x + 8; px < p.x + p.w; px += 34) {
-            ctx.fillRect(px, p.y + 24 + ((px * 7) % 18), 6, 4);
+          ctx.fillStyle = '#5c3c26';
+          for (let px = p.x + 8; px < p.x + p.w; px += 36) {
+            ctx.fillRect(px, p.y + 22 + ((px * 7) % 20), 7, 4);
           }
         } else if (p.type === 'straw') {
-          // Fardo de heno dorado con cuerdas rojas
+          // Fardo de heno estilo Stardew Valley con detalle artesanal
           ctx.fillStyle = '#eab308';
           ctx.fillRect(p.x, p.y, p.w, p.h);
           ctx.strokeStyle = '#28311b';
           ctx.lineWidth = 2.5;
           ctx.strokeRect(p.x, p.y, p.w, p.h);
 
-          // Pajas
-          ctx.strokeStyle = '#facc15';
+          // Sombra inferior del fardo
+          ctx.fillStyle = '#ca8a04';
+          ctx.fillRect(p.x + 2, p.y + p.h - 8, p.w - 4, 6);
+
+          // Puntas y briznas de paja dorada
+          ctx.strokeStyle = '#fef08a';
           ctx.lineWidth = 1.5;
-          for (let sy = p.y + 8; sy < p.y + p.h - 6; sy += 9) {
+          for (let sy = p.y + 7; sy < p.y + p.h - 6; sy += 8) {
             ctx.beginPath();
-            ctx.moveTo(p.x + 6, sy);
-            ctx.lineTo(p.x + p.w - 6, sy);
+            ctx.moveTo(p.x + 5, sy);
+            ctx.lineTo(p.x + p.w - 5, sy);
             ctx.stroke();
           }
 
-          // Cuerdas de amarre
-          ctx.strokeStyle = '#b91c1c';
-          ctx.lineWidth = 3;
+          // Pajas sueltas que sobresalen en los bordes
+          ctx.strokeStyle = '#eab308';
+          ctx.lineWidth = 2;
+          for (let wx = p.x + 10; wx < p.x + p.w - 10; wx += 18) {
+            ctx.beginPath();
+            ctx.moveTo(wx, p.y);
+            ctx.lineTo(wx + ((wx % 2 === 0) ? 3 : -3), p.y - 4);
+            ctx.stroke();
+          }
+
+          // Cuerdas dobles de cáñamo rústico
+          ctx.strokeStyle = '#78350f';
+          ctx.lineWidth = 3.5;
           ctx.beginPath();
-          ctx.moveTo(p.x + p.w * 0.3, p.y);
-          ctx.lineTo(p.x + p.w * 0.3, p.y + p.h);
-          ctx.moveTo(p.x + p.w * 0.7, p.y);
-          ctx.lineTo(p.x + p.w * 0.7, p.y + p.h);
+          ctx.moveTo(p.x + p.w * 0.28, p.y);
+          ctx.lineTo(p.x + p.w * 0.28, p.y + p.h);
+          ctx.moveTo(p.x + p.w * 0.72, p.y);
+          ctx.lineTo(p.x + p.w * 0.72, p.y + p.h);
           ctx.stroke();
         } else if (p.type === 'wood') {
-          // Pasarela de madera rústica con postes hasta el suelo
-          ctx.fillStyle = '#6b4522';
-          ctx.fillRect(p.x + 12, p.y + p.h, 10, 340 - (p.y + p.h));
-          ctx.fillRect(p.x + p.w - 22, p.y + p.h, 10, 340 - (p.y + p.h));
+          // Pasarela de roble estilo carpintería de Robin (Stardew Valley)
+          ctx.fillStyle = '#451a03';
+          ctx.fillRect(p.x + 10, p.y + p.h, 12, 340 - (p.y + p.h));
+          ctx.fillRect(p.x + p.w - 22, p.y + p.h, 12, 340 - (p.y + p.h));
 
-          ctx.fillStyle = '#8f5d30';
+          // Enredaderas verdes que trepan por los postes
+          ctx.fillStyle = '#22c55e';
+          for (let py = p.y + p.h + 8; py < 330; py += 24) {
+            ctx.beginPath();
+            ctx.arc(p.x + 10, py, 3, 0, Math.PI * 2);
+            ctx.arc(p.x + p.w - 10, py + 10, 3, 0, Math.PI * 2);
+            ctx.fill();
+          }
+
+          // Tablón principal de madera
+          ctx.fillStyle = '#854d0e';
           ctx.fillRect(p.x, p.y, p.w, p.h);
+
+          // Veteado cálido de la madera
+          ctx.fillStyle = '#a16207';
+          ctx.fillRect(p.x + 2, p.y + 3, p.w - 4, p.h * 0.35);
+
           ctx.strokeStyle = '#28311b';
           ctx.lineWidth = 2.5;
           ctx.strokeRect(p.x, p.y, p.w, p.h);
 
-          // Clavos y tablas
-          ctx.strokeStyle = '#28311b';
+          // Clavos de hierro forjado y junturas de tablones
+          ctx.strokeStyle = '#3b1e08';
           ctx.lineWidth = 1.5;
-          for (let bx = p.x + 24; bx < p.x + p.w - 12; bx += 28) {
+          for (let bx = p.x + 26; bx < p.x + p.w - 12; bx += 30) {
             ctx.beginPath();
             ctx.moveTo(bx, p.y);
             ctx.lineTo(bx, p.y + p.h);
             ctx.stroke();
+
+            // Cabezas de clavos
+            ctx.fillStyle = '#334155';
+            ctx.fillRect(bx - 5, p.y + 4, 2.5, 2.5);
+            ctx.fillRect(bx - 5, p.y + p.h - 6, 2.5, 2.5);
+          }
+
+          // Farol rústico colgante con halo cálido de luz en plataformas seleccionadas
+          if (p.lantern) {
+            const lx = p.x + p.w - 8;
+            const ly = p.y + p.h + 12;
+
+            ctx.strokeStyle = '#1e293b';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(lx, p.y + p.h);
+            ctx.lineTo(lx, ly);
+            ctx.stroke();
+
+            const lanternGlow = ctx.createRadialGradient(lx, ly + 6, 2, lx, ly + 6, 32);
+            lanternGlow.addColorStop(0, 'rgba(251, 191, 36, 0.45)');
+            lanternGlow.addColorStop(1, 'rgba(251, 191, 36, 0)');
+            ctx.fillStyle = lanternGlow;
+            ctx.beginPath();
+            ctx.arc(lx, ly + 6, 32, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.font = '14px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('🏮', lx, ly + 10);
           }
         }
       }
 
-      // Dibujar charcos de barro con efecto de fango viscoso y aviso de peligro
+      // Dibujar charcos de barro viscoso con burbujas y cartel de peligro
       for (const m of this.mudPuddles) {
-        ctx.fillStyle = '#3a210d';
+        ctx.fillStyle = '#201205';
         ctx.beginPath();
         ctx.ellipse(m.x + m.w / 2, m.y + m.h / 2, m.w / 2, m.h / 2, 0, 0, Math.PI * 2);
         ctx.fill();
 
-        ctx.fillStyle = '#241407';
+        ctx.fillStyle = '#3a210d';
         ctx.beginPath();
-        ctx.ellipse(m.x + m.w / 2, m.y + m.h / 2 + 2, m.w * 0.38, m.h * 0.38, 0, 0, Math.PI * 2);
+        ctx.ellipse(m.x + m.w / 2, m.y + m.h / 2 + 1, m.w * 0.38, m.h * 0.38, 0, 0, Math.PI * 2);
         ctx.fill();
 
-        // Burbujas de lodo animadas
-        const bubbleY = m.y + Math.sin(this.animTime * 5 + m.x) * 3;
+        // Burbujas de lodo viscoso animadas
+        const b1Y = m.y + Math.sin(this.animTime * 5 + m.x) * 3;
+        const b2Y = m.y + Math.sin(this.animTime * 4.5 + m.x * 2) * 2.5;
         ctx.fillStyle = '#543217';
         ctx.beginPath();
-        ctx.arc(m.x + m.w * 0.35, bubbleY, 4, 0, Math.PI * 2);
-        ctx.arc(m.x + m.w * 0.65, bubbleY - 1, 3, 0, Math.PI * 2);
+        ctx.arc(m.x + m.w * 0.32, b1Y, 4, 0, Math.PI * 2);
+        ctx.arc(m.x + m.w * 0.68, b2Y, 3, 0, Math.PI * 2);
         ctx.fill();
 
-        // Cartelito de precaución lodo
-        ctx.font = '14px Arial';
+        // Estaca con cartel de precaución
+        ctx.font = '15px Arial';
         ctx.textAlign = 'center';
-        ctx.fillText('⚠️', m.x + m.w / 2, m.y - 8);
+        ctx.fillText('⚠️', m.x + m.w / 2, m.y - 7);
       }
 
-      // Dibujar zarzas espinosas
+      // Dibujar zarzas espinosas de campo
       for (const z of this.thorns) {
         ctx.font = '22px Arial';
         ctx.textAlign = 'center';
         ctx.fillText('🌵', z.x + z.w / 2, z.y + z.h - 2);
       }
 
-      // Dibujar trampolines de heno elásticos
+      // Dibujar trampolines de heno elásticos (los únicos impulsores hacia arriba)
       for (const t of this.trampolines) {
         ctx.fillStyle = '#78350f';
-        ctx.fillRect(t.x + 6, t.y + 8, t.w - 12, t.h - 8);
+        ctx.fillRect(t.x + 4, t.y + 8, t.w - 8, t.h - 8);
+        ctx.strokeStyle = '#28311b';
+        ctx.lineWidth = 1.5;
+        ctx.strokeRect(t.x + 4, t.y + 8, t.w - 8, t.h - 8);
 
-        // Resorte metálico
-        ctx.strokeStyle = '#64748b';
+        ctx.strokeStyle = '#94a3b8';
         ctx.lineWidth = 3;
         ctx.beginPath();
-        ctx.moveTo(t.x + 12, t.y + 12);
-        ctx.lineTo(t.x + t.w / 2, t.y + 6);
-        ctx.lineTo(t.x + t.w - 12, t.y + 12);
+        ctx.moveTo(t.x + 10, t.y + 12);
+        ctx.lineTo(t.x + t.w / 2, t.y + 5);
+        ctx.lineTo(t.x + t.w - 10, t.y + 12);
         ctx.stroke();
 
-        // Almohadilla superior elástica
-        ctx.fillStyle = '#f59e0b';
-        ctx.fillRect(t.x, t.y, t.w, 6);
-        ctx.strokeStyle = '#1a1a1a';
+        ctx.fillStyle = '#dc2626';
+        ctx.fillRect(t.x, t.y, t.w, 7);
+        ctx.strokeStyle = '#28311b';
         ctx.lineWidth = 1.5;
-        ctx.strokeRect(t.x, t.y, t.w, 6);
+        ctx.strokeRect(t.x, t.y, t.w, 7);
+
+        ctx.fillStyle = '#fef08a';
+        ctx.fillRect(t.x + t.w / 2 - 8, t.y + 1, 16, 5);
+
+        ctx.font = 'bold 9px "Space Mono", monospace';
+        ctx.fillStyle = '#166534';
+        ctx.textAlign = 'center';
+        ctx.fillText('▲ SALTO', t.x + t.w / 2, t.y - 6);
       }
 
-      // Dibujar Pergaminos Dorados de Quiz con aura brillante
+      // Dibujar Pergaminos Dorados de Quiz con halo celestial
       for (const scroll of this.quizScrolls) {
         if (!scroll.taken) {
           const hoverY = scroll.y + Math.sin(this.animTime * 5 + scroll.x) * 5;
@@ -1718,7 +1899,6 @@
           ctx.textBaseline = 'middle';
           ctx.fillText('📜', scroll.x, hoverY);
 
-          // Resplandor dorado místico
           ctx.fillStyle = 'rgba(251, 191, 36, 0.4)';
           ctx.beginPath();
           ctx.arc(scroll.x, hoverY, 18, 0, Math.PI * 2);
@@ -1726,11 +1906,11 @@
 
           ctx.font = 'bold 10px "Space Mono", monospace';
           ctx.fillStyle = '#78350f';
-          ctx.fillText('PISTA', scroll.x, hoverY - 22);
+          ctx.fillText('PISTA QUIZ', scroll.x, hoverY - 22);
         }
       }
 
-      // Dibujar items nutritivos con animación de levitación y destello
+      // Dibujar items nutritivos y estrellas
       for (const item of this.items) {
         if (!item.taken) {
           const hoverY = item.y + Math.sin(this.animTime * 4 + item.x) * 4.5;
@@ -1739,7 +1919,6 @@
           ctx.textBaseline = 'middle';
           ctx.fillText(item.emoji, item.x, hoverY);
 
-          // Resplandor dorado tenue
           ctx.fillStyle = 'rgba(255, 216, 61, 0.35)';
           ctx.beginPath();
           ctx.arc(item.x, hoverY, 14, 0, Math.PI * 2);
@@ -1747,7 +1926,7 @@
         }
       }
 
-      // Dibujar partículas activas
+      // Dibujar partículas
       for (const pt of this.particles) {
         ctx.fillStyle = pt.color;
         ctx.globalAlpha = Math.max(0, pt.life);
@@ -1757,7 +1936,7 @@
       }
       ctx.globalAlpha = 1.0;
 
-      // Dibujar textos flotantes (+10, -1 VIDA, etc.)
+      // Dibujar textos flotantes
       ctx.font = 'bold 15px "Space Mono", monospace';
       ctx.textAlign = 'center';
       for (const ft of this.floatingTexts) {
@@ -1767,47 +1946,51 @@
       }
       ctx.globalAlpha = 1.0;
 
-      // Dibujar Granero de Meta
+      // Dibujar Granero de Meta B-13 estilo Deluxe Stardew
       this.drawGoal(ctx);
 
-      // Dibujar Jugador (Animalito con accesorio y animación)
+      // Dibujar Jugador
       this.drawPlayer(ctx);
 
       ctx.restore();
     },
 
     drawWindmill(ctx, wx, wy) {
-      // Torre del molino
-      ctx.fillStyle = '#78350f';
+      ctx.fillStyle = '#854d0e';
       ctx.beginPath();
-      ctx.moveTo(wx - 26, wy + 100);
-      ctx.lineTo(wx - 14, wy);
-      ctx.lineTo(wx + 14, wy);
-      ctx.lineTo(wx + 26, wy + 100);
+      ctx.moveTo(wx - 28, wy + 100);
+      ctx.lineTo(wx - 16, wy);
+      ctx.lineTo(wx + 16, wy);
+      ctx.lineTo(wx + 28, wy + 100);
       ctx.closePath();
       ctx.fill();
+      ctx.strokeStyle = '#28311b';
+      ctx.lineWidth = 2.5;
+      ctx.stroke();
 
-      // Cúpula
       ctx.fillStyle = '#451a03';
       ctx.beginPath();
-      ctx.arc(wx, wy, 16, Math.PI, 0);
+      ctx.arc(wx, wy, 18, Math.PI, 0);
       ctx.fill();
+      ctx.stroke();
 
-      // Aspas giratorias animadas
       ctx.save();
       ctx.translate(wx, wy);
-      ctx.rotate(this.animTime * 1.8);
-      ctx.strokeStyle = '#fef08a';
-      ctx.lineWidth = 3;
+      ctx.rotate(this.animTime * 1.6);
       for (let i = 0; i < 4; i++) {
         ctx.rotate(Math.PI / 2);
+        ctx.strokeStyle = '#78350f';
+        ctx.lineWidth = 3;
         ctx.beginPath();
         ctx.moveTo(0, 0);
-        ctx.lineTo(44, 0);
+        ctx.lineTo(46, 0);
         ctx.stroke();
 
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.75)';
-        ctx.fillRect(14, -8, 28, 16);
+        ctx.fillStyle = 'rgba(254, 243, 199, 0.85)';
+        ctx.strokeStyle = '#28311b';
+        ctx.lineWidth = 1;
+        ctx.fillRect(14, -9, 28, 18);
+        ctx.strokeRect(14, -9, 28, 18);
       }
       ctx.restore();
     },
@@ -1815,23 +1998,42 @@
     drawGoal(ctx) {
       const g = this.goal;
 
-      // Cuerpo del Granero Rojo B-13
+      // Cuerpo principal del Granero Rojo B-13 (Robin's Deluxe Barn)
       ctx.fillStyle = '#8b261e';
       ctx.fillRect(g.x, g.y, g.w, g.h);
       ctx.strokeStyle = '#28311b';
       ctx.lineWidth = 3;
       ctx.strokeRect(g.x, g.y, g.w, g.h);
 
-      // Puertas dobles de granero con la clásica X blanca
-      const dw = 52;
-      const dh = 70;
+      // Tablones horizontales de revestimiento
+      ctx.strokeStyle = '#681b14';
+      ctx.lineWidth = 1.5;
+      for (let ly = g.y + 14; ly < g.y + g.h; ly += 14) {
+        ctx.beginPath();
+        ctx.moveTo(g.x, ly);
+        ctx.lineTo(g.x + g.w, ly);
+        ctx.stroke();
+      }
+
+      // Molduras esquineras blancas de granero
+      ctx.fillStyle = '#fef3c7';
+      ctx.fillRect(g.x, g.y, 8, g.h);
+      ctx.fillRect(g.x + g.w - 8, g.y, 8, g.h);
+      ctx.strokeStyle = '#28311b';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(g.x, g.y, 8, g.h);
+      ctx.strokeRect(g.x + g.w - 8, g.y, 8, g.h);
+
+      // Puertas dobles centrales con clásica X blanca
+      const dw = 60;
+      const dh = 80;
       const dx = g.x + (g.w - dw) / 2;
       const dy = g.y + g.h - dh;
 
-      ctx.fillStyle = '#3a130f';
+      ctx.fillStyle = '#451a03';
       ctx.fillRect(dx, dy, dw, dh);
       ctx.strokeStyle = '#ffffff';
-      ctx.lineWidth = 2.5;
+      ctx.lineWidth = 3;
       ctx.strokeRect(dx, dy, dw, dh);
 
       ctx.beginPath();
@@ -1841,21 +2043,31 @@
       ctx.lineTo(dx, dy + dh);
       ctx.stroke();
 
-      // Ventana circular del granero con luz cálida
+      // Ventana circular del pajar con luz dorada
       ctx.fillStyle = '#fef08a';
       ctx.beginPath();
-      ctx.arc(g.x + g.w / 2, g.y + 40, 16, 0, Math.PI * 2);
+      ctx.arc(g.x + g.w / 2, g.y + 44, 18, 0, Math.PI * 2);
       ctx.fill();
       ctx.strokeStyle = '#28311b';
-      ctx.lineWidth = 2;
+      ctx.lineWidth = 2.5;
       ctx.stroke();
 
-      // Techo campestre
+      // Heno que cuelga de la ventana del pajar
+      ctx.strokeStyle = '#eab308';
+      ctx.lineWidth = 3;
+      for (let hx = -10; hx <= 10; hx += 5) {
+        ctx.beginPath();
+        ctx.moveTo(g.x + g.w / 2 + hx, g.y + 58);
+        ctx.lineTo(g.x + g.w / 2 + hx + ((hx % 2 === 0) ? 3 : -3), g.y + 68);
+        ctx.stroke();
+      }
+
+      // Techo campestre a dos aguas con alero
       ctx.fillStyle = '#551511';
       ctx.beginPath();
-      ctx.moveTo(g.x - 14, g.y);
-      ctx.lineTo(g.x + g.w / 2, g.y - 45);
-      ctx.lineTo(g.x + g.w + 14, g.y);
+      ctx.moveTo(g.x - 16, g.y);
+      ctx.lineTo(g.x + g.w / 2, g.y - 50);
+      ctx.lineTo(g.x + g.w + 16, g.y);
       ctx.closePath();
       ctx.fill();
       ctx.strokeStyle = '#28311b';
@@ -1863,33 +2075,33 @@
       ctx.stroke();
 
       // Cúpula superior con gallito veleta
-      ctx.fillStyle = '#ffffff';
-      ctx.fillRect(g.x + g.w / 2 - 8, g.y - 62, 16, 17);
+      ctx.fillStyle = '#fef3c7';
+      ctx.fillRect(g.x + g.w / 2 - 10, g.y - 68, 20, 18);
       ctx.strokeStyle = '#28311b';
-      ctx.lineWidth = 1.5;
-      ctx.strokeRect(g.x + g.w / 2 - 8, g.y - 62, 16, 17);
+      ctx.lineWidth = 2;
+      ctx.strokeRect(g.x + g.w / 2 - 10, g.y - 68, 20, 18);
 
-      ctx.font = '18px Arial';
+      ctx.font = '20px Arial';
       ctx.textAlign = 'center';
-      ctx.fillText('🐓', g.x + g.w / 2, g.y - 68);
+      ctx.fillText('🐓', g.x + g.w / 2, g.y - 74);
 
-      // Bandera de Meta ondeante
+      // Mástil y Bandera ondeante de Meta
       const flagWave = Math.sin(this.animTime * 6) * 4;
-      ctx.fillStyle = '#1a1a1a';
-      ctx.fillRect(g.x + g.w / 2 - 2, g.y - 105, 4, 45);
+      ctx.fillStyle = '#1e293b';
+      ctx.fillRect(g.x + g.w / 2 - 2, g.y - 115, 4, 45);
 
-      ctx.font = '26px Arial';
-      ctx.fillText('🏁', g.x + g.w / 2 + 16, g.y - 105 + flagWave);
+      ctx.font = '28px Arial';
+      ctx.fillText('🏁', g.x + g.w / 2 + 18, g.y - 114 + flagWave);
 
-      // Cartel luminoso del Granero
-      ctx.fillStyle = '#fef08a';
-      ctx.fillRect(g.x + 8, g.y - 18, g.w - 16, 18);
+      // Cartel de madera tallada: "GRANERO B-13"
+      ctx.fillStyle = '#fde68a';
+      ctx.fillRect(g.x + 12, g.y - 20, g.w - 24, 20);
       ctx.strokeStyle = '#28311b';
-      ctx.lineWidth = 1.5;
-      ctx.strokeRect(g.x + 8, g.y - 18, g.w - 16, 18);
+      ctx.lineWidth = 2;
+      ctx.strokeRect(g.x + 12, g.y - 20, g.w - 24, 20);
 
       ctx.fillStyle = '#1c2713';
-      ctx.font = 'bold 9px "Space Mono", monospace';
+      ctx.font = 'bold 11px "Space Mono", monospace';
       ctx.textAlign = 'center';
       ctx.fillText('GRANERO B-13', g.x + g.w / 2, g.y - 6);
     },
@@ -1922,22 +2134,21 @@
           sy = 0.92;
         }
       } else if (Math.abs(p.vx) > 0.5) {
-        // Trote rítmico
         sy = 1 + Math.sin(p.runCycle * 2) * 0.08;
         sx = 1 - Math.sin(p.runCycle * 2) * 0.05;
       }
 
       ctx.scale(sx, sy);
 
-      // Sombra proyectada en el suelo
+      // Sombra proyectada en la plataforma
       if (p.grounded) {
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.18)';
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
         ctx.beginPath();
         ctx.ellipse(0, p.h / 2 + 2, 14, 4, 0, 0, Math.PI * 2);
         ctx.fill();
       }
 
-      // Sprite del animal seleccionado
+      // Sprite del animal corredor
       ctx.font = '36px Arial';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
