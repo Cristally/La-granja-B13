@@ -190,7 +190,7 @@
     if (iconEl) iconEl.textContent = icon || '🏆';
     if (titleEl) titleEl.textContent = title || '¡Felicitaciones!';
     if (subEl) subEl.textContent = subtitle || 'Desafío Recreativo Superado';
-    if (msgEl) msgEl.textContent = msg || '';
+    if (msgEl) msgEl.innerHTML = msg || '';
     if (statsEl) statsEl.innerHTML = stats || '';
     if (stampEl) stampEl.textContent = stamp || 'MISIÓN CUMPLIDA';
 
@@ -1634,7 +1634,7 @@
           title: (this.difficulty === 'extrema') ? '¡YOU DIED! — Muerte Súbita' : '¡El Fango Atrapó a tu Corredor!',
           subtitle: `Nivel: ${this.diffConfig[this.difficulty].name} — Recorrido Interrumpido`,
           stamp: (this.difficulty === 'extrema') ? 'PRACTICE MAKES PERFECT' : 'INTÉNTALO OTRA VEZ',
-          msg: `${cupheadBarHtml}Tu corredor no logró alcanzar la meta con vida en esta ocasión. ¡Vuelve a intentarlo!`,
+          msg: `${cupheadBarHtml}<div style="margin-top:10px;">Tu corredor no logró alcanzar la meta con vida en esta ocasión. ¡Vuelve a intentarlo!</div>`,
           stats: `⭐ <b>Puntaje:</b> ${this.score} pts &nbsp;|&nbsp; ⏱️ <b>Tiempo:</b> ${this.timerSeconds}s &nbsp;|&nbsp; 💡 <b>Pistas descubiertas:</b> ${this.unlockedClues.length}`,
           onRestart: () => this.showStartScreen()
         });
@@ -2035,7 +2035,7 @@
             title: winTitle,
             subtitle: winSubtitle,
             stamp: winStamp,
-            msg: `${extremaUnlockBanner}¡Tu corredor ${this.player.emoji} superó los obstáculos y alcanzó la meta con vida! Recuerda usar las pistas descubiertas para responder los Quizzes en el Mapa y ganar décimas.`,
+            msg: `${extremaUnlockBanner}<div style="margin-top:8px;">¡Tu corredor ${this.player.emoji} superó los obstáculos y alcanzó la meta con vida! Recuerda usar las pistas descubiertas para responder los Quizzes en el Mapa y ganar décimas.</div>`,
             stats: `⭐ <b>Puntos de Carrera:</b> ${this.score} pts &nbsp;|&nbsp; ❤️ <b>Vidas restantes:</b> ${'❤️'.repeat(Math.max(1, this.lives))} &nbsp;|&nbsp; ⏱️ <b>Tiempo:</b> ${timeStr}${cluesListHtml}`,
             onRestart: () => this.showStartScreen()
           });

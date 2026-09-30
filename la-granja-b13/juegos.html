@@ -267,28 +267,28 @@
           <h3 class="stage-title" id="platStageTitle">Carrera hacia el Granero B-13</h3>
           <p class="stage-subtitle" id="platStageSubtitle">Configuración previa para una competencia limpia y pareja entre todos los estudiantes.</p>
 
-          <div class="stage-grid" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));">
+          <div class="stage-grid stage-grid-plat">
             <!-- Tarjeta 1: Corredor y Accesorio -->
-            <div class="stage-card">
+            <div class="stage-card stage-card-plat-centered">
               <div class="stage-card-icon">🐾</div>
-              <div class="stage-card-body" style="width: 100%;">
+              <div class="stage-card-body">
                 <h4>Elige tu Corredor</h4>
-                <div class="runner-selector-group" id="modalRunnerSelector" style="margin: 6px 0;">
-                  <button type="button" class="runner-pick-btn active" data-animal="conejo">🐰</button>
-                  <button type="button" class="runner-pick-btn" data-animal="gallo">🐓</button>
-                  <button type="button" class="runner-pick-btn" data-animal="gallina">🐔</button>
-                  <button type="button" class="runner-pick-btn" data-animal="pato">🦆</button>
-                  <button type="button" class="runner-pick-btn" data-animal="agapornis">🦜</button>
-                  <button type="button" class="runner-pick-btn" data-animal="catita">🐦</button>
+                <div class="runner-selector-group" id="modalRunnerSelector">
+                  <button type="button" class="runner-pick-btn active" data-animal="conejo" title="Conejo">🐰</button>
+                  <button type="button" class="runner-pick-btn" data-animal="gallo" title="Gallo">🐓</button>
+                  <button type="button" class="runner-pick-btn" data-animal="gallina" title="Gallina">🐔</button>
+                  <button type="button" class="runner-pick-btn" data-animal="pato" title="Pato">🦆</button>
+                  <button type="button" class="runner-pick-btn" data-animal="agapornis" title="Agapornis">🦜</button>
+                  <button type="button" class="runner-pick-btn" data-animal="catita" title="Catita">🐦</button>
                 </div>
                 <div class="stage-runner-preview" id="modalCharPreview">Corredor activo: <b>🐰 Conejo</b></div>
               </div>
             </div>
 
             <!-- Tarjeta 2: Nivel de Desafío -->
-            <div class="stage-card">
+            <div class="stage-card stage-card-plat-centered">
               <div class="stage-card-icon">🎯</div>
-              <div class="stage-card-body" style="width: 100%;">
+              <div class="stage-card-body">
                 <h4>Nivel de Desafío</h4>
                 <div class="diff-modal-grid" id="modalDiffSelector">
                   <button type="button" class="diff-card-btn active" data-diff="facil">
@@ -301,24 +301,34 @@
                   </button>
                   <button type="button" class="diff-card-btn" data-diff="dificil">
                     <span class="diff-badge">🔴 DIFÍCIL</span>
-                    <span class="diff-desc">Caverna Hollow · 2 ❤️</span>
+                    <span class="diff-desc">Hollow · 2 ❤️</span>
                   </button>
                   <button type="button" class="diff-card-btn locked" data-diff="extrema" id="modalDiffExtrema">
                     <span class="diff-badge">🟣 EXTREMA <span class="lock-icon" id="modalLockIcon">🔒</span></span>
-                    <span class="diff-desc">Celeste/Cuphead · 1 ❤️</span>
+                    <span class="diff-desc">Celeste · 1 ❤️</span>
                   </button>
                 </div>
               </div>
             </div>
 
             <!-- Tarjeta 3: Controles & Mecánicas Especiales -->
-            <div class="stage-card">
+            <div class="stage-card stage-card-plat-centered">
               <div class="stage-card-icon">🎮</div>
               <div class="stage-card-body">
                 <h4>Controles y Salida</h4>
-                <p>Teclas <kbd class="kbd-chip">A</kbd> <kbd class="kbd-chip">D</kbd> correr · <kbd class="kbd-chip">Espacio</kbd> saltar.</p>
-                <p id="modalControlsProHint" style="margin-top: 5px; font-size: 0.78rem; color: #4338ca; line-height: 1.35;">
-                  💡 <b>Pistas:</b> Úsalas para los Quizzes. En <b>Extrema</b> se activa el <b>Air Dash Celeste</b> (<kbd class="kbd-chip">Shift</kbd> / <kbd class="kbd-chip">X</kbd>) y los <b>Parry Orbs</b> de Cuphead (💖).
+                <div class="plat-controls-pills">
+                  <div class="plat-control-row">
+                    <span class="plat-ctrl-desc">Correr:</span>
+                    <kbd class="kbd-chip">A</kbd> <kbd class="kbd-chip">D</kbd> / <kbd class="kbd-chip">←</kbd> <kbd class="kbd-chip">→</kbd>
+                  </div>
+                  <div class="plat-control-row">
+                    <span class="plat-ctrl-desc">Saltar:</span>
+                    <kbd class="kbd-chip">Espacio</kbd> / <kbd class="kbd-chip">W</kbd> / <kbd class="kbd-chip">↑</kbd>
+                  </div>
+                </div>
+                <p id="modalControlsProHint" class="plat-ctrl-hint">
+                  💡 <b>Pistas:</b> Para los Quizzes en el mapa.<br>
+                  ⚡ En <b>Extrema:</b> <kbd class="kbd-chip">Shift</kbd> (Dash) y 💖 Parry.
                 </p>
               </div>
             </div>
@@ -448,7 +458,7 @@
     </div>
     <div class="card-body" style="padding-top:8px;">
       <div class="stamp" id="victoryStamp">MISIÓN CUMPLIDA</div>
-      <p id="victoryMsg" style="font-size:0.95rem;line-height:1.5;margin:12px 0 16px;color:#334155;"></p>
+      <div id="victoryMsg" style="font-size:0.95rem;line-height:1.5;margin:12px 0 16px;color:#334155;text-align:center;"></div>
       <div id="victoryStats" style="background:#f8fafc;border:1.5px solid #e2e8f0;padding:12px 16px;border-radius:12px;font-size:0.88rem;margin-bottom:18px;font-weight:700;color:#1e293b;"></div>
       <div class="victory-actions-row" style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
         <button class="tool-btn victory-btn-again" id="victoryPlayAgainBtn" type="button">
