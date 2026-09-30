@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Juega en la Granja B-13 — Minijuegos Zootécnicos</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;700&family=Karla:wght@400;500;700&family=Space+Mono:wght@700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/juegos.css">
+</head>
+<body>
+<div class="app games-app">
+
+  <!-- Navegación superior -->
+  <nav class="view-nav">
+    <a href="index.html">🌾 Potrero</a>
+    <a href="mapa.html">🗺️ Mapa de la Granja</a>
+    <a href="galeria-real.html">📸 Granja Real B-13</a>
+    <a href="juegos.html" class="active">🎮 Juega en la Granja</a>
+    <button id="navBtnCambiarModo" class="nav-switch-btn" type="button" title="Volver a la selección de modo o inicio">🔄 Cambiar Modo / Salir</button>
+  </nav>
+
+  <!-- Encabezado -->
+  <header class="top">
+    <div class="brand-wrap">
+      <img src="assets/img/logo.png" alt="Logo Granja B-13" class="app-logo">
+      <div>
+        <h1>Juega en la Granja B13</h1>
+        <div class="sub">Zona Recreativa, Gamificación y Aprendizaje — Liceo Domingo Herrera Rivera B-13</div>
+      </div>
+    </div>
+    <div class="scorebox">
+      PUNTAJE PURO: <b id="score">0</b><br>
+      MODO: <span id="modoStatus">Estudiante</span>
+    </div>
+  </header>
+
+  <!-- Toolbar de perfil y accesos -->
+  <div class="toolbar">
+    <div class="student-pill" id="studentPill" title="Toca para cambiar o ingresar tus datos de estudiante">
+      <span class="student-icon">🎒</span>
+      <div class="student-info">
+        <span class="student-label">ESTUDIANTE</span>
+        <b id="studentDisplayName">(Sin registrar)</b>
+      </div>
+      <button id="changeStudentBtn" class="student-change-btn" type="button" aria-label="Editar estudiante">✏️</button>
+    </div>
+    <div class="tool-buttons">
+      <button id="leaderboardBtn" class="tool-btn leaderboard-tool-btn" type="button" title="Ver Salón de Honor y Ranking">🏆 Ranking</button>
+      <button id="achievementsBtn" class="tool-btn" type="button">🎖️ Logros</button>
+      <button id="rulesBtn" class="tool-btn" type="button">📋 Normas</button>
+      <button id="soundBtn" class="tool-btn" type="button">🔊 Sonido</button>
+      <button id="btnPortalRegresarInicio" class="tool-btn btn-portal-inicio" type="button" title="Regresar a selección de rol o inicio">🚪 Salir / Modo</button>
+    </div>
+  </div>
+
+  <!-- Barra de Selección de Minijuegos estilo Arcade -->
+  <div class="games-nav-bar">
+    <button type="button" class="game-tab-btn active" data-game="game-memory">
+      <span>🃏</span> Parejas de Curiosidades
+    </button>
+    <button type="button" class="game-tab-btn" data-game="game-wordsearch">
+      <span>🔤</span> Sopa de Letras
+    </button>
+    <button type="button" class="game-tab-btn" data-game="game-platformer">
+      <span>🏃‍♂️</span> Aventura 2D (Plataformas)
+    </button>
+  </div>
+
+  <!-- ============================================================
+       JUEGO 1: BUSCA LAS PAREJAS (MEMORIA DE CURIOSIDADES)
+       ============================================================ -->
+  <section class="game-panel active" id="game-memory">
+    <div class="game-header-box">
+      <div class="game-title-group">
+        <h2>🃏 Busca las Parejas de Curiosidades</h2>
+        <p>Voltea las cartas numeradas y empareja cada curiosidad zootécnica con el animal correspondiente de la granja.</p>
+      </div>
+      <div class="game-scoreboard">
+        <div class="game-stat-chip">
+          <span>🔄 Intentos:</span> <b id="memMovesVal">0</b>
+        </div>
+        <div class="game-stat-chip">
+          <span>✅ Parejas:</span> <b id="memMatchesVal">0/6</b>
+        </div>
+        <div class="game-stat-chip">
+          <span>⏱️ Tiempo:</span> <b id="memTimeVal">00:00</b>
+        </div>
+        <button type="button" class="game-action-btn" id="memResetBtn">🔀 Reiniciar / Barajar</button>
+      </div>
+    </div>
+
+    <!-- Tablero de cartas numeradas (como en la imagen del usuario) -->
+    <div class="memory-board" id="memoryBoard"></div>
+  </section>
+
+  <!-- ============================================================
+       JUEGO 2: SOPA DE LETRAS ZOOTÉCNICA
+       ============================================================ -->
+  <section class="game-panel" id="game-wordsearch">
+    <div class="game-header-box">
+      <div class="game-title-group">
+        <h2>🔤 Sopa de Letras Agroecológica</h2>
+        <p>Encuentra las 10 palabras esenciales sobre anatomía, alimentación y bienestar animal de La Granja B-13.</p>
+      </div>
+      <div class="game-scoreboard">
+        <div class="game-stat-chip">
+          <span>🎯 Encontradas:</span> <b id="wsCountVal">0/10</b>
+        </div>
+        <button type="button" class="game-action-btn" id="wsResetBtn">🔄 Nueva Sopa de Letras</button>
+      </div>
+    </div>
+
+    <div class="wordsearch-layout">
+      <!-- Cuadrícula 12x12 -->
+      <div class="wordsearch-grid-box">
+        <div class="wordsearch-grid" id="wsGrid"></div>
+      </div>
+
+      <!-- Tarjetas de pistas (como en la imagen del usuario) -->
+      <div class="clues-container">
+        <div class="clues-grid" id="wsCluesList"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       JUEGO 3: PLATAFORMAS 2D (AVENTURA EN LA GRANJA B-13)
+       ============================================================ */ -->
+  <section class="game-panel" id="game-platformer">
+    <div class="game-header-box">
+      <div class="game-title-group">
+        <h2>🏃‍♂️ Aventura en la Granja B-13</h2>
+        <p>Corre, salta sobre fardos de paja, recoge alimento nutritivo y llega al Granero Rojo con tu animalito personalizado.</p>
+      </div>
+      <div class="game-scoreboard">
+        <div class="game-stat-chip">
+          <span>🌾 Puntos:</span> <b id="platScoreVal">0</b>
+        </div>
+        <div class="game-stat-chip">
+          <span>❤️ Vidas:</span> <b id="platLivesVal">❤️❤️❤️</b>
+        </div>
+        <button type="button" class="game-action-btn" id="platResetBtn">🔄 Reiniciar Carrera</button>
+      </div>
+    </div>
+
+    <div class="character-bar">
+      <span>🐾 <b>Tu Corredor:</b></span>
+      <div class="char-avatar-preview" id="charPreviewIcon">🐰</div>
+      <span style="font-size:0.8rem;color:#555;">(Personalizado desde el Potrero con tu accesorio)</span>
+      <span style="margin-left:auto;font-size:0.8rem;color:#444;">Controles: <b>Flechas o A/D</b> para correr · <b>Espacio / W</b> para saltar</span>
+    </div>
+
+    <div class="platformer-wrap">
+      <canvas id="platformerCanvas" width="860" height="400"></canvas>
+      
+      <!-- Controles táctiles en pantalla para móviles y tablets -->
+      <div class="arcade-touch-bar">
+        <div class="touch-dpad">
+          <button type="button" class="touch-btn" id="touchBtnLeft" aria-label="Mover a la izquierda">◀</button>
+          <button type="button" class="touch-btn" id="touchBtnRight" aria-label="Mover a la derecha">▶</button>
+        </div>
+        <button type="button" class="touch-btn touch-btn-jump" id="touchBtnJump" aria-label="Saltar">🦘 SALTO</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pie de página -->
+  <footer class="ods" style="margin-top:24px;">
+    Vinculado a ODS 4 (Educación de calidad) y ODS 15 (Vida de ecosistemas terrestres). Proyecto <b>La Granja B13</b> — Go Innova, Hecho Proyecto B-13.
+  </footer>
+</div>
+
+<!-- Modal de Cuaderno de Campo / Perfil del Estudiante -->
+<div class="overlay" id="studentOverlay">
+  <div class="card student-card">
+    <button class="close-btn" data-close="studentOverlay" aria-label="Cerrar">✕</button>
+    <div class="card-head">
+      <div class="big-sprite" id="studentModalAvatarIcon">🎓</div>
+      <div>
+        <h2>Cuaderno de Campo</h2>
+        <div class="lat" id="studentModalAvatarSubtitle">Perfil del Estudiante B-13 & Logros</div>
+      </div>
+    </div>
+    <div class="card-body" id="studentModalBody"></div>
+  </div>
+</div>
+
+<!-- Modal de Logros e Insignias -->
+<div class="overlay" id="achievementsOverlay">
+  <div class="card">
+    <button class="close-btn" data-close="achievementsOverlay" aria-label="Cerrar">✕</button>
+    <div class="card-head">
+      <div class="big-sprite">🏆</div>
+      <div>
+        <h2>Cuaderno de Logros e Insignias</h2>
+        <div class="lat">Desafíos y metas de aprendizaje en La Granja B13</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="achievements-vertical-list" id="achievementsList"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de Información Individual de Insignia -->
+<div class="overlay" id="badgeOverlay">
+  <div class="card small-card">
+    <button class="close-btn" data-close="badgeOverlay" aria-label="Cerrar">✕</button>
+    <div class="card-head">
+      <div class="big-sprite" id="badgeModalIcon">🏆</div>
+      <div>
+        <h2 id="badgeModalTitle">Insignia</h2>
+        <div class="lat" id="badgeModalStatus">Estado del logro</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="stamp" id="badgeModalStamp">LOGRO DE CAMPO</div>
+      <p id="badgeModalDesc" style="font-size:0.92rem;line-height:1.5;margin:10px 0 14px;"></p>
+      <div id="badgeModalHint" style="font-size:0.82rem;color:var(--grass-dark);margin-bottom:14px;background:var(--paper-dark);padding:9px 12px;border-radius:4px;border-left:3px solid var(--hay);"></div>
+      <button class="tool-btn" data-close="badgeOverlay" type="button" style="width:100%;padding:10px;background:var(--hay);color:var(--ink);font-weight:700;font-size:0.88rem;">
+        ✓ Entendido
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de Normas de la Granja -->
+<div class="overlay" id="rulesOverlay">
+  <div class="card small-card">
+    <button class="close-btn" data-close="rulesOverlay" aria-label="Cerrar">✕</button>
+    <div class="card-head">
+      <div class="big-sprite">📋</div>
+      <div>
+        <h2>Antes de visitar la granja</h2>
+        <div class="lat">Normas de comportamiento y cuidado animal (ODS 15)</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="stamp">CUADERNO DE CAMPO</div>
+      <ul class="rules-list" id="rulesList"></ul>
+      <div class="save-note">Aprender estas normas antes de ir a la granja física ayuda a cuidar a los animales y a evitar que se estresen.</div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de Certificado Oficial -->
+<div class="overlay" id="certificateOverlay">
+  <div class="card cert-modal-card">
+    <div class="cert-modal-header no-print">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span style="font-size:1.8rem;">🎓</span>
+        <div>
+          <h2 style="margin:0;font-family:'Fraunces',serif;color:var(--grass-dark);">Certificado Oficial B-13</h2>
+          <div style="font-size:0.82rem;color:var(--ink);">Acreditación de competencia y bienestar animal</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <button type="button" class="tool-btn" id="printCertBtn" style="background:#ffd83d;color:#1a1a1a;font-weight:700;padding:8px 16px;border:2px solid #1a1a1a;border-radius:6px;cursor:pointer;">
+          🖨️ Imprimir / Guardar en PDF
+        </button>
+        <button class="close-btn" data-close="certificateOverlay" aria-label="Cerrar" style="position:static;">✕</button>
+      </div>
+    </div>
+    <div class="card-body cert-modal-body" id="certificateContent">
+      <!-- Se inyecta la hoja de diploma -->
+    </div>
+  </div>
+</div>
+
+<!-- Modal de Victoria en Minijuegos -->
+<div class="overlay" id="victoryOverlay">
+  <div class="card small-card" style="text-align:center;">
+    <button class="close-btn" data-close="victoryOverlay" aria-label="Cerrar">✕</button>
+    <div class="card-head" style="justify-content:center;text-align:center;">
+      <div class="big-sprite" id="victoryIcon" style="font-size:3.2rem;">🏆</div>
+      <div>
+        <h2 id="victoryTitle" style="font-family:'Fraunces',serif;color:var(--grass-dark);">¡Felicitaciones!</h2>
+        <div class="lat" id="victorySubtitle">Desafío Recreativo Superado</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="stamp" id="victoryStamp">MISIÓN CUMPLIDA</div>
+      <p id="victoryMsg" style="font-size:0.94rem;line-height:1.5;margin:12px 0 16px;"></p>
+      <div id="victoryStats" style="background:var(--paper-dark);padding:10px 14px;border-radius:8px;font-size:0.88rem;margin-bottom:16px;font-weight:700;color:var(--ink);"></div>
+      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
+        <button class="tool-btn" id="victoryPlayAgainBtn" type="button" style="padding:10px 16px;background:var(--hay);color:var(--ink);font-weight:700;border:2px solid var(--ink);border-radius:6px;cursor:pointer;">
+          🔁 Jugar de nuevo
+        </button>
+        <button class="tool-btn" data-close="victoryOverlay" type="button" style="padding:10px 16px;background:var(--paper);color:var(--ink);font-weight:700;border:2px solid var(--ink);border-radius:6px;cursor:pointer;">
+          ✓ Aceptar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- Scripts -->
+<script src="js/data.js"></script>
+<script src="js/audio.js"></script>
+<script src="js/state.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/auth-ui.js"></script>
+<script src="js/granjita-portal.js"></script>
+<script src="js/card.js"></script>
+<script src="js/ranking.js"></script>
+<script src="js/juegos.js"></script>
+</body>
+</html>

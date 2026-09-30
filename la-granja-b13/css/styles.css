@@ -2874,14 +2874,14 @@ body.rol-admin .badges-bar {
 /* Contenedor principal del sidebar en PC */
 .ranking-sidebar {
   position: fixed;
-  top: 76px;
-  right: 16px;
+  top: 86px;
+  right: 0;
   width: 320px;
-  max-height: calc(100vh - 96px);
-  z-index: 950;
+  max-height: calc(100vh - 106px);
+  z-index: 1050;
   display: flex;
   flex-direction: column;
-  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+  transition: transform 0.38s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
   pointer-events: auto;
 }
 
@@ -2889,23 +2889,24 @@ body.rol-admin .badges-bar {
   display: flex;
   flex-direction: column;
   height: 100%;
-  max-height: calc(100vh - 96px);
-  background: rgba(255, 253, 247, 0.96);
+  max-height: calc(100vh - 106px);
+  background: rgba(255, 253, 247, 0.97);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
   border: 2.5px solid var(--ink);
-  border-radius: 16px;
-  box-shadow: 0 12px 32px rgba(40, 49, 27, 0.22), 4px 4px 0 var(--ink);
+  border-right: none;
+  border-radius: 16px 0 0 16px;
+  box-shadow: -6px 10px 30px rgba(40, 49, 27, 0.22), -3px 3px 0 var(--ink);
   overflow: hidden;
 }
 
 /* Pestaña lateral para colapsar / expandir en PC */
 .ranking-tab-handle {
   position: absolute;
-  left: -44px;
-  top: 16px;
-  width: 44px;
-  height: 84px;
+  left: -42px;
+  top: 48px;
+  width: 42px;
+  height: 76px;
   background: linear-gradient(135deg, #ffd83d, #e8a838);
   border: 2.5px solid var(--ink);
   border-right: none;
@@ -2916,7 +2917,7 @@ body.rol-admin .badges-bar {
   justify-content: center;
   gap: 2px;
   cursor: pointer;
-  box-shadow: -3px 4px 10px rgba(0, 0, 0, 0.15);
+  box-shadow: -4px 4px 10px rgba(0, 0, 0, 0.2);
   transition: all 0.2s ease;
   padding: 0;
   color: var(--ink);
@@ -2924,7 +2925,7 @@ body.rol-admin .badges-bar {
 
 .ranking-tab-handle:hover {
   background: linear-gradient(135deg, #ffe566, #f3b54a);
-  transform: translateX(-2px);
+  transform: translateX(-3px);
 }
 
 .ranking-tab-handle .handle-icon {
@@ -2947,13 +2948,13 @@ body.rol-admin .badges-bar {
   margin-top: 2px;
 }
 
-/* Estado colapsado en PC */
+/* Estado colapsado en PC: completamente fuera del lienzo para no chocar con el diseño */
 .ranking-sidebar.collapsed {
-  transform: translateX(calc(100% - 10px));
+  transform: translateX(100%);
 }
 
-.ranking-sidebar.collapsed:hover {
-  transform: translateX(calc(100% - 18px));
+.ranking-sidebar.collapsed .ranking-tab-handle:hover {
+  transform: translateX(-4px);
 }
 
 /* Encabezado */
@@ -3111,12 +3112,77 @@ body.rol-admin .badges-bar {
   border: 1.5px solid #dcd7c5;
   background: #ffffff;
   transition: transform 0.2s cubic-bezier(0.2, 0.9, 0.3, 1), box-shadow 0.2s ease;
+  overflow: visible; /* Permite que la corona sobresalga sin recortarse */
+}
+
+.shimmer-wrapper {
+  position: absolute;
+  inset: 0;
   overflow: hidden;
+  border-radius: 10px;
+  pointer-events: none;
 }
 
 .ranking-card:hover {
   transform: translateX(-3px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* --- Espacios Vacíos / Demo Slot --- */
+.ranking-card.slot-empty {
+  border: 1.5px dashed #cbd5e1;
+  background: #fbfbfb;
+  opacity: 0.78;
+}
+
+.ranking-card.slot-empty:hover {
+  opacity: 0.95;
+  border-color: var(--grass-dark, #2b5329);
+  transform: translateX(-2px);
+}
+
+.ranking-card.slot-empty.podium-empty {
+  background: #faf8f2;
+  border-color: #e2d9c2;
+}
+
+.empty-avatar-box {
+  border: 1.5px dashed #94a3b8 !important;
+  background: #f1f5f9 !important;
+  box-shadow: none !important;
+}
+
+.empty-name {
+  color: #64748b !important;
+  font-style: italic;
+  font-weight: 600 !important;
+}
+
+.empty-grade {
+  color: #94a3b8 !important;
+}
+
+.empty-pts {
+  color: #94a3b8 !important;
+  font-weight: 600 !important;
+}
+
+.empty-gold-badge {
+  background: #fef3c7;
+  color: #b45309;
+  border: 1px dashed #d97706;
+}
+
+.empty-silver-badge {
+  background: #f1f5f9;
+  color: #475569;
+  border: 1px dashed #94a3b8;
+}
+
+.empty-bronze-badge {
+  background: #ffedd5;
+  color: #c2410c;
+  border: 1px dashed #ea580c;
 }
 
 .ranking-card-left {
@@ -3246,11 +3312,12 @@ body.rol-admin .badges-bar {
   top: -14px;
   left: 50%;
   transform: translateX(-50%);
-  font-size: 1.3rem;
+  font-size: 1.35rem;
   line-height: 1;
-  filter: drop-shadow(0 2px 4px rgba(217, 119, 6, 0.6));
+  filter: drop-shadow(0 2px 4px rgba(217, 119, 6, 0.7));
   animation: crownBob 2.2s ease-in-out infinite alternate;
-  z-index: 2;
+  z-index: 10;
+  pointer-events: none;
 }
 
 /* --- #1 LUGAR: ORO (Gran Campeón Zootécnico) --- */
@@ -3577,8 +3644,57 @@ body.rol-admin .badges-bar {
   100% { transform: rotate(5deg) scale(1.06); filter: drop-shadow(0 0 12px rgba(255, 216, 61, 0.9)); }
 }
 
+/* ============================================================
+   Marca de Agua de Seguridad en Vista Previa de Certificado
+   ============================================================ */
+.certificate-sheet {
+  position: relative;
+}
+
+.cert-watermark-ribbon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(-24deg);
+  background: rgba(220, 38, 38, 0.13);
+  border: 4px dashed rgba(220, 38, 38, 0.55);
+  color: #b91c1c;
+  font-family: 'Space Mono', monospace;
+  font-size: 1.35rem;
+  font-weight: 900;
+  padding: 14px 28px;
+  text-align: center;
+  letter-spacing: 2px;
+  pointer-events: none;
+  z-index: 100;
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.cert-preview-notice {
+  background: #fffbeb;
+  border: 1.5px solid #d97706;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 0.8rem;
+  color: #92400e;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 /* Reglas de impresión para PDF / papel */
 @media print {
+  /* Si está en modo vista previa, bloquear completamente la impresión */
+  .cert-modal-card.is-preview-mode,
+  #certificateOverlay:has(.is-preview-mode) {
+    display: none !important;
+    visibility: hidden !important;
+  }
+
   body {
     background: #fff !important;
   }

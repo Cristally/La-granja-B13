@@ -8,29 +8,18 @@
 (function() {
   'use strict';
 
-  // Alumnos modelo del Liceo B-13 para dinamizar el ranking de partida
-  const COMPANEROS_INICIALES = [
-    { id: 'mock_vicente', studentName: 'Vicente Carvajal', studentGrade: '2° Medio B', avatarIcon: '🐓', pureScore: 450, score: 450, badgesCount: 6, quizzesCount: 5 },
-    { id: 'mock_valentina', studentName: 'Valentina Rojas', studentGrade: '3° Medio A', avatarIcon: '🐰', pureScore: 410, score: 410, badgesCount: 5, quizzesCount: 5 },
-    { id: 'mock_matias', studentName: 'Matías Alquinta', studentGrade: '1° Medio C', avatarIcon: '🦆', pureScore: 360, score: 360, badgesCount: 4, quizzesCount: 4 },
-    { id: 'mock_florencia', studentName: 'Florencia Herrera', studentGrade: '2° Medio B', avatarIcon: '🦜', pureScore: 310, score: 310, badgesCount: 3, quizzesCount: 4 },
-    { id: 'mock_diego', studentName: 'Diego Tapia', studentGrade: '3° Medio B', avatarIcon: '🐦', pureScore: 260, score: 260, badgesCount: 3, quizzesCount: 3 },
-    { id: 'mock_camila', studentName: 'Camila Muñoz', studentGrade: '1° Medio A', avatarIcon: '🐔', pureScore: 210, score: 210, badgesCount: 2, quizzesCount: 3 },
-    { id: 'mock_lucas', studentName: 'Lucas Valenzuela', studentGrade: '2° Medio B', avatarIcon: '🤠', pureScore: 170, score: 170, badgesCount: 2, quizzesCount: 2 },
-    { id: 'mock_sofia', studentName: 'Sofía Morales', studentGrade: '4° Medio B', avatarIcon: '🌸', pureScore: 120, score: 120, badgesCount: 1, quizzesCount: 2 }
-  ];
-
+  // Estado inicial colapsado por defecto para no invadir márgenes ni tapar el potrero
   let currentFilter = 'general'; // 'general' | 'curso'
-  let isSidebarCollapsed = false;
+  let isSidebarCollapsed = true;
 
-  // Cargar estado de colapso desde localStorage
+  // Cargar preferencia de colapso desde localStorage si el usuario ya interactuó
   try {
     const savedCol = localStorage.getItem('granja_ranking_collapsed');
     if (savedCol !== null) isSidebarCollapsed = (savedCol === 'true');
   } catch (e) {}
 
   /**
-   * Obtiene la lista unificada de estudiantes y calcula su puntaje puro (sin repetición)
+   * Obtiene la lista unificada de estudiantes reales y calcula su puntaje puro (sin repetición)
    */
   async function obtenerListaRanking() {
     let listaServidor = null;
@@ -82,15 +71,10 @@
       };
     }
 
-    // Mapa unificador por ID normalizado
+    // Mapa unificador por ID normalizado: SOLO alumnos que existen con cuenta en el sistema
     const mapaEstudiantes = new Map();
 
-    // A. Compañeros de base para mantener el ranking dinámico
-    COMPANEROS_INICIALES.forEach(c => {
-      mapaEstudiantes.set(c.id, { ...c });
-    });
-
-    // B. Cuentas creadas por el registro
+    // A. Cuentas creadas y registradas (con correo y clave en Auth)
     cuentasLocales.forEach(c => {
       if (!c.nombre || c.nombre.trim() === '') return;
       const id = (c.nombre.trim() + '_' + (c.curso || '').trim()).toLowerCase();
@@ -106,7 +90,7 @@
       });
     });
 
-    // C. Perfiles de juego en localStorage (con puntajes puros reales)
+    // B. Perfiles reales en localStorage vinculados a cuentas
     Object.values(perfilesLocales).forEach(p => {
       if (!p.studentName || p.studentName.trim() === '') return;
       const id = (p.studentName.trim() + '_' + (p.studentGrade || '').trim()).toLowerCase();
@@ -114,11 +98,12 @@
         ? window.computePureScore(p.stateData || p)
         : (p.pureScore || p.score || 0);
 
+      const existing = mapaEstudiantes.get(id);
       mapaEstudiantes.set(id, {
         id,
         studentName: p.studentName.trim(),
         studentGrade: (p.studentGrade || '').trim() || 'Liceo B-13',
-        avatarIcon: p.avatarIcon || '🧑‍🌾',
+        avatarIcon: p.avatarIcon || (existing ? existing.avatarIcon : '🧑‍🌾'),
         pureScore: pure,
         score: pure,
         badgesCount: p.badgesCount || 0,
@@ -126,26 +111,27 @@
       });
     });
 
-    // D. Datos del servidor si existían
+    // C. Datos del servidor si existían
     if (listaServidor) {
       listaServidor.forEach(s => {
         if (!s.studentName) return;
         const id = (s.studentName.trim() + '_' + (s.studentGrade || '').trim()).toLowerCase();
         const pure = Number.isFinite(s.pureScore) ? s.pureScore : (s.score || 0);
+        const existing = mapaEstudiantes.get(id);
         mapaEstudiantes.set(id, {
           id,
           studentName: s.studentName.trim(),
           studentGrade: (s.studentGrade || '').trim() || 'Liceo B-13',
-          avatarIcon: s.avatarIcon || '🧑‍🌾',
+          avatarIcon: s.avatarIcon || (existing ? existing.avatarIcon : '🧑‍🌾'),
           pureScore: pure,
           score: pure,
-          badgesCount: s.badgesCount || 0,
-          quizzesCount: s.quizzesCount || 0
+          badgesCount: s.badgesCount || (existing ? existing.badgesCount : 0),
+          quizzesCount: s.quizzesCount || (existing ? existing.quizzesCount : 0)
         });
       });
     }
 
-    // E. Sobrescribir con estudiante activo actual
+    // D. Sobrescribir con estudiante activo actual
     if (estudianteActivo) {
       mapaEstudiantes.set(estudianteActivo.id, estudianteActivo);
     }
@@ -388,10 +374,10 @@
     }
 
     let html = '';
-    // Mostramos los 10 primeros lugares
-    const topLimit = Math.min(ranking.length, 10);
+    // 1. Mostrar los estudiantes reales registrados (máx 10)
+    const realCount = Math.min(ranking.length, 10);
 
-    for (let i = 0; i < topLimit; i++) {
+    for (let i = 0; i < realCount; i++) {
       const st = ranking[i];
       const rankNum = i + 1;
       const isTop1 = (rankNum === 1);
@@ -415,11 +401,11 @@
 
       if (isTop1) {
         crownVfx = `<span class="vfx-crown" title="Gran Campeón/a B-13">👑</span>`;
-        shimmerVfx = `<div class="vfx-shimmer gold-shimmer"></div>`;
+        shimmerVfx = `<div class="shimmer-wrapper"><div class="vfx-shimmer gold-shimmer"></div></div>`;
         particleVfx = `<span class="vfx-sparkle s1">✨</span><span class="vfx-sparkle s2">⭐</span>`;
         badgeHtml = `<span class="rank-pos-badge gold-badge"><span class="badge-num">1°</span> ORO</span>`;
       } else if (isTop2) {
-        shimmerVfx = `<div class="vfx-shimmer silver-shimmer"></div>`;
+        shimmerVfx = `<div class="shimmer-wrapper"><div class="vfx-shimmer silver-shimmer"></div></div>`;
         particleVfx = `<span class="vfx-sparkle silver-spark">✨</span>`;
         badgeHtml = `<span class="rank-pos-badge silver-badge"><span class="badge-num">2°</span> PLATA</span>`;
       } else if (isTop3) {
@@ -453,6 +439,46 @@
             ${badgeHtml}
             <div class="ranking-pts-box">
               <b class="ranking-pts-val">${st.pureScore}</b>
+              <span class="ranking-pts-lbl">pts puros</span>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // 2. Rellenar los espacios vacíos restantes hasta completar el Top 10 estilo demo de juego
+    for (let j = realCount; j < 10; j++) {
+      const slotNum = j + 1;
+      const isPodiumSlot = slotNum <= 3;
+      const slotBadge = slotNum === 1
+        ? `<span class="rank-pos-badge empty-gold-badge">1° ORO</span>`
+        : (slotNum === 2
+          ? `<span class="rank-pos-badge empty-silver-badge">2° PLATA</span>`
+          : (slotNum === 3
+            ? `<span class="rank-pos-badge empty-bronze-badge">3° BRONCE</span>`
+            : `<span class="rank-pos-badge other-badge">#${slotNum}</span>`));
+
+      html += `
+        <div class="ranking-card slot-empty rank-other ${isPodiumSlot ? 'podium-empty' : ''}" data-rank="${slotNum}">
+          <div class="ranking-card-left">
+            <div class="ranking-avatar-wrap">
+              <div class="ranking-avatar-box empty-avatar-box">
+                <span class="ranking-avatar-icon">${isPodiumSlot ? '🏆' : '🌱'}</span>
+              </div>
+            </div>
+            <div class="ranking-user-info">
+              <div class="ranking-name-row">
+                <span class="ranking-name empty-name">[Espacio Disponible]</span>
+              </div>
+              <div class="ranking-grade-tag empty-grade">
+                <span>⭐</span> ¡Rinde quizzes para reclamar!
+              </div>
+            </div>
+          </div>
+          <div class="ranking-card-right">
+            ${slotBadge}
+            <div class="ranking-pts-box">
+              <b class="ranking-pts-val empty-pts">---</b>
               <span class="ranking-pts-lbl">pts puros</span>
             </div>
           </div>

@@ -489,37 +489,64 @@ window.trackAnimalSound = trackAnimalSound;
 /* ============ Certificado Oficial Digital Liceo B-13 ============ */
 
 function openCertificateModal(isDemo = false) {
-  renderCertificate(isDemo);
+  const isFullyCompleted = (state.certificateUnlocked === true);
+  const isPreviewMode = isDemo || !isFullyCompleted;
+  renderCertificate(isPreviewMode);
   openOverlayId('certificateOverlay');
-  setupCertificateEvents();
+  setupCertificateEvents(isPreviewMode);
 }
 
 function renderCertificate(isDemo = false) {
   const container = document.getElementById('certificateContent');
   if (!container) return;
 
+  const overlayCard = document.querySelector('#certificateOverlay .cert-modal-card');
+  if (overlayCard) {
+    if (isDemo) {
+      overlayCard.classList.add('is-preview-mode');
+    } else {
+      overlayCard.classList.remove('is-preview-mode');
+    }
+  }
+
   const isSimulated = isDemo && (!state.studentName || state.studentName.trim() === '');
   const studentName = isSimulated ? 'YEFRIN GONZÁLEZ (DEMO)' : (state.studentName || 'Estudiante B-13').toUpperCase();
   const studentGrade = isSimulated ? '3° Medio F' : (state.studentGrade || 'Enseñanza Media');
   const studentTitle = state.studentTitle || 'Guardián/a de la Granja';
-  const studentScore = (state.score && state.score > 0) ? state.score : (isDemo ? 850 : 0);
+  const studentScore = (state.pureScore && state.pureScore > 0) ? state.pureScore : ((state.score && state.score > 0) ? state.score : (isDemo ? 850 : 0));
   const badgesCount = (state.badges || []).length;
   const secretCount = (state.secretBadges || []).length;
   const totalBadges = (badgesCount + secretCount) || (isDemo ? 12 : 0);
 
-  if (!state.certificateCode) {
+  if (!state.certificateCode && !isDemo) {
     const rnd = Math.random().toString(36).substring(2, 7).toUpperCase();
     state.certificateCode = `B13-CERT-2026-${rnd}`;
     state.certificateIssuedAt = Date.now();
     saveState();
   }
 
-  const issueDate = state.certificateIssuedAt
+  const certFolio = isDemo ? 'PREVIEW-MUESTRA-BLOQUEADA' : (state.certificateCode || 'B13-CERT-2026-OFICIAL');
+  const issueDate = (state.certificateIssuedAt && !isDemo)
     ? new Date(state.certificateIssuedAt).toLocaleDateString('es-CL', { year: 'numeric', month: 'long', day: 'numeric' })
     : new Date().toLocaleDateString('es-CL', { year: 'numeric', month: 'long', day: 'numeric' });
 
   container.innerHTML = `
+    ${isDemo ? `
+      <div class="cert-preview-notice no-print">
+        <span style="font-size:1.3rem;">🔒</span>
+        <div>
+          <b>Modo Vista Previa:</b> Esta es una muestra visual ilustrativa. La versión oficial <b>sin marca de agua</b> y con el botón de <b>descarga en PDF habilitado</b> se activará automáticamente cuando completes todos los desafíos y quizzes zootécnicos.
+        </div>
+      </div>
+    ` : ''}
+
     <div class="certificate-sheet">
+      ${isDemo ? `
+        <div class="cert-watermark-ribbon">
+          ⚠️ VISTA PREVIA · MUESTRA NO DESCARGABLE · COMPLETA EL 100% PARA DESCARGAR
+        </div>
+      ` : ''}
+
       <div class="cert-border-outer">
         <div class="cert-border-inner">
           
@@ -569,7 +596,7 @@ function renderCertificate(isDemo = false) {
           <div class="cert-merits-grid">
             <div class="cert-merit-box">
               <div class="cert-merit-val">${studentScore} PTS</div>
-              <div class="cert-merit-lbl">PUNTAJE ACUMULADO</div>
+              <div class="cert-merit-lbl">PUNTAJE PURO ACUMULADO</div>
             </div>
             <div class="cert-merit-box">
               <div class="cert-merit-val">+0.5 DÉCIMAS</div>
@@ -600,11 +627,11 @@ function renderCertificate(isDemo = false) {
                 <div class="cert-seal-inner">
                   <span class="cert-seal-star">★ ★ ★</span>
                   <span class="cert-seal-txt">LICEO B-13</span>
-                  <span class="cert-seal-valid">OFICIALMENTE VALIDADO</span>
+                  <span class="cert-seal-valid">${isDemo ? 'MUESTRA DEMO' : 'OFICIALMENTE VALIDADO'}</span>
                   <span class="cert-seal-year">2026</span>
                 </div>
               </div>
-              <div class="cert-code-tag">FOLIO: ${state.certificateCode}</div>
+              <div class="cert-code-tag">FOLIO: ${certFolio}</div>
               <div class="cert-date-tag">Fecha: ${issueDate}</div>
             </div>
 
@@ -623,10 +650,15 @@ function renderCertificate(isDemo = false) {
   `;
 }
 
-function setupCertificateEvents() {
+function setupCertificateEvents(isPreviewMode = false) {
   const printBtn = document.getElementById('printCertBtn');
   if (printBtn) {
-    printBtn.onclick = () => window.print();
+    if (isPreviewMode) {
+      printBtn.style.display = 'none'; // Ocultar y deshabilitar descarga en vista previa
+    } else {
+      printBtn.style.display = 'inline-block';
+      printBtn.onclick = () => window.print();
+    }
   }
 }
 
