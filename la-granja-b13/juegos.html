@@ -147,10 +147,18 @@
     </div>
 
     <div class="character-bar">
-      <span>🐾 <b>Tu Corredor:</b></span>
-      <div class="char-avatar-preview" id="charPreviewIcon">🐰</div>
-      <span style="font-size:0.8rem;color:#555;">(Personalizado desde el Potrero con tu accesorio)</span>
-      <span style="margin-left:auto;font-size:0.8rem;color:#444;">Controles: <b>Flechas o A/D</b> para correr · <b>Espacio / W</b> para saltar</span>
+      <span>🐾 <b>Elegir Corredor B-13:</b></span>
+      <div class="runner-selector-group" id="runnerSelectorGroup">
+        <button type="button" class="runner-pick-btn active" data-animal="conejo" data-emoji="🐰">🐰 Conejo</button>
+        <button type="button" class="runner-pick-btn" data-animal="gallo" data-emoji="🐓">🐓 Gallo</button>
+        <button type="button" class="runner-pick-btn" data-animal="gallina" data-emoji="🐔">🐔 Gallina</button>
+        <button type="button" class="runner-pick-btn" data-animal="pato" data-emoji="🦆">🦆 Pato</button>
+        <button type="button" class="runner-pick-btn" data-animal="agapornis" data-emoji="🦜">🦜 Agapornis</button>
+        <button type="button" class="runner-pick-btn" data-animal="catita" data-emoji="🐦">🐦 Catita</button>
+      </div>
+      <div class="char-avatar-preview" id="charPreviewIcon" title="Tu animal con su accesorio">🐰</div>
+      <span style="font-size:0.78rem;color:#555;">(Lleva el accesorio que elegiste en el Potrero)</span>
+      <span style="margin-left:auto;font-size:0.78rem;color:#444;">Controles: <b>A/D o Flechas</b> correr · <b>Espacio o W</b> saltar</span>
     </div>
 
     <div class="platformer-wrap">
@@ -273,7 +281,7 @@
 <!-- Modal de Victoria en Minijuegos -->
 <div class="overlay" id="victoryOverlay">
   <div class="card small-card" style="text-align:center;">
-    <button class="close-btn" data-close="victoryOverlay" aria-label="Cerrar">✕</button>
+    <button class="close-btn" id="victoryCloseBtn" data-close="victoryOverlay" aria-label="Cerrar">✕</button>
     <div class="card-head" style="justify-content:center;text-align:center;">
       <div class="big-sprite" id="victoryIcon" style="font-size:3.2rem;">🏆</div>
       <div>
@@ -289,7 +297,7 @@
         <button class="tool-btn" id="victoryPlayAgainBtn" type="button" style="padding:10px 16px;background:var(--hay);color:var(--ink);font-weight:700;border:2px solid var(--ink);border-radius:6px;cursor:pointer;">
           🔁 Jugar de nuevo
         </button>
-        <button class="tool-btn" data-close="victoryOverlay" type="button" style="padding:10px 16px;background:var(--paper);color:var(--ink);font-weight:700;border:2px solid var(--ink);border-radius:6px;cursor:pointer;">
+        <button class="tool-btn" id="victoryAcceptBtn" data-close="victoryOverlay" type="button" style="padding:10px 16px;background:var(--paper);color:var(--ink);font-weight:700;border:2px solid var(--ink);border-radius:6px;cursor:pointer;">
           ✓ Aceptar
         </button>
       </div>

@@ -167,7 +167,6 @@
       <button class="ranking-tab-handle" id="rankingTabHandle" type="button" title="Colapsar o expandir Salón de Honor">
         <span class="handle-icon">🏆</span>
         <span class="handle-label">TOP 10</span>
-        <span class="handle-arrow">${isSidebarCollapsed ? '‹' : '›'}</span>
       </button>
 
       <div class="ranking-container">
@@ -237,6 +236,36 @@
     `;
     document.body.appendChild(infoModal);
 
+    // Backdrop para oscurecer el fondo en PC y móvil
+    let backdrop = document.getElementById('rankingBackdrop');
+    if (!backdrop) {
+      backdrop = document.createElement('div');
+      backdrop.id = 'rankingBackdrop';
+      backdrop.className = 'ranking-backdrop';
+      document.body.appendChild(backdrop);
+    }
+
+    const cerrarRanking = () => {
+      aside.classList.remove('mobile-open');
+      isSidebarCollapsed = true;
+      aside.classList.add('collapsed');
+      if (backdrop) backdrop.classList.remove('visible');
+      try {
+        localStorage.setItem('granja_ranking_collapsed', 'true');
+      } catch (e) {}
+    };
+
+    backdrop.addEventListener('click', cerrarRanking);
+    document.getElementById('rankingHeaderCloseBtn').addEventListener('click', cerrarRanking);
+
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        if (!aside.classList.contains('collapsed') || aside.classList.contains('mobile-open')) {
+          cerrarRanking();
+        }
+      }
+    });
+
     // Botón flotante para móviles en pantallas pequeñas
     if (!document.getElementById('mobileRankingFloatBtn')) {
       const floatBtn = document.createElement('button');
@@ -254,13 +283,6 @@
 
     // Configurar listeners de interacción
     document.getElementById('rankingTabHandle').addEventListener('click', toggleSidebarCollapse);
-    document.getElementById('rankingHeaderCloseBtn').addEventListener('click', () => {
-      if (window.innerWidth < 1024) {
-        aside.classList.remove('mobile-open');
-      } else {
-        toggleSidebarCollapse();
-      }
-    });
 
     document.getElementById('rankingInfoBtn').addEventListener('click', () => {
       infoModal.style.display = 'flex';
@@ -293,17 +315,18 @@
 
   function toggleSidebarCollapse() {
     const aside = document.getElementById('rankingSidebar');
+    const backdrop = document.getElementById('rankingBackdrop');
     if (!aside) return;
 
     if (window.innerWidth < 1024) {
-      aside.classList.toggle('mobile-open');
+      const isOpen = aside.classList.toggle('mobile-open');
+      if (backdrop) backdrop.classList.toggle('visible', isOpen);
       return;
     }
 
     isSidebarCollapsed = !isSidebarCollapsed;
     aside.classList.toggle('collapsed', isSidebarCollapsed);
-    const arrow = aside.querySelector('.handle-arrow');
-    if (arrow) arrow.textContent = isSidebarCollapsed ? '‹' : '›';
+    if (backdrop) backdrop.classList.toggle('visible', !isSidebarCollapsed);
 
     try {
       localStorage.setItem('granja_ranking_collapsed', isSidebarCollapsed ? 'true' : 'false');
@@ -313,16 +336,7 @@
   function toggleRankingWidget() {
     const aside = document.getElementById('rankingSidebar');
     if (!aside) return;
-
-    if (window.innerWidth < 1024) {
-      aside.classList.toggle('mobile-open');
-    } else {
-      if (aside.classList.contains('collapsed')) {
-        toggleSidebarCollapse();
-      } else {
-        aside.scrollIntoView({ behavior: 'smooth' });
-      }
-    }
+    toggleSidebarCollapse();
     renderizarRanking();
   }
   window.toggleRankingWidget = toggleRankingWidget;
