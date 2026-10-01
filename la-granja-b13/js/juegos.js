@@ -272,6 +272,18 @@
     }
   });
 
+  function checkMaestroArcade() {
+    if (typeof state === 'undefined') return;
+    const mg = state.minigames || {};
+    const mem = (mg.memory && mg.memory.bestScore > 0) || false;
+    const ws = (mg.wordsearch && mg.wordsearch.bestScore > 0) || false;
+    const plat = (mg.platformer && mg.platformer.bestScore > 0) || false;
+    if (mem && ws && plat && typeof window.unlockBadge === 'function') {
+      window.unlockBadge('maestro_arcade');
+    }
+  }
+  window.checkMaestroArcade = checkMaestroArcade;
+
   /* ============================================================
      SISTEMA DE PESTAÑAS DE JUEGOS
      ============================================================ */
@@ -749,6 +761,8 @@
                 state.minigames.memory.bestTime = Math.min(state.minigames.memory.bestTime || 9999, this.timerSeconds);
                 if (typeof saveState === 'function') saveState();
               }
+              if (typeof window.unlockBadge === 'function') window.unlockBadge('memoria_fotografica');
+              if (typeof checkMaestroArcade === 'function') checkMaestroArcade();
               if (typeof window.refreshRankingWidget === 'function') {
                 window.refreshRankingWidget();
               }
@@ -1096,6 +1110,8 @@
             state.minigames.wordsearch.bestTime = Math.min(state.minigames.wordsearch.bestTime || 9999, this.timerSeconds);
             if (typeof saveState === 'function') saveState();
           }
+          if (typeof window.unlockBadge === 'function') window.unlockBadge('ojo_halcon');
+          if (typeof checkMaestroArcade === 'function') checkMaestroArcade();
           if (typeof window.refreshRankingWidget === 'function') {
             window.refreshRankingWidget();
           }
@@ -1513,6 +1529,7 @@
       this.lives = cfg.lives;
       this.maxLives = cfg.lives;
       this.timerSeconds = 0;
+      this.mudDamageCount = 0;
       this.isRunning = true;
       this.isFinished = false;
       this.wallopBannerTimer = (this.difficulty === 'extrema') ? 1.8 : 0;
@@ -1659,6 +1676,11 @@
           life: 1.0,
           decay: 0.08
         });
+      }
+      if (!this.totalDashCount) this.totalDashCount = 0;
+      this.totalDashCount++;
+      if (this.totalDashCount >= 10 && typeof window.unlockSecretBadge === 'function') {
+        window.unlockSecretBadge('dash_celeste');
       }
       this.updateDashUI();
     },
@@ -2031,6 +2053,7 @@
 
     takeDamage(amount, reason) {
       if (this.isFinished) return;
+      this.mudDamageCount = (this.mudDamageCount || 0) + amount;
       this.lives = Math.max(0, this.lives - amount);
       this.player.invulnerableTime = 1.35;
       this.player.vy = -6.0;
@@ -2513,6 +2536,15 @@
         const winTitle = (this.difficulty === 'extrema') ? '¡VICTORIA TOTAL! ¡CALIFICACIÓN SOBRESALIENTE!' : '¡Llegaste al Granero B-13!';
         const winSubtitle = (this.difficulty === 'extrema') ? '¡Has Conquistado la Pesadilla Arcade con Honores!' : `¡Carrera Campestre Completada (${cfg.name})!`;
         const winStamp = (this.difficulty === 'extrema') ? 'MAESTRÍA SUPREMA B-13' : 'MISIÓN CUMPLIDA';
+
+        if (typeof window.unlockBadge === 'function') window.unlockBadge('velocista_granero');
+        if (this.difficulty === 'dificil' || this.difficulty === 'extrema') {
+          if (typeof window.unlockSecretBadge === 'function') window.unlockSecretBadge('pesadilla_conquistada');
+        }
+        if ((!this.mudDamageCount || this.mudDamageCount === 0) && typeof window.unlockSecretBadge === 'function') {
+          window.unlockSecretBadge('parry_cuphead');
+        }
+        if (typeof checkMaestroArcade === 'function') checkMaestroArcade();
 
         setTimeout(() => {
           showGameVictory({

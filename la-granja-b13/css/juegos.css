@@ -1430,28 +1430,42 @@
 
 /* Selector dentro del modal previo de inicio */
 .diff-modal-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 5px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
   width: 100%;
-  margin-top: 3px;
+  margin-top: 6px;
+  justify-content: center;
 }
 
 .diff-card-btn {
+  flex: 1 1 0px;
+  min-width: 95px;
   background: #ffffff;
   border: 1.5px solid #e2e8f0;
-  border-radius: 8px;
-  padding: 5px 4px;
+  border-radius: 10px;
+  padding: 8px 6px;
   cursor: pointer;
   text-align: center;
   align-items: center;
   justify-content: center;
-  transition: all 0.15s ease;
+  transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   flex-direction: column;
-  gap: 1px;
-  min-height: 46px;
+  gap: 2px;
+  min-height: 52px;
   box-sizing: border-box;
+}
+
+#platDiffSelector.diff-modal-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 6px;
+}
+
+#platDiffSelector.diff-modal-grid .diff-card-btn {
+  flex: unset;
+  min-width: unset;
 }
 
 .diff-card-btn:hover:not(.locked) {

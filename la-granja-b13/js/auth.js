@@ -62,9 +62,13 @@ const Auth = {
     // Sincronizar estado global con la sesión activa
     const sesion = Auth.getSesion();
     if (typeof state !== 'undefined') {
-      if (sesion && sesion.rol === 'estudiante') {
-        state.studentName = sesion.nombre || '';
-        state.studentGrade = sesion.curso || '';
+      if (sesion && sesion.rol === 'estudiante' && sesion.nombre) {
+        if (typeof setActiveStudent === 'function') {
+          setActiveStudent(sesion.nombre, sesion.curso || '');
+        } else {
+          state.studentName = sesion.nombre || '';
+          state.studentGrade = sesion.curso || '';
+        }
       } else {
         state.studentName = '';
         state.studentGrade = '';
@@ -84,19 +88,39 @@ const Auth = {
   },
 
   setSesion(sesion) {
-    localStorage.setItem(CLAVE_SESION, JSON.stringify(sesion));
-    if (typeof state !== 'undefined') {
-      if (sesion.rol === 'estudiante') {
-        state.studentName = sesion.nombre || '';
-        state.studentGrade = sesion.curso || '';
-      } else {
-        state.studentName = '';
-        state.studentGrade = '';
+    try {
+      localStorage.setItem('granjaSesionActiva', 'true');
+      localStorage.setItem(CLAVE_SESION, JSON.stringify(sesion));
+      if (typeof state !== 'undefined') {
+        if (sesion && sesion.rol === 'estudiante') {
+          if (typeof setActiveStudent === 'function' && sesion.nombre) {
+            setActiveStudent(sesion.nombre, sesion.curso || '');
+          } else {
+            state.studentName = sesion.nombre || '';
+            state.studentGrade = sesion.curso || '';
+          }
+          if (typeof discoveredSet !== 'undefined' && Array.isArray(state.discovered)) {
+            discoveredSet.clear();
+            state.discovered.forEach(id => discoveredSet.add(id));
+          }
+          if (typeof mapDiscoveredSet !== 'undefined' && Array.isArray(state.mapDiscovered)) {
+            mapDiscoveredSet.clear();
+            state.mapDiscovered.forEach(id => mapDiscoveredSet.add(id));
+          }
+        } else {
+          state.studentName = '';
+          state.studentGrade = '';
+        }
+        if (typeof saveState === 'function') saveState();
       }
-      if (typeof saveState === 'function') saveState();
+      Auth.aplicarRestriccionesRol();
+      if (typeof updateHeaderUI === 'function') updateHeaderUI();
+      if (typeof updateHeaderScore === 'function') updateHeaderScore();
+      if (typeof updateStudentUI === 'function') updateStudentUI();
+      if (typeof window.refreshRankingWidget === 'function') window.refreshRankingWidget();
+    } catch (e) {
+      console.error('Error al guardar sesión:', e);
     }
-    Auth.aplicarRestriccionesRol();
-    if (typeof updateHeaderUI === 'function') updateHeaderUI();
   },
 
   cerrarSesion() {
@@ -286,11 +310,21 @@ const Auth = {
       // Restaurar scorebox de estudiante
       if (scorebox && !document.getElementById('score')) {
         const isMap = document.title.includes('Mapa');
-        const count = isMap ? (typeof mapDiscoveredSet !== 'undefined' ? mapDiscoveredSet.size : 0) :
-                      (typeof discoveredSet !== 'undefined' ? discoveredSet.size : 0);
-        const total = isMap ? '10' : '5';
-        const scoreVal = (typeof computePureScore === 'function') ? computePureScore(state) : ((typeof state !== 'undefined' && state.pureScore) ? state.pureScore : 0);
-        scorebox.innerHTML = `PUNTAJE: <b id="score">${scoreVal}</b><br>${unit}: <span id="discovered">${count}</span>/${total}`;
+        const isGallery = document.title.includes('Galería') || document.title.includes('Galeria') || !!document.getElementById('galleryCount');
+        const isGames = document.title.includes('Juega') || !!document.getElementById('modoStatus');
+
+        if (isGames) {
+          const scoreVal = (typeof state !== 'undefined' && state.score) ? state.score : 0;
+          scorebox.innerHTML = `PUNTAJE: <b id="score">${scoreVal}</b><br>MODO: <span id="modoStatus">Estudiante</span>`;
+        } else {
+          const count = isGallery ? (document.getElementById('galleryCount')?.textContent || '13') :
+                        isMap ? (typeof mapDiscoveredSet !== 'undefined' ? mapDiscoveredSet.size : 0) :
+                        (typeof discoveredSet !== 'undefined' ? discoveredSet.size : 0);
+          const total = isGallery ? '13' : (isMap ? '10' : '5');
+          const unit = isGallery ? 'REGISTROS' : (isMap ? 'ANIMALES' : 'FICHAS');
+          const scoreVal = (typeof computePureScore === 'function') ? computePureScore(state) : ((typeof state !== 'undefined' && state.pureScore) ? state.pureScore : 0);
+          scorebox.innerHTML = `PUNTAJE: <b id="score">${scoreVal}</b><br>${unit}: <span id="discovered">${count}</span>/${total}`;
+        }
       }
     } else if (rol === 'profesor') {
       if (iconEl) iconEl.textContent = '🍎';

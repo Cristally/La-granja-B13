@@ -479,6 +479,10 @@
     }
   }
 
+  function getAppContainer() {
+    return document.querySelector('.app') || document.querySelector('.wrap') || document.querySelector('.games-app') || document.getElementById('gamesAppWrap');
+  }
+
   function cambiarPantalla(origen, destino, alTerminar) {
     if (origen) origen.hidden = true;
     if (destino) {
@@ -490,7 +494,7 @@
 
   function verificarEstadoInicial() {
     const sesionActiva = localStorage.getItem(CLAVE_SESION_ACTIVA) === 'true';
-    const appContainer = document.querySelector('.app') || document.querySelector('.wrap');
+    const appContainer = getAppContainer();
 
     if (!sesionActiva) {
       if (appContainer) appContainer.style.display = 'none';
@@ -516,20 +520,27 @@
   }
 
   function entrarAlJuego(rol, datos) {
-    localStorage.setItem(CLAVE_SESION_ACTIVA, 'true');
-    if (typeof Auth !== 'undefined') {
-      Auth.setSesion({ rol, ...datos });
-      Auth.aplicarRestriccionesRol();
-      if (typeof Auth.cerrarModales === 'function') Auth.cerrarModales();
+    try {
+      localStorage.setItem(CLAVE_SESION_ACTIVA, 'true');
+      if (typeof Auth !== 'undefined') {
+        Auth.setSesion({ rol, ...datos });
+        Auth.aplicarRestriccionesRol();
+        if (typeof Auth.cerrarModales === 'function') Auth.cerrarModales();
+      }
+      if (typeof closeAllModals === 'function') closeAllModals();
+      document.querySelectorAll('.overlay, .role-modal-overlay').forEach(ov => {
+        ov.classList.remove('active', 'open');
+        ov.style.display = 'none';
+      });
+      ocultarTodasLasPantallas();
+      const appContainer = getAppContainer();
+      if (appContainer) appContainer.style.display = '';
+    } catch (err) {
+      console.error('Error al entrar al juego:', err);
+      ocultarTodasLasPantallas();
+      const appContainer = getAppContainer();
+      if (appContainer) appContainer.style.display = '';
     }
-    if (typeof closeAllModals === 'function') closeAllModals();
-    document.querySelectorAll('.overlay, .role-modal-overlay').forEach(ov => {
-      ov.classList.remove('active');
-      ov.style.display = 'none';
-    });
-    ocultarTodasLasPantallas();
-    const appContainer = document.querySelector('.app') || document.querySelector('.wrap');
-    if (appContainer) appContainer.style.display = '';
   }
 
   window.volverAlEspacioModos = function() {
@@ -540,10 +551,10 @@
     }
     if (typeof closeAllModals === 'function') closeAllModals();
     document.querySelectorAll('.overlay, .role-modal-overlay').forEach(ov => {
-      ov.classList.remove('active');
+      ov.classList.remove('active', 'open');
       ov.style.display = 'none';
     });
-    const appContainer = document.querySelector('.app') || document.querySelector('.wrap');
+    const appContainer = getAppContainer();
     if (appContainer) appContainer.style.display = 'none';
     ocultarTodasLasPantallas();
     const modeScreen = document.getElementById('modeScreen');

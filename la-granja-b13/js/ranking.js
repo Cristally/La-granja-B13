@@ -460,6 +460,9 @@
     let miPosicion = -1;
     if (estudianteActivo) {
       miPosicion = ranking.findIndex(s => s.id === estudianteActivo.id) + 1;
+      if (miPosicion >= 1 && miPosicion <= 3 && typeof window.unlockBadge === 'function') {
+        window.unlockBadge('podio_honor');
+      }
     }
 
     const isGames = (currentFilter === 'juegos');

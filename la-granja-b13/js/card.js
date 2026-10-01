@@ -28,9 +28,16 @@ function showToast(msg) {
 
 function openOverlayId(id) {
   const el = document.getElementById(id);
-  if (el) el.classList.add('open');
+  if (el) {
+    el.style.display = 'flex';
+    el.classList.add('open');
+  }
   if (id === 'rulesOverlay' && typeof unlockSecretBadge === 'function') {
     unlockSecretBadge('devoralibros');
+    if (typeof state !== 'undefined') {
+      state.rulesRead = true;
+      if (typeof saveState === 'function') saveState();
+    }
   }
 }
 
@@ -38,8 +45,8 @@ function closeOverlayId(id) {
   const el = document.getElementById(id);
   if (el) {
     el.classList.remove('open');
+    el.style.display = 'none';
     if (id === 'victoryOverlay') {
-      el.style.display = 'none';
       if (typeof AudioFX !== 'undefined' && AudioFX.stopAll) AudioFX.stopAll();
     }
   }
@@ -478,6 +485,25 @@ function unlockSecretBadge(id) {
   if (typeof renderAchievementsList === 'function') renderAchievementsList();
   if (typeof renderBadgesBar === 'function') renderBadgesBar();
 }
+window.unlockSecretBadge = unlockSecretBadge;
+
+function unlockBadge(id) {
+  if (!state) return;
+  if (!state.badges) state.badges = [];
+  if (state.badges.includes(id)) return;
+
+  state.badges.push(id);
+  saveState();
+
+  const b = (typeof BADGES !== 'undefined' ? BADGES : []).find(x => x.id === id);
+  if (b) {
+    showToast(`🏅 ¡Nuevo logro oficial! ${b.icon} ${b.label}`);
+    playVictory();
+  }
+  if (typeof renderAchievementsList === 'function') renderAchievementsList();
+  if (typeof renderBadgesBar === 'function') renderBadgesBar();
+}
+window.unlockBadge = unlockBadge;
 
 function trackAnimalSound(soundSrc) {
   if (!state) return;
@@ -848,6 +874,16 @@ function checkBadges() {
     mapAnimals.some(a => isPerfectQuiz(state.mapQuiz[a.id], a.quiz.length));
   if (anyPerfect && !state.badges.includes('precision')) newly.push('precision');
 
+  // Nuevas insignias oficiales
+  if ((state.pureScore || 0) >= 50 && !state.badges.includes('cosecha_decimas')) newly.push('cosecha_decimas');
+  if (state.clues && state.clues.length >= 5 && !state.badges.includes('cuaderno_dorado')) newly.push('cuaderno_dorado');
+  if ((state.avatarIcon !== '🧑‍🌾' || (state.custom && Object.keys(state.custom).length > 0)) && !state.badges.includes('estilista_campo')) newly.push('estilista_campo');
+
+  // Logro secreto: diploma_dorado
+  if (state.organsInspected && state.organsInspected.length >= 3 && state.rulesRead && state.soundsPlayed && state.soundsPlayed.length >= 3 && !state.secretBadges.includes('diploma_dorado')) {
+    unlockSecretBadge('diploma_dorado');
+  }
+
   newly.forEach(id => {
     state.badges.push(id);
     const b = BADGES.find(x => x.id === id);
@@ -986,41 +1022,186 @@ function switchTab(tab) {
 /* ============ Ficha ============ */
 
 function renderFicha(a) {
+  const panel = document.getElementById('panel-ficha');
+  if (!panel) return;
+
+  // Buscar perfil divertido correspondiente
+  const profileKey = a.id || a.species || 'gallo';
+  const funProfile = (typeof ANIMAL_FUN_PROFILES !== 'undefined' && (ANIMAL_FUN_PROFILES[profileKey] || ANIMAL_FUN_PROFILES[a.species] || ANIMAL_FUN_PROFILES.gallo)) || {
+    quote: `¡Hola! Soy ${a.name}, habitante del Liceo B-13. ¡Explora mi ficha para conocer mis secretos biológicos!`,
+    joke: {
+      question: "¿Por qué los animalitos de la granja son tan felices?",
+      punchline: "¡Porque en el Liceo B-13 reciben cariño, respeto y cuidados zootécnicos todos los días! 💚🌾"
+    },
+    superpower: {
+      name: "⚡ Adaptación Zootécnica de Terreno",
+      desc: "Excelente resiliencia ambiental y convivencia comunitaria en los espacios educativos del liceo."
+    },
+    curiosity: "La granja escolar del Liceo B-13 fomenta el bienestar animal, la tenencia responsable y el aprendizaje vivencial de las ciencias naturales."
+  };
+
+  // Easter egg: Si es Nesquik, desbloquear logro amigo_nesquik
+  if ((a.id === 'nesquik' || a.name === 'Nesquik') && typeof unlockSecretBadge === 'function') {
+    unlockSecretBadge('amigo_nesquik');
+  }
+
+  // Registrar superpoder visto para el logro 'superpoder_detective'
+  if (typeof state !== 'undefined') {
+    if (!state.superpowersViewed) state.superpowersViewed = [];
+    if (!state.superpowersViewed.includes(profileKey)) {
+      state.superpowersViewed.push(profileKey);
+      if (typeof saveState === 'function') saveState();
+    }
+    if (state.superpowersViewed.length >= 4 && typeof unlockSecretBadge === 'function') {
+      unlockSecretBadge('superpoder_detective');
+    }
+  }
+
   const intro = a.blurb
     ? `<div class="fact pet-intro"><div class="k">Sobre ${a.name}</div><div class="v">${a.blurb}${zoneLine(a)}</div></div>`
     : '';
-  document.getElementById('panel-ficha').innerHTML = `
-    <div class="stamp">ESPÉCIMEN OBSERVADO</div>
-    ${intro}
-    <div class="fact"><div class="k">Clasificación</div><div class="v">${a.facts.clasificacion}</div></div>
-    <div class="fact"><div class="k">Hábitat</div><div class="v">${a.facts.habitat}</div></div>
-    <div class="fact"><div class="k">Alimentación</div><div class="v">${a.facts.alimentacion}</div></div>
-    <div class="fact"><div class="k">Consumo de agua</div><div class="v">${a.facts.agua}</div></div>
-    <div class="fact"><div class="k">Comportamiento</div><div class="v">${a.facts.comportamiento}</div></div>
-    <div class="fact"><div class="k">Reproducción</div><div class="v">${a.facts.reproduccion}</div></div>
-    <div class="fact"><div class="k">Cuidados y bienestar</div><div class="v">${a.facts.cuidados}</div></div>
-    <div class="fact highlight"><div class="k">Dato de campo</div><div class="v">${a.facts.dato}</div></div>
-    <div class="anatomy-box">
-      <div class="k">Anatomía</div>
-      <button class="open-btn" id="openAnatomyBtn" type="button">🔬 Ver diagrama interactivo</button>
-      <div class="anatomy-diagram" id="anatomyDiagram" style="display:none;"></div>
+
+  panel.innerHTML = `
+    <div class="ficha-container">
+      <div class="ficha-top-bar">
+        <span class="stamp">ESPÉCIMEN OBSERVADO</span>
+        <span class="ficha-species-badge">🌿 FAUNA B-13</span>
+      </div>
+
+      ${intro}
+
+      <!-- Bocadillo de Diálogo Amigable -->
+      <div class="animal-speech-bubble">
+        <div class="bubble-avatar">${a.emoji || '🐾'}</div>
+        <div class="bubble-content">
+          <div class="bubble-title">
+            <span>¡Mensaje de ${a.name}!</span>
+          </div>
+          <p class="bubble-text">"${funProfile.quote}"</p>
+        </div>
+      </div>
+
+      <!-- Tarjeta de Superpoder Biológico -->
+      <div class="animal-superpower-card">
+        <div class="superpower-header">
+          <span class="superpower-badge">SUPERPODER BIOLÓGICO</span>
+          <span class="superpower-name">${funProfile.superpower.name}</span>
+        </div>
+        <p class="superpower-desc">${funProfile.superpower.desc}</p>
+      </div>
+
+      <!-- Chiste Interactivo del Corral con Remate Revelable -->
+      <div class="animal-joke-box" id="jokeBox_${a.id}">
+        <div class="joke-header">
+          <span class="joke-title-tag">😂 Chiste del Corral</span>
+          <span class="joke-sub">¡Toca para adivinar y reír!</span>
+        </div>
+        <div class="joke-q">${funProfile.joke.question}</div>
+        <div class="joke-punchline" id="punchline_${a.id}" style="display:none;">
+          <span>🎭</span> <b>${funProfile.joke.punchline}</b>
+        </div>
+        <button type="button" class="joke-reveal-btn" id="jokeBtn_${a.id}">
+          <span>👀 ¡Ver Remate!</span>
+        </button>
+      </div>
+
+      <!-- Tarjeta de Curiosidad Asombrosa -->
+      <div class="animal-curiosity-card">
+        <span class="curiosity-icon">💡</span>
+        <div class="curiosity-body">
+          <div class="curiosity-tag">¿SABÍAS ESTO? · CURIOSIDAD DE CAMPO</div>
+          <p class="curiosity-text">${funProfile.curiosity}</p>
+        </div>
+      </div>
+
+      <!-- Grilla de Fichas Zootécnicas y Científicas -->
+      <div class="facts-grid">
+        <div class="fact-card full-width">
+          <div class="fact-card-k">🏷️ Clasificación</div>
+          <div class="fact-card-v">${a.facts.clasificacion}</div>
+        </div>
+        <div class="fact-card">
+          <div class="fact-card-k">🏡 Hábitat</div>
+          <div class="fact-card-v">${a.facts.habitat}</div>
+        </div>
+        <div class="fact-card">
+          <div class="fact-card-k">🥗 Alimentación</div>
+          <div class="fact-card-v">${a.facts.alimentacion}</div>
+        </div>
+        <div class="fact-card">
+          <div class="fact-card-k">💧 Consumo de Agua</div>
+          <div class="fact-card-v">${a.facts.agua}</div>
+        </div>
+        <div class="fact-card">
+          <div class="fact-card-k">👥 Comportamiento</div>
+          <div class="fact-card-v">${a.facts.comportamiento}</div>
+        </div>
+        <div class="fact-card">
+          <div class="fact-card-k">🐣 Reproducción</div>
+          <div class="fact-card-v">${a.facts.reproduccion}</div>
+        </div>
+        <div class="fact-card full-width">
+          <div class="fact-card-k">❤️ Cuidados y Bienestar Animal</div>
+          <div class="fact-card-v">${a.facts.cuidados}</div>
+        </div>
+        <div class="fact-card full-width">
+          <div class="fact-card-k">🌾 Dato de Terreno</div>
+          <div class="fact-card-v">${a.facts.dato}</div>
+        </div>
+      </div>
+
+      <div class="anatomy-box">
+        <div class="k">Anatomía y Órganos</div>
+        <button class="open-btn" id="openAnatomyBtn" type="button">🔬 Ver radiografía / diagrama interactivo</button>
+        <div class="anatomy-diagram" id="anatomyDiagram" style="display:none;"></div>
+      </div>
     </div>
   `;
+
+  // Listener para el botón interactivo de revelar remate del chiste
+  const jokeBtn = document.getElementById(`jokeBtn_${a.id}`);
+  const punchlineEl = document.getElementById(`punchline_${a.id}`);
+  if (jokeBtn && punchlineEl) {
+    jokeBtn.addEventListener('click', () => {
+      const isHidden = punchlineEl.style.display === 'none';
+      if (isHidden) {
+        punchlineEl.style.display = 'flex';
+        punchlineEl.classList.add('revealed');
+        jokeBtn.innerHTML = '<span>🤫 Ocultar Remate</span>';
+        if (typeof state !== 'undefined') {
+          if (!state.jokesRevealedCount) state.jokesRevealedCount = 0;
+          state.jokesRevealedCount++;
+          if (typeof saveState === 'function') saveState();
+          if (state.jokesRevealedCount >= 3 && typeof unlockSecretBadge === 'function') {
+            unlockSecretBadge('comediante_corral');
+          }
+        }
+        if (typeof spawnStarBurst === 'function') spawnStarBurst(jokeBtn);
+      } else {
+        punchlineEl.style.display = 'none';
+        punchlineEl.classList.remove('revealed');
+        jokeBtn.innerHTML = '<span>👀 ¡Ver Remate!</span>';
+      }
+    });
+  }
+
   const btn = document.getElementById('openAnatomyBtn');
   const diagram = document.getElementById('anatomyDiagram');
   let openState = false;
-  btn.addEventListener('click', () => {
-    openState = !openState;
-    if (openState) {
-      diagram.style.display = 'block';
-      diagram.innerHTML = a.anatomyImage ? buildAnatomyImage(a) : buildAnatomySVG(a);
-      attachOrganHandlers(a);
-      btn.textContent = '✕ Cerrar anatomía';
-    } else {
-      diagram.style.display = 'none';
-      btn.textContent = '🔬 Ver diagrama interactivo';
-    }
-  });
+  if (btn && diagram) {
+    btn.addEventListener('click', () => {
+      openState = !openState;
+      if (openState) {
+        diagram.style.display = 'block';
+        diagram.innerHTML = a.anatomyImage ? buildAnatomyImage(a) : buildAnatomySVG(a);
+        attachOrganHandlers(a);
+        btn.textContent = '✕ Cerrar anatomía';
+      } else {
+        diagram.style.display = 'none';
+        btn.textContent = '🔬 Ver radiografía / diagrama interactivo';
+      }
+    });
+  }
 }
 
 function zoneLine(a) {
@@ -2217,3 +2398,11 @@ if (sesionActual && sesionActual.rol === 'estudiante' && (!state.studentName || 
     openStudentModal();
   }, 500);
 }
+
+// Huevo de pascua zen: exploración paciente de más de 3 minutos
+setTimeout(() => {
+  if (typeof unlockSecretBadge === 'function') {
+    unlockSecretBadge('zen_granja');
+  }
+}, 180000);
+
