@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Acceso y Selección de Modo — La Granja B13</title>
+<meta name="description" content="Portal de inicio de sesión, registro de estudiantes y selección de modo de La Granja B13 — Liceo Domingo Herrera Rivera B-13">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Karla:wght@400;500;700&family=Space+Mono:wght@400;700&family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+<style>
+  /* Ajustes específicos para el portal standalone */
+  body.login-page {
+    margin: 0;
+    padding: 0;
+    background: radial-gradient(circle at 50% 25%, #6a102c 0%, #3a0816 100%);
+    min-height: 100vh;
+    min-height: 100dvh;
+    font-family: 'Fredoka', 'Baloo 2', 'Trebuchet MS', 'Karla', sans-serif;
+    color: #ffffff;
+    overflow-x: hidden;
+  }
+  .active-session-banner {
+    background: rgba(255, 216, 61, 0.15);
+    border: 2px solid #ffd83d;
+    border-radius: 12px;
+    padding: 12px 16px;
+    margin: 0 auto 16px;
+    max-width: 440px;
+    text-align: center;
+    color: #fff6de;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.35);
+  }
+  .active-session-banner b {
+    color: #ffd83d;
+  }
+  .active-session-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .active-session-btn {
+    padding: 8px 14px;
+    border-radius: 20px;
+    font-size: 0.88rem;
+    font-weight: 700;
+    cursor: pointer;
+    border: none;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .active-session-btn.btn-continue {
+    background: #ffd83d;
+    color: #3a0816;
+  }
+  .active-session-btn.btn-logout {
+    background: rgba(255,255,255,0.18);
+    color: #ffffff;
+    border: 1px solid rgba(255,255,255,0.4);
+  }
+</style>
+</head>
+<body class="login-page">
+
+  <div id="granjitaPortalWrap">
+    <!-- PANTALLA 1: Inicio / Bienvenida -->
+    <div class="start-screen" id="startScreen">
+      <div class="start-content">
+        <img src="assets/img/logo.png" alt="Escudo Oficial Granja B13" class="logo-img">
+        <h1 class="game-title">
+          <span class="title-line1">Bienvenidos a la</span>
+          <span class="title-line2">Granjita B13</span>
+        </h1>
+        <p class="start-subtitle">Exploración Interactiva y Aprendizaje en Terreno</p>
+
+        <!-- Banner de sesión activa si ya hay una cuenta abierta -->
+        <div class="active-session-banner" id="portalActiveSessionBanner" style="display:none;">
+          <div>👋 Tienes una sesión activa como: <b id="portalActiveSessionUser">Estudiante</b></div>
+          <div class="active-session-actions">
+            <button type="button" class="active-session-btn btn-continue" id="btnContinueActiveSession">
+              🌾 Continuar a la Granja
+            </button>
+            <button type="button" class="active-session-btn btn-logout" id="btnLogoutActiveSession">
+              🚪 Cerrar Sesión
+            </button>
+          </div>
+        </div>
+
+        <button class="enter-btn" id="portalEnterBtn" type="button">
+          <span>Comenzar Experiencia</span>
+          <span class="btn-ic">🌾</span>
+        </button>
+
+        <div class="start-bottom-roles">
+          <button class="modern-chip-btn" id="portalStartAdminBtn" type="button">
+            <span>🔧</span> Admin
+          </button>
+          <button class="modern-chip-btn" id="portalStartProfesorBtn" type="button">
+            <span>🍎</span> Profesor
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- PANTALLA 2: Selección de Modo -->
+    <div class="mode-screen" id="modeScreen" hidden>
+      <div class="screen-top-bar">
+        <button class="modern-back-btn" id="portalModeBackBtn" type="button" title="Volver a la bienvenida">
+          <span class="back-arrow">←</span>
+          <span>Volver a Inicio</span>
+        </button>
+        <span class="auth-school-badge">Liceo Domingo Herrera Rivera B-13</span>
+      </div>
+
+      <div class="mode-content">
+        <img src="assets/img/logo.png" alt="Escudo Oficial Granja B13" class="auth-logo">
+        <h2 class="mode-title" style="color:#ffffff !important;">¿Cómo quieres entrar?</h2>
+        <p class="mode-subtitle">Selecciona tu perfil de acceso para comenzar</p>
+
+        <div class="mode-cards-grid">
+          <button class="modern-mode-card" id="portalModeVisitaBtn" type="button">
+            <span class="mode-card-ic">🧭</span>
+            <div class="mode-card-info">
+              <span class="mode-card-title">Modo Visitas</span>
+              <span class="mode-card-desc">Exploración libre de potrero, mapa y galería</span>
+            </div>
+            <span class="mode-card-arrow">➤</span>
+          </button>
+
+          <button class="modern-mode-card modern-mode-student" id="portalModeEstudianteBtn" type="button">
+            <span class="mode-card-ic">🎓</span>
+            <div class="mode-card-info">
+              <span class="mode-card-title">Modo Estudiante</span>
+              <span class="mode-card-desc">Guarda décimas, insignias y progreso formativo</span>
+            </div>
+            <span class="mode-card-arrow">➤</span>
+          </button>
+        </div>
+
+        <div class="mode-quick-access">
+          <span class="mode-quick-label">Acceso administrativo y docente</span>
+          <div class="mode-quick-buttons">
+            <button class="modern-chip-btn" id="portalModeAdminBtn" type="button">
+              <span>🔧</span> Administrador
+            </button>
+            <button class="modern-chip-btn" id="portalModeProfesorBtn" type="button">
+              <span>🍎</span> Profesor / Docente
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PANTALLA 3: Portal de Acceso Estudiante (Moderno & Separado) -->
+    <div class="auth-screen" id="authScreen" hidden>
+      <div class="screen-top-bar">
+        <button class="modern-back-btn" id="portalAuthBackBtn" type="button" title="Volver a seleccionar modo">
+          <span class="back-arrow">←</span>
+          <span>Volver a Selección de Modo</span>
+        </button>
+        <span class="auth-school-badge">Liceo Domingo Herrera Rivera B-13</span>
+      </div>
+
+      <div class="modern-auth-container">
+        <div class="modern-auth-brand">
+          <img src="assets/img/logo.png" alt="Escudo Oficial Granja B13" class="auth-logo">
+          <h1>La Granjita B13</h1>
+          <p>Exploración de la Granja y Cuaderno de Campo</p>
+        </div>
+
+        <div class="modern-auth-card">
+          <!-- Pestañas Segmentadas para alternar entre Iniciar Sesión y Crear Cuenta -->
+          <div class="auth-segmented-nav" role="tablist">
+            <button type="button" class="auth-nav-pill active" id="authTabLoginBtn" role="tab" aria-selected="true">
+              <span>🔑</span> Iniciar Sesión
+            </button>
+            <button type="button" class="auth-nav-pill" id="authTabRegisterBtn" role="tab" aria-selected="false">
+              <span>✨</span> Crear Cuenta
+            </button>
+          </div>
+
+          <!-- Panel 1: INICIAR SESIÓN -->
+          <div class="auth-pane" id="paneLogin">
+            <div class="auth-pane-header">
+              <h2 class="auth-pane-title">¡Bienvenido/a de nuevo!</h2>
+              <p class="auth-pane-sub">Ingresa a tu sesión para guardar tus décimas, puntaje y logros de campo.</p>
+            </div>
+
+            <!-- Botón de prueba rápida con un solo toque -->
+            <button type="button" class="demo-quick-fill-btn" id="btnFillDemoCreds" title="Toca para rellenar los datos de prueba">
+              <span class="demo-flash">⚡</span>
+              <span class="demo-txt">Cuenta demo: <b>demo@granja.cl</b> (demo1234)</span>
+              <span class="demo-action">Rellenar</span>
+            </button>
+
+            <form class="modern-form" id="portalLoginForm">
+              <div class="form-field">
+                <label for="portalLoginCorreo">Correo institucional o registrado</label>
+                <div class="input-box">
+                  <span class="input-ic">✉️</span>
+                  <input type="email" id="portalLoginCorreo" placeholder="ejemplo@granja.cl" autocomplete="username" value="demo@granja.cl" required>
+                </div>
+              </div>
+
+              <div class="form-field">
+                <label for="portalLoginClave">Contraseña</label>
+                <div class="input-box">
+                  <span class="input-ic">🔒</span>
+                  <input type="password" id="portalLoginClave" placeholder="Ingresa tu contraseña" autocomplete="current-password" value="demo1234" required>
+                  <button type="button" class="toggle-pass-btn" id="toggleLoginPass" aria-label="Mostrar contraseña">👁️</button>
+                </div>
+              </div>
+
+              <div class="auth-error-box" id="portalLoginError" hidden></div>
+
+              <button type="submit" class="modern-btn-submit" id="portalLoginSubmitBtn">
+                <span>Ingresar a la Granja</span>
+                <span class="btn-ic">➤</span>
+              </button>
+            </form>
+
+            <div class="auth-footer-switch">
+              ¿Aún no tienes cuenta creada?
+              <button type="button" class="switch-link-btn" id="btnGoToRegister">Regístrate gratis aquí</button>
+            </div>
+          </div>
+
+          <!-- Panel 2: CREAR CUENTA -->
+          <div class="auth-pane" id="paneRegister" hidden>
+            <div class="auth-pane-header">
+              <h2 class="auth-pane-title">Registro de Estudiante</h2>
+              <p class="auth-pane-sub">Crea tu cuenta escolar para activar tu Cuaderno de Campo individual.</p>
+            </div>
+
+            <form class="modern-form" id="portalRegisterForm">
+              <div class="form-field">
+                <label for="portalRegNombre">Nombre completo</label>
+                <div class="input-box">
+                  <span class="input-ic">👤</span>
+                  <input type="text" id="portalRegNombre" placeholder="Tu nombre y apellido (sin números)" autocomplete="name" required>
+                </div>
+              </div>
+
+              <div class="form-row-2col">
+                <div class="form-field">
+                  <label for="portalRegCurso">Curso / Nivel oficial</label>
+                  <div class="input-box">
+                    <span class="input-ic">🏫</span>
+                    <select id="portalRegCurso" required>
+                      <option value="" disabled selected>Selecciona tu curso...</option>
+                      <optgroup label="1° Medios">
+                        <option value="1° Medio A">1° Medio A</option>
+                        <option value="1° Medio B">1° Medio B</option>
+                        <option value="1° Medio C">1° Medio C</option>
+                        <option value="1° Medio D">1° Medio D</option>
+                        <option value="1° Medio E">1° Medio E</option>
+                        <option value="1° Medio F">1° Medio F</option>
+                      </optgroup>
+                      <optgroup label="2° Medios">
+                        <option value="2° Medio A">2° Medio A</option>
+                        <option value="2° Medio B">2° Medio B</option>
+                        <option value="2° Medio C">2° Medio C</option>
+                        <option value="2° Medio D">2° Medio D</option>
+                        <option value="2° Medio E">2° Medio E</option>
+                        <option value="2° Medio F">2° Medio F</option>
+                      </optgroup>
+                      <optgroup label="3° Medios">
+                        <option value="3° Medio A">3° Medio A</option>
+                        <option value="3° Medio B">3° Medio B</option>
+                        <option value="3° Medio C">3° Medio C</option>
+                        <option value="3° Medio D">3° Medio D</option>
+                        <option value="3° Medio E">3° Medio E</option>
+                        <option value="3° Medio F">3° Medio F</option>
+                      </optgroup>
+                      <optgroup label="4° Medios">
+                        <option value="4° Medio A">4° Medio A</option>
+                        <option value="4° Medio B">4° Medio B</option>
+                        <option value="4° Medio C">4° Medio C</option>
+                        <option value="4° Medio D">4° Medio D</option>
+                        <option value="4° Medio E">4° Medio E</option>
+                        <option value="4° Medio F">4° Medio F</option>
+                      </optgroup>
+                      <optgroup label="Talleres y Academias B-13">
+                        <option value="Brigada Ecológica B-13">Brigada Ecológica B-13</option>
+                        <option value="Academia de Ciencias B-13">Academia de Ciencias B-13</option>
+                        <option value="Taller Agroecológico B-13">Taller Agroecológico B-13</option>
+                        <option value="Otro Curso / Nivel B-13">Otro Curso / Nivel B-13</option>
+                      </optgroup>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="form-field">
+                  <label for="portalRegGenero">Género</label>
+                  <div class="input-box">
+                    <span class="input-ic">🚻</span>
+                    <select id="portalRegGenero" required>
+                      <option value="" disabled selected>Selecciona...</option>
+                      <option value="Femenino">Femenino</option>
+                      <option value="Masculino">Masculino</option>
+                      <option value="Prefiero no decirlo">Prefiero no decirlo</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-field">
+                <label for="portalRegCorreo">Correo electrónico</label>
+                <div class="input-box">
+                  <span class="input-ic">✉️</span>
+                  <input type="email" id="portalRegCorreo" placeholder="estudiante@granja.cl" autocomplete="username" required>
+                </div>
+              </div>
+
+              <div class="form-field">
+                <label for="portalRegClave">Crear contraseña</label>
+                <div class="input-box">
+                  <span class="input-ic">🔒</span>
+                  <input type="password" id="portalRegClave" placeholder="Mínimo 6 caracteres" autocomplete="new-password" minlength="6" required>
+                  <button type="button" class="toggle-pass-btn" id="toggleRegPass" aria-label="Mostrar contraseña">👁️</button>
+                </div>
+              </div>
+
+              <div class="auth-error-box" id="portalRegisterError" hidden></div>
+
+              <button type="submit" class="modern-btn-submit modern-btn-gold" id="portalRegSubmitBtn">
+                <span>Crear mi Cuenta de Estudiante</span>
+                <span class="btn-ic">✨</span>
+              </button>
+            </form>
+
+            <div class="auth-footer-switch">
+              ¿Ya tienes una cuenta creada?
+              <button type="button" class="switch-link-btn" id="btnGoToLogin">Inicia sesión aquí</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PANTALLA 4: Estadísticas de Administrador -->
+    <div class="admin-screen" id="adminScreen" hidden>
+      <div class="screen-top-bar">
+        <button class="modern-back-btn" id="portalAdminBackBtn" type="button" title="Volver a selección de modo">
+          <span class="back-arrow">←</span>
+          <span>Volver a Selección de Modo</span>
+        </button>
+        <span class="auth-school-badge">Panel Administrativo B-13</span>
+      </div>
+
+      <div class="admin-content">
+        <h2 class="brand-heading">📊 Estadísticas y Control de la Granjita B13</h2>
+        <div id="portalAdminNotif" class="admin-notif-banner" hidden></div>
+        <div class="admin-stats" id="portalAdminStats"></div>
+        
+        <div class="stat-card stat-card-danger">
+          <div class="stat-card-header">
+            <span class="danger-ic">⚙️</span>
+            <h3 style="color:#ffb3b3;margin:0;">Limpieza y Control de Registros</h3>
+          </div>
+          <p class="auth-hint" style="text-align:left;color:#ffe6e6;margin:8px 0 14px;line-height:1.4;">
+            Gestiona o vacía la base de datos de estudiantes, puntuaciones y respuestas para iniciar un nuevo ciclo de actividades escolares.
+          </p>
+          <div class="admin-action-buttons">
+            <button class="admin-btn-action admin-btn-warning" id="portalResetRespuestasBtn" type="button">
+              <span>📝</span> Borrar solo respuestas y actividad (conservar estudiantes)
+            </button>
+            <button class="admin-btn-action admin-btn-danger" id="portalResetDatosBtn" type="button">
+              <span>🗑️</span> Borrar TODOS los registros (Alumnos, Respuestas y Perfiles)
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PANTALLA 5: Panel del Profesor -->
+    <div class="admin-screen" id="profesorScreen" hidden>
+      <div class="screen-top-bar">
+        <button class="modern-back-btn" id="portalProfesorBackBtn" type="button" title="Volver a selección de modo">
+          <span class="back-arrow">←</span>
+          <span>Volver a Selección de Modo</span>
+        </button>
+        <span class="auth-school-badge">Portal Docente Liceo B-13</span>
+      </div>
+
+      <div class="admin-content">
+        <h2 class="brand-heading">🍎 Panel del Profesor</h2>
+
+        <div class="stat-card">
+          <h3>📋 Seguimiento y Registro de Actividades</h3>
+          <div class="admin-action-buttons" style="margin-top:10px;">
+            <button class="admin-btn-action admin-btn-gold" id="btnProfesorEntrarJuego" type="button">
+              <span>🌾</span> Entrar a la Granja (Modo Docente)
+            </button>
+            <button class="admin-btn-action admin-btn-info" id="btnProfesorAbrirPlanilla" type="button">
+              <span>📋</span> Ver Calificaciones del Curso en el Juego
+            </button>
+            <a href="/api/export-csv" class="admin-btn-action admin-btn-success" id="btnDescargarPlanillaDocente" style="text-decoration:none;">
+              <span>📊</span> Descargar Planilla Excel (.csv)
+            </a>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <h3>➕ Crear quiz para una zona del mapa</h3>
+          <p class="auth-hint" style="text-align:left;color:#ffeed1;margin-bottom:12px;">Máximo 10 preguntas por zona con puntaje en décimas.</p>
+          <form class="auth-form modern-form" id="portalQuizEditorForm">
+            <div class="form-field">
+              <label for="portalQuizAutor">Profesor/a Docente Guía</label>
+              <div class="input-box">
+                <span class="input-ic">👤</span>
+                <select id="portalQuizAutor" required>
+                  <option value="Profesor/a B-13">Profesor/a B-13 (Docente Guía)</option>
+                  <option value="Prof. Carlos Soto">Prof. Carlos Soto (Ciencias Naturales)</option>
+                  <option value="Prof. Ana Reyes">Prof. Ana Reyes (Biología y Ecosistemas)</option>
+                  <option value="Prof. Valentina Rojas">Prof. Valentina Rojas (Educación Ambiental)</option>
+                  <option value="Prof. Francisco Tapia">Prof. Francisco Tapia (Taller Agroecológico)</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-field">
+              <label for="portalQuizZona">Zona del mapa</label>
+              <div class="input-box">
+                <span class="input-ic">📍</span>
+                <select id="portalQuizZona" required>
+                  <option value="" disabled selected>Selecciona una zona...</option>
+                  <option value="conejos">🐰 Conejeras Escolares</option>
+                  <option value="gallinas">🐔 Gallinero B-13</option>
+                  <option value="jaula-gallo">🐓 Jaula del Gallo Fino</option>
+                  <option value="arboleda">🌳 Arboleda y Pajarera</option>
+                  <option value="aviario">🦜 Aviario Australiano</option>
+                  <option value="potrero">🌾 Potrero Central</option>
+                  <option value="huerto">🥕 Huerto Orgánico</option>
+                  <option value="invernadero">🌱 Invernadero Pedagógico</option>
+                  <option value="compostera">🍂 Compostera Escolar</option>
+                  <option value="lombricultura">🪱 Lombricultura y Vermicompost</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-field">
+              <label for="portalQuizPregunta">Pregunta formativa</label>
+              <div class="input-box">
+                <span class="input-ic">❓</span>
+                <input type="text" id="portalQuizPregunta" placeholder="Escribe la pregunta" required>
+              </div>
+            </div>
+            <div class="form-row-2col">
+              <div class="form-field">
+                <label for="portalQuizOpcion0">Alternativa 1</label>
+                <div class="input-box">
+                  <span class="input-ic">A</span>
+                  <input type="text" id="portalQuizOpcion0" placeholder="Alternativa 1" required>
+                </div>
+              </div>
+              <div class="form-field">
+                <label for="portalQuizOpcion1">Alternativa 2</label>
+                <div class="input-box">
+                  <span class="input-ic">B</span>
+                  <input type="text" id="portalQuizOpcion1" placeholder="Alternativa 2" required>
+                </div>
+              </div>
+            </div>
+            <div class="form-row-2col">
+              <div class="form-field">
+                <label for="portalQuizOpcion2">Alternativa 3</label>
+                <div class="input-box">
+                  <span class="input-ic">C</span>
+                  <input type="text" id="portalQuizOpcion2" placeholder="Alternativa 3" required>
+                </div>
+              </div>
+              <div class="form-field">
+                <label for="portalQuizOpcion3">Alternativa 4</label>
+                <div class="input-box">
+                  <span class="input-ic">D</span>
+                  <input type="text" id="portalQuizOpcion3" placeholder="Alternativa 4" required>
+                </div>
+              </div>
+            </div>
+            <div class="form-row-2col">
+              <div class="form-field">
+                <label for="portalQuizCorrecta">¿Cuál alternativa es correcta?</label>
+                <div class="input-box">
+                  <span class="input-ic">✅</span>
+                  <select id="portalQuizCorrecta" required>
+                    <option value="" disabled selected>Alternativa correcta...</option>
+                    <option value="0">Alternativa 1 (A)</option>
+                    <option value="1">Alternativa 2 (B)</option>
+                    <option value="2">Alternativa 3 (C)</option>
+                    <option value="3">Alternativa 4 (D)</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-field">
+                <label for="portalQuizDecimas">Décimas asignadas</label>
+                <div class="input-box">
+                  <span class="input-ic">📐</span>
+                  <input type="number" id="portalQuizDecimas" placeholder="0.3" step="0.1" min="0" max="1" value="0.3" required>
+                </div>
+              </div>
+            </div>
+            <p class="auth-error-box" id="portalQuizEditorError" hidden></p>
+            <button class="modern-btn-submit modern-btn-gold" type="submit">
+              <span>➕ Publicar Quiz en el Mapa</span>
+            </button>
+          </form>
+        </div>
+
+        <div class="admin-stats" id="portalQuizListaProfesor"></div>
+      </div>
+    </div>
+
+    <!-- MODALES DE PIN ADMIN Y LOGIN PROFESOR -->
+    <div class="granjita-modal" id="portalAdminPinModal" hidden>
+      <div class="granjita-modal-card">
+        <button class="granjita-modal-close" id="closePortalAdminPin" type="button" aria-label="Cerrar modal">✕</button>
+        <div class="modal-card-icon">🔐</div>
+        <h3 class="brand-heading brand-heading-sm">Acceso Administrador</h3>
+        <p class="auth-hint" style="margin-bottom:12px;">Ingresa el código PIN de 4 dígitos para acceder al panel de control.</p>
+        <form class="auth-form modern-form" id="portalAdminPinForm">
+          <div class="input-box" style="justify-content:center;">
+            <input class="auth-pin" type="tel" inputmode="numeric" pattern="[0-9]*" maxlength="4" id="portalInputAdminPin" placeholder="••••" autocomplete="off" required>
+          </div>
+          <p class="auth-error-box" id="portalAdminPinError" hidden></p>
+          <button class="modern-btn-submit modern-btn-gold" type="submit">
+            <span>Ingresar al Panel</span>
+            <span class="btn-ic">🔓</span>
+          </button>
+        </form>
+        <p class="auth-hint" style="margin-top:10px;opacity:0.85;">PIN de prueba: <b>1234</b></p>
+      </div>
+    </div>
+
+    <div class="granjita-modal" id="portalProfesorLoginModal" hidden>
+      <div class="granjita-modal-card">
+        <button class="granjita-modal-close" id="closePortalProfesorLogin" type="button" aria-label="Cerrar modal">✕</button>
+        <div class="modal-card-icon">🍎</div>
+        <h3 class="brand-heading brand-heading-sm">Acceso Profesor</h3>
+        <p class="auth-hint" style="margin-bottom:12px;">Ingresa con tus credenciales docentes para administrar quizzes y notas.</p>
+        <form class="auth-form modern-form" id="portalProfesorLoginForm">
+          <div class="form-field">
+            <label for="portalProfesorEmail">Correo Institucional</label>
+            <div class="input-box">
+              <span class="input-ic">✉️</span>
+              <input type="email" id="portalProfesorEmail" placeholder="profesor@granja.cl" autocomplete="username" value="profesor@granja.cl" required>
+            </div>
+          </div>
+          <div class="form-field">
+            <label for="portalProfesorPass">Contraseña</label>
+            <div class="input-box">
+              <span class="input-ic">🔒</span>
+              <input type="password" id="portalProfesorPass" placeholder="Contraseña" autocomplete="current-password" value="profesor1234" required>
+            </div>
+          </div>
+          <p class="auth-error-box" id="portalProfesorError" hidden></p>
+          <button class="modern-btn-submit modern-btn-gold" type="submit">
+            <span>Ingresar como Profesor</span>
+            <span class="btn-ic">➤</span>
+          </button>
+        </form>
+        <p class="auth-hint" style="margin-top:10px;opacity:0.85;">Docente demo: <b>profesor@granja.cl</b> / <b>profesor1234</b></p>
+      </div>
+    </div>
+
+    <!-- MODAL CELEBRATORIO DE REGISTRO EXITOSO -->
+    <div class="granjita-modal" id="portalRegSuccessModal" hidden>
+      <div class="granjita-modal-card" style="text-align:center;max-width:440px;">
+        <div class="modal-card-icon" style="font-size:3.2rem;">🎉</div>
+        <h3 class="brand-heading brand-heading-sm" style="color:#ffd83d;margin-bottom:6px;">¡Cuenta Creada con Éxito!</h3>
+        <p class="auth-hint" style="font-size:0.95rem;color:#ffffff;line-height:1.5;margin:8px 0 14px;">
+          ¡Bienvenido/a a La Granja B-13, <b id="regSuccessNombre" style="color:#ffd83d;">Estudiante</b>!<br>
+          Tu Cuaderno de Campo individual del curso <b id="regSuccessCurso" style="color:#a7f3d0;">1° Medio</b> ha sido activado en el sistema escolar.
+        </p>
+        <div style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,216,61,0.3);border-radius:8px;padding:10px 14px;margin-bottom:16px;text-align:left;font-size:0.82rem;color:#ffeed1;line-height:1.55;">
+          🌾 <b>Cuaderno Individual:</b> Tu puntaje y décimas quedarán guardados en este equipo.<br>
+          🐾 <b>Animales de la Granja:</b> Descubre las 5 especies del potrero y los 10 registros del mapa.<br>
+          🎖️ <b>Insignias y Certificado:</b> Podrás ganar insignias oficiales del Liceo B-13.
+        </div>
+        <button class="modern-btn-submit modern-btn-gold" id="btnRegSuccessContinuar" type="button" style="width:100%;font-size:1.02rem;padding:12px;">
+          <span>Comenzar Aventura en la Granja</span>
+          <span class="btn-ic">🌾</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <!-- Scripts esenciales del portal -->
+  <script src="js/data.js"></script>
+  <script src="js/map-data.js"></script>
+  <script src="js/state.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/granjita-portal.js"></script>
+</body>
+</html>

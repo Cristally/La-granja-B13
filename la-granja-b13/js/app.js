@@ -308,8 +308,22 @@ function updateHeader() {
     return;
   }
   const purePts = (typeof computePureScore === 'function') ? computePureScore(state) : (state.pureScore || 0);
+  const scoreEl = document.getElementById('score');
+  const discEl = document.getElementById('discovered');
+
+  // Contar estrictamente las especies que pertenecen al Potrero (0 a 5)
+  const potreroFound = POTRERO_IDS.filter(id => {
+    if (typeof discoveredSet !== 'undefined' && discoveredSet.has) return discoveredSet.has(id);
+    if (state && Array.isArray(state.discovered)) return state.discovered.includes(id);
+    return false;
+  }).length;
+
   if (scoreEl) scoreEl.textContent = purePts;
-  if (discEl) discEl.textContent = discoveredSet.size;
+  if (discEl) discEl.textContent = potreroFound;
+
+  if (typeof Auth !== 'undefined' && typeof Auth.aplicarRestriccionesRol === 'function') {
+    Auth.aplicarRestriccionesRol();
+  }
 }
 
 function openCard(id) {

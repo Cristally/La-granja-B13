@@ -444,6 +444,26 @@ app.delete('/api/students/:id', (req, res) => {
 });
 
 // Rutas directas para el frontend
+app.get('/login', (req, res) => {
+  res.sendFile(path.join(__dirname, 'login.html'));
+});
+
+app.get('/mapa', (req, res) => {
+  res.sendFile(path.join(__dirname, 'mapa.html'));
+});
+
+app.get('/juegos', (req, res) => {
+  res.sendFile(path.join(__dirname, 'juegos.html'));
+});
+
+app.get('/galeria-real', (req, res) => {
+  res.sendFile(path.join(__dirname, 'galeria-real.html'));
+});
+
+app.get('/ficha', (req, res) => {
+  res.sendFile(path.join(__dirname, 'ficha.html'));
+});
+
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });

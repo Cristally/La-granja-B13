@@ -7,8 +7,35 @@
 (function() {
   const CLAVE_SESION_ACTIVA = 'granjaSesionActiva';
 
+  const isLoginPage = (function() {
+    const p = (window.location.pathname || '').toLowerCase();
+    return p.endsWith('/login') || p.endsWith('/login.html') || p.includes('login') ||
+           document.body.classList.contains('login-page') ||
+           !!document.getElementById('loginAppWrap');
+  })();
+
   function inyectarPantallas() {
-    if (document.getElementById('startScreen')) return;
+    if (!isLoginPage) {
+      const sesionActiva = localStorage.getItem(CLAVE_SESION_ACTIVA) === 'true';
+      if (!sesionActiva) {
+        const loginTarget = window.location.protocol === 'file:' ? 'login.html' : '/login';
+        window.location.replace(loginTarget);
+        return;
+      }
+      // En páginas de contenido con sesión activa no se inyecta el portal, solo se configuran botones
+      inyectarBotonInicioEnJuego();
+      if (typeof Auth !== 'undefined') {
+        Auth.aplicarRestriccionesRol();
+      }
+      return;
+    }
+
+    if (document.getElementById('startScreen')) {
+      inyectarBotonInicioEnJuego();
+      inicializarEventos();
+      verificarEstadoInicial();
+      return;
+    }
 
     const portalWrap = document.createElement('div');
     portalWrap.id = 'granjitaPortalWrap';
@@ -22,6 +49,19 @@
             <span class="title-line2">Granjita B13</span>
           </h1>
           <p class="start-subtitle">Exploración Interactiva y Aprendizaje en Terreno</p>
+
+          <!-- Banner de sesión activa si ya hay una cuenta abierta -->
+          <div class="active-session-banner" id="portalActiveSessionBanner" style="display:none;">
+            <div>👋 Tienes una sesión activa como: <b id="portalActiveSessionUser">Estudiante</b></div>
+            <div class="active-session-actions">
+              <button type="button" class="active-session-btn btn-continue" id="btnContinueActiveSession">
+                🌾 Continuar a la Granja
+              </button>
+              <button type="button" class="active-session-btn btn-logout" id="btnLogoutActiveSession">
+                🚪 Cerrar Sesión
+              </button>
+            </div>
+          </div>
 
           <button class="enter-btn" id="portalEnterBtn" type="button">
             <span>Comenzar Experiencia</span>
@@ -533,29 +573,20 @@
   }
 
   function inyectarBotonInicioEnJuego() {
+    const sesion = (typeof Auth !== 'undefined' && typeof Auth.getSesion === 'function') ? Auth.getSesion() : { rol: 'visita' };
+    const isVisita = (sesion.rol === 'visita');
+    const label = isVisita ? '🚪 Salir' : '🚪 Cerrar Sesión';
+    const tip = isVisita ? 'Salir de la granja' : 'Cerrar sesión de estudiante / docente';
+
     // Vincular todos los botones de cambio de modo o salida si existen
     document.querySelectorAll('#btnPortalRegresarInicio, .btn-portal-inicio, .nav-switch-btn, #navBtnCambiarModo, #btnOverlayCambiarModo').forEach(btn => {
+      btn.textContent = label;
+      btn.title = tip;
       btn.onclick = (e) => {
         e.preventDefault();
         window.volverAlEspacioModos();
       };
     });
-
-    // Si no existe en la barra de herramientas, agregarlo
-    const toolButtons = document.querySelector('.tool-buttons');
-    if (toolButtons && !document.getElementById('btnPortalRegresarInicio')) {
-      const btn = document.createElement('button');
-      btn.id = 'btnPortalRegresarInicio';
-      btn.type = 'button';
-      btn.className = 'tool-btn btn-portal-inicio';
-      btn.innerHTML = '🚪 Cambiar Modo';
-      btn.title = 'Regresar a la selección de rol o modo';
-      btn.addEventListener('click', (e) => {
-        e.preventDefault();
-        window.volverAlEspacioModos();
-      });
-      toolButtons.appendChild(btn);
-    }
   }
 
   function getAppContainer() {
@@ -572,23 +603,55 @@
   }
 
   function verificarEstadoInicial() {
-    const sesionActiva = localStorage.getItem(CLAVE_SESION_ACTIVA) === 'true';
-    const appContainer = getAppContainer();
-
-    if (!sesionActiva) {
-      if (appContainer) appContainer.style.display = 'none';
-      document.getElementById('startScreen').hidden = false;
-      document.getElementById('modeScreen').hidden = true;
-      document.getElementById('authScreen').hidden = true;
-      document.getElementById('adminScreen').hidden = true;
-      document.getElementById('profesorScreen').hidden = true;
-    } else {
+    if (!isLoginPage) {
       ocultarTodasLasPantallas();
+      const appContainer = getAppContainer();
       if (appContainer) appContainer.style.display = '';
       if (typeof Auth !== 'undefined') {
         Auth.aplicarRestriccionesRol();
       }
+      return;
     }
+
+    const sesionActiva = localStorage.getItem(CLAVE_SESION_ACTIVA) === 'true';
+    const banner = document.getElementById('portalActiveSessionBanner');
+    const userText = document.getElementById('portalActiveSessionUser');
+    const btnContinue = document.getElementById('btnContinueActiveSession');
+    const btnLogout = document.getElementById('btnLogoutActiveSession');
+
+    if (sesionActiva) {
+      const sesion = (typeof Auth !== 'undefined') ? Auth.getSesion() : { rol: 'visita', nombre: 'Visitante' };
+      if (banner && userText) {
+        const rolTexto = sesion.rol === 'visita' ? 'Modo Visita' :
+                         sesion.rol === 'estudiante' ? `Estudiante (${sesion.curso || 'B-13'})` :
+                         sesion.rol === 'profesor' ? 'Docente' : 'Administrador';
+        userText.textContent = `${sesion.nombre || 'Usuario'} · ${rolTexto}`;
+        banner.style.display = 'flex';
+      }
+      if (btnContinue) {
+        btnContinue.onclick = () => {
+          window.location.href = 'index.html';
+        };
+      }
+      if (btnLogout) {
+        btnLogout.onclick = () => {
+          localStorage.removeItem(CLAVE_SESION_ACTIVA);
+          if (typeof Auth !== 'undefined') {
+            Auth.setSesion({ rol: 'visita', nombre: 'Visitante' });
+          }
+          if (banner) banner.style.display = 'none';
+        };
+      }
+    } else {
+      if (banner) banner.style.display = 'none';
+    }
+
+    const startScreen = document.getElementById('startScreen');
+    if (startScreen) startScreen.hidden = false;
+    ['modeScreen', 'authScreen', 'adminScreen', 'profesorScreen'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.hidden = true;
+    });
   }
 
   function ocultarTodasLasPantallas() {
@@ -603,50 +666,22 @@
       localStorage.setItem(CLAVE_SESION_ACTIVA, 'true');
       if (typeof Auth !== 'undefined') {
         Auth.setSesion({ rol, ...datos });
-        Auth.aplicarRestriccionesRol();
-        if (typeof Auth.cerrarModales === 'function') Auth.cerrarModales();
       }
-      if (typeof closeAllModals === 'function') closeAllModals();
-      document.querySelectorAll('.overlay, .role-modal-overlay').forEach(ov => {
-        ov.classList.remove('active', 'open');
-        ov.style.display = 'none';
-      });
-      ocultarTodasLasPantallas();
-      const appContainer = getAppContainer();
-      if (appContainer) appContainer.style.display = '';
+      window.location.href = 'index.html';
     } catch (err) {
       console.error('Error al entrar al juego:', err);
-      ocultarTodasLasPantallas();
-      const appContainer = getAppContainer();
-      if (appContainer) appContainer.style.display = '';
+      window.location.href = 'index.html';
     }
   }
 
   window.volverAlEspacioModos = function() {
     localStorage.removeItem(CLAVE_SESION_ACTIVA);
-    // Cerrar cualquier overlay o modal del juego que pudiera estar abierto
-    if (typeof Auth !== 'undefined' && typeof Auth.cerrarModales === 'function') {
-      Auth.cerrarModales();
+    if (typeof Auth !== 'undefined') {
+      Auth.setSesion({ rol: 'visita', nombre: 'Visitante' });
+      if (typeof Auth.cerrarModales === 'function') Auth.cerrarModales();
     }
-    if (typeof closeAllModals === 'function') closeAllModals();
-    document.querySelectorAll('.overlay, .role-modal-overlay').forEach(ov => {
-      ov.classList.remove('active', 'open');
-      ov.style.display = 'none';
-    });
-    const appContainer = getAppContainer();
-    if (appContainer) appContainer.style.display = 'none';
-    ocultarTodasLasPantallas();
-    const modeScreen = document.getElementById('modeScreen');
-    if (modeScreen) {
-      modeScreen.hidden = false;
-      modeScreen.scrollTop = 0;
-    } else {
-      const startScreen = document.getElementById('startScreen');
-      if (startScreen) {
-        startScreen.hidden = false;
-        startScreen.scrollTop = 0;
-      }
-    }
+    const loginTarget = window.location.protocol === 'file:' ? 'login.html' : '/login';
+    window.location.href = loginTarget;
   };
   window.volverAlInicio = window.volverAlEspacioModos;
 

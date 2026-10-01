@@ -117,8 +117,7 @@ const Auth = {
         if (typeof saveState === 'function') saveState();
       }
       Auth.aplicarRestriccionesRol();
-      if (typeof updateHeaderUI === 'function') updateHeaderUI();
-      if (typeof updateHeaderScore === 'function') updateHeaderScore();
+      if (typeof updateHeader === 'function') updateHeader();
       if (typeof updateStudentUI === 'function') updateStudentUI();
       if (typeof window.refreshRankingWidget === 'function') window.refreshRankingWidget();
     } catch (e) {
@@ -127,10 +126,21 @@ const Auth = {
   },
 
   cerrarSesion() {
+    localStorage.removeItem('granjaSesionActiva');
     Auth.setSesion({ rol: 'visita', nombre: 'Visitante' });
-    Auth.mostrarNotificacion('Has cerrado sesión. Modo Visitas activado.');
+    Auth.mostrarNotificacion('Has cerrado sesión.');
     Auth.actualizarPildora();
-    setTimeout(() => location.reload(), 300);
+    const loginTarget = window.location.protocol === 'file:' ? 'login.html' : '/login';
+    setTimeout(() => {
+      window.location.href = loginTarget;
+    }, 200);
+  },
+
+  salir() {
+    localStorage.removeItem('granjaSesionActiva');
+    Auth.setSesion({ rol: 'visita', nombre: 'Visitante' });
+    const loginTarget = window.location.protocol === 'file:' ? 'login.html' : '/login';
+    window.location.href = loginTarget;
   },
 
   entrarVisita() {
@@ -322,13 +332,38 @@ const Auth = {
 
       // Ajustar scorebox para visita (sin puntaje escolar acumulable)
       if (scorebox) {
-        const isMap = document.title.includes('Mapa');
-        const isGallery = document.title.includes('Galería') || document.title.includes('Galeria') || !!document.getElementById('galleryCount');
-        const count = isGallery ? (document.getElementById('galleryCount')?.textContent || '13') :
-                      isMap ? (typeof mapDiscoveredSet !== 'undefined' ? mapDiscoveredSet.size : 0) :
-                      (typeof discoveredSet !== 'undefined' ? discoveredSet.size : 0);
-        const total = isGallery ? '13' : (isMap ? '10' : '5');
-        const unit = isGallery ? 'REGISTROS' : (isMap ? 'ANIMALES' : 'FICHAS');
+        const isMap = document.title.includes('Mapa') || window.location.pathname.includes('mapa');
+        const isGallery = document.title.includes('Galería') || document.title.includes('Galeria') || window.location.pathname.includes('galeria') || !!document.getElementById('galleryCount');
+        const isFicha = document.title.includes('Enciclopedia') || window.location.pathname.includes('ficha') || !!document.getElementById('fichaContentWrap');
+
+        let count = 0;
+        let total = '5';
+        let unit = 'FICHAS';
+
+        if (isGallery) {
+          count = document.getElementById('galleryCount')?.textContent || '13';
+          total = '13';
+          unit = 'REGISTROS';
+        } else if (isMap) {
+          count = (typeof mapDiscoveredSet !== 'undefined') ? mapDiscoveredSet.size : ((typeof state !== 'undefined' && state.mapDiscovered) ? state.mapDiscovered.length : 0);
+          total = '10';
+          unit = 'ANIMALES';
+        } else if (isFicha) {
+          const allDisc = (typeof state !== 'undefined' && Array.isArray(state.discovered)) ? state.discovered.length : (typeof discoveredSet !== 'undefined' ? discoveredSet.size : 0);
+          count = Math.min(10, allDisc);
+          total = '10';
+          unit = 'FICHAS';
+        } else {
+          // Potrero: estrictamente especies reales del potrero (0 a 5)
+          const potreroList = (typeof POTRERO_IDS !== 'undefined') ? POTRERO_IDS : ['gallo', 'gallina', 'conejo', 'catita', 'agapornis'];
+          count = potreroList.filter(id => {
+            if (typeof discoveredSet !== 'undefined' && discoveredSet.has) return discoveredSet.has(id);
+            if (typeof state !== 'undefined' && Array.isArray(state.discovered)) return state.discovered.includes(id);
+            return false;
+          }).length;
+          total = '5';
+          unit = 'FICHAS';
+        }
         scorebox.innerHTML = `<span style="color:#ffd83d;font-weight:700;">🧭 VISITA</span><br>${unit}: <span id="discovered">${count}</span>/${total}`;
       }
     } else if (rol === 'estudiante') {
@@ -359,21 +394,45 @@ const Auth = {
       if (achievementsBtn) achievementsBtn.style.display = '';
       if (badgesBar) badgesBar.style.display = '';
 
-      // Restaurar scorebox de estudiante
-      if (scorebox && !document.getElementById('score')) {
-        const isMap = document.title.includes('Mapa');
-        const isGallery = document.title.includes('Galería') || document.title.includes('Galeria') || !!document.getElementById('galleryCount');
-        const isGames = document.title.includes('Juega') || !!document.getElementById('modoStatus');
+      // Restaurar scorebox de estudiante de forma instantánea
+      if (scorebox) {
+        const isMap = document.title.includes('Mapa') || window.location.pathname.includes('mapa');
+        const isGallery = document.title.includes('Galería') || document.title.includes('Galeria') || window.location.pathname.includes('galeria') || !!document.getElementById('galleryCount');
+        const isGames = document.title.includes('Juega') || window.location.pathname.includes('juegos') || !!document.getElementById('modoStatus');
+        const isFicha = document.title.includes('Enciclopedia') || window.location.pathname.includes('ficha') || !!document.getElementById('fichaContentWrap');
 
         if (isGames) {
           const scoreVal = (typeof state !== 'undefined' && state.score) ? state.score : 0;
           scorebox.innerHTML = `PUNTAJE: <b id="score">${scoreVal}</b><br>MODO: <span id="modoStatus">Estudiante</span>`;
         } else {
-          const count = isGallery ? (document.getElementById('galleryCount')?.textContent || '13') :
-                        isMap ? (typeof mapDiscoveredSet !== 'undefined' ? mapDiscoveredSet.size : 0) :
-                        (typeof discoveredSet !== 'undefined' ? discoveredSet.size : 0);
-          const total = isGallery ? '13' : (isMap ? '10' : '5');
-          const unit = isGallery ? 'REGISTROS' : (isMap ? 'ANIMALES' : 'FICHAS');
+          let count = 0;
+          let total = '5';
+          let unit = 'FICHAS';
+
+          if (isGallery) {
+            count = document.getElementById('galleryCount')?.textContent || '13';
+            total = '13';
+            unit = 'REGISTROS';
+          } else if (isMap) {
+            count = (typeof mapDiscoveredSet !== 'undefined') ? mapDiscoveredSet.size : ((typeof state !== 'undefined' && state.mapDiscovered) ? state.mapDiscovered.length : 0);
+            total = '10';
+            unit = 'ANIMALES';
+          } else if (isFicha) {
+            const allDisc = (typeof state !== 'undefined' && Array.isArray(state.discovered)) ? state.discovered.length : (typeof discoveredSet !== 'undefined' ? discoveredSet.size : 0);
+            count = Math.min(10, allDisc);
+            total = '10';
+            unit = 'FICHAS';
+          } else {
+            // Potrero: estrictamente especies reales del potrero (0 a 5)
+            const potreroList = (typeof POTRERO_IDS !== 'undefined') ? POTRERO_IDS : ['gallo', 'gallina', 'conejo', 'catita', 'agapornis'];
+            count = potreroList.filter(id => {
+              if (typeof discoveredSet !== 'undefined' && discoveredSet.has) return discoveredSet.has(id);
+              if (typeof state !== 'undefined' && Array.isArray(state.discovered)) return state.discovered.includes(id);
+              return false;
+            }).length;
+            total = '5';
+            unit = 'FICHAS';
+          }
           const scoreVal = (typeof computePureScore === 'function') ? computePureScore(state) : ((typeof state !== 'undefined' && state.pureScore) ? state.pureScore : 0);
           scorebox.innerHTML = `PUNTAJE: <b id="score">${scoreVal}</b><br>${unit}: <span id="discovered">${count}</span>/${total}`;
         }
@@ -418,6 +477,27 @@ const Auth = {
         scorebox.innerHTML = `<span style="color:#ffd83d;font-weight:700;">🔧 ADMIN</span><br><span style="font-size:0.75rem;color:var(--hay);">Métricas Liceo B-13</span>`;
       }
     }
+
+    // 3. Botones de Salir / Cerrar Sesión en navegación y barra
+    const exitButtons = document.querySelectorAll('#navBtnCambiarModo, .nav-switch-btn, #btnPortalRegresarInicio');
+    const isVisita = (rol === 'visita');
+    const exitText = isVisita ? '🚪 Salir' : '🚪 Cerrar Sesión';
+    const exitTitle = isVisita ? 'Salir de la granja' : 'Cerrar sesión de estudiante / docente';
+
+    exitButtons.forEach(btn => {
+      btn.textContent = exitText;
+      btn.title = exitTitle;
+      btn.onclick = (e) => {
+        e.preventDefault();
+        if (isVisita) {
+          if (typeof Auth.salir === 'function') Auth.salir();
+          else window.volverAlEspacioModos();
+        } else {
+          if (typeof Auth.cerrarSesion === 'function') Auth.cerrarSesion();
+          else window.volverAlEspacioModos();
+        }
+      };
+    });
   },
 
   abrirSelectorRoles() {

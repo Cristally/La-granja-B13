@@ -1149,7 +1149,8 @@ function checkBadges() {
   const newly = [];
   const mapAnimals = getMapAnimals();
 
-  if (discoveredSet.size === ANIMALS.filter(a => POTRERO_IDS.includes(a.id)).length && !state.badges.includes('explorador')) newly.push('explorador');
+  const potreroExplored = POTRERO_IDS.every(id => discoveredSet.has(id));
+  if (potreroExplored && !state.badges.includes('explorador')) newly.push('explorador');
 
   const anyCompleted = ANIMALS.some(a => state.quiz[a.id] && state.quiz[a.id].completed);
   if (anyCompleted && !state.badges.includes('cuadernista')) newly.push('cuadernista');
@@ -1277,7 +1278,7 @@ function openFichaOverlay(a, opts) {
     if (total > 0 && bucket.size === total) {
       const msg = isMap
         ? '¡Cuaderno completo! Conociste a los 10 animales del Mapa de la Granja.'
-        : '¡Cuaderno completo! Descubriste las 4 fichas de campo del potrero.';
+        : '¡Cuaderno completo! Descubriste las 5 fichas de campo del potrero.';
       setTimeout(() => showToast(msg), 400);
     }
   }
