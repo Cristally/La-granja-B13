@@ -172,8 +172,8 @@
   }
   window.showQuizClueToast = showQuizClueToast;
 
-  /* Helper para modal de victoria enriquecido y de cierre garantizado */
-  function showGameVictory({ icon, title, subtitle, msg, stats, stamp, onRestart }) {
+  /* Helper para modal de resultado/victoria enriquecido y de cierre garantizado */
+  function showGameVictory({ icon, title, subtitle, msg, stats, stamp, isDefeat = false, onRestart, onRetryImmediate }) {
     const overlay = document.getElementById('victoryOverlay');
     if (!overlay) return;
 
@@ -187,14 +187,23 @@
     const acceptBtn = document.getElementById('victoryAcceptBtn');
     const closeBtn = document.getElementById('victoryCloseBtn');
 
-    if (iconEl) iconEl.textContent = icon || '🏆';
-    if (titleEl) titleEl.textContent = title || '¡Felicitaciones!';
-    if (subEl) subEl.textContent = subtitle || 'Desafío Recreativo Superado';
+    if (iconEl) iconEl.textContent = icon || (isDefeat ? '🌧️' : '🏆');
+    if (titleEl) {
+      titleEl.textContent = title || (isDefeat ? '¡Inténtalo de Nuevo!' : '¡Felicitaciones!');
+      titleEl.style.color = isDefeat ? '#991b1b' : '#1b4332';
+    }
+    if (subEl) subEl.textContent = subtitle || (isDefeat ? 'Recorrido Interrumpido' : 'Desafío Recreativo Superado');
     if (msgEl) msgEl.innerHTML = msg || '';
     if (statsEl) statsEl.innerHTML = stats || '';
-    if (stampEl) stampEl.textContent = stamp || 'MISIÓN CUMPLIDA';
+    if (stampEl) {
+      stampEl.textContent = stamp || (isDefeat ? 'INTÉNTALO OTRA VEZ' : 'MISIÓN CUMPLIDA');
+      stampEl.className = isDefeat ? 'stamp stamp-defeat' : 'stamp';
+    }
 
-    const closeVictory = (e) => {
+    const activeRestart = typeof onRestart === 'function' ? onRestart : null;
+    const activeImmediate = typeof onRetryImmediate === 'function' ? onRetryImmediate : activeRestart;
+
+    const closeVictory = (e, callback) => {
       if (e) {
         e.preventDefault();
         e.stopPropagation();
@@ -202,21 +211,44 @@
       overlay.classList.remove('open');
       overlay.style.display = 'none';
       AudioFX.stopAll();
+      if (typeof callback === 'function') {
+        callback();
+      }
     };
 
-    if (closeBtn) closeBtn.onclick = closeVictory;
-    if (acceptBtn) acceptBtn.onclick = closeVictory;
+    if (isDefeat) {
+      if (restartBtn) {
+        restartBtn.innerHTML = '<span>🚀</span> ¡Volver a Intentarlo!';
+        restartBtn.className = 'tool-btn victory-btn-retry-primary';
+        restartBtn.title = 'Reintentar de inmediato con la misma configuración';
+        restartBtn.onclick = (e) => closeVictory(e, activeImmediate);
+      }
+      if (acceptBtn) {
+        acceptBtn.innerHTML = '<span>⚙️</span> Apartado de Reintento';
+        acceptBtn.className = 'tool-btn victory-btn-retry-lobby';
+        acceptBtn.title = 'Ir al apartado para cambiar corredor, dificultad y reintentar';
+        acceptBtn.onclick = (e) => closeVictory(e, activeRestart);
+      }
+    } else {
+      if (restartBtn) {
+        restartBtn.innerHTML = '🔁 Jugar otra versión';
+        restartBtn.className = 'tool-btn victory-btn-again';
+        restartBtn.onclick = (e) => closeVictory(e, activeImmediate);
+      }
+      if (acceptBtn) {
+        acceptBtn.innerHTML = '✓ Aceptar';
+        acceptBtn.className = 'tool-btn victory-btn-accept';
+        acceptBtn.onclick = (e) => closeVictory(e, activeRestart);
+      }
+    }
 
-    if (restartBtn) {
-      restartBtn.onclick = (e) => {
-        closeVictory(e);
-        if (typeof onRestart === 'function') onRestart();
-      };
+    if (closeBtn) {
+      closeBtn.onclick = (e) => closeVictory(e, activeRestart);
     }
 
     overlay.onclick = (e) => {
       if (e.target === overlay) {
-        closeVictory(e);
+        closeVictory(e, activeRestart);
       }
     };
 
@@ -228,10 +260,14 @@
   window.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
       const vOverlay = document.getElementById('victoryOverlay');
-      if (vOverlay) {
-        vOverlay.classList.remove('open');
-        vOverlay.style.display = 'none';
-        AudioFX.stopAll();
+      if (vOverlay && vOverlay.classList.contains('open')) {
+        const closeBtn = document.getElementById('victoryCloseBtn');
+        if (closeBtn) closeBtn.click();
+        else {
+          vOverlay.classList.remove('open');
+          vOverlay.style.display = 'none';
+          AudioFX.stopAll();
+        }
       }
     }
   });
@@ -1074,7 +1110,7 @@
       }
     },
 
-    showStartScreen() {
+    showStartScreen(isRetry = false, retryStats = null) {
       this.isRunning = false;
       this.isFinished = false;
       if (this.reqId) {
@@ -1086,6 +1122,56 @@
 
       const overlay = document.getElementById('platStartOverlay');
       if (overlay) overlay.classList.remove('hidden');
+
+      const stagePill = document.getElementById('platStagePill');
+      const stageTitle = document.getElementById('platStageTitle');
+      const stageSubtitle = document.getElementById('platStageSubtitle');
+      const playBtn = document.getElementById('platStartPlayBtn');
+      const retryCard = document.getElementById('platRetrySummaryCard');
+
+      if (isRetry) {
+        if (stagePill) {
+          stagePill.innerHTML = '<span>🔄</span> MODO REINTENTO &amp; REVANCHA — B-13';
+          stagePill.className = 'stage-badge-pill stage-badge-retry';
+        }
+        if (stageTitle) stageTitle.textContent = '¿Listo para tu Revancha?';
+        if (stageSubtitle) stageSubtitle.textContent = '¡No te rindas! Ajusta tu corredor, cambia de dificultad si lo necesitas y supera tu marca anterior.';
+        if (playBtn) {
+          playBtn.innerHTML = '<span>🚀</span> ¡Reintentar la Carrera!';
+          playBtn.className = 'stage-play-btn stage-play-btn-retry';
+        }
+        if (retryCard && retryStats) {
+          const tipText = (this.difficulty === 'extrema')
+            ? 'En Pesadilla Arcade usa el Air Dash (<kbd class="kbd-chip">Shift</kbd> / <kbd class="kbd-chip">X</kbd>) en el aire para cruzar precipicios.'
+            : (this.difficulty === 'dificil')
+            ? 'Aprovecha las setas elásticas para tomar altura sobre las pozas de lodo tóxico.'
+            : 'Si caes abajo, busca los trampolines amarillos para rebotar hacia las plataformas superiores.';
+
+          retryCard.innerHTML = `
+            <div class="retry-card-badge">📊 RESULTADO DEL ÚLTIMO INTENTO (${retryStats.runnerEmoji} · ${retryStats.diffName})</div>
+            <div class="retry-card-stats-row">
+              <div class="retry-stat-item"><span class="retry-stat-label">🏁 Recorrido:</span> <span class="retry-stat-value">${retryStats.pct}%</span></div>
+              <div class="retry-stat-item"><span class="retry-stat-label">⭐ Puntaje:</span> <span class="retry-stat-value">${retryStats.score} pts</span></div>
+              <div class="retry-stat-item"><span class="retry-stat-label">⏱️ Sobrevivido:</span> <span class="retry-stat-value">${retryStats.time}s</span></div>
+              <div class="retry-stat-item"><span class="retry-stat-label">💡 Pistas:</span> <span class="retry-stat-value">${retryStats.clues}</span></div>
+            </div>
+            <div class="retry-card-tip">💡 <b>Estrategia de Revancha:</b> ${tipText}</div>
+          `;
+          retryCard.style.display = 'flex';
+        }
+      } else {
+        if (stagePill) {
+          stagePill.innerHTML = '🏃‍♂️🌾 AVENTURA EN LA GRANJA B-13';
+          stagePill.className = 'stage-badge-pill';
+        }
+        if (stageTitle) stageTitle.textContent = 'Carrera hacia el Granero B-13';
+        if (stageSubtitle) stageSubtitle.textContent = 'Configuración previa para una competencia limpia y pareja entre todos los estudiantes.';
+        if (playBtn) {
+          playBtn.innerHTML = '<span>▶</span> ¡Empezar la Carrera!';
+          playBtn.className = 'stage-play-btn';
+        }
+        if (retryCard) retryCard.style.display = 'none';
+      }
 
       const cfg = this.diffConfig[this.difficulty] || this.diffConfig.facil;
       this.score = 0;
@@ -1655,6 +1741,14 @@
 
       const p = this.player;
       const pct = Math.min(99, Math.max(1, Math.round((p.x / (this.worldWidth - 200)) * 100)));
+      const retryStatsData = {
+        pct: pct,
+        score: this.score,
+        time: this.timerSeconds,
+        clues: this.unlockedClues.length,
+        diffName: this.diffConfig[this.difficulty] ? this.diffConfig[this.difficulty].name : 'Estándar',
+        runnerEmoji: this.player.emoji
+      };
 
       // Tarjeta de progreso y quote estilo Cuphead
       const cupheadBarHtml = `
@@ -1680,13 +1774,15 @@
 
       setTimeout(() => {
         showGameVictory({
+          isDefeat: true,
           icon: (this.difficulty === 'extrema') ? '💀⚡' : '🌧️',
           title: (this.difficulty === 'extrema') ? '¡YOU DIED! — Muerte Súbita' : '¡El Fango Atrapó a tu Corredor!',
           subtitle: `Nivel: ${this.diffConfig[this.difficulty].name} — Recorrido Interrumpido`,
           stamp: (this.difficulty === 'extrema') ? 'PRACTICE MAKES PERFECT' : 'INTÉNTALO OTRA VEZ',
-          msg: `${cupheadBarHtml}<div style="margin-top:10px;">Tu corredor no logró alcanzar la meta con vida en esta ocasión. ¡Vuelve a intentarlo!</div>`,
+          msg: `${cupheadBarHtml}<div style="margin-top:10px;">Tu corredor no logró alcanzar la meta con vida en esta ocasión. Puedes reintentar la carrera inmediatamente o ir al apartado de reintento para ajustar corredor y dificultad.</div>`,
           stats: `⭐ <b>Puntaje:</b> ${this.score} pts &nbsp;|&nbsp; ⏱️ <b>Tiempo:</b> ${this.timerSeconds}s &nbsp;|&nbsp; 💡 <b>Pistas descubiertas:</b> ${this.unlockedClues.length}`,
-          onRestart: () => this.showStartScreen()
+          onRetryImmediate: () => this.startRun(),
+          onRestart: () => this.showStartScreen(true, retryStatsData)
         });
       }, 200);
     },

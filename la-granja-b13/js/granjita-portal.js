@@ -51,7 +51,7 @@
 
         <div class="mode-content">
           <img src="assets/img/logo.png" alt="Escudo Oficial Granja B13" class="auth-logo">
-          <h2 class="mode-title">¿Cómo quieres entrar?</h2>
+          <h2 class="mode-title" style="color:#ffffff !important;">¿Cómo quieres entrar?</h2>
           <p class="mode-subtitle">Selecciona tu perfil de acceso para comenzar</p>
 
           <div class="mode-cards-grid">
