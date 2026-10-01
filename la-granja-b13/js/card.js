@@ -73,17 +73,16 @@ function bounceSpriteIfPresent(id) {
 /* ============ Gestión de Estudiante ============ */
 
 function updateStudentUI() {
+  const displayEl = document.getElementById('studentDisplayName');
+  if (displayEl && state && state.studentName) {
+    const gradeText = state.studentGrade ? ` (${state.studentGrade})` : '';
+    displayEl.textContent = state.studentName + gradeText;
+  }
   if (typeof Auth !== 'undefined' && typeof Auth.aplicarRestriccionesRol === 'function') {
     Auth.aplicarRestriccionesRol();
   } else {
-    const displayEl = document.getElementById('studentDisplayName');
-    if (displayEl) {
-      if (state.studentName && state.studentName.trim() !== '') {
-        const gradeText = state.studentGrade ? ` (${state.studentGrade})` : '';
-        displayEl.textContent = state.studentName + gradeText;
-      } else {
-        displayEl.textContent = 'Visitante';
-      }
+    if (displayEl && (!state.studentName || state.studentName.trim() === '')) {
+      displayEl.textContent = 'Visitante';
     }
   }
 
@@ -156,6 +155,11 @@ function renderStudentProfileModal() {
   const badgesEarned = (state.badges || []).length;
   const secretsEarned = (state.secretBadges || []).length;
 
+  const MAX_NAME_CHANGES = 3;
+  const changesDone = typeof state.nameChangesCount === 'number' ? state.nameChangesCount : 0;
+  const changesLeft = Math.max(0, MAX_NAME_CHANGES - changesDone);
+  const isNameLocked = changesLeft <= 0;
+
   const isEligibleForCert = state.certificateUnlocked ||
     (state.badges && (state.badges.includes('guardian') || state.badges.includes('veterinario'))) ||
     (POTRERO_IDS.every(id => state.quiz[id] && state.quiz[id].completed));
@@ -223,9 +227,23 @@ function renderStudentProfileModal() {
 
     <!-- Formulario de Datos Básicos y Personalización -->
     <form id="studentForm" onsubmit="return false;">
-      <div class="field-row" style="margin-bottom:10px;">
-        <label for="studentNameInput" style="font-size:0.82rem;font-weight:700;">Nombre y Apellido *</label>
-        <input type="text" id="studentNameInput" value="${currentName}" placeholder="Ej: Yefrin González" maxlength="30" required autocomplete="off" style="width:100%;padding:8px 10px;border:2px solid var(--ink);border-radius:6px;font-size:0.9rem;">
+      <div class="field-row" style="margin-bottom:12px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;flex-wrap:wrap;gap:4px;">
+          <label for="studentNameInput" style="font-size:0.82rem;font-weight:700;">Nombre y Apellido *</label>
+          ${isNameLocked ? `
+            <span id="nameChangeBadge" style="font-size:0.72rem;font-weight:700;padding:2px 8px;border-radius:12px;background:#ffebee;color:#c62828;border:1px solid #ef9a9a;display:inline-flex;align-items:center;gap:4px;">
+              🔒 Límite de 3 cambios alcanzado
+            </span>
+          ` : `
+            <span id="nameChangeBadge" style="font-size:0.72rem;font-weight:700;padding:2px 8px;border-radius:12px;background:#e8f5e9;color:#2e7d32;border:1px solid #a5d6a7;display:inline-flex;align-items:center;gap:4px;">
+              ✏️ ${changesLeft} de ${MAX_NAME_CHANGES} cambios disponibles
+            </span>
+          `}
+        </div>
+        <input type="text" id="studentNameInput" value="${currentName}" placeholder="Ej: Yefrin González" maxlength="30" required autocomplete="off" ${isNameLocked ? 'readonly' : ''} style="width:100%;padding:8px 10px;border:2px solid var(--ink);border-radius:6px;font-size:0.9rem;${isNameLocked ? 'background:#f0f0f0;cursor:not-allowed;color:#555;opacity:0.9;' : ''}">
+        <div style="font-size:0.72rem;color:${isNameLocked ? '#c62828' : '#666'};margin-top:4px;">
+          ${isNameLocked ? '⚠️ Has alcanzado el límite máximo de 3 cambios de nombre permitidos para tu cuenta de estudiante.' : `ℹ️ Cada estudiante puede cambiar su nombre oficial hasta un máximo de 3 veces (te quedan ${changesLeft} disponibles).`}
+        </div>
       </div>
       <div class="field-row" style="margin-bottom:10px;">
         <label for="studentGradeInput" style="font-size:0.82rem;font-weight:700;">Curso / Nivel *</label>
@@ -394,10 +412,26 @@ function renderStudentProfileModal() {
 
   const nameInp = document.getElementById('studentNameInput');
   if (nameInp) {
-    nameInp.addEventListener('input', () => {
-      const prev = document.getElementById('modalNamePreview');
-      if (prev) prev.textContent = nameInp.value || 'Estudiante Sin Registrar';
-    });
+    if (isNameLocked) {
+      nameInp.addEventListener('click', () => {
+        if (typeof showToast === 'function') {
+          showToast('🔒 Has alcanzado el límite máximo de 3 cambios de nombre.');
+        }
+      });
+      nameInp.addEventListener('keydown', (e) => {
+        if (e.key.length === 1 || e.key === 'Backspace' || e.key === 'Delete') {
+          e.preventDefault();
+          if (typeof showToast === 'function') {
+            showToast('🔒 Has alcanzado el límite máximo de 3 cambios de nombre.');
+          }
+        }
+      });
+    } else {
+      nameInp.addEventListener('input', () => {
+        const prev = document.getElementById('modalNamePreview');
+        if (prev) prev.textContent = nameInp.value || 'Estudiante Sin Registrar';
+      });
+    }
   }
 
   let tempThemeMode = currentThemeMode;
@@ -535,7 +569,9 @@ function handleSaveStudent() {
   const currentAvatar = state.avatarIcon || '🧑‍🌾';
   const currentFrameColor = state.avatarColor || '#ffd83d';
   const currentTitle = state.studentTitle || 'Explorador/a de Campo';
-  saveStudentProfile(currentAvatar, currentFrameColor, currentTitle);
+  const currentThemeMode = state.themeMode || 'light';
+  const currentThemeBg = state.themeBg || '#FAF7EE';
+  saveStudentProfile(currentAvatar, currentFrameColor, currentTitle, currentThemeMode, currentThemeBg);
 }
 
 function saveStudentProfile(avatar, frame, title, themeMode, themeBg) {
@@ -567,35 +603,96 @@ function saveStudentProfile(avatar, frame, title, themeMode, themeBg) {
   if (nameInput) nameInput.classList.remove('input-error');
   if (gradeInput) gradeInput.classList.remove('input-error');
 
-  const ok = setActiveStudent(cleanName, cleanGrade);
-  if (ok) {
-    state.avatarIcon = avatar || state.avatarIcon || '🧑‍🌾';
-    state.avatarColor = frame || state.avatarColor || '#ffd83d';
-    const isDark = (typeof getBgLuminance === 'function' ? getBgLuminance(themeBg) : 0.9) <= 0.38;
-    const finalMode = isDark ? 'dark' : 'light';
-    state.themeMode = finalMode;
-    state.themeBg = themeBg || (isDark ? '#141c13' : '#FAF7EE');
-    if (typeof applyGranjaTheme === 'function') {
-      applyGranjaTheme(state.themeMode, state.themeBg);
-    }
-    saveState();
+  const oldName = (state.studentName || '').trim();
+  const oldGrade = (state.studentGrade || '').trim();
+  const isNameChanged = (oldName !== '' && cleanName.toLowerCase() !== oldName.toLowerCase());
+  const isGradeChanged = (oldGrade !== '' && cleanGrade.toLowerCase() !== oldGrade.toLowerCase());
 
-    discoveredSet = new Set(state.discovered);
-    mapDiscoveredSet = new Set(state.mapDiscovered);
-    closeOverlayId('studentOverlay');
-    updateStudentUI();
-    if (typeof updateHeader === 'function') updateHeader();
-    if (typeof Auth !== 'undefined' && typeof Auth.aplicarRestriccionesRol === 'function') {
-      Auth.aplicarRestriccionesRol();
+  if (isNameChanged) {
+    const currentCount = typeof state.nameChangesCount === 'number' ? state.nameChangesCount : 0;
+    if (currentCount >= 3) {
+      if (errEl) {
+        errEl.textContent = '🔒 Has alcanzado el límite máximo de 3 cambios de nombre.';
+        errEl.style.display = 'block';
+      }
+      if (nameInput) {
+        nameInput.value = oldName;
+      }
+      if (typeof showToast === 'function') {
+        showToast('🔒 No puedes cambiar más veces tu nombre (límite de 3 cambios alcanzado).');
+      }
+      return;
     }
-    renderBadgesBar();
+    state.nameChangesCount = currentCount + 1;
+    renameStudent(oldName, oldGrade, cleanName, cleanGrade);
+  } else if (isGradeChanged) {
+    renameStudent(oldName, oldGrade, cleanName, cleanGrade);
+  } else if (!oldName) {
+    setActiveStudent(cleanName, cleanGrade);
+  }
+
+  // Sincronizar datos de sesión y registro de cuentas de Auth
+  try {
+    if (typeof Auth !== 'undefined') {
+      const sesion = Auth.getSesion();
+      if (sesion && sesion.rol === 'estudiante') {
+        sesion.nombre = cleanName;
+        sesion.curso = cleanGrade;
+        sesion.nameChangesCount = state.nameChangesCount || 0;
+        localStorage.setItem('granjaSesion', JSON.stringify(sesion));
+      }
+      const estudiantes = Auth.getEstudiantes();
+      let mod = false;
+      estudiantes.forEach(est => {
+        if (est.nombre && (est.nombre.toLowerCase() === oldName.toLowerCase() || est.nombre.toLowerCase() === cleanName.toLowerCase())) {
+          est.nombre = cleanName;
+          est.curso = cleanGrade;
+          est.nameChangesCount = state.nameChangesCount || 0;
+          mod = true;
+        }
+      });
+      if (mod) {
+        Auth.guardarEstudiantes(estudiantes);
+      }
+    }
+  } catch (e) {
+    console.warn('Error sincronizando Auth:', e);
+  }
+
+  state.avatarIcon = avatar || state.avatarIcon || '🧑‍🌾';
+  state.avatarColor = frame || state.avatarColor || '#ffd83d';
+  state.studentTitle = title || state.studentTitle || 'Explorador/a de Campo';
+  const isDark = (typeof getBgLuminance === 'function' ? getBgLuminance(themeBg) : 0.9) <= 0.38;
+  const finalMode = isDark ? 'dark' : 'light';
+  state.themeMode = finalMode;
+  state.themeBg = themeBg || (isDark ? '#141c13' : '#FAF7EE');
+  if (typeof applyGranjaTheme === 'function') {
+    applyGranjaTheme(state.themeMode, state.themeBg);
+  }
+  saveState();
+
+  discoveredSet = new Set(state.discovered);
+  mapDiscoveredSet = new Set(state.mapDiscovered);
+  closeOverlayId('studentOverlay');
+  updateStudentUI();
+  if (typeof updateHeader === 'function') updateHeader();
+  if (typeof Auth !== 'undefined' && typeof Auth.aplicarRestriccionesRol === 'function') {
+    Auth.aplicarRestriccionesRol();
+  }
+  renderBadgesBar();
+
+  if (isNameChanged) {
+    const changesLeft = Math.max(0, 3 - (state.nameChangesCount || 0));
+    showToast(`✏️ Nombre actualizado a "${cleanName}". (Te quedan ${changesLeft} cambio${changesLeft === 1 ? '' : 's'})`);
+  } else {
     showToast(`🎒 Perfil actualizado: ${cleanName} (${state.studentTitle})`);
+  }
 
-    if (activeAnimal) {
-      renderQuiz(activeAnimal);
-    }
+  if (activeAnimal) {
+    renderQuiz(activeAnimal);
   }
 }
+window.saveStudentProfile = saveStudentProfile;
 
 /* ============ Sistema de Logros Secretos y Easter Eggs ============ */
 

@@ -65,6 +65,7 @@ function defaultStudentSession(name, grade) {
     collectedClues: [],
     themeBg: '#FAF7EE',
     themeMode: 'light',
+    nameChangesCount: 0,
     createdAt: Date.now(),
     updatedAt: Date.now()
   };
@@ -141,6 +142,7 @@ function loadState() {
         base.collectedClues = Array.isArray(saved.collectedClues) ? saved.collectedClues : [];
         base.themeBg = saved.themeBg || '#FAF7EE';
         base.themeMode = saved.themeMode || 'light';
+        base.nameChangesCount = typeof saved.nameChangesCount === 'number' ? saved.nameChangesCount : 0;
         base.createdAt = saved.createdAt || Date.now();
         base.updatedAt = saved.updatedAt || Date.now();
 
@@ -212,6 +214,7 @@ window.computePureScore = computePureScore;
 
 function saveState() {
   try {
+    if (typeof window !== 'undefined') window.state = state;
     state.pureScore = computePureScore(state);
     state.score = state.pureScore; // Puntaje oficial del juego es el puntaje puro sin repetición
     state.updatedAt = Date.now();
@@ -236,6 +239,7 @@ function saveState() {
         badgesCount: state.badges.length,
         secretBadgesCount: (state.secretBadges || []).length,
         certificateUnlocked: !!state.certificateUnlocked,
+        nameChangesCount: state.nameChangesCount || 0,
         updatedAt: state.updatedAt,
         stateData: JSON.parse(JSON.stringify(state))
       };
@@ -281,6 +285,9 @@ function setActiveStudent(name, grade) {
     state = profiles[key].stateData;
     state.studentName = cleanName;
     state.studentGrade = cleanGrade;
+    if (typeof state.nameChangesCount !== 'number') {
+      state.nameChangesCount = profiles[key].nameChangesCount || 0;
+    }
     if (!Array.isArray(state.collectedClues)) state.collectedClues = [];
   } else {
     // Iniciar nuevo cuaderno de campo para este estudiante
@@ -288,12 +295,83 @@ function setActiveStudent(name, grade) {
     state = defaultStudentSession(cleanName, cleanGrade);
     state.soundOn = currentSound;
   }
+
+  try {
+    const rawSesion = localStorage.getItem('granjaSesion');
+    if (rawSesion) {
+      const s = JSON.parse(rawSesion);
+      if (s && s.rol === 'estudiante' && s.nombre && s.nombre.toLowerCase() === cleanName.toLowerCase()) {
+        if (typeof s.nameChangesCount === 'number' && s.nameChangesCount > (state.nameChangesCount || 0)) {
+          state.nameChangesCount = s.nameChangesCount;
+        }
+      }
+    }
+  } catch (e) {}
   
   ensureMapQuizEntries(state);
   applyGranjaTheme(state.themeMode, state.themeBg);
+  if (typeof window !== 'undefined') window.state = state;
   saveState();
   return true;
 }
+
+function renameStudent(oldName, oldGrade, newName, newGrade) {
+  const cleanOldName = (oldName || '').trim();
+  const cleanOldGrade = (oldGrade || '').trim();
+  const cleanNewName = (newName || '').trim();
+  const cleanNewGrade = (newGrade || '').trim();
+
+  if (!cleanNewName) return false;
+
+  const oldKey = (cleanOldName + '_' + cleanOldGrade).toLowerCase();
+  const newKey = (cleanNewName + '_' + cleanNewGrade).toLowerCase();
+
+  const profiles = loadAllProfiles();
+
+  if (oldKey !== newKey) {
+    if (profiles[oldKey]) {
+      // Migrar registro completo del estudiante sin perder quizzes ni puntajes
+      profiles[newKey] = {
+        ...profiles[oldKey],
+        studentName: cleanNewName,
+        studentGrade: cleanNewGrade,
+        nameChangesCount: state.nameChangesCount || profiles[oldKey].nameChangesCount || 0,
+        updatedAt: Date.now()
+      };
+      if (profiles[newKey].stateData) {
+        profiles[newKey].stateData.studentName = cleanNewName;
+        profiles[newKey].stateData.studentGrade = cleanNewGrade;
+        profiles[newKey].stateData.nameChangesCount = state.nameChangesCount || 0;
+      }
+      delete profiles[oldKey];
+      saveAllProfiles(profiles);
+    }
+
+    // Migrar cuaderno de pistas zootécnicas si existían
+    try {
+      const oldCluesKey = 'granja_clues_' + oldKey;
+      const newCluesKey = 'granja_clues_' + newKey;
+      const oldClues = localStorage.getItem(oldCluesKey);
+      if (oldClues && !localStorage.getItem(newCluesKey)) {
+        localStorage.setItem(newCluesKey, oldClues);
+        localStorage.removeItem(oldCluesKey);
+      }
+    } catch (e) {}
+  }
+
+  // Actualizar estado en memoria y persistir
+  if (state) {
+    state.studentName = cleanNewName;
+    state.studentGrade = cleanNewGrade;
+    saveState();
+  }
+
+  return true;
+}
+window.renameStudent = renameStudent;
+window.setActiveStudent = setActiveStudent;
+window.saveState = saveState;
+window.loadState = loadState;
 
 function resetState() {
   try {
@@ -322,6 +400,9 @@ function clearAllProfiles() {
 
 // Estado global de la sesión
 let state = loadState();
+if (typeof window !== 'undefined') {
+  window.state = state;
+}
 
 // Cálculo matemático universal de luminancia relativa (W3C WCAG 2.1)
 function getBgLuminance(colorStr) {

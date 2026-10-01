@@ -99,6 +99,9 @@ const Auth = {
             state.studentName = sesion.nombre || '';
             state.studentGrade = sesion.curso || '';
           }
+          if (typeof sesion.nameChangesCount === 'number' && typeof state !== 'undefined') {
+            state.nameChangesCount = sesion.nameChangesCount;
+          }
           if (typeof discoveredSet !== 'undefined' && Array.isArray(state.discovered)) {
             discoveredSet.clear();
             state.discovered.forEach(id => discoveredSet.add(id));
@@ -181,12 +184,12 @@ const Auth = {
       return { ok: false, error: 'Este correo electrónico ya está registrado en la base de datos escolar.' };
     }
 
-    const nuevo = { nombre, curso, genero, correo, clave, fechaRegistro: new Date().toISOString() };
+    const nuevo = { nombre, curso, genero, correo, clave, nameChangesCount: 0, fechaRegistro: new Date().toISOString() };
     estudiantes.push(nuevo);
     Auth.guardarEstudiantes(estudiantes);
 
     // Iniciar sesión automáticamente
-    Auth.setSesion({ rol: 'estudiante', nombre, correo, curso, genero });
+    Auth.setSesion({ rol: 'estudiante', nombre, correo, curso, genero, nameChangesCount: 0 });
     return { ok: true, usuario: nuevo };
   },
 
@@ -204,7 +207,8 @@ const Auth = {
         nombre: CUENTA_DEMO_ESTUDIANTE.nombre,
         correo: CUENTA_DEMO_ESTUDIANTE.correo,
         curso: CUENTA_DEMO_ESTUDIANTE.curso,
-        genero: CUENTA_DEMO_ESTUDIANTE.genero
+        genero: CUENTA_DEMO_ESTUDIANTE.genero,
+        nameChangesCount: CUENTA_DEMO_ESTUDIANTE.nameChangesCount || 0
       });
       return { ok: true };
     }
@@ -240,7 +244,8 @@ const Auth = {
       nombre: usuarioPorCorreo.nombre,
       correo: usuarioPorCorreo.correo,
       curso: usuarioPorCorreo.curso,
-      genero: usuarioPorCorreo.genero
+      genero: usuarioPorCorreo.genero,
+      nameChangesCount: usuarioPorCorreo.nameChangesCount || 0
     });
     return { ok: true };
   },
@@ -338,8 +343,8 @@ const Auth = {
         iconEl.style.padding = '1px';
       }
       if (labelEl) labelEl.textContent = studentTitle.toUpperCase();
-      const nombre = sesion.nombre || (typeof state !== 'undefined' && state.studentName) || 'Estudiante';
-      const curso = sesion.curso || (typeof state !== 'undefined' && state.studentGrade) || '';
+      const nombre = (typeof state !== 'undefined' && state.studentName) ? state.studentName : (sesion.nombre || 'Estudiante');
+      const curso = (typeof state !== 'undefined' && state.studentGrade) ? state.studentGrade : (sesion.curso || '');
       if (displayEl) displayEl.textContent = `${nombre}${curso ? ' (' + curso + ')' : ''}`;
       if (changeBtn) {
         changeBtn.textContent = '✏️';
@@ -530,6 +535,11 @@ const TeacherQuizzes = {
 
 function getTeacherQuizzesForZone(zonaId) {
   return TeacherQuizzes.getForZone(zonaId);
+}
+
+if (typeof window !== 'undefined') {
+  window.Auth = Auth;
+  window.TeacherQuizzes = TeacherQuizzes;
 }
 
 // Inicializar al cargar el script
