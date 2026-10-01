@@ -149,6 +149,8 @@ function renderStudentProfileModal() {
   const currentTitle = state.studentTitle || 'Explorador/a de Campo';
   const currentName = state.studentName || '';
   const currentGrade = state.studentGrade || '';
+  const currentThemeMode = state.themeMode || 'light';
+  const currentThemeBg = state.themeBg || '#FAF7EE';
   const score = state.score || 0;
   const badgesEarned = (state.badges || []).length;
   const secretsEarned = (state.secretBadges || []).length;
@@ -268,6 +270,42 @@ function renderStudentProfileModal() {
         </div>
       </div>
 
+      <!-- Personalización de Fondo y Modo Oscuro / Claro -->
+      <div style="margin-bottom:14px;background:var(--paper-dark);border:1.5px solid var(--ink);border-radius:8px;padding:10px;">
+        <label style="font-size:0.84rem;font-weight:700;display:block;margin-bottom:8px;color:var(--ink);">
+          🎨 Tema Visual y Color de Fondo de la Granja
+        </label>
+        
+        <!-- Toggle Modo Claro / Modo Oscuro -->
+        <div style="display:flex;gap:8px;margin-bottom:10px;">
+          <button type="button" id="btnThemeLight" class="theme-mode-btn ${currentThemeMode !== 'dark' ? 'active' : ''}" style="flex:1;padding:8px 6px;border-radius:6px;border:2px solid ${currentThemeMode !== 'dark' ? 'var(--grass-dark)' : '#bbb'};background:${currentThemeMode !== 'dark' ? '#fff' : 'transparent'};font-weight:700;font-size:0.8rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;color:var(--ink);">
+            <span>☀️</span> Modo Claro
+          </button>
+          <button type="button" id="btnThemeDark" class="theme-mode-btn ${currentThemeMode === 'dark' ? 'active' : ''}" style="flex:1;padding:8px 6px;border-radius:6px;border:2px solid ${currentThemeMode === 'dark' ? 'var(--grass-dark)' : '#bbb'};background:${currentThemeMode === 'dark' ? '#141c13' : 'transparent'};color:${currentThemeMode === 'dark' ? '#fff' : 'inherit'};font-weight:700;font-size:0.8rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;">
+            <span>🌙</span> Modo Oscuro
+          </button>
+        </div>
+
+        <!-- Paleta de Colores de Fondo a Gusto Propio -->
+        <div>
+          <span style="font-size:0.76rem;font-weight:700;display:block;margin-bottom:6px;color:var(--ink);">Color de fondo a tu gusto propio:</span>
+          <div class="theme-bg-palette" id="themeBgPalette" style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;">
+            <button type="button" class="theme-swatch-btn ${currentThemeBg === '#FAF7EE' ? 'selected' : ''}" data-color="#FAF7EE" title="Original Granja" style="background:#FAF7EE;width:30px;height:30px;border-radius:6px;border:2px solid ${currentThemeBg === '#FAF7EE' ? '#1a1a1a' : '#bbb'};cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,0.15);"></button>
+            <button type="button" class="theme-swatch-btn ${currentThemeBg === '#E8F5E9' ? 'selected' : ''}" data-color="#E8F5E9" title="Menta Suave" style="background:#E8F5E9;width:30px;height:30px;border-radius:6px;border:2px solid ${currentThemeBg === '#E8F5E9' ? '#1a1a1a' : '#bbb'};cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,0.15);"></button>
+            <button type="button" class="theme-swatch-btn ${currentThemeBg === '#E1F5FE' ? 'selected' : ''}" data-color="#E1F5FE" title="Cielo Azul" style="background:#E1F5FE;width:30px;height:30px;border-radius:6px;border:2px solid ${currentThemeBg === '#E1F5FE' ? '#1a1a1a' : '#bbb'};cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,0.15);"></button>
+            <button type="button" class="theme-swatch-btn ${currentThemeBg === '#FFF9C4' ? 'selected' : ''}" data-color="#FFF9C4" title="Trigo Cálido" style="background:#FFF9C4;width:30px;height:30px;border-radius:6px;border:2px solid ${currentThemeBg === '#FFF9C4' ? '#1a1a1a' : '#bbb'};cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,0.15);"></button>
+            <button type="button" class="theme-swatch-btn ${currentThemeBg === '#F3E5F5' ? 'selected' : ''}" data-color="#F3E5F5" title="Lavanda Suave" style="background:#F3E5F5;width:30px;height:30px;border-radius:6px;border:2px solid ${currentThemeBg === '#F3E5F5' ? '#1a1a1a' : '#bbb'};cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,0.15);"></button>
+            <button type="button" class="theme-swatch-btn ${currentThemeBg === '#FBE9E7' ? 'selected' : ''}" data-color="#FBE9E7" title="Arcilla y Crema" style="background:#FBE9E7;width:30px;height:30px;border-radius:6px;border:2px solid ${currentThemeBg === '#FBE9E7' ? '#1a1a1a' : '#bbb'};cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,0.15);"></button>
+            <button type="button" class="theme-swatch-btn ${currentThemeBg === '#151C14' ? 'selected' : ''}" data-color="#151C14" title="Noche Campestre" style="background:#151C14;width:30px;height:30px;border-radius:6px;border:2px solid ${currentThemeBg === '#151C14' ? '#1a1a1a' : '#bbb'};cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,0.15);"></button>
+            
+            <label style="display:inline-flex;align-items:center;gap:5px;cursor:pointer;margin-left:4px;padding:2px 8px;border:1.5px solid var(--ink);border-radius:6px;background:#fff;" title="Elegir cualquier color personalizado con el selector">
+              <input type="color" id="themeBgCustomInput" value="${currentThemeBg}" style="width:24px;height:24px;padding:0;border:none;cursor:pointer;background:transparent;">
+              <span style="font-size:0.75rem;font-weight:700;color:#1a1a1a;">Libre</span>
+            </label>
+          </div>
+        </div>
+      </div>
+
       <div id="studentError" style="color:var(--clay);font-size:0.8rem;font-weight:700;margin-bottom:8px;display:none;"></div>
 
       <button type="submit" class="tool-btn" id="saveStudentBtn" style="width:100%;padding:10px;background:var(--hay);color:var(--ink);font-weight:700;font-size:0.92rem;border:2px solid var(--ink);border-radius:6px;cursor:pointer;">
@@ -361,11 +399,82 @@ function renderStudentProfileModal() {
     });
   }
 
+  let tempThemeMode = currentThemeMode;
+  let tempThemeBg = currentThemeBg;
+
+  const btnLight = document.getElementById('btnThemeLight');
+  const btnDark = document.getElementById('btnThemeDark');
+  const bgPalette = document.getElementById('themeBgPalette');
+  const bgCustom = document.getElementById('themeBgCustomInput');
+
+  function updateThemeUI(mode, bg) {
+    if (btnLight && btnDark) {
+      if (mode === 'dark') {
+        btnDark.style.borderColor = 'var(--grass-dark)';
+        btnDark.style.background = '#141c13';
+        btnDark.style.color = '#fff';
+        btnLight.style.borderColor = '#bbb';
+        btnLight.style.background = 'transparent';
+        btnLight.style.color = 'inherit';
+      } else {
+        btnLight.style.borderColor = 'var(--grass-dark)';
+        btnLight.style.background = '#fff';
+        btnLight.style.color = 'var(--ink)';
+        btnDark.style.borderColor = '#bbb';
+        btnDark.style.background = 'transparent';
+        btnDark.style.color = 'inherit';
+      }
+    }
+    if (bgPalette) {
+      bgPalette.querySelectorAll('.theme-swatch-btn').forEach(btn => {
+        const isMatch = (btn.dataset.color.toLowerCase() === bg.toLowerCase());
+        btn.style.borderColor = isMatch ? '#1a1a1a' : '#bbb';
+        btn.style.transform = isMatch ? 'scale(1.15)' : 'none';
+      });
+    }
+    if (typeof applyGranjaTheme === 'function') {
+      applyGranjaTheme(mode, bg);
+    }
+  }
+
+  if (btnLight) {
+    btnLight.addEventListener('click', () => {
+      tempThemeMode = 'light';
+      if (tempThemeBg === '#151C14' || tempThemeBg === '#141c13') tempThemeBg = '#FAF7EE';
+      updateThemeUI(tempThemeMode, tempThemeBg);
+    });
+  }
+
+  if (btnDark) {
+    btnDark.addEventListener('click', () => {
+      tempThemeMode = 'dark';
+      if (tempThemeBg === '#FAF7EE' || tempThemeBg === '#faf7ee') tempThemeBg = '#151C14';
+      updateThemeUI(tempThemeMode, tempThemeBg);
+    });
+  }
+
+  if (bgPalette) {
+    bgPalette.querySelectorAll('.theme-swatch-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        tempThemeBg = btn.dataset.color;
+        if (tempThemeBg === '#151C14') tempThemeMode = 'dark';
+        updateThemeUI(tempThemeMode, tempThemeBg);
+      });
+    });
+  }
+
+  if (bgCustom) {
+    bgCustom.addEventListener('input', () => {
+      tempThemeBg = bgCustom.value;
+      updateThemeUI(tempThemeMode, tempThemeBg);
+    });
+  }
+
   const form = document.getElementById('studentForm');
   if (form) {
     form.addEventListener('submit', (e) => {
       e.preventDefault();
-      saveStudentProfile(tempAvatar, tempFrame, tempTitle);
+      saveStudentProfile(tempAvatar, tempFrame, tempTitle, tempThemeMode, tempThemeBg);
     });
   }
 
@@ -373,7 +482,7 @@ function renderStudentProfileModal() {
   if (saveBtn) {
     saveBtn.addEventListener('click', (e) => {
       e.preventDefault();
-      saveStudentProfile(tempAvatar, tempFrame, tempTitle);
+      saveStudentProfile(tempAvatar, tempFrame, tempTitle, tempThemeMode, tempThemeBg);
     });
   }
 
@@ -414,7 +523,7 @@ function handleSaveStudent() {
   saveStudentProfile(currentAvatar, currentFrameColor, currentTitle);
 }
 
-function saveStudentProfile(avatar, frame, title) {
+function saveStudentProfile(avatar, frame, title, themeMode, themeBg) {
   const nameInput = document.getElementById('studentNameInput');
   const gradeInput = document.getElementById('studentGradeInput');
   const errEl = document.getElementById('studentError');
@@ -448,6 +557,11 @@ function saveStudentProfile(avatar, frame, title) {
     state.avatarIcon = avatar || state.avatarIcon || '🧑‍🌾';
     state.avatarColor = frame || state.avatarColor || '#ffd83d';
     state.studentTitle = title || state.studentTitle || 'Explorador/a de Campo';
+    if (themeMode) state.themeMode = themeMode;
+    if (themeBg) state.themeBg = themeBg;
+    if (typeof applyGranjaTheme === 'function') {
+      applyGranjaTheme(state.themeMode, state.themeBg);
+    }
     saveState();
 
     discoveredSet = new Set(state.discovered);
@@ -929,6 +1043,15 @@ function showFinalMessage(text) {
 /* ============ Abrir / cerrar la ficha ============ */
 
 function openFichaOverlay(a, opts) {
+  if (!a || !a.id) return;
+  // Redirigir a la vista completa y dedicada ficha.html cuando se abre desde el Potrero o el Mapa
+  if (typeof window !== 'undefined' && window.location && !window.location.pathname.includes('ficha.html')) {
+    const isMap = window.location.pathname.includes('mapa');
+    const fromPage = isMap ? 'mapa.html' : 'index.html';
+    window.location.href = `ficha.html?id=${encodeURIComponent(a.id)}&from=${encodeURIComponent(fromPage)}`;
+    return;
+  }
+
   opts = opts || {};
   currentOnClose = opts.onClose || null;
   activeAnimal = a;
@@ -1032,8 +1155,8 @@ function renderFicha(a) {
   const funProfile = (typeof ANIMAL_FUN_PROFILES !== 'undefined' && (ANIMAL_FUN_PROFILES[profileKey] || ANIMAL_FUN_PROFILES[a.species] || ANIMAL_FUN_PROFILES.gallo)) || {
     quote: `¡Hola! Soy ${a.name}, habitante del Liceo B-13. ¡Explora mi ficha para conocer mis secretos biológicos!`,
     joke: {
-      question: "¿Por qué los animalitos de la granja son tan felices?",
-      punchline: "¡Porque en el Liceo B-13 reciben cariño, respeto y cuidados zootécnicos todos los días! 💚🌾"
+      question: "¿Por qué los animales de la Granja B-13 sacan las mejores notas del liceo?",
+      punchline: "¡Porque se pasan todo el día en el campo practicando ciencias naturales al aire libre! 🌾🦉 ¡Puro 7 zootécnico!"
     },
     superpower: {
       name: "⚡ Adaptación Zootécnica de Terreno",
@@ -1092,10 +1215,10 @@ function renderFicha(a) {
         <p class="superpower-desc">${funProfile.superpower.desc}</p>
       </div>
 
-      <!-- Chiste Interactivo del Corral con Remate Revelable -->
+      <!-- Chiste de Granja Interactivo con Remate Revelable -->
       <div class="animal-joke-box" id="jokeBox_${a.id}">
         <div class="joke-header">
-          <span class="joke-title-tag">😂 Chiste del Corral</span>
+          <span class="joke-title-tag">🌾 Chiste de Granja</span>
           <span class="joke-sub">¡Toca para adivinar y reír!</span>
         </div>
         <div class="joke-q">${funProfile.joke.question}</div>

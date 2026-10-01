@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ficha Zootécnica Oficial — La Granja B-13</title>
+<meta name="description" content="Ficha zootécnica, biológica y pedagógica de la fauna del Liceo Domingo Herrera Rivera B-13.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Karla:wght@400;500;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+<link rel="stylesheet" href="css/juegos.css">
+</head>
+<body>
+<div class="app ficha-page-app" id="fichaAppWrap">
+
+  <!-- Barra de regreso y navegación -->
+  <div class="nav-back-bar">
+    <a href="index.html" id="fichaNavBackBtn" class="nav-back-btn">
+      <span style="font-size:1.1rem;">←</span> <span id="fichaNavBackText">Volver a la Granja</span>
+    </a>
+    <nav class="view-nav" style="margin:0;">
+      <a href="index.html">🌾 Potrero</a>
+      <a href="mapa.html">🗺️ Mapa 3D</a>
+      <a href="galeria-real.html">📸 Granja Real</a>
+      <a href="juegos.html">🎮 Minijuegos</a>
+      <button id="navBtnCambiarModo" class="nav-switch-btn" type="button" title="Volver a la selección de modo o inicio">🔄 Salir / Modo</button>
+    </nav>
+  </div>
+
+  <!-- Encabezado con Identidad del Liceo -->
+  <header class="top">
+    <div class="brand-wrap">
+      <img src="assets/img/logo.png" alt="Logo Granja B-13" class="app-logo">
+      <div>
+        <h1>Enciclopedia Fauna B-13</h1>
+        <div class="sub">Ficha zootécnica de campo, anatomía, chistes y quizzes — Liceo B-13 Antofagasta</div>
+      </div>
+    </div>
+    <div class="scorebox">
+      PUNTAJE: <b id="score">0</b><br>
+      FICHAS: <span id="discovered">0</span>/10
+    </div>
+  </header>
+
+  <!-- Barra de Herramientas y Perfil Estudiantil -->
+  <div class="toolbar" style="margin-bottom:14px;">
+    <div class="student-pill" id="studentPill" title="Toca para cambiar o ingresar tus datos de estudiante">
+      <span class="student-icon">🎒</span>
+      <div class="student-info">
+        <span class="student-label">ESTUDIANTE</span>
+        <b id="studentDisplayName">(Sin registrar)</b>
+      </div>
+      <button id="changeStudentBtn" class="student-change-btn" type="button" aria-label="Editar estudiante">✏️</button>
+    </div>
+    <div class="tool-buttons">
+      <button id="leaderboardBtn" class="tool-btn leaderboard-tool-btn" type="button" title="Ver Salón de Honor y Ranking">🏆 Ranking</button>
+      <button id="achievementsBtn" class="tool-btn" type="button">🎖️ Logros</button>
+      <button id="rulesBtn" class="tool-btn" type="button">📋 Normas</button>
+      <button id="soundBtn" class="tool-btn" type="button">🔊 Sonido</button>
+      <button id="teacherBtn" class="tool-btn" type="button">👩‍🏫 Panel docente</button>
+    </div>
+  </div>
+
+  <!-- Cinta selectora rápida de todos los animales -->
+  <div class="ficha-species-ribbon" id="fichaSpeciesRibbon">
+    <!-- Se inyecta dinámicamente con JS -->
+  </div>
+
+  <!-- Banner Hero del Animal Seleccionado -->
+  <div class="ficha-hero-banner" id="fichaHeroBanner">
+    <div class="ficha-hero-photo-wrap" id="fichaPhotoWrap">
+      <div class="ficha-hero-emoji" id="fichaHeroEmoji">🐇</div>
+      <img src="" alt="" class="ficha-hero-photo" id="fichaHeroImg" style="display:none;">
+      <div class="ficha-hero-acc-badge" id="fichaHeroAccBadge" style="display:none;">👒</div>
+    </div>
+    <div class="ficha-hero-details">
+      <div class="ficha-hero-badges">
+        <span class="ficha-pill-badge" id="fichaZoneBadge">📍 Hábitat Escolar</span>
+        <span class="ficha-pill-badge status-ok" id="fichaStatusBadge">✅ Registrado en tu Cuaderno</span>
+      </div>
+      <h1 id="fichaHeroName">Cargando animal...</h1>
+      <div class="ficha-hero-lat" id="fichaHeroLat">Especie biológica</div>
+      <p id="fichaHeroBlurb" style="margin:0 0 14px;font-size:0.96rem;line-height:1.5;color:var(--ink);"></p>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+        <button type="button" class="ficha-sound-play-btn" id="fichaSoundBtn">
+          <span>🔊</span> <span id="fichaSoundLabel">Escuchar Sonido Real</span>
+        </button>
+        <span id="fichaSoundStatus" style="font-size:0.8rem;color:var(--grass-dark);font-weight:700;"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pestañas Principales en Pantalla Completa -->
+  <div class="ficha-main-tabs" id="fichaMainTabs">
+    <button type="button" class="ficha-tab-btn active" data-tab="facts">
+      <span>📋</span> Ficha Zootécnica
+    </button>
+    <button type="button" class="ficha-tab-btn" data-tab="jokes">
+      <span>🌾</span> Chiste de Granja & Superpoder
+    </button>
+    <button type="button" class="ficha-tab-btn" data-tab="anatomy">
+      <span>🔬</span> Anatomía Interactiva
+    </button>
+    <button type="button" class="ficha-tab-btn" data-tab="accessories">
+      <span>🎨</span> Personalizar Accesorio
+    </button>
+    <button type="button" class="ficha-tab-btn" data-tab="quiz">
+      <span>📝</span> Quiz Formativo (Por Décimas)
+    </button>
+  </div>
+
+  <!-- Contenedor General de Pestañas -->
+  <div class="ficha-view-container">
+    
+    <!-- Pestaña 1: Ficha Zootécnica y Biológica Completa -->
+    <div class="ficha-panel" id="panelFichaFacts" style="display:block;">
+      <div class="ficha-facts-wide-grid" id="fichaFactsWideGrid">
+        <!-- Inyectado dinámicamente -->
+      </div>
+    </div>
+
+    <!-- Pestaña 2: Chiste de Granja, Superpoder Biológico y Curiosidad -->
+    <div class="ficha-panel" id="panelFichaJokes" style="display:none;">
+      <div id="fichaJokesContainer">
+        <!-- Inyectado dinámicamente -->
+      </div>
+    </div>
+
+    <!-- Pestaña 3: Anatomía y Fisiología Interactiva -->
+    <div class="ficha-panel" id="panelFichaAnatomy" style="display:none;">
+      <div id="fichaAnatomyContainer">
+        <!-- Inyectado dinámicamente -->
+      </div>
+    </div>
+
+    <!-- Pestaña 4: Personalizar Accesorio -->
+    <div class="ficha-panel" id="panelFichaAccessories" style="display:none;">
+      <div id="panel-personalizar">
+        <!-- Reutiliza la función renderPersonalizar() de card.js -->
+      </div>
+    </div>
+
+    <!-- Pestaña 5: Quiz Formativo -->
+    <div class="ficha-panel" id="panelFichaQuiz" style="display:none;">
+      <div id="panel-quiz">
+        <!-- Reutiliza la función renderQuiz() de card.js -->
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Barra de Insignias y Footer -->
+  <div class="badges-bar" id="badgesBar"></div>
+
+  <footer class="ods">
+    Vinculado a ODS 4 (Educación de calidad) y ODS 15 (Vida de ecosistemas terrestres). Proyecto <b>La Granja B13</b> — Go Innova, Hecho Proyecto B-13.
+  </footer>
+</div>
+
+<!-- ============================================================
+     MODALES GLOBALES (Compartidos con el resto de la plataforma)
+     ============================================================ -->
+
+<!-- Elementos puente invisibles para compatibilidad de eventos con card.js -->
+<div style="display:none;" id="fichaBridgeElements" aria-hidden="true">
+  <div id="cardSprite"></div>
+  <div id="cardName"></div>
+  <div id="cardLat"></div>
+  <button id="cardSoundBtn" type="button"></button>
+  <button id="closeBtn" type="button"></button>
+</div>
+
+<!-- Registro / Perfil de Estudiante y Personalización de Avatar & Tema -->
+<div class="overlay" id="studentOverlay">
+  <div class="card student-custom-card">
+    <button class="close-btn" data-close="studentOverlay" aria-label="Cerrar">✕</button>
+    <div class="card-head">
+      <div class="big-sprite" id="studentModalAvatarIcon">🧑‍🌾</div>
+      <div>
+        <h2 id="studentModalTitle">Perfil de Estudiante</h2>
+        <div class="lat">Cuaderno de Campo y Datos Oficiales B-13</div>
+      </div>
+    </div>
+    <div class="card-body" id="studentModalBody"></div>
+  </div>
+</div>
+
+<!-- Normas de Convivencia y Seguridad en la Granja -->
+<div class="overlay" id="rulesOverlay">
+  <div class="card rules-card">
+    <button class="close-btn" data-close="rulesOverlay" aria-label="Cerrar">✕</button>
+    <div class="card-head">
+      <div class="big-sprite">📋</div>
+      <div>
+        <h2>Normas de la Granja B13</h2>
+        <div class="lat">Reglamento escolar y tenencia responsable</div>
+      </div>
+    </div>
+    <div class="card-body" id="rulesModalBody"></div>
+  </div>
+</div>
+
+<!-- Panel Docente -->
+<div class="overlay" id="teacherOverlay">
+  <div class="card teacher-card">
+    <button class="close-btn" data-close="teacherOverlay" aria-label="Cerrar">✕</button>
+    <div class="card-head">
+      <div class="big-sprite">👩‍🏫</div>
+      <div>
+        <h2>Panel Docente</h2>
+        <div class="lat">Progreso de la clase y sugerencias pedagógicas</div>
+      </div>
+    </div>
+    <div class="card-body teacher-body" id="teacherContent"></div>
+  </div>
+</div>
+
+<!-- Catálogo de Logros e Insignias -->
+<div class="overlay" id="achievementsOverlay">
+  <div class="card achievements-card">
+    <button class="close-btn" data-close="achievementsOverlay" aria-label="Cerrar">✕</button>
+    <div class="card-head">
+      <div class="big-sprite">🎖️</div>
+      <div>
+        <h2>Logros e Insignias B-13</h2>
+        <div class="lat">Completa desafíos para desbloquear todas las insignias de campo</div>
+      </div>
+    </div>
+    <div class="card-body" id="achievementsModalBody"></div>
+  </div>
+</div>
+
+<!-- Detalle de Insignia Individual -->
+<div class="overlay" id="badgeOverlay">
+  <div class="card small-card badge-detail-card">
+    <button class="close-btn" data-close="badgeOverlay" aria-label="Cerrar">✕</button>
+    <div class="card-head">
+      <div class="big-sprite" id="badgeModalIcon">🏆</div>
+      <div>
+        <h2 id="badgeModalTitle">Insignia</h2>
+        <div class="lat" id="badgeModalStatus">Estado del logro</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="stamp" id="badgeModalStamp">LOGRO OFICIAL</div>
+      <p id="badgeModalDesc" style="font-size:0.92rem;line-height:1.5;margin:10px 0 12px;"></p>
+      <div class="badge-hint-box" id="badgeModalHint" style="background:var(--paper-dark);border:1.5px dashed var(--ink);border-radius:6px;padding:10px;font-size:0.82rem;line-height:1.4;margin-bottom:14px;"></div>
+      <button class="tool-btn" data-close="badgeOverlay" type="button" style="width:100%;padding:10px;background:var(--hay);color:var(--ink);font-weight:700;font-size:0.88rem;">
+        ✓ Entendido
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Certificado Oficial B-13 -->
+<div class="overlay" id="certificateOverlay">
+  <div class="card cert-modal-dialog">
+    <div class="cert-modal-header no-print">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span style="font-size:1.8rem;">🎓</span>
+        <div>
+          <h2 style="margin:0;font-family:'Fraunces',serif;color:var(--grass-dark);">Certificado Oficial B-13</h2>
+          <div style="font-size:0.82rem;color:var(--ink);">Acreditación de competencia y bienestar animal</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <button type="button" class="tool-btn" id="printCertBtn" style="background:#ffd83d;color:#1a1a1a;font-weight:700;padding:8px 16px;border:2px solid #1a1a1a;border-radius:6px;cursor:pointer;">
+          🖨️ Imprimir / Guardar en PDF
+        </button>
+        <button class="close-btn" data-close="certificateOverlay" aria-label="Cerrar" style="position:static;">✕</button>
+      </div>
+    </div>
+    <div class="card-body cert-modal-body" id="certificateContent"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- Scripts de la Plataforma -->
+<script src="js/data.js"></script>
+<script src="js/map-data.js"></script>
+<script src="js/audio.js"></script>
+<script src="js/state.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/auth-ui.js"></script>
+<script src="js/granjita-portal.js"></script>
+<script src="js/card.js"></script>
+<script src="js/ranking.js"></script>
+<script src="js/ficha-app.js"></script>
+</body>
+</html>

@@ -330,11 +330,23 @@
      para que los estudiantes los repasen antes de rendir los Quizzes
      ============================================================ */
   const CluesNotebook = {
-    STORAGE_KEY: 'granja_student_clues',
+    getStorageKey() {
+      let userKey = 'anonimo';
+      if (typeof Auth !== 'undefined' && typeof Auth.getSesion === 'function') {
+        const sesion = Auth.getSesion();
+        if (sesion && sesion.rol === 'estudiante' && (sesion.correo || sesion.nombre)) {
+          userKey = (sesion.correo || sesion.nombre).trim().toLowerCase().replace(/[^a-z0-9_]/g, '_');
+        }
+      } else if (typeof state !== 'undefined' && state.studentName && state.studentName.trim()) {
+        userKey = (state.studentName + '_' + (state.studentGrade || '')).trim().toLowerCase().replace(/[^a-z0-9_]/g, '_');
+      }
+      return `granja_clues_${userKey}`;
+    },
 
     getClues() {
+      const key = this.getStorageKey();
       try {
-        const raw = localStorage.getItem(this.STORAGE_KEY);
+        const raw = localStorage.getItem(key);
         if (raw) {
           const parsed = JSON.parse(raw);
           if (Array.isArray(parsed)) return parsed;
@@ -347,8 +359,9 @@
     },
 
     saveClues(clues) {
+      const key = this.getStorageKey();
       try {
-        localStorage.setItem(this.STORAGE_KEY, JSON.stringify(clues));
+        localStorage.setItem(key, JSON.stringify(clues));
       } catch (e) {}
       if (typeof state !== 'undefined') {
         state.collectedClues = clues;
@@ -1611,6 +1624,7 @@
 
     setupControls() {
       window.addEventListener('keydown', (e) => {
+        if (['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target?.tagName) || (e.target && e.target.isContentEditable)) return;
         if (['ArrowLeft', 'KeyA'].includes(e.code)) this.keys.left = true;
         if (['ArrowRight', 'KeyD'].includes(e.code)) this.keys.right = true;
         if (['ArrowUp', 'KeyW', 'Space'].includes(e.code)) {
@@ -1625,6 +1639,7 @@
       });
 
       window.addEventListener('keyup', (e) => {
+        if (['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target?.tagName) || (e.target && e.target.isContentEditable)) return;
         if (['ArrowLeft', 'KeyA'].includes(e.code)) this.keys.left = false;
         if (['ArrowRight', 'KeyD'].includes(e.code)) this.keys.right = false;
         if (['ArrowUp', 'KeyW', 'Space'].includes(e.code)) this.keys.jump = false;

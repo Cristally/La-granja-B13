@@ -171,7 +171,7 @@
 
               <form class="modern-form" id="portalRegisterForm">
                 <div class="form-field">
-                  <label for="portalRegNombre">Nombre completo (solo letras y espacios)</label>
+                  <label for="portalRegNombre">Nombre completo</label>
                   <div class="input-box">
                     <span class="input-ic">👤</span>
                     <input type="text" id="portalRegNombre" placeholder="Tu nombre y apellido (sin números)" autocomplete="name" required>
@@ -797,7 +797,7 @@
           this.value = cleaned;
           const errEl = document.getElementById('portalRegisterError');
           if (errEl) {
-            errEl.textContent = 'ℹ️ Los números no están permitidos en el nombre completo (solo letras y espacios).';
+            errEl.textContent = 'ℹ️ Los números no están permitidos en el nombre completo. Por favor ingresa tu nombre real.';
             errEl.hidden = false;
             setTimeout(() => {
               if (errEl && errEl.textContent.includes('números')) errEl.hidden = true;

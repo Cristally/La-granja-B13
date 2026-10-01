@@ -14,11 +14,12 @@
   --fence-light:#A47A53;
   --barn:#944336;
   --card-shadow: 0 6px 20px rgba(40,49,27,0.12), 3px 3px 0 rgba(40,49,27,0.16);
+  --bg-canvas: #FAF7EE;
 }
 *{box-sizing:border-box;}
 body{
   margin:0;
-  background:var(--paper);
+  background-color: var(--bg-canvas, #FAF7EE);
   background-image:
     radial-gradient(circle at 1px 1px, rgba(59,88,50,0.08) 1.2px, transparent 0),
     radial-gradient(circle at 13px 13px, rgba(232,168,56,0.06) 1.2px, transparent 0);
@@ -26,6 +27,98 @@ body{
   color:var(--ink);
   font-family:'Karla', sans-serif;
   min-height: 100vh;
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+/* Modo Oscuro Granja B-13 */
+html.theme-dark, body.theme-dark {
+  --paper: #1b2418;
+  --paper-dark: #121810;
+  --paper-card: #222d1e;
+  --ink: #eef3e5;
+  --grass-dark: #81c784;
+  --grass-mid: #a5d6a7;
+  --hay: #ffd54f;
+  color: #eef3e5;
+  background-color: var(--bg-canvas, #141c13) !important;
+}
+
+body.theme-dark {
+  background-image:
+    radial-gradient(circle at 1px 1px, rgba(129,199,132,0.1) 1.2px, transparent 0),
+    radial-gradient(circle at 13px 13px, rgba(255,213,79,0.06) 1.2px, transparent 0);
+}
+
+body.theme-dark .card,
+body.theme-dark .student-custom-card,
+body.theme-dark .rules-card,
+body.theme-dark .teacher-card,
+body.theme-dark .cert-modal-dialog,
+body.theme-dark .games-nav-bar,
+body.theme-dark .stage-card,
+body.theme-dark .animal-view-card,
+body.theme-dark .ficha-view-container {
+  background: var(--paper-card);
+  color: var(--ink);
+  border-color: #44563b;
+}
+
+body.theme-dark .fact-card {
+  background: #192215;
+  color: var(--ink);
+  border-color: #3e5035;
+}
+
+body.theme-dark .fact-card-v {
+  color: #d7e2cb;
+}
+
+body.theme-dark .fact-card-k {
+  color: #aed581;
+}
+
+body.theme-dark .tabs button {
+  background: var(--paper-dark);
+  color: var(--ink);
+  border-right-color: #3e5035;
+}
+
+body.theme-dark .tabs button.active {
+  background: var(--paper-card);
+  color: var(--hay);
+}
+
+body.theme-dark .top h1,
+body.theme-dark .card-head h2,
+body.theme-dark #modalNamePreview {
+  color: #ffffff;
+}
+
+body.theme-dark input[type="text"],
+body.theme-dark input[type="email"],
+body.theme-dark input[type="password"],
+body.theme-dark select {
+  background: #141a12 !important;
+  color: #eef3e5 !important;
+  border-color: #4c6241 !important;
+}
+
+body.theme-dark .view-nav a {
+  background: #1f2a1c;
+  color: #eef3e5;
+  border-color: #3e5035;
+}
+
+body.theme-dark .view-nav a.active {
+  background: #32442c;
+  color: #ffd54f;
+  border-color: #ffd54f;
+}
+
+body.theme-dark .nav-switch-btn {
+  background: #2a1f18;
+  color: #ffcc80;
+  border-color: #8d4f24;
 }
 .app{
   max-width:900px;
@@ -4321,5 +4414,319 @@ body.rol-admin .badges-bar {
   background: linear-gradient(135deg, #34d399 0%, #10b981 100%);
   transform: translateY(-2px);
   box-shadow: 0 8px 20px rgba(5, 150, 105, 0.45);
+}
+
+/* ============================================================
+   VISTA COMPLETA DEDICADA DE FICHA DE ANIMAL (ficha.html)
+   Reemplaza el modal superpuesto estrecho por una vista amplia,
+   cómoda y moderna con estética editorial campesina de alta calidad.
+   ============================================================ */
+.ficha-page-app {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 16px 16px 60px;
+}
+
+.nav-back-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.nav-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--paper-dark);
+  color: var(--ink);
+  font-family: 'Karla', sans-serif;
+  font-weight: 800;
+  font-size: 0.88rem;
+  padding: 8px 16px;
+  border: 2px solid var(--ink);
+  border-radius: 8px;
+  text-decoration: none;
+  box-shadow: 2px 2px 0 var(--ink);
+  transition: all 0.15s ease;
+  cursor: pointer;
+}
+
+.nav-back-btn:hover {
+  background: var(--hay);
+  transform: translate(-1px, -1px);
+  box-shadow: 3px 3px 0 var(--ink);
+}
+
+/* Selector horizontal de animales */
+.ficha-species-ribbon {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 6px 4px 12px;
+  margin-bottom: 18px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.ficha-species-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  background: var(--paper-card);
+  color: var(--ink);
+  border: 2px solid var(--ink);
+  border-radius: 20px;
+  font-family: 'Karla', sans-serif;
+  font-weight: 700;
+  font-size: 0.84rem;
+  cursor: pointer;
+  white-space: nowrap;
+  box-shadow: 2px 2px 0 rgba(40,49,27,0.1);
+  transition: all 0.15s ease;
+  text-decoration: none;
+}
+
+.ficha-species-btn:hover {
+  background: var(--paper-dark);
+  transform: translateY(-2px);
+}
+
+.ficha-species-btn.active {
+  background: var(--grass-dark);
+  color: #ffffff;
+  border-color: var(--ink);
+  box-shadow: 0 3px 8px rgba(59,88,50,0.35);
+}
+
+/* Hero Banner del Animal */
+.ficha-hero-banner {
+  background: var(--paper-card);
+  border: 3px solid var(--ink);
+  border-radius: 14px;
+  padding: 22px;
+  margin-bottom: 20px;
+  box-shadow: 6px 6px 0 rgba(40,49,27,0.18);
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 24px;
+  align-items: center;
+}
+
+@media (max-width: 720px) {
+  .ficha-hero-banner {
+    grid-template-columns: 1fr;
+    text-align: center;
+    padding: 16px;
+  }
+}
+
+.ficha-hero-photo-wrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  max-width: 240px;
+  margin: 0 auto;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 3px solid var(--ink);
+  box-shadow: 4px 4px 0 rgba(40,49,27,0.15);
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ficha-hero-photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.ficha-hero-emoji {
+  font-size: 5.5rem;
+  line-height: 1;
+}
+
+.ficha-hero-acc-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  font-size: 1.8rem;
+  background: rgba(255,255,255,0.92);
+  border: 2px solid var(--ink);
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+
+.ficha-hero-details h1 {
+  font-family: 'Fraunces', serif;
+  font-size: 2.2rem;
+  font-weight: 700;
+  margin: 0 0 4px;
+  color: var(--ink);
+  line-height: 1.15;
+}
+
+.ficha-hero-lat {
+  font-size: 1.05rem;
+  font-style: italic;
+  color: var(--grass-dark);
+  margin-bottom: 12px;
+  font-weight: 500;
+}
+
+.ficha-hero-badges {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.ficha-pill-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 20px;
+  border: 1.5px solid var(--ink);
+  background: var(--paper-dark);
+}
+
+.ficha-pill-badge.status-ok {
+  background: #ecfdf5;
+  color: #065f46;
+  border-color: #059669;
+}
+
+.ficha-sound-play-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: #fff;
+  border: 2px solid var(--ink);
+  border-radius: 8px;
+  padding: 9px 18px;
+  font-family: 'Karla', sans-serif;
+  font-weight: 800;
+  font-size: 0.92rem;
+  cursor: pointer;
+  box-shadow: 3px 3px 0 var(--ink);
+  transition: all 0.15s ease;
+}
+
+.ficha-sound-play-btn:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 4px 4px 0 var(--ink);
+}
+
+/* Barra de pestañas amplias */
+.ficha-main-tabs {
+  display: flex;
+  background: var(--paper-dark);
+  border: 2.5px solid var(--ink);
+  border-radius: 10px 10px 0 0;
+  overflow-x: auto;
+  border-bottom: none;
+}
+
+.ficha-tab-btn {
+  flex: 1;
+  min-width: 140px;
+  padding: 12px 14px;
+  background: transparent;
+  border: none;
+  border-right: 1.5px solid var(--ink);
+  font-family: 'Karla', sans-serif;
+  font-weight: 800;
+  font-size: 0.88rem;
+  color: var(--ink);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: background 0.15s ease;
+}
+
+.ficha-tab-btn:last-child {
+  border-right: none;
+}
+
+.ficha-tab-btn.active {
+  background: var(--paper-card);
+  color: var(--grass-dark);
+  box-shadow: inset 0 3px 0 var(--hay);
+}
+
+/* Contenedor del contenido de la ficha */
+.ficha-view-container {
+  background: var(--paper-card);
+  border: 2.5px solid var(--ink);
+  border-radius: 0 0 12px 12px;
+  padding: 22px;
+  margin-bottom: 30px;
+  box-shadow: 6px 6px 0 rgba(40,49,27,0.15);
+}
+
+/* Responsive grid amplia para Ficha Zootécnica */
+.ficha-facts-wide-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+}
+
+@media (max-width: 680px) {
+  .ficha-facts-wide-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.ficha-fact-card {
+  background: #ffffff;
+  border: 2px solid var(--ink);
+  border-radius: 10px;
+  padding: 14px;
+  box-shadow: 2px 2px 0 rgba(40,49,27,0.08);
+  transition: transform 0.15s ease;
+}
+
+.ficha-fact-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 3px 3px 0 rgba(40,49,27,0.12);
+}
+
+.ficha-fact-card.full-col {
+  grid-column: 1 / -1;
+}
+
+.ficha-fact-card-k {
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--grass-dark);
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ficha-fact-card-v {
+  font-size: 0.95rem;
+  line-height: 1.45;
+  color: var(--ink);
 }
 

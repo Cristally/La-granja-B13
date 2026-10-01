@@ -284,8 +284,8 @@ const ANIMAL_FUN_PROFILES = {
   gallo: {
     quote: "¡Kikirikí! Soy el despertador biológico oficial del Liceo B-13. Si te quedas dormido en clases, ¡te canto al oído!",
     joke: {
-      question: "¿Por qué el gallo canta siempre con los ojos cerrados?",
-      punchline: "¡Porque ya se sabe la canción de memoria! 😂🎶"
+      question: "¿Por qué el gallo de la granja canta con tanta fuerza a las 6 de la mañana?",
+      punchline: "¡Porque si cantara a mediodía, las gallinas se reirían de su cresta despeinada! ⏰🐓 ¡Y para que nadie llegue atrasado a la primera hora!"
     },
     superpower: {
       name: "⚡ Reloj Circadiano de Precisión",
@@ -296,8 +296,8 @@ const ANIMAL_FUN_PROFILES = {
   gallina: {
     quote: "¡Cloc cloc! Mientras tú estudias para la prueba de ciencias, yo sintetizo cáscaras perfectas con carbonato de calcio. ¡Pura química de corral!",
     joke: {
-      question: "¿Qué hace una gallina en el gimnasio del colegio?",
-      punchline: "¡Ponerse en forma para que los huevos salgan bien redonditos! 🥚💪"
+      question: "¿Qué le dijo una gallina a otra al ver que el profe avisó prueba sorpresa de Ciencias?",
+      punchline: "¡Tranquila comadre, si no sabemos la respuesta... ¡por lo menos cacareamos con estilo hasta que toque el timbre! 😂🐔 ¡Y si nos sacamos un 7, ponemos un huevo de oro!"
     },
     superpower: {
       name: "⚡ Visión Tetracromática Ultravioleta",
@@ -308,8 +308,8 @@ const ANIMAL_FUN_PROFILES = {
   conejo: {
     quote: "¡Boing boing! Mis orejas no son antenas parabólicas de wifi, ¡pero escucho el crujido de una ramita a 50 metros de distancia!",
     joke: {
-      question: "¿Qué le dice una zanahoria a un conejo apurado?",
-      punchline: "¡No me comas tan rápido, que me da hipo de naranja! 🥕🐰"
+      question: "¿Por qué los conejos de la granja son los mejores alumnos en matemáticas?",
+      punchline: "¡Porque en menos de tres meses se multiplican que da miedo! 🐰✖️➕ ¡No necesitan ni calculadora científica!"
     },
     superpower: {
       name: "⚡ Radar Auditivo 360° y Cecotrofia",
@@ -320,8 +320,8 @@ const ANIMAL_FUN_PROFILES = {
   catita: {
     quote: "¡Pío pío! Hablo más rápido que tu profesor cuando faltan 2 minutos para que toque el timbre del recreo.",
     joke: {
-      question: "¿Por qué las catitas son tan buenas para los exámenes?",
-      punchline: "¡Porque se pasan todo el recreo repasando pío por pío! 🦜📝"
+      question: "¿Qué hace una catita parada encima del router de WiFi del liceo?",
+      punchline: "¡Pasa todo el recreo enviando tuits reales sin gastar el plan de datos móviles! 🐦📡 ¡Pío, pío y retuit con décimas!"
     },
     superpower: {
       name: "⚡ Percepción Visual Ultra Rápida",
@@ -332,8 +332,8 @@ const ANIMAL_FUN_PROFILES = {
   agapornis: {
     quote: "¡Los inseparables del B-13! Siempre en pareja, compartiendo semillas y secretos. ¡El amor y la lealtad más linda del aviario!",
     joke: {
-      question: "¿Qué le regaló el agapornis a su pareja para el aniversario?",
-      punchline: "¡Una ramita de alpiste en forma de corazón y un besito con el pico! 💖🌾"
+      question: "¿Por qué los agapornis nunca juegan a las escondidas en el aviario?",
+      punchline: "¡Porque si uno se esconde dos segundos, el otro se desespera, empieza a chillar y le arruina el escondite a todo el colegio! 🦜😂 ¡El amor del corral no sabe guardar secretos!"
     },
     superpower: {
       name: "⚡ Vínculo Monógamo Inquebrantable",
@@ -344,8 +344,8 @@ const ANIMAL_FUN_PROFILES = {
   matias_vicente: {
     quote: "¡Dúo de honor Bantam! Seremos pequeños y esponjosos, pero tenemos más porte, estilo y plumas en las patitas que cualquier modelo de pasarela.",
     joke: {
-      question: "¿Por qué Matías y Vicente nunca se pierden en el gallinero?",
-      punchline: "¡Porque donde canta uno, el otro le hace los coros de inmediato! 🎤🐓"
+      question: "¿Por qué Matías y Vicente caminan con el pecho tan inflado por todo el gallinero?",
+      punchline: "¡Porque miden apenas 20 centímetros pero juran que son los guardaespaldas oficiales de Jurassic Park! 🦖🐓 ¡Cuidado con los dinosaurios de bolsillo!"
     },
     superpower: {
       name: "⚡ Plumaje Sedoso y Porte Ornamental",
@@ -356,8 +356,8 @@ const ANIMAL_FUN_PROFILES = {
   nesquik: {
     quote: "¡Hola, soy Nesquik! Tengo pelito café chocolate súper esponjoso, soy algo tímido al inicio pero un amor cuando me traes heno fresco.",
     joke: {
-      question: "¿Por qué a Nesquik le pusieron ese nombre tan dulce?",
-      punchline: "¡Porque es tan suavecito y café que parece una taza de chocolatada tibia! 🍫🥛"
+      question: "¿Por qué Nesquik se esconde cada vez que un estudiante abre una mochila en el recreo?",
+      punchline: "¡Porque tiene miedo de que lo confundan con un brownie gigante de chocolate y le den un mordisco! 🍫🐰 ¡'Ojo chiquillos: soy conejo zootécnico, no colación escolar'!"
     },
     superpower: {
       name: "⚡ Pelaje Térmico Extra Esponjoso",
@@ -368,8 +368,8 @@ const ANIMAL_FUN_PROFILES = {
   vainilla: {
     quote: "¡Hola! Soy Vainilla, el más tierno y regalón de la conejera. ¡Tengo manchitas café claro en las orejas y me derrito por una caricia suave!",
     joke: {
-      question: "¿Cuál es el postre favorito de Vainilla?",
-      punchline: "¡Un postre de heno de alfalfa con chispitas de zanahoria rallada! 🍦🥕"
+      question: "¿Cuál es el superpoder secreto de Vainilla el conejo?",
+      punchline: "¡Hacerse el profundamente dormido apenas ve que van a limpiar la conejera! 😴🥕 Pero cuando escucha el crujido de heno fresco... ¡milagro, resucitó al segundo!"
     },
     superpower: {
       name: "⚡ Efecto Relajante Antiestrés",
@@ -380,8 +380,8 @@ const ANIMAL_FUN_PROFILES = {
   tasmi: {
     quote: "¡Aquí viene Tasmi el revoltoso! Si dejas una caja de cartón cerca mío... ¡en 5 minutos será confeti! ¡Energía y saltos al máximo!",
     joke: {
-      question: "¿Qué hace Tasmi cuando encuentra una caja de cartón nueva?",
-      punchline: "¡Una obra de arte moderno a punta de mordisquitos express! 📦🎨"
+      question: "¿Qué título profesional tiene Tasmi el conejo?",
+      punchline: "¡Ingeniero en demolición de cajas de cartón y trituración express de tareas escolares! 📦💥 'Profe, se lo juro por mi vida: mi conejo se comió la cartulina'."
     },
     superpower: {
       name: "⚡ Dientes Autoafilables de Crecimiento Infinito",
@@ -392,8 +392,8 @@ const ANIMAL_FUN_PROFILES = {
   quesito: {
     quote: "¡Soy Quesito! Blanco como la nieve, con ojitos azules brillantes y súper metiche. ¡Si hay algo nuevo en el corral, yo voy primero a mirar!",
     joke: {
-      question: "¿Por qué a Quesito le gusta tanto la ciencia zootécnica?",
-      punchline: "¡Porque siempre está metiendo las patitas en nuevos descubrimientos! 🔬🧀"
+      question: "¿Por qué Quesito tiene los ojos tan abiertos y siempre está asomado en primera fila?",
+      punchline: "¡Porque es más copuchento que grupo de WhatsApp del curso! Si pasa algo en la granja, ¡él ya lo sabe antes que la inspectora general! 🧀👀"
     },
     superpower: {
       name: "⚡ Ojos Azules y Curiosidad Suprema",
@@ -404,8 +404,8 @@ const ANIMAL_FUN_PROFILES = {
   vaca: {
     quote: "¡Muuuuuy buenas! Tengo 4 compartimentos estomacales trabajando en equipo. Mientras tú te cansas mascando chicle, ¡yo rumio todo el día feliz!",
     joke: {
-      question: "¿Por qué la vaca fue a la biblioteca escolar del B-13?",
-      punchline: "¡Porque quería leer libros de ciencia para hacer leche concentrada en conocimiento! 🥛📖"
+      question: "¿Qué le respondió la vaca al estudiante que le preguntó si podía darle leche chocolatada?",
+      punchline: "¡Muuuuy gracioso! Si quieres chocolate, cómprate un helado en el kiosko; ¡yo produzco calcio puro y pasto procesado, no milagros de repostería! 🐄🍫"
     },
     superpower: {
       name: "⚡ Rumiación Simbiótica Multicámara",
@@ -416,8 +416,8 @@ const ANIMAL_FUN_PROFILES = {
   oveja: {
     quote: "¡Beee-nvenidos! Mi lana es la maravilla textil más asombrosa de la naturaleza: térmica, impermeable, transpirable y 100% biodegradable.",
     joke: {
-      question: "¿A qué juegan las ovejitas en el recreo de la granja?",
-      punchline: "¡Al balom-beee en la pradera verde! ⚽🐑"
+      question: "¿Qué hace una oveja cuando se enoja con las demás en el potrero?",
+      punchline: "¡Les hace la ley del hielo y se va balando: '¡No me miren, que me da la lana!' 🐑🧶 ¡Puro drama textil de alta costura!"
     },
     superpower: {
       name: "⚡ Memoria Facial de Rebaño",
@@ -428,8 +428,8 @@ const ANIMAL_FUN_PROFILES = {
   pato: {
     quote: "¡Cuak cuak! Mis plumas tienen tecnología impermeable natural. ¡El agua resbala por completo y yo nado seco, ligero y con estilo!",
     joke: {
-      question: "¿Qué hace un pato cuando se toma una foto campestre?",
-      punchline: "¡Pone carita de pato... digo, carita cuak-tástica! 🦆📸"
+      question: "¿Qué le dijo un pato al otro antes de tirarse un piquero en el estanque?",
+      punchline: "—¡Tírate con confianza, compadre! ¡Si fuéramos gallinas nos daría frío, pero nosotros venimos impermeables de fábrica y con salvavidas incorporado! 🦆💦"
     },
     superpower: {
       name: "⚡ Manto Hidrofóbico Uropígeo",

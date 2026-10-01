@@ -62,6 +62,9 @@ function defaultStudentSession(name, grade) {
     soundOn: true,
     finalShown: false,
     mapFinalShown: false,
+    collectedClues: [],
+    themeBg: '#FAF7EE',
+    themeMode: 'light',
     createdAt: Date.now(),
     updatedAt: Date.now()
   };
@@ -135,6 +138,9 @@ function loadState() {
         base.soundOn = saved.soundOn !== false;
         base.finalShown = !!saved.finalShown;
         base.mapFinalShown = !!saved.mapFinalShown;
+        base.collectedClues = Array.isArray(saved.collectedClues) ? saved.collectedClues : [];
+        base.themeBg = saved.themeBg || '#FAF7EE';
+        base.themeMode = saved.themeMode || 'light';
         base.createdAt = saved.createdAt || Date.now();
         base.updatedAt = saved.updatedAt || Date.now();
 
@@ -275,6 +281,7 @@ function setActiveStudent(name, grade) {
     state = profiles[key].stateData;
     state.studentName = cleanName;
     state.studentGrade = cleanGrade;
+    if (!Array.isArray(state.collectedClues)) state.collectedClues = [];
   } else {
     // Iniciar nuevo cuaderno de campo para este estudiante
     const currentSound = state ? state.soundOn : true;
@@ -283,6 +290,7 @@ function setActiveStudent(name, grade) {
   }
   
   ensureMapQuizEntries(state);
+  applyGranjaTheme(state.themeMode, state.themeBg);
   saveState();
   return true;
 }
@@ -314,3 +322,44 @@ function clearAllProfiles() {
 
 // Estado global de la sesión
 let state = loadState();
+
+function applyGranjaTheme(themeMode, themeBg) {
+  const mode = themeMode || (typeof state !== 'undefined' ? state.themeMode : null) || localStorage.getItem('granja_theme_mode') || 'light';
+  const bg = themeBg || (typeof state !== 'undefined' ? state.themeBg : null) || localStorage.getItem('granja_theme_bg') || '#FAF7EE';
+
+  const isDark = (mode === 'dark');
+  if (isDark) {
+    document.documentElement.classList.add('theme-dark');
+    if (document.body) document.body.classList.add('theme-dark');
+    const darkBg = (bg && bg !== '#FAF7EE' && bg !== '#faf7ee') ? bg : '#141c13';
+    document.documentElement.style.setProperty('--bg-canvas', darkBg);
+    if (document.body) document.body.style.backgroundColor = darkBg;
+  } else {
+    document.documentElement.classList.remove('theme-dark');
+    if (document.body) document.body.classList.remove('theme-dark');
+    const lightBg = bg || '#FAF7EE';
+    document.documentElement.style.setProperty('--bg-canvas', lightBg);
+    if (document.body) document.body.style.backgroundColor = lightBg;
+  }
+
+  if (typeof state !== 'undefined' && state) {
+    state.themeMode = mode;
+    state.themeBg = bg;
+  }
+  try {
+    localStorage.setItem('granja_theme_mode', mode);
+    localStorage.setItem('granja_theme_bg', bg);
+  } catch (e) {}
+}
+window.applyGranjaTheme = applyGranjaTheme;
+
+applyGranjaTheme(state ? state.themeMode : null, state ? state.themeBg : null);
+if (typeof document !== 'undefined') {
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+      applyGranjaTheme(state ? state.themeMode : null, state ? state.themeBg : null);
+    });
+  } else {
+    applyGranjaTheme(state ? state.themeMode : null, state ? state.themeBg : null);
+  }
+}
