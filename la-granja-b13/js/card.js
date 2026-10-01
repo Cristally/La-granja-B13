@@ -1394,19 +1394,24 @@ function renderFicha(a) {
         <p class="superpower-desc">${funProfile.superpower.desc}</p>
       </div>
 
-      <!-- Chiste de Granja Interactivo con Remate Revelable -->
+      <!-- Chiste de Granja Interactivo con Remate Revelable y Audio -->
       <div class="animal-joke-box" id="jokeBox_${a.id}">
         <div class="joke-header">
           <span class="joke-title-tag">🌾 Chiste de Granja</span>
-          <span class="joke-sub">¡Toca para adivinar y reír!</span>
+          <span class="joke-sub">¡Humor zootécnico del Liceo B-13!</span>
         </div>
-        <div class="joke-q">${funProfile.joke.question}</div>
+        <div class="joke-q" id="jokeQ_${a.id}">${funProfile.joke.question}</div>
         <div class="joke-punchline" id="punchline_${a.id}" style="display:none;">
-          <span>🎭</span> <b>${funProfile.joke.punchline}</b>
+          <span>🎭</span> <b id="jokeA_${a.id}">${funProfile.joke.punchline}</b>
         </div>
-        <button type="button" class="joke-reveal-btn" id="jokeBtn_${a.id}">
-          <span>👀 ¡Ver Remate!</span>
-        </button>
+        <div class="joke-actions-row" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:8px;">
+          <button type="button" class="joke-reveal-btn" id="jokeBtn_${a.id}">
+            <span>👀 ¡Ver Remate!</span>
+          </button>
+          <button type="button" class="joke-audio-btn tool-btn" id="jokeAudioBtn_${a.id}" style="padding:7px 14px;font-size:0.82rem;font-weight:700;background:#fef3c7;border:1.5px solid #d97706;color:#78350f;border-radius:20px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:all 0.2s ease;">
+            <span>🗣️ Escuchar Chiste</span>
+          </button>
+        </div>
       </div>
 
       <!-- Tarjeta de Curiosidad Asombrosa -->
@@ -1416,6 +1421,13 @@ function renderFicha(a) {
           <div class="curiosity-tag">¿SABÍAS ESTO? · CURIOSIDAD DE CAMPO</div>
           <p class="curiosity-text">${funProfile.curiosity}</p>
         </div>
+      </div>
+
+      <!-- Botón directo al Muro Comunitario de la Granja -->
+      <div style="margin:10px 0 14px;">
+        <button type="button" class="tool-btn" id="cardCommentBtn_${a.id}" style="width:100%;padding:10px;background:#f0f9ff;border:1.5px solid #0284c7;color:#0369a1;font-weight:700;border-radius:8px;font-size:0.86rem;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;">
+          <span>💬</span> Preguntar o Dejar Observación sobre ${a.name} en el Muro
+        </button>
       </div>
 
       <!-- Grilla de Fichas Zootécnicas y Científicas -->
@@ -1462,9 +1474,63 @@ function renderFicha(a) {
     </div>
   `;
 
+  // Sonido cómico de remate (redoble y platillo / ba-dum-tss)
+  function playComicRimshot() {
+    try {
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      if (!AudioCtx) return;
+      const ctx = new AudioCtx();
+      const now = ctx.currentTime;
+      
+      const osc1 = ctx.createOscillator();
+      const gain1 = ctx.createGain();
+      osc1.type = 'triangle';
+      osc1.frequency.setValueAtTime(160, now);
+      osc1.frequency.exponentialRampToValueAtTime(60, now + 0.12);
+      gain1.gain.setValueAtTime(0.35, now);
+      gain1.gain.linearRampToValueAtTime(0.01, now + 0.12);
+      osc1.connect(gain1);
+      gain1.connect(ctx.destination);
+      osc1.start(now);
+      osc1.stop(now + 0.13);
+
+      const osc2 = ctx.createOscillator();
+      const gain2 = ctx.createGain();
+      osc2.type = 'triangle';
+      osc2.frequency.setValueAtTime(140, now + 0.14);
+      osc2.frequency.exponentialRampToValueAtTime(50, now + 0.28);
+      gain2.gain.setValueAtTime(0.4, now + 0.14);
+      gain2.gain.linearRampToValueAtTime(0.01, now + 0.28);
+      osc2.connect(gain2);
+      gain2.connect(ctx.destination);
+      osc2.start(now + 0.14);
+      osc2.stop(now + 0.29);
+
+      const bufferSize = ctx.sampleRate * 0.35;
+      const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+      const data = buffer.getChannelData(0);
+      for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+      const noise = ctx.createBufferSource();
+      noise.buffer = buffer;
+      const filter = ctx.createBiquadFilter();
+      filter.type = 'highpass';
+      filter.frequency.value = 4500;
+      const cymbalGain = ctx.createGain();
+      cymbalGain.gain.setValueAtTime(0.35, now + 0.3);
+      cymbalGain.gain.exponentialRampToValueAtTime(0.001, now + 0.6);
+      noise.connect(filter);
+      filter.connect(cymbalGain);
+      cymbalGain.connect(ctx.destination);
+      noise.start(now + 0.3);
+      noise.stop(now + 0.62);
+    } catch (e) {}
+  }
+
   // Listener para el botón interactivo de revelar remate del chiste
   const jokeBtn = document.getElementById(`jokeBtn_${a.id}`);
+  const jokeAudioBtn = document.getElementById(`jokeAudioBtn_${a.id}`);
   const punchlineEl = document.getElementById(`punchline_${a.id}`);
+
   if (jokeBtn && punchlineEl) {
     jokeBtn.addEventListener('click', () => {
       const isHidden = punchlineEl.style.display === 'none';
@@ -1472,6 +1538,7 @@ function renderFicha(a) {
         punchlineEl.style.display = 'flex';
         punchlineEl.classList.add('revealed');
         jokeBtn.innerHTML = '<span>🤫 Ocultar Remate</span>';
+        playComicRimshot();
         if (typeof state !== 'undefined') {
           if (!state.jokesRevealedCount) state.jokesRevealedCount = 0;
           state.jokesRevealedCount++;
@@ -1486,6 +1553,61 @@ function renderFicha(a) {
         punchlineEl.classList.remove('revealed');
         jokeBtn.innerHTML = '<span>👀 ¡Ver Remate!</span>';
       }
+    });
+  }
+
+  // Narración sonora del chiste con síntesis de voz y remate
+  if (jokeAudioBtn) {
+    jokeAudioBtn.addEventListener('click', () => {
+      const q = funProfile.joke.question;
+      const cleanPunch = funProfile.joke.punchline.replace(/[^\w\sáéíóúüñ¿?¡!]/gi, '');
+
+      if (punchlineEl) {
+        punchlineEl.style.display = 'flex';
+        punchlineEl.classList.add('revealed');
+      }
+      if (jokeBtn) jokeBtn.innerHTML = '<span>🤫 Ocultar Remate</span>';
+
+      jokeAudioBtn.disabled = true;
+      jokeAudioBtn.style.opacity = '0.7';
+
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const utterQ = new SpeechSynthesisUtterance(q);
+        utterQ.lang = 'es-CL';
+        utterQ.rate = 0.95;
+        utterQ.pitch = 1.05;
+
+        const utterA = new SpeechSynthesisUtterance(cleanPunch);
+        utterA.lang = 'es-CL';
+        utterA.rate = 1.0;
+        utterA.pitch = 1.15;
+        utterA.onend = () => {
+          playComicRimshot();
+          jokeAudioBtn.disabled = false;
+          jokeAudioBtn.style.opacity = '1';
+          if (typeof spawnStarBurst === 'function') spawnStarBurst(jokeAudioBtn);
+        };
+
+        utterQ.onend = () => {
+          setTimeout(() => {
+            window.speechSynthesis.speak(utterA);
+          }, 350);
+        };
+
+        window.speechSynthesis.speak(utterQ);
+      } else {
+        playComicRimshot();
+        jokeAudioBtn.disabled = false;
+        jokeAudioBtn.style.opacity = '1';
+      }
+    });
+  }
+
+  const cardCommentBtn = document.getElementById(`cardCommentBtn_${a.id}`);
+  if (cardCommentBtn) {
+    cardCommentBtn.addEventListener('click', () => {
+      openCommentsModal(a.id);
     });
   }
 
@@ -2266,6 +2388,7 @@ function renderTeacherPanel() {
       <button class="teacher-tab-btn ${activeTeacherTab === 'calificaciones' ? 'active' : ''}" data-ttab="calificaciones" type="button">📋 Calificaciones</button>
       <button class="teacher-tab-btn ${activeTeacherTab === 'quizzes' ? 'active' : ''}" data-ttab="quizzes" type="button">➕ Crear Quizzes</button>
       <button class="teacher-tab-btn ${activeTeacherTab === 'stats' ? 'active' : ''}" data-ttab="stats" type="button">📊 Métricas del Liceo</button>
+      <button class="teacher-tab-btn ${activeTeacherTab === 'historial' ? 'active' : ''}" data-ttab="historial" type="button">📡 Historial en Vivo</button>
     </div>
 
     <!-- Pestaña 1: Calificaciones -->
@@ -2390,6 +2513,34 @@ function renderTeacherPanel() {
         </div>
       </div>
     </div>
+
+    <!-- Pestaña 4: Historial de Modificaciones y Acciones en Tiempo Real -->
+    <div id="tabContentHistorial" style="${activeTeacherTab === 'historial' ? 'display:block;' : 'display:none;'}">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px;">
+        <div>
+          <span style="display:inline-flex;align-items:center;gap:6px;background:#dcfce7;color:#166534;padding:4px 10px;border-radius:12px;font-size:0.75rem;font-weight:700;">
+            <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#22c55e;"></span>
+            MONITOREO EN TIEMPO REAL
+          </span>
+          <div style="font-size:0.8rem;color:#555;margin-top:4px;">Registro cronológico continuo de registros, quizzes y actividades en la Granja B-13.</div>
+        </div>
+        <div style="display:flex;gap:6px;">
+          <button type="button" class="tool-btn" id="btnRefreshActivityFeed" style="padding:6px 12px;font-size:0.8rem;">🔄 Actualizar</button>
+        </div>
+      </div>
+
+      <div class="activity-filter-bar" style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap;">
+        <button type="button" class="act-filter-btn active" data-actfilter="all">Todos</button>
+        <button type="button" class="act-filter-btn" data-actfilter="register">🎓 Registros</button>
+        <button type="button" class="act-filter-btn" data-actfilter="score_up">⭐ Puntajes</button>
+        <button type="button" class="act-filter-btn" data-actfilter="comment">💬 Comentarios</button>
+        <button type="button" class="act-filter-btn" data-actfilter="quiz_created">📝 Quizzes</button>
+      </div>
+
+      <div id="teacherActivityFeedContainer" style="max-height:360px;overflow-y:auto;display:flex;flex-direction:column;gap:8px;padding-right:4px;">
+        <div style="text-align:center;padding:20px;color:#666;font-size:0.85rem;">Cargando historial de actividades...</div>
+      </div>
+    </div>
   `;
 
   // Cambiar pestañas
@@ -2473,21 +2624,58 @@ function renderTeacherPanel() {
     });
   }
 
-  // Eventos de eliminar pregunta
-  body.querySelectorAll('.quiz-item-del').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const zId = btn.dataset.delZid;
-      const idx = parseInt(btn.dataset.delIdx, 10);
-      if (confirm('¿Eliminar esta pregunta del mapa?')) {
-        if (typeof TeacherQuizzes !== 'undefined') {
-          TeacherQuizzes.remove(zId, idx);
-          renderTeacherPanel();
-          if (typeof renderMapPins === 'function') renderMapPins();
+    body.querySelectorAll('.quiz-item-del').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const zId = btn.dataset.delZid;
+        const idx = parseInt(btn.dataset.delIdx, 10);
+        if (confirm('¿Eliminar esta pregunta del mapa?')) {
+          if (typeof TeacherQuizzes !== 'undefined') {
+            TeacherQuizzes.remove(zId, idx);
+            renderTeacherPanel();
+            if (typeof renderMapPins === 'function') renderMapPins();
+          }
         }
-      }
+      });
     });
-  });
-}
+
+    // Eventos de Tab 4: Historial en Vivo
+    if (activeTeacherTab === 'historial') {
+      loadTeacherLiveActivity(currentActivityFilter);
+      if (teacherActivityPollingInterval) clearInterval(teacherActivityPollingInterval);
+      teacherActivityPollingInterval = setInterval(() => {
+        const cont = document.getElementById('teacherActivityFeedContainer');
+        if (cont && activeTeacherTab === 'historial') {
+          loadTeacherLiveActivity(currentActivityFilter, true);
+        } else {
+          if (teacherActivityPollingInterval) {
+            clearInterval(teacherActivityPollingInterval);
+            teacherActivityPollingInterval = null;
+          }
+        }
+      }, 4000);
+
+      const refBtn = document.getElementById('btnRefreshActivityFeed');
+      if (refBtn) {
+        refBtn.addEventListener('click', () => {
+          loadTeacherLiveActivity(currentActivityFilter);
+        });
+      }
+
+      body.querySelectorAll('.act-filter-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          body.querySelectorAll('.act-filter-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          currentActivityFilter = btn.dataset.actfilter;
+          loadTeacherLiveActivity(currentActivityFilter);
+        });
+      });
+    } else {
+      if (teacherActivityPollingInterval) {
+        clearInterval(teacherActivityPollingInterval);
+        teacherActivityPollingInterval = null;
+      }
+    }
+  }
 
 function exportReport() {
   const potreroAnimals = ANIMALS.filter(a => POTRERO_IDS.includes(a.id));
@@ -2559,6 +2747,467 @@ function exportReport() {
   aTag.remove();
   URL.revokeObjectURL(url);
 }
+
+/* ============================================================
+   HISTORIAL EN VIVO DEL PANEL DOCENTE (FEED DE ACTIVIDADES)
+   ============================================================ */
+
+let currentActivityFilter = 'all';
+let teacherActivityPollingInterval = null;
+
+async function loadTeacherLiveActivity(filter = 'all', silent = false) {
+  const container = document.getElementById('teacherActivityFeedContainer');
+  if (!container) return;
+  if (!silent) {
+    container.innerHTML = '<div style="text-align:center;padding:20px;color:#666;font-size:0.85rem;">⏳ Consultando actividad en vivo...</div>';
+  }
+
+  let logs = [];
+  try {
+    const res = await fetch(`/api/activity?limit=50&filter=${encodeURIComponent(filter)}`);
+    if (res.ok) {
+      const data = await res.json();
+      if (data && data.logs) logs = data.logs;
+    }
+  } catch (e) {
+    try {
+      logs = JSON.parse(localStorage.getItem('granjaActivityLogs')) || [];
+      if (filter !== 'all') {
+        logs = logs.filter(l => l.type === filter);
+      }
+    } catch (err) {}
+  }
+
+  if (!logs || logs.length === 0) {
+    container.innerHTML = `
+      <div style="text-align:center;padding:24px 10px;background:#f8fafc;border:1.5px dashed #cbd5e1;border-radius:8px;">
+        <span style="font-size:1.8rem;display:block;margin-bottom:6px;">🌾</span>
+        <strong style="color:#1e293b;font-size:0.9rem;">No hay actividades registradas en esta categoría aún.</strong>
+        <p style="color:#64748b;font-size:0.8rem;margin:4px 0 0;">Las acciones de estudiantes y profesores aparecerán aquí en vivo.</p>
+      </div>
+    `;
+    return;
+  }
+
+  const iconsByType = {
+    register: '🎓',
+    login: '🔑',
+    score_up: '⭐',
+    quiz_created: '📝',
+    comment: '💬',
+    system: '⚙️'
+  };
+
+  const html = logs.map(l => {
+    const icon = iconsByType[l.type] || '📌';
+    const dateObj = new Date(l.timestamp);
+    const timeStr = !isNaN(dateObj.getTime()) ? dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }) : 'Reciente';
+    const dateStr = !isNaN(dateObj.getTime()) ? dateObj.toLocaleDateString() : '';
+    const roleCls = l.role === 'profesor' || l.role === 'admin' ? 'role-profesor' : 'role-estudiante';
+    const roleLabel = l.role === 'profesor' ? 'Docente' : (l.role === 'admin' ? 'Admin' : 'Estudiante');
+
+    let extraDetails = '';
+    if (l.details && typeof l.details === 'object') {
+      if (l.details.animal) extraDetails += ` · 🐾 ${l.details.animal}`;
+      if (l.details.course) extraDetails += ` · 🏫 ${l.details.course}`;
+      if (l.details.score) extraDetails += ` · 🏆 ${l.details.score} pts`;
+      if (l.details.zone) extraDetails += ` · 📍 ${l.details.zone}`;
+    }
+
+    return `
+      <div class="activity-item-card type-${l.type || 'system'}">
+        <div class="act-icon-box">${icon}</div>
+        <div class="act-info-box">
+          <div class="act-header-row">
+            <div>
+              <span class="act-user-tag">${sanitizeInput(l.user || 'Anónimo')}</span>
+              <span class="act-role-pill ${roleCls}">${roleLabel}</span>
+              ${extraDetails ? `<span style="font-size:0.75rem;color:#64748b;font-weight:600;">${extraDetails}</span>` : ''}
+            </div>
+            <span class="act-time-stamp" title="${dateStr} ${timeStr}">🕒 ${timeStr}</span>
+          </div>
+          <p class="act-desc-text">${sanitizeInput(l.description || '')}</p>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  container.innerHTML = html;
+}
+
+/* ============================================================
+   SISTEMA COMUNITARIO: MURO DE PREGUNTAS Y COMENTARIOS B-13
+   ============================================================ */
+
+let currentCommentAnimalFilter = 'all';
+
+function ensureCommentsModal() {
+  if (document.getElementById('commentsOverlay')) return;
+
+  const animalOptions = ANIMALS.map(a => `<option value="${a.id}">🐾 ${a.name} (${a.defaultName})</option>`).join('');
+
+  const modalHtml = `
+    <div class="overlay" id="commentsOverlay" style="display:none;">
+      <div class="card comments-modal-card">
+        <button class="close-btn" data-close="commentsOverlay" aria-label="Cerrar">✕</button>
+        <div class="card-head" style="align-items:center;gap:12px;padding-bottom:10px;">
+          <div class="big-sprite">💬</div>
+          <div>
+            <h2 style="font-family:'Fraunces',serif;color:#14532d;margin:0;font-size:1.35rem;">Muro Comunitario de La Granja B-13</h2>
+            <div class="lat" style="font-size:0.84rem;color:#475569;">Preguntas zootécnicas, observaciones de campo y retroalimentación pedagógica</div>
+          </div>
+        </div>
+
+        <div class="card-body" style="padding-top:8px;">
+          <!-- Filtro de Muro -->
+          <div class="comments-filter-strip">
+            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+              <label for="commentFilterAnimal" style="font-size:0.8rem;font-weight:700;color:#334155;">Filtrar por Animal:</label>
+              <select id="commentFilterAnimal" style="padding:5px 8px;border:1.5px solid #cbd5e1;border-radius:6px;font-size:0.82rem;font-family:'Karla',sans-serif;">
+                <option value="all">🌐 Todos los animales / General</option>
+                <option value="general">🌾 General de la Granja</option>
+                ${animalOptions}
+              </select>
+            </div>
+            <div style="display:flex;gap:6px;">
+              <button type="button" class="tool-btn" id="btnRefreshComments" style="padding:5px 10px;font-size:0.8rem;">🔄 Actualizar</button>
+            </div>
+          </div>
+
+          <!-- Caja de Publicación -->
+          <div class="comments-compose-box">
+            <form id="commentPostForm">
+              <div class="comments-compose-header">
+                <div class="comments-type-pill">
+                  <button type="button" class="comments-type-btn active" id="btnTypeQuestion" data-type="question">❓ Pregunta Zootécnica</button>
+                  <button type="button" class="comments-type-btn" id="btnTypeObs" data-type="observation">🌾 Observación de Campo</button>
+                </div>
+                <div style="display:flex;align-items:center;gap:6px;">
+                  <label for="commentPostAnimal" style="font-size:0.78rem;font-weight:700;color:#475569;">Especie:</label>
+                  <select id="commentPostAnimal" style="padding:4px 8px;border:1.5px solid #cbd5e1;border-radius:6px;font-size:0.8rem;">
+                    <option value="general">🌾 General de la Granja</option>
+                    ${animalOptions}
+                  </select>
+                </div>
+              </div>
+
+              <textarea id="commentInputText" class="comments-textarea" placeholder="Escribe tu pregunta sobre la salud, alimentación o hábitos de los animales..." required></textarea>
+
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;flex-wrap:wrap;gap:8px;">
+                <div id="commentAuthorDisplay" style="font-size:0.8rem;color:#64748b;font-weight:600;">
+                  Publicando como: <b>${sanitizeInput(state.studentName || 'Estudiante')}</b>
+                </div>
+                <button type="submit" class="tool-btn" style="background:var(--grass-dark);color:#fff;padding:8px 16px;font-weight:700;font-size:0.84rem;border-radius:6px;">
+                  ✉️ Publicar en el Muro
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <!-- Feed de comentarios -->
+          <div class="comments-feed-list" id="commentsFeedList">
+            <div style="text-align:center;padding:20px;color:#666;font-size:0.85rem;">Cargando comentarios...</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  document.body.insertAdjacentHTML('beforeend', modalHtml);
+
+  // Selector de tipo (pregunta vs observación)
+  let isQuestionPost = true;
+  const btnQ = document.getElementById('btnTypeQuestion');
+  const btnO = document.getElementById('btnTypeObs');
+  if (btnQ && btnO) {
+    btnQ.addEventListener('click', () => {
+      isQuestionPost = true;
+      btnQ.classList.add('active');
+      btnO.classList.remove('active');
+      const ta = document.getElementById('commentInputText');
+      if (ta) ta.placeholder = '¿Tienes alguna duda sobre su nutrición, hábitat o comportamiento? Escríbela aquí...';
+    });
+    btnO.addEventListener('click', () => {
+      isQuestionPost = false;
+      btnO.classList.add('active');
+      btnQ.classList.remove('active');
+      const ta = document.getElementById('commentInputText');
+      if (ta) ta.placeholder = 'Describe lo que viste hoy en terreno (ej: "Hoy las catitas comieron espinaca con mucho entusiasmo")...';
+    });
+  }
+
+  // Selector de filtro de animal
+  const filterSel = document.getElementById('commentFilterAnimal');
+  if (filterSel) {
+    filterSel.addEventListener('change', () => {
+      currentCommentAnimalFilter = filterSel.value;
+      loadCommunityComments(currentCommentAnimalFilter);
+    });
+  }
+
+  const refreshBtn = document.getElementById('btnRefreshComments');
+  if (refreshBtn) {
+    refreshBtn.addEventListener('click', () => {
+      loadCommunityComments(currentCommentAnimalFilter);
+    });
+  }
+
+  // Envío de nuevo comentario
+  const form = document.getElementById('commentPostForm');
+  if (form) {
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const textEl = document.getElementById('commentInputText');
+      const animalEl = document.getElementById('commentPostAnimal');
+      const text = textEl ? textEl.value.trim() : '';
+      const animalId = animalEl ? animalEl.value : 'general';
+
+      if (!text) return;
+
+      const sesion = (typeof Auth !== 'undefined' && typeof Auth.getSesion === 'function') ? Auth.getSesion() : null;
+      const author = (sesion && sesion.nombre) || state.studentName || 'Estudiante B-13';
+      const role = (sesion && sesion.rol) || 'estudiante';
+      const course = (sesion && sesion.curso) || state.studentGrade || 'Enseñanza Media';
+
+      const commentData = {
+        author,
+        role,
+        course,
+        animalId,
+        text,
+        isQuestion: isQuestionPost
+      };
+
+      try {
+        const res = await fetch('/api/comments', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(commentData)
+        });
+        if (res.ok) {
+          textEl.value = '';
+          showToast('💬 ¡Comentario publicado en el muro!');
+          loadCommunityComments(currentCommentAnimalFilter);
+        } else {
+          fallbackSaveCommentLocally(commentData);
+        }
+      } catch (err) {
+        fallbackSaveCommentLocally(commentData);
+      }
+    });
+  }
+}
+
+function fallbackSaveCommentLocally(commentData) {
+  try {
+    let local = JSON.parse(localStorage.getItem('granjaLocalComments')) || [];
+    const newC = {
+      id: 'c_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5),
+      timestamp: new Date().toISOString(),
+      ...commentData,
+      replies: []
+    };
+    local.unshift(newC);
+    localStorage.setItem('granjaLocalComments', JSON.stringify(local));
+    const textEl = document.getElementById('commentInputText');
+    if (textEl) textEl.value = '';
+    showToast('💬 ¡Comentario guardado localmente!');
+    loadCommunityComments(currentCommentAnimalFilter);
+  } catch (e) {
+    showToast('⚠️ No se pudo guardar el comentario.');
+  }
+}
+
+async function loadCommunityComments(animalFilter = 'all') {
+  const container = document.getElementById('commentsFeedList');
+  if (!container) return;
+
+  container.innerHTML = '<div style="text-align:center;padding:20px;color:#666;font-size:0.85rem;">⏳ Cargando opiniones del muro...</div>';
+
+  let comments = [];
+  try {
+    const url = animalFilter && animalFilter !== 'all' ? `/api/comments?animalId=${encodeURIComponent(animalFilter)}` : '/api/comments';
+    const res = await fetch(url);
+    if (res.ok) {
+      const data = await res.json();
+      if (data && data.comments) comments = data.comments;
+    }
+  } catch (e) {
+    try {
+      comments = JSON.parse(localStorage.getItem('granjaLocalComments')) || [];
+      if (animalFilter && animalFilter !== 'all') {
+        comments = comments.filter(c => c.animalId === animalFilter);
+      }
+    } catch (err) {}
+  }
+
+  if (!comments || comments.length === 0) {
+    container.innerHTML = `
+      <div style="text-align:center;padding:28px 12px;background:#f8fafc;border:1.5px dashed #cbd5e1;border-radius:8px;">
+        <span style="font-size:2rem;display:block;margin-bottom:6px;">💬</span>
+        <strong style="color:#1e293b;font-size:0.95rem;">Aún no hay comentarios para esta selección.</strong>
+        <p style="color:#64748b;font-size:0.82rem;margin:4px 0 0;">¡Sé el primero en compartir una observación o hacer una pregunta!</p>
+      </div>
+    `;
+    return;
+  }
+
+  const sesion = (typeof Auth !== 'undefined' && typeof Auth.getSesion === 'function') ? Auth.getSesion() : null;
+  const isDocente = sesion && (sesion.rol === 'profesor' || sesion.rol === 'admin');
+
+  const html = comments.map(c => {
+    const dateObj = new Date(c.timestamp);
+    const dateStr = !isNaN(dateObj.getTime()) ? dateObj.toLocaleDateString() : '';
+    const timeStr = !isNaN(dateObj.getTime()) ? dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
+    const animalObj = ANIMALS.find(a => a.id === c.animalId);
+    const animalLabel = animalObj ? `${animalObj.emoji || '🐾'} ${animalObj.name}` : (c.animalId === 'general' ? '🌾 General de la Granja' : `🐾 ${c.animalId}`);
+
+    const isQuestion = !!c.isQuestion;
+    const hasTeacherReply = (c.replies || []).some(r => r.role === 'profesor' || r.role === 'admin');
+    
+    let badgePill = '';
+    if (isQuestion) {
+      badgePill = hasTeacherReply
+        ? '<span style="background:#dcfce7;color:#15803d;padding:2px 8px;border-radius:12px;font-size:0.72rem;font-weight:700;">✅ Respondida por Docente</span>'
+        : '<span style="background:#e0f2fe;color:#0369a1;padding:2px 8px;border-radius:12px;font-size:0.72rem;font-weight:700;">❓ Pregunta Pendiente</span>';
+    } else {
+      badgePill = '<span style="background:#fef3c7;color:#92400e;padding:2px 8px;border-radius:12px;font-size:0.72rem;font-weight:700;">🌾 Observación de Campo</span>';
+    }
+
+    const repliesHtml = (c.replies && c.replies.length > 0) ? `
+      <div class="comment-replies-list">
+        ${c.replies.map(r => {
+          const rDate = new Date(r.timestamp);
+          const rTimeStr = !isNaN(rDate.getTime()) ? rDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
+          const isRTeacher = r.role === 'profesor' || r.role === 'admin';
+          return `
+            <div class="reply-item">
+              <div class="reply-header">
+                <span class="reply-author ${isRTeacher ? 'is-teacher' : ''}">
+                  ${isRTeacher ? '👩‍🏫 ' : '🧑‍🌾 '}${sanitizeInput(r.author || 'Usuario')}
+                  ${isRTeacher ? '<span style="font-size:0.68rem;background:#dbeafe;color:#1d4ed8;padding:1px 5px;border-radius:8px;margin-left:4px;">DOCENTE</span>' : ''}
+                </span>
+                <span style="color:#94a3b8;font-size:0.72rem;">${rTimeStr}</span>
+              </div>
+              <div>${sanitizeInput(r.text || '')}</div>
+            </div>
+          `;
+        }).join('')}
+      </div>
+    ` : '';
+
+    return `
+      <div class="comment-card ${isQuestion ? 'is-question' : 'is-observation'}" data-cid="${c.id}">
+        <div class="comment-card-top">
+          <div class="comment-user-box">
+            <div class="comment-avatar">${c.role === 'profesor' ? '👩‍🏫' : '🧑‍🌾'}</div>
+            <div>
+              <strong style="font-size:0.86rem;color:#0f172a;">${sanitizeInput(c.author || 'Estudiante')}</strong>
+              <span style="font-size:0.74rem;color:#64748b;margin-left:4px;">(${sanitizeInput(c.course || c.role || '')})</span>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+            <span class="comment-animal-tag">${animalLabel}</span>
+            ${badgePill}
+            <span style="font-size:0.72rem;color:#94a3b8;">${dateStr} ${timeStr}</span>
+          </div>
+        </div>
+
+        <div class="comment-text-body">${sanitizeInput(c.text || '')}</div>
+
+        ${repliesHtml}
+
+        <!-- Formulario inline de respuesta -->
+        <form class="comment-reply-form" data-reply-to="${c.id}">
+          <input type="text" class="comment-reply-input" placeholder="${isDocente ? 'Escribe una retroalimentación docente oficial...' : 'Escribe una respuesta o comentario...'}" required>
+          <button type="submit" class="comment-reply-btn">${isDocente ? '👩‍🏫 Responder como Docente' : '💬 Responder'}</button>
+        </form>
+      </div>
+    `;
+  }).join('');
+
+  container.innerHTML = html;
+
+  // Event listeners para enviar respuestas
+  container.querySelectorAll('.comment-reply-form').forEach(rForm => {
+    rForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const cid = rForm.dataset.replyTo;
+      const inp = rForm.querySelector('.comment-reply-input');
+      const text = inp ? inp.value.trim() : '';
+      if (!text) return;
+
+      const ses = (typeof Auth !== 'undefined' && typeof Auth.getSesion === 'function') ? Auth.getSesion() : null;
+      const author = (ses && ses.nombre) || state.studentName || 'Participante B-13';
+      const role = (ses && ses.rol) || 'estudiante';
+
+      try {
+        const res = await fetch(`/api/comments/${encodeURIComponent(cid)}/reply`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ author, role, text })
+        });
+        if (res.ok) {
+          inp.value = '';
+          showToast('✨ Respuesta agregada con éxito');
+          loadCommunityComments(currentCommentAnimalFilter);
+        } else {
+          fallbackReplyLocally(cid, { author, role, text });
+        }
+      } catch (err) {
+        fallbackReplyLocally(cid, { author, role, text });
+      }
+    });
+  });
+}
+
+function fallbackReplyLocally(cid, replyData) {
+  try {
+    let local = JSON.parse(localStorage.getItem('granjaLocalComments')) || [];
+    const target = local.find(c => c.id === cid);
+    if (target) {
+      if (!target.replies) target.replies = [];
+      target.replies.push({
+        id: 'r_' + Date.now(),
+        timestamp: new Date().toISOString(),
+        ...replyData
+      });
+      localStorage.setItem('granjaLocalComments', JSON.stringify(local));
+      showToast('✨ Respuesta guardada localmente');
+      loadCommunityComments(currentCommentAnimalFilter);
+    }
+  } catch (e) {}
+}
+
+function openCommentsModal(animalId) {
+  ensureCommentsModal();
+  const sesion = (typeof Auth !== 'undefined' && typeof Auth.getSesion === 'function') ? Auth.getSesion() : null;
+  const authorDisplay = document.getElementById('commentAuthorDisplay');
+  if (authorDisplay) {
+    const curName = (sesion && sesion.nombre) || state.studentName || 'Estudiante';
+    const curRole = (sesion && sesion.rol === 'profesor') ? 'Docente B-13' : 'Estudiante';
+    authorDisplay.innerHTML = `Publicando como: <b>${sanitizeInput(curName)}</b> (${curRole})`;
+  }
+
+  if (animalId) {
+    currentCommentAnimalFilter = animalId;
+    const filterSel = document.getElementById('commentFilterAnimal');
+    if (filterSel) filterSel.value = animalId;
+    const postSel = document.getElementById('commentPostAnimal');
+    if (postSel) postSel.value = animalId;
+  } else {
+    currentCommentAnimalFilter = 'all';
+    const filterSel = document.getElementById('commentFilterAnimal');
+    if (filterSel) filterSel.value = 'all';
+  }
+
+  loadCommunityComments(currentCommentAnimalFilter);
+  openOverlayId('commentsOverlay');
+}
+
+window.openCommentsModal = openCommentsModal;
+window.ensureCommentsModal = ensureCommentsModal;
+window.loadTeacherLiveActivity = loadTeacherLiveActivity;
 
 /* ============ Barra de herramientas y overlays ============ */
 
@@ -2684,6 +3333,11 @@ document.addEventListener('click', (e) => {
     e.preventDefault();
     openTeacherPanelSafe();
   }
+  const cBtn = e.target.closest('#commentsBtn');
+  if (cBtn) {
+    e.preventDefault();
+    openCommentsModal();
+  }
 });
 
 // Abrir modal de Escudo Oficial al hacer clic en el Logo
@@ -2707,7 +3361,7 @@ document.querySelectorAll('.overlay').forEach(el => {
 window.addEventListener('keydown', e => {
   if (e.key === 'Escape') {
     closeFichaOverlay();
-    ['studentOverlay', 'rulesOverlay', 'teacherOverlay', 'finalOverlay', 'miniVistaOverlay', 'zoneInfoOverlay', 'badgeOverlay', 'achievementsOverlay', 'logoOverlay', 'victoryOverlay'].forEach(closeOverlayId);
+    ['studentOverlay', 'rulesOverlay', 'teacherOverlay', 'finalOverlay', 'miniVistaOverlay', 'zoneInfoOverlay', 'badgeOverlay', 'achievementsOverlay', 'logoOverlay', 'victoryOverlay', 'commentsOverlay'].forEach(closeOverlayId);
   }
 });
 

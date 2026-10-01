@@ -319,6 +319,16 @@
               PlatformerGame.pauseRun();
             }
           }
+          if (targetId === 'game-flappy') {
+            if (!FlappyGame.initialized) FlappyGame.start();
+            else {
+              if (!FlappyGame.isRunning) FlappyGame.draw();
+            }
+          } else {
+            if (typeof FlappyGame !== 'undefined' && FlappyGame.isRunning) {
+              FlappyGame.pause();
+            }
+          }
         }
       });
     });
@@ -1227,7 +1237,7 @@
       catita: '🐦'
     },
     difficulty: 'facil',
-    unlockedDifficulties: ['facil', 'media', 'dificil'],
+    unlockedDifficulties: ['facil', 'media', 'dificil', 'legendaria'],
     diffConfig: {
       facil: {
         name: '🟢 Fácil',
@@ -1272,6 +1282,18 @@
         jumpStrength: 10.8,
         theme: 'extrema',
         dashEnabled: true
+      },
+      legendaria: {
+        name: '👑 Legendaria',
+        title: 'Cacería Salvaje — Lobo Sombra y Reloj Fatal',
+        subtitle: '¡Límite estricto de 45 segundos! El voraz Lobo Sombra te pisa los talones sin descanso. Air Dash habilitado y 1 Sola Vida.',
+        lives: 1,
+        speed: 5.6,
+        gravity: 0.65,
+        jumpStrength: 10.8,
+        theme: 'legendaria',
+        dashEnabled: true,
+        timeLimit: 45
       }
     },
     player: {
@@ -1341,7 +1363,9 @@
         state.minigames = state.minigames || {};
         state.minigames.platformer = state.minigames.platformer || {};
         if (!Array.isArray(state.minigames.platformer.unlockedDifficulties)) {
-          state.minigames.platformer.unlockedDifficulties = ['facil', 'media', 'dificil'];
+          state.minigames.platformer.unlockedDifficulties = ['facil', 'media', 'dificil', 'legendaria'];
+        } else if (!state.minigames.platformer.unlockedDifficulties.includes('legendaria')) {
+          state.minigames.platformer.unlockedDifficulties.push('legendaria');
         }
         this.unlockedDifficulties = state.minigames.platformer.unlockedDifficulties;
       }
@@ -1369,6 +1393,7 @@
         diffValEl.style.color = (this.difficulty === 'facil') ? '#16a34a'
           : (this.difficulty === 'media') ? '#d97706'
           : (this.difficulty === 'dificil') ? '#dc2626'
+          : (this.difficulty === 'legendaria') ? '#b45309'
           : '#9333ea';
       }
 
@@ -1541,17 +1566,32 @@
       this.score = 0;
       this.lives = cfg.lives;
       this.maxLives = cfg.lives;
-      this.timerSeconds = 0;
       this.mudDamageCount = 0;
       this.isRunning = true;
       this.isFinished = false;
-      this.wallopBannerTimer = (this.difficulty === 'extrema') ? 1.8 : 0;
+
+      if (this.difficulty === 'legendaria') {
+        this.timerSeconds = 45;
+        this.wallopBannerTimer = 2.4;
+      } else {
+        this.timerSeconds = 0;
+        this.wallopBannerTimer = (this.difficulty === 'extrema') ? 1.8 : 0;
+      }
       this.updateHud();
 
       clearInterval(this.timerInterval);
       this.timerInterval = setInterval(() => {
-        this.timerSeconds++;
-        this.updateHud();
+        if (this.difficulty === 'legendaria') {
+          this.timerSeconds--;
+          this.updateHud();
+          if (this.timerSeconds <= 0) {
+            clearInterval(this.timerInterval);
+            this.takeDamage(999, '⏱️ ¡TIEMPO AGOTADO! El Granero B-13 cerró sus puertas.');
+          }
+        } else {
+          this.timerSeconds++;
+          this.updateHud();
+        }
       }, 1000);
 
       this.lastTime = performance.now();
@@ -1761,9 +1801,23 @@
       this.player.currentPlatform = null;
       this.updateDashUI();
 
+      // Perseguidor Lobo Sombra en Modo Legendario
+      if (this.difficulty === 'legendaria') {
+        this.chaserEnemy = {
+          x: -160,
+          y: 280,
+          w: 48,
+          h: 44,
+          speed: 4.88,
+          animTime: 0
+        };
+      } else {
+        this.chaserEnemy = null;
+      }
+
       // Hojas/esporas según dificultad
       this.ambientLeaves = [];
-      const leafCount = (this.difficulty === 'dificil') ? 35 : 26;
+      const leafCount = (this.difficulty === 'dificil') ? 35 : (this.difficulty === 'legendaria') ? 42 : 26;
       for (let i = 0; i < leafCount; i++) {
         this.ambientLeaves.push({
           x: Math.random() * 4200,
@@ -1775,6 +1829,8 @@
           rot: Math.random() * Math.PI * 2,
           color: (this.difficulty === 'dificil')
             ? ['#38bdf8', '#818cf8', '#c084fc', '#a5f3fc'][Math.floor(Math.random() * 4)] // Esporas luminosas Hollow Knight
+            : (this.difficulty === 'legendaria')
+            ? ['#ef4444', '#f97316', '#b91c1c', '#dc2626', '#fbbf24'][Math.floor(Math.random() * 5)] // Cenizas incandescentes de Lobo Sombra
             : (this.difficulty === 'extrema')
             ? ['#f472b6', '#a855f7', '#fbbf24', '#f43f5e', '#38bdf8'][Math.floor(Math.random() * 5)] // Neón Celeste / Cuphead
             : ['#fbcfe8', '#f472b6', '#fed7aa', '#fde047', '#a7f3d0'][Math.floor(Math.random() * 5)] // Pétalos Stardew
@@ -1789,7 +1845,8 @@
 
       // Variación sutil garantizando que plataformas elevadas estén en y ≤ 210
       const rOffset = () => (Math.random() - 0.5) * 16;
-      const isExtrema = this.difficulty === 'extrema';
+      const isLegendaria = this.difficulty === 'legendaria';
+      const isExtrema = this.difficulty === 'extrema' || isLegendaria;
       const isDificil = this.difficulty === 'dificil' || isExtrema;
       const isMedia = this.difficulty === 'media';
 
@@ -2158,10 +2215,10 @@
       setTimeout(() => {
         showGameVictory({
           isDefeat: true,
-          icon: (this.difficulty === 'extrema') ? '💀⚡' : '🌧️',
-          title: (this.difficulty === 'extrema') ? '¡YOU DIED! — Muerte Súbita' : '¡El Fango Atrapó a tu Corredor!',
+          icon: (this.difficulty === 'legendaria') ? '🐺💀' : (this.difficulty === 'extrema') ? '💀⚡' : '🌧️',
+          title: (this.difficulty === 'legendaria') ? '¡EL LOBO SOMBRA TE ATRAPÓ!' : (this.difficulty === 'extrema') ? '¡YOU DIED! — Muerte Súbita' : '¡El Fango Atrapó a tu Corredor!',
           subtitle: `Nivel: ${this.diffConfig[this.difficulty].name} — Recorrido Interrumpido`,
-          stamp: (this.difficulty === 'extrema') ? 'PRACTICE MAKES PERFECT' : 'INTÉNTALO OTRA VEZ',
+          stamp: (this.difficulty === 'legendaria') ? 'EL LOBO NUNCA DUERME' : (this.difficulty === 'extrema') ? 'PRACTICE MAKES PERFECT' : 'INTÉNTALO OTRA VEZ',
           msg: `${cupheadBarHtml}<div style="margin-top:10px;">Tu corredor no logró alcanzar la meta con vida en esta ocasión. Puedes reintentar la carrera inmediatamente o ir al apartado de reintento para ajustar corredor y dificultad.</div>`,
           stats: `⭐ <b>Puntaje:</b> ${this.score} pts &nbsp;|&nbsp; ⏱️ <b>Tiempo:</b> ${this.timerSeconds}s &nbsp;|&nbsp; 💡 <b>Pistas descubiertas:</b> ${this.unlockedClues.length}`,
           onRetryImmediate: () => this.startRun(),
@@ -2174,9 +2231,32 @@
       const p = this.player;
       const cfg = this.diffConfig[this.difficulty] || this.diffConfig.facil;
 
-      // Tiempo de banner Cuphead al inicio de Extrema
+      // Tiempo de banner al inicio
       if (this.wallopBannerTimer > 0) {
         this.wallopBannerTimer -= dt * 0.001;
+      }
+
+      // Persecución voraz del Lobo Sombra en Modo Legendario
+      if (this.difficulty === 'legendaria' && this.chaserEnemy) {
+        const wolf = this.chaserEnemy;
+        const dist = p.x - wolf.x;
+
+        if (dist > 320) {
+          wolf.speed = 5.3;
+        } else if (dist > 180) {
+          wolf.speed = 5.0;
+        } else {
+          wolf.speed = 4.85;
+        }
+
+        wolf.x += wolf.speed * (dt / 16.666);
+        wolf.y += (p.y - wolf.y) * 0.08;
+
+        const hitBoxX = Math.abs((p.x + p.w / 2) - (wolf.x + wolf.w / 2));
+        const hitBoxY = Math.abs((p.y + p.h / 2) - (wolf.y + wolf.h / 2));
+        if (hitBoxX < 32 && hitBoxY < 36 && p.invulnerableTime <= 0) {
+          this.takeDamage(999, '🐺 ¡El Lobo Sombra te alcanzó! Devorado en plena carrera.');
+        }
       }
 
       // Decrementar tiempo de invulnerabilidad tras daño
@@ -2560,13 +2640,17 @@
             </div>`
           : '';
 
-        const winIcon = (this.difficulty === 'extrema') ? '🏆👑' : (this.difficulty === 'dificil') ? '🗡️🏆' : '🏆';
-        const winTitle = (this.difficulty === 'extrema') ? '¡VICTORIA TOTAL! ¡CALIFICACIÓN SOBRESALIENTE!' : '¡Llegaste al Granero B-13!';
-        const winSubtitle = (this.difficulty === 'extrema') ? '¡Has Conquistado la Pesadilla Arcade con Honores!' : `¡Carrera Campestre Completada (${cfg.name})!`;
-        const winStamp = (this.difficulty === 'extrema') ? 'MAESTRÍA SUPREMA B-13' : 'MISIÓN CUMPLIDA';
+        const winIcon = (this.difficulty === 'legendaria') ? '🐺👑⚡' : (this.difficulty === 'extrema') ? '🏆👑' : (this.difficulty === 'dificil') ? '🗡️🏆' : '🏆';
+        const winTitle = (this.difficulty === 'legendaria') ? '¡SUPERVIVIENTE LEGENDARIO!' : (this.difficulty === 'extrema') ? '¡VICTORIA TOTAL! ¡CALIFICACIÓN SOBRESALIENTE!' : '¡Llegaste al Granero B-13!';
+        const winSubtitle = (this.difficulty === 'legendaria') ? '¡Escapaste de las fauces del Lobo Sombra en tiempo récord!' : (this.difficulty === 'extrema') ? '¡Has Conquistado la Pesadilla Arcade con Honores!' : `¡Carrera Campestre Completada (${cfg.name})!`;
+        const winStamp = (this.difficulty === 'legendaria') ? 'LEYENDA VIVIENTE B-13' : (this.difficulty === 'extrema') ? 'MAESTRÍA SUPREMA B-13' : 'MISIÓN CUMPLIDA';
 
+        if (this.difficulty === 'legendaria') {
+          this.score += 500;
+          if (typeof window.unlockSecretBadge === 'function') window.unlockSecretBadge('superviviente_legendario');
+        }
         if (typeof window.unlockBadge === 'function') window.unlockBadge('velocista_granero');
-        if (this.difficulty === 'dificil' || this.difficulty === 'extrema') {
+        if (this.difficulty === 'dificil' || this.difficulty === 'extrema' || this.difficulty === 'legendaria') {
           if (typeof window.unlockSecretBadge === 'function') window.unlockSecretBadge('pesadilla_conquistada');
         }
         if ((!this.mudDamageCount || this.mudDamageCount === 0) && typeof window.unlockSecretBadge === 'function') {
@@ -2655,7 +2739,16 @@
       }
 
       // 1. Cielo según dificultad
-      if (this.difficulty === 'extrema') {
+      if (this.difficulty === 'legendaria') {
+        // Crepúsculo tormentoso carmesí (Cacería del Lobo Sombra)
+        const skyGrad = ctx.createLinearGradient(0, 0, 0, h);
+        skyGrad.addColorStop(0, '#1c0707');
+        skyGrad.addColorStop(0.38, '#450a0a');
+        skyGrad.addColorStop(0.72, '#7f1d1d');
+        skyGrad.addColorStop(1, '#991b1b');
+        ctx.fillStyle = skyGrad;
+        ctx.fillRect(0, 0, w, h);
+      } else if (this.difficulty === 'extrema') {
         // Estética Synthwave / Retro Cuphead Celeste
         const skyGrad = ctx.createLinearGradient(0, 0, 0, h);
         skyGrad.addColorStop(0, '#180326');
@@ -2696,7 +2789,21 @@
       ctx.save();
       const sunX = w - 100;
       const sunY = 70;
-      if (this.difficulty === 'dificil') {
+      if (this.difficulty === 'legendaria') {
+        // Luna de Sangre carmesí con resplandor
+        ctx.fillStyle = 'rgba(239, 68, 68, 0.35)';
+        ctx.beginPath();
+        ctx.arc(sunX, sunY, 68, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = '#dc2626';
+        ctx.beginPath();
+        ctx.arc(sunX, sunY, 30, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = '#7f1d1d';
+        ctx.beginPath();
+        ctx.arc(sunX + 6, sunY - 4, 24, 0, Math.PI * 2);
+        ctx.fill();
+      } else if (this.difficulty === 'dificil') {
         // Luna espectral de caverna
         ctx.fillStyle = 'rgba(56, 189, 248, 0.25)';
         ctx.beginPath();
@@ -2749,7 +2856,7 @@
         ctx.fill();
       } else {
         // Nubes suaves
-        ctx.fillStyle = (this.difficulty === 'extrema') ? 'rgba(236, 72, 153, 0.25)' : 'rgba(255, 255, 255, 0.85)';
+        ctx.fillStyle = (this.difficulty === 'extrema') ? 'rgba(236, 72, 153, 0.25)' : (this.difficulty === 'legendaria') ? 'rgba(185, 28, 28, 0.35)' : 'rgba(255, 255, 255, 0.85)';
         for (let i = 0; i < 9; i++) {
           const cloudX = ((i * 380) - (this.cameraX * 0.10) + (this.animTime * 10)) % (w + 420) - 100;
           const cloudY = 48 + (i % 3) * 24;
@@ -2763,9 +2870,9 @@
 
       // Capas montañosas
       ctx.save();
-      const mColor1 = (this.difficulty === 'extrema') ? '#3b0764' : (this.difficulty === 'dificil') ? '#090d16' : (this.difficulty === 'media') ? '#7c2d12' : '#3d5a80';
-      const mColor2 = (this.difficulty === 'extrema') ? '#581c87' : (this.difficulty === 'dificil') ? '#1e293b' : (this.difficulty === 'media') ? '#9a3412' : '#204e3b';
-      const mColor3 = (this.difficulty === 'extrema') ? '#701a75' : (this.difficulty === 'dificil') ? '#334155' : (this.difficulty === 'media') ? '#c2410c' : '#40916c';
+      const mColor1 = (this.difficulty === 'legendaria') ? '#1c0707' : (this.difficulty === 'extrema') ? '#3b0764' : (this.difficulty === 'dificil') ? '#090d16' : (this.difficulty === 'media') ? '#7c2d12' : '#3d5a80';
+      const mColor2 = (this.difficulty === 'legendaria') ? '#450a0a' : (this.difficulty === 'extrema') ? '#581c87' : (this.difficulty === 'dificil') ? '#1e293b' : (this.difficulty === 'media') ? '#9a3412' : '#204e3b';
+      const mColor3 = (this.difficulty === 'legendaria') ? '#7f1d1d' : (this.difficulty === 'extrema') ? '#701a75' : (this.difficulty === 'dificil') ? '#334155' : (this.difficulty === 'media') ? '#c2410c' : '#40916c';
 
       ctx.fillStyle = mColor1;
       ctx.beginPath();
@@ -3162,24 +3269,30 @@
       // Meta: Granero B-13
       this.drawGoal(ctx);
 
+      // Lobo Sombra perseguidor en Modo Legendario
+      if (this.difficulty === 'legendaria' && this.chaserEnemy) {
+        this.drawChaserEnemy(ctx);
+      }
+
       // Jugador
+      ctx.globalAlpha = 1.0;
       this.drawPlayer(ctx);
 
       ctx.restore();
 
-      // Banner "READY? WALLOP!" estilo Cuphead al inicio de Extrema
+      // Banner "READY? GO!" al inicio de carrera
       if (this.wallopBannerTimer > 0) {
         ctx.save();
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.45)';
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.55)';
         ctx.fillRect(0, h / 2 - 45, w, 90);
-        ctx.fillStyle = '#ffd83d';
+        ctx.fillStyle = (this.difficulty === 'legendaria') ? '#ef4444' : '#ffd83d';
         ctx.font = '900 2.2rem "Fraunces", serif';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.shadowColor = '#000000';
         ctx.shadowBlur = 10;
-        // Banner universal "READY? GO!" al inicio de carrera
-        ctx.fillText('READY? GO!', w / 2, h / 2);
+        const bannerTxt = (this.difficulty === 'legendaria') ? '¡HUYE DEL LOBO! ⏱️ 45s' : 'READY? GO!';
+        ctx.fillText(bannerTxt, w / 2, h / 2);
         ctx.restore();
       }
 
@@ -3190,6 +3303,31 @@
         vig.addColorStop(1, 'rgba(15, 3, 25, 0.45)');
         ctx.fillStyle = vig;
         ctx.fillRect(0, 0, w, h);
+      } else if (this.difficulty === 'legendaria') {
+        // Alertas y efectos de pantalla de Modo Legendario
+        const wolfDist = this.chaserEnemy ? Math.max(0, this.player.x - this.chaserEnemy.x) : 999;
+        const vigIntensity = (wolfDist < 160) ? 0.65 : (wolfDist < 260) ? 0.42 : 0.25;
+        const vig = ctx.createRadialGradient(w / 2, h / 2, w * 0.3, w / 2, h / 2, w * 0.62);
+        vig.addColorStop(0, 'rgba(0, 0, 0, 0)');
+        vig.addColorStop(1, `rgba(185, 28, 28, ${vigIntensity})`);
+        ctx.fillStyle = vig;
+        ctx.fillRect(0, 0, w, h);
+
+        // Barra HUD superior de alerta de proximidad del lobo
+        ctx.save();
+        ctx.fillStyle = 'rgba(15, 23, 42, 0.75)';
+        ctx.fillRect(w / 2 - 140, 8, 280, 26);
+        ctx.strokeStyle = (wolfDist < 160) ? '#ef4444' : '#f59e0b';
+        ctx.lineWidth = 1.8;
+        ctx.strokeRect(w / 2 - 140, 8, 280, 26);
+
+        ctx.font = 'bold 12px "Space Mono", monospace';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillStyle = (wolfDist < 160) ? '#fca5a5' : '#fef08a';
+        const distM = Math.max(0, Math.round(wolfDist / 12));
+        ctx.fillText(`🐺 LOBO SOMBRA: ${distM}m ATRÁS ⚠️`, w / 2, 21);
+        ctx.restore();
       }
 
       ctx.restore();
@@ -3332,11 +3470,12 @@
       ctx.save();
       ctx.translate(p.x + p.w / 2, p.y + p.h / 2);
 
+      // Siempre asegurar opacidad normal 1.0 por defecto
+      ctx.globalAlpha = 1.0;
+
       // Parpadeo de invulnerabilidad
       if (p.invulnerableTime > 0) {
-        if (Math.floor(this.animTime * 14) % 2 === 0) {
-          ctx.globalAlpha = 0.35;
-        }
+        ctx.globalAlpha = (Math.floor(this.animTime * 14) % 2 === 0) ? 0.35 : 1.0;
       }
 
       // Volteo horizontal
@@ -3360,6 +3499,10 @@
       } else if (Math.abs(p.vx) > 0.5) {
         sy = 1 + Math.sin(p.runCycle * 2) * 0.08;
         sx = 1 - Math.sin(p.runCycle * 2) * 0.05;
+      } else {
+        // En reposo (idle): respiración sutil
+        sy = 1 + Math.sin(this.animTime * 3) * 0.02;
+        sx = 1 - Math.sin(this.animTime * 3) * 0.015;
       }
 
       ctx.scale(sx, sy);
@@ -3390,15 +3533,62 @@
         ctx.restore();
       }
 
-      // Aura de Air Dash lista en Extrema
+      // Aura de Air Dash lista en Extrema / Legendaria
       if (this.diffConfig[this.difficulty]?.dashEnabled && p.hasAirDash) {
-        ctx.strokeStyle = 'rgba(56, 189, 248, 0.65)';
+        ctx.strokeStyle = (this.difficulty === 'legendaria') ? 'rgba(239, 68, 68, 0.75)' : 'rgba(56, 189, 248, 0.65)';
         ctx.lineWidth = 2;
         ctx.beginPath();
         ctx.arc(0, 0, 24, 0, Math.PI * 2);
         ctx.stroke();
       }
 
+      ctx.globalAlpha = 1.0;
+      ctx.restore();
+    },
+
+    drawChaserEnemy(ctx) {
+      const wolf = this.chaserEnemy;
+      if (!wolf) return;
+      ctx.save();
+      ctx.translate(wolf.x + wolf.w / 2, wolf.y + wolf.h / 2);
+
+      // Estelas oscuras de sombra que se desprenden
+      ctx.fillStyle = 'rgba(15, 23, 42, 0.5)';
+      for (let i = 1; i <= 3; i++) {
+        const offY = Math.sin(this.animTime * 12 + i) * 5;
+        ctx.beginPath();
+        ctx.arc(-i * 15, offY, 18 - i * 3, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      // Aura carmesí pulsante
+      const pulse = Math.sin(this.animTime * 10) * 4;
+      ctx.fillStyle = 'rgba(239, 68, 68, 0.22)';
+      ctx.beginPath();
+      ctx.arc(0, 0, 26 + pulse, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Sombra en el suelo
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.35)';
+      ctx.beginPath();
+      ctx.ellipse(0, wolf.h / 2 + 2, 16, 5, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Sprite del Lobo
+      ctx.font = '42px Arial';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('🐺', 0, 0);
+
+      // Ojo rojo llameante
+      ctx.fillStyle = '#ef4444';
+      ctx.shadowColor = '#dc2626';
+      ctx.shadowBlur = 10;
+      ctx.beginPath();
+      ctx.arc(6, -4, 3.5, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.globalAlpha = 1.0;
       ctx.restore();
     },
 
@@ -3409,12 +3599,818 @@
       if (scoreEl) scoreEl.textContent = this.score;
       if (livesEl) livesEl.textContent = '❤️'.repeat(Math.max(0, this.lives));
       if (timeEl) {
-        const mins = Math.floor(this.timerSeconds / 60);
-        const secs = this.timerSeconds % 60;
+        const mins = Math.floor(Math.max(0, this.timerSeconds) / 60);
+        const secs = Math.max(0, this.timerSeconds) % 60;
         timeEl.textContent = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        if (this.difficulty === 'legendaria') {
+          timeEl.style.color = (this.timerSeconds <= 10) ? '#ef4444' : '#b45309';
+          timeEl.style.fontWeight = 'bold';
+        } else {
+          timeEl.style.color = '';
+        }
       }
     }
   };
+
+  /* ============================================================
+     JUEGO 4: FLAPPY LORO B-13 (AGAPORNIS VOLADOR)
+     ============================================================ */
+  const FlappyGame = {
+    canvas: null,
+    ctx: null,
+    animId: null,
+    initialized: false,
+    isRunning: false,
+    gameOver: false,
+    hasFlappedOnce: false,
+
+    // Dificultad
+    difficulty: 'facil',
+    diffConfig: {
+      facil: {
+        gravity: 0.28,
+        jumpPower: -6.2,
+        pipeSpeed: 2.1,
+        pipeGap: 155,
+        pipeInterval: 130
+      },
+      media: {
+        gravity: 0.35,
+        jumpPower: -7.0,
+        pipeSpeed: 2.7,
+        pipeGap: 135,
+        pipeInterval: 110
+      },
+      dificil: {
+        gravity: 0.42,
+        jumpPower: -7.8,
+        pipeSpeed: 3.3,
+        pipeGap: 115,
+        pipeInterval: 95
+      }
+    },
+
+    // Datos del pájaro
+    bird: {
+      x: 120,
+      y: 200,
+      vy: 0,
+      radius: 17,
+      angle: 0,
+      wingTimer: 0
+    },
+
+    // Elementos del mundo
+    pipes: [],
+    seeds: [],
+    particles: [],
+    clouds: [],
+    frameCount: 0,
+    score: 0,
+    seedsCollected: 0,
+    highScore: 0,
+    activeFact: '',
+
+    facts: [
+      "¡Sabías que los agapornis son llamados 'inseparables' porque forman parejas leales que permanecen juntas toda la vida!",
+      "El pico fuerte y curvo de los loros actúa como una tercera extremidad: les permite trepar y partir semillas duras.",
+      "Las plumas verdes de los agapornis contienen psitacofulvinas, pigmentos exclusivos que solo producen los loros.",
+      "En la Granja B-13, una dieta rica en semillas variadas, verduras frescas y agua limpia garantiza su plumaje radiante.",
+      "Los loros tienen visión tetracromática: pueden ver la luz ultravioleta (UV), lo que les permite saber qué frutos están maduros.",
+      "Las patas de los loros son zigodáctilas (dos dedos hacia adelante y dos hacia atrás), lo que les permite agarrar cosas como manos."
+    ],
+
+    init() {
+      if (this.initialized) return;
+      this.canvas = document.getElementById('flappyCanvas');
+      if (!this.canvas) return;
+      this.ctx = this.canvas.getContext('2d');
+
+      this.highScore = parseInt(localStorage.getItem('granjaFlappyBest') || (state.flappyHighScore || 0), 10) || 0;
+
+      // Generar nubes iniciales
+      this.clouds = [
+        { x: 50, y: 40, w: 90, h: 40, speed: 0.4 },
+        { x: 300, y: 70, w: 120, h: 50, speed: 0.6 },
+        { x: 580, y: 30, w: 100, h: 42, speed: 0.5 },
+        { x: 750, y: 80, w: 130, h: 48, speed: 0.55 }
+      ];
+
+      this.bindEvents();
+      this.initialized = true;
+      this.updateHud();
+      this.showStartScreen();
+    },
+
+    bindEvents() {
+      // Selector de dificultad
+      const diffBtns = document.querySelectorAll('#flappyDiffSelector .diff-card-btn');
+      diffBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          diffBtns.forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          this.difficulty = btn.dataset.diff || 'facil';
+          const valEl = document.getElementById('flappyDiffVal');
+          if (valEl) {
+            const labels = { facil: '🟢 Paseo', media: '🟡 Potrero', dificil: '🔴 Desafío B-13' };
+            valEl.textContent = labels[this.difficulty] || this.difficulty;
+          }
+        });
+      });
+
+      // Botón comenzar
+      const startBtn = document.getElementById('flappyStartPlayBtn');
+      if (startBtn) {
+        startBtn.addEventListener('click', () => {
+          this.hideStartScreen();
+          this.resetGame();
+        });
+      }
+
+      // Botón aletear touch
+      const flapBtn = document.getElementById('flappyTouchFlapBtn');
+      if (flapBtn) {
+        flapBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          this.flap();
+        });
+        flapBtn.addEventListener('touchstart', (e) => {
+          e.preventDefault();
+          this.flap();
+        }, { passive: false });
+      }
+
+      // Clic o toque en canvas
+      if (this.canvas) {
+        this.canvas.addEventListener('mousedown', (e) => {
+          e.preventDefault();
+          this.flap();
+        });
+        this.canvas.addEventListener('touchstart', (e) => {
+          e.preventDefault();
+          this.flap();
+        }, { passive: false });
+      }
+
+      // Teclado (Espacio / Flecha Arriba / W)
+      window.addEventListener('keydown', (e) => {
+        const panel = document.getElementById('game-flappy');
+        if (!panel || !panel.classList.contains('active')) return;
+
+        if (e.code === 'Space' || e.code === 'ArrowUp' || e.code === 'KeyW') {
+          e.preventDefault();
+          this.flap();
+        }
+      });
+    },
+
+    showStartScreen() {
+      this.isRunning = false;
+      if (this.animId) cancelAnimationFrame(this.animId);
+      const overlay = document.getElementById('flappyStartOverlay');
+      if (overlay) overlay.style.display = 'flex';
+      this.drawIdle();
+    },
+
+    hideStartScreen() {
+      const overlay = document.getElementById('flappyStartOverlay');
+      if (overlay) overlay.style.display = 'none';
+    },
+
+    start() {
+      this.init();
+      this.showStartScreen();
+    },
+
+    resetGame() {
+      this.score = 0;
+      this.seedsCollected = 0;
+      this.pipes = [];
+      this.seeds = [];
+      this.particles = [];
+      this.frameCount = 0;
+      this.gameOver = false;
+      this.hasFlappedOnce = false;
+
+      this.bird.y = this.canvas.height * 0.45;
+      this.bird.vy = 0;
+      this.bird.angle = 0;
+
+      this.activeFact = this.facts[Math.floor(Math.random() * this.facts.length)];
+
+      this.isRunning = true;
+      this.updateHud();
+
+      if (this.animId) cancelAnimationFrame(this.animId);
+      this.loop();
+    },
+
+    pause() {
+      this.isRunning = false;
+      if (this.animId) {
+        cancelAnimationFrame(this.animId);
+        this.animId = null;
+      }
+    },
+
+    flap() {
+      if (this.gameOver) {
+        this.resetGame();
+        return;
+      }
+      if (!this.isRunning) {
+        this.hideStartScreen();
+        this.resetGame();
+      }
+
+      const cfg = this.diffConfig[this.difficulty] || this.diffConfig.facil;
+      this.bird.vy = cfg.jumpPower;
+      this.hasFlappedOnce = true;
+
+      // Sonido de aleteo suave
+      if (typeof AudioFX !== 'undefined' && AudioFX.playTone) {
+        AudioFX.playTone(392, 'sine', 0.08);
+      }
+
+      // Partículas de brisa / pluma
+      for (let i = 0; i < 3; i++) {
+        this.particles.push({
+          x: this.bird.x - 14,
+          y: this.bird.y + (Math.random() * 12 - 6),
+          vx: -(Math.random() * 2 + 1),
+          vy: Math.random() * 1.5 - 0.7,
+          life: 20,
+          maxLife: 20,
+          color: 'rgba(255, 255, 255, 0.7)',
+          size: Math.random() * 3 + 2
+        });
+      }
+    },
+
+    spawnPipe() {
+      const cfg = this.diffConfig[this.difficulty] || this.diffConfig.facil;
+      const minHeight = 50;
+      const groundH = 45;
+      const playableH = this.canvas.height - groundH;
+      const maxTop = playableH - cfg.pipeGap - minHeight;
+      const topH = Math.floor(Math.random() * (maxTop - minHeight + 1)) + minHeight;
+      const bottomY = topH + cfg.pipeGap;
+      const bottomH = playableH - bottomY;
+
+      const pipe = {
+        x: this.canvas.width + 10,
+        width: 58,
+        topH,
+        bottomY,
+        bottomH,
+        passed: false
+      };
+      this.pipes.push(pipe);
+
+      // 65% probabilidad de generar una semilla de girasol en la brecha
+      if (Math.random() < 0.65) {
+        this.seeds.push({
+          x: pipe.x + pipe.width * 0.5,
+          y: topH + cfg.pipeGap * 0.5 + (Math.random() * 30 - 15),
+          radius: 12,
+          collected: false,
+          baseY: topH + cfg.pipeGap * 0.5,
+          oscSpeed: Math.random() * 0.05 + 0.03
+        });
+      }
+    },
+
+    update() {
+      if (!this.isRunning || this.gameOver) return;
+
+      const cfg = this.diffConfig[this.difficulty] || this.diffConfig.facil;
+      this.frameCount++;
+
+      // Física del ave si ya dio el primer aleteo
+      if (this.hasFlappedOnce) {
+        this.bird.vy += cfg.gravity;
+        this.bird.y += this.bird.vy;
+        this.bird.angle = Math.min(Math.PI / 4, Math.max(-Math.PI / 4, this.bird.vy * 0.07));
+      } else {
+        // Flotación suave idle previa al flap
+        this.bird.y += Math.sin(this.frameCount * 0.08) * 0.8;
+      }
+
+      this.bird.wingTimer += 0.2;
+
+      // Generar postes
+      if (this.hasFlappedOnce && this.frameCount % cfg.pipeInterval === 0) {
+        this.spawnPipe();
+      }
+
+      // Mover nubes
+      this.clouds.forEach(c => {
+        c.x -= c.speed;
+        if (c.x + c.w < 0) c.x = this.canvas.width + 20;
+      });
+
+      // Mover postes y verificar pase
+      const birdBox = {
+        left: this.bird.x - this.bird.radius + 3,
+        right: this.bird.x + this.bird.radius - 3,
+        top: this.bird.y - this.bird.radius + 3,
+        bottom: this.bird.y + this.bird.radius - 3
+      };
+
+      for (let i = this.pipes.length - 1; i >= 0; i--) {
+        const p = this.pipes[i];
+        p.x -= cfg.pipeSpeed;
+
+        // Puntuación por esquivar
+        if (!p.passed && p.x + p.width < this.bird.x) {
+          p.passed = true;
+          this.score++;
+          this.updateHud();
+          if (typeof AudioFX !== 'undefined' && AudioFX.playTone) {
+            AudioFX.playTone(587.33, 'triangle', 0.12);
+          }
+        }
+
+        // Colisión con postes
+        if (birdBox.right > p.x && birdBox.left < p.x + p.width) {
+          if (birdBox.top < p.topH || birdBox.bottom > p.bottomY) {
+            this.handleCrash();
+            return;
+          }
+        }
+
+        if (p.x + p.width < -30) {
+          this.pipes.splice(i, 1);
+        }
+      }
+
+      // Mover y recolectar semillas
+      for (let i = this.seeds.length - 1; i >= 0; i--) {
+        const s = this.seeds[i];
+        s.x -= cfg.pipeSpeed;
+        s.y = s.baseY + Math.sin(this.frameCount * s.oscSpeed) * 8;
+
+        if (!s.collected) {
+          const dist = Math.hypot(this.bird.x - s.x, this.bird.y - s.y);
+          if (dist < this.bird.radius + s.radius) {
+            s.collected = true;
+            this.seedsCollected++;
+            this.score += 5;
+            this.updateHud();
+
+            // Sonido de recolecta alegre
+            if (typeof AudioFX !== 'undefined' && AudioFX.playTone) {
+              AudioFX.playTone(523.25, 'sine', 0.08, 0);
+              AudioFX.playTone(659.25, 'sine', 0.08, 50);
+              AudioFX.playTone(783.99, 'triangle', 0.15, 100);
+            }
+
+            // Partículas doradas
+            for (let k = 0; k < 8; k++) {
+              const ang = Math.random() * Math.PI * 2;
+              const spd = Math.random() * 3 + 1;
+              this.particles.push({
+                x: s.x,
+                y: s.y,
+                vx: Math.cos(ang) * spd,
+                vy: Math.sin(ang) * spd,
+                life: 25,
+                maxLife: 25,
+                color: '#facc15',
+                size: Math.random() * 4 + 2
+              });
+            }
+          }
+        }
+
+        if (s.x + s.radius < -20 || s.collected) {
+          this.seeds.splice(i, 1);
+        }
+      }
+
+      // Colisión suelo y techo
+      const groundY = this.canvas.height - 45;
+      if (this.bird.y + this.bird.radius >= groundY || this.bird.y - this.bird.radius <= 0) {
+        this.handleCrash();
+        return;
+      }
+
+      // Actualizar partículas
+      for (let i = this.particles.length - 1; i >= 0; i--) {
+        const pt = this.particles[i];
+        pt.x += pt.vx;
+        pt.y += pt.vy;
+        pt.life--;
+        if (pt.life <= 0) this.particles.splice(i, 1);
+      }
+    },
+
+    handleCrash() {
+      this.gameOver = true;
+      this.isRunning = false;
+
+      // Sonido de choque
+      if (typeof AudioFX !== 'undefined' && AudioFX.playTone) {
+        AudioFX.playTone(146.83, 'sawtooth', 0.22);
+      }
+
+      // Guardar récord
+      if (this.score > this.highScore) {
+        this.highScore = this.score;
+        localStorage.setItem('granjaFlappyBest', this.highScore);
+        if (typeof state !== 'undefined') {
+          state.flappyHighScore = this.highScore;
+          if (typeof saveState === 'function') saveState();
+        }
+      }
+
+      // Bonificación al perfil general del alumno
+      if (this.score > 0) {
+        const ptsWon = Math.floor(this.score * 1.5) + this.seedsCollected * 2;
+        if (typeof state !== 'undefined') {
+          state.score = (state.score || 0) + ptsWon;
+          if (typeof saveState === 'function') saveState();
+          if (typeof updateHeaderScore === 'function') updateHeaderScore();
+        }
+      }
+
+      this.updateHud();
+      this.draw();
+    },
+
+    updateHud() {
+      const sEl = document.getElementById('flappyScoreVal');
+      const seedEl = document.getElementById('flappySeedsVal');
+      const bEl = document.getElementById('flappyBestVal');
+      if (sEl) sEl.textContent = this.score;
+      if (seedEl) seedEl.textContent = this.seedsCollected;
+      if (bEl) bEl.textContent = this.highScore;
+    },
+
+    draw() {
+      if (!this.ctx || !this.canvas) return;
+      const ctx = this.ctx;
+      const w = this.canvas.width;
+      const h = this.canvas.height;
+
+      ctx.clearRect(0, 0, w, h);
+
+      // 1. Cielo con degradado campestre
+      const skyGrad = ctx.createLinearGradient(0, 0, 0, h);
+      skyGrad.addColorStop(0, '#38bdf8');
+      skyGrad.addColorStop(0.5, '#bae6fd');
+      skyGrad.addColorStop(0.85, '#e0f2fe');
+      skyGrad.addColorStop(1, '#86efac');
+      ctx.fillStyle = skyGrad;
+      ctx.fillRect(0, 0, w, h);
+
+      // 2. Sol brillante del Liceo
+      ctx.save();
+      ctx.fillStyle = '#fef08a';
+      ctx.beginPath();
+      ctx.arc(w - 70, 60, 36, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = 'rgba(254, 240, 138, 0.35)';
+      ctx.beginPath();
+      ctx.arc(w - 70, 60, 52, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+
+      // 3. Nubes decorativas
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
+      this.clouds.forEach(c => {
+        ctx.beginPath();
+        ctx.arc(c.x, c.y, c.h * 0.45, 0, Math.PI * 2);
+        ctx.arc(c.x + c.w * 0.3, c.y - c.h * 0.2, c.h * 0.55, 0, Math.PI * 2);
+        ctx.arc(c.x + c.w * 0.6, c.y, c.h * 0.45, 0, Math.PI * 2);
+        ctx.fill();
+      });
+
+      // 4. Colinas distantes
+      ctx.fillStyle = '#86efac';
+      ctx.beginPath();
+      ctx.moveTo(0, h - 45);
+      ctx.bezierCurveTo(120, h - 90, 240, h - 60, 380, h - 85);
+      ctx.bezierCurveTo(520, h - 110, 680, h - 70, w, h - 80);
+      ctx.lineTo(w, h);
+      ctx.lineTo(0, h);
+      ctx.fill();
+
+      // 5. Postes de Madera (Cercados)
+      this.pipes.forEach(p => {
+        this.drawFencePost(ctx, p.x, 0, p.width, p.topH, true);
+        this.drawFencePost(ctx, p.x, p.bottomY, p.width, p.bottomH, false);
+      });
+
+      // 6. Semillas de Girasol flotantes
+      this.seeds.forEach(s => {
+        this.drawSunflowerSeed(ctx, s.x, s.y, s.radius);
+      });
+
+      // 7. Partículas
+      this.particles.forEach(pt => {
+        ctx.save();
+        ctx.globalAlpha = pt.life / pt.maxLife;
+        ctx.fillStyle = pt.color;
+        ctx.beginPath();
+        ctx.arc(pt.x, pt.y, pt.size, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      });
+
+      // 8. Ave: Pepe el Agapornis
+      this.drawAgapornis(ctx, this.bird.x, this.bird.y, this.bird.angle, this.bird.wingTimer);
+
+      // 9. Suelo del potrero con pasto
+      const groundY = h - 45;
+      ctx.fillStyle = '#65a30d';
+      ctx.fillRect(0, groundY, w, 45);
+      ctx.fillStyle = '#4d7c0f';
+      ctx.fillRect(0, groundY, w, 6);
+
+      // Margaritas en el pasto
+      for (let x = 15; x < w; x += 45) {
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath();
+        ctx.arc(x, groundY + 16, 3, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = '#facc15';
+        ctx.beginPath();
+        ctx.arc(x, groundY + 16, 1.5, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      // 10. Marcador en pantalla si está jugando
+      if (this.isRunning && !this.gameOver) {
+        ctx.save();
+        ctx.font = "bold 26px 'Fraunces', serif";
+        ctx.fillStyle = '#ffffff';
+        ctx.strokeStyle = '#0f172a';
+        ctx.lineWidth = 4;
+        ctx.textAlign = 'center';
+        ctx.strokeText(`${this.score} pts`, w * 0.5, 45);
+        ctx.fillText(`${this.score} pts`, w * 0.5, 45);
+        ctx.restore();
+      }
+
+      // 11. Modal de Game Over en Canvas
+      if (this.gameOver) {
+        this.drawGameOverScreen(ctx, w, h);
+      }
+    },
+
+    drawFencePost(ctx, x, y, width, height, isTop) {
+      ctx.save();
+      // Poste de madera principal
+      const woodGrad = ctx.createLinearGradient(x, y, x + width, y);
+      woodGrad.addColorStop(0, '#78350f');
+      woodGrad.addColorStop(0.3, '#92400e');
+      woodGrad.addColorStop(0.7, '#b45309');
+      woodGrad.addColorStop(1, '#78350f');
+      ctx.fillStyle = woodGrad;
+      ctx.fillRect(x, y, width, height);
+
+      // Borde y líneas de veta
+      ctx.strokeStyle = '#451a03';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(x, y, width, height);
+
+      // Tapa o extremo redondeado del poste
+      const capH = 14;
+      const capY = isTop ? height - capH : y;
+      ctx.fillStyle = '#92400e';
+      ctx.fillRect(x - 3, capY, width + 6, capH);
+      ctx.strokeRect(x - 3, capY, width + 6, capH);
+
+      // Hojas de enredadera decorativas (hiedra de la granja)
+      ctx.fillStyle = '#22c55e';
+      ctx.beginPath();
+      ctx.arc(x + 8, isTop ? height - 20 : y + 20, 5, 0, Math.PI * 2);
+      ctx.arc(x + width - 8, isTop ? height - 30 : y + 30, 4, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    },
+
+    drawSunflowerSeed(ctx, x, y, r) {
+      ctx.save();
+      // Aura dorada
+      ctx.fillStyle = 'rgba(250, 204, 21, 0.35)';
+      ctx.beginPath();
+      ctx.arc(x, y, r + 4, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Pétalos dorados
+      ctx.fillStyle = '#f59e0b';
+      for (let i = 0; i < 8; i++) {
+        const ang = (i * Math.PI * 2) / 8;
+        const px = x + Math.cos(ang) * (r * 0.85);
+        const py = y + Math.sin(ang) * (r * 0.85);
+        ctx.beginPath();
+        ctx.arc(px, py, 3.5, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      // Semilla central
+      ctx.fillStyle = '#78350f';
+      ctx.beginPath();
+      ctx.arc(x, y, r * 0.65, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Brillo
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath();
+      ctx.arc(x - 2, y - 2, 1.8, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    },
+
+    drawAgapornis(ctx, x, y, angle, wingTimer) {
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.rotate(angle);
+
+      // Cola de plumas verdes y azul turquesa
+      ctx.fillStyle = '#0284c7';
+      ctx.beginPath();
+      ctx.moveTo(-12, 4);
+      ctx.lineTo(-24, 8);
+      ctx.lineTo(-14, -2);
+      ctx.closePath();
+      ctx.fill();
+
+      // Cuerpo ovalado verde esmeralda
+      ctx.fillStyle = '#16a34a';
+      ctx.beginPath();
+      ctx.ellipse(0, 2, 16, 12, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Cara y babero color melocotón / rojo rosado (Agapornis roseicollis)
+      ctx.fillStyle = '#ef4444';
+      ctx.beginPath();
+      ctx.ellipse(7, -1, 10, 9, 0.2, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = '#fb923c';
+      ctx.beginPath();
+      ctx.ellipse(5, 4, 8, 7, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Pico curvado amarillo / marfil
+      ctx.fillStyle = '#fde047';
+      ctx.beginPath();
+      ctx.moveTo(14, -3);
+      ctx.lineTo(23, 2);
+      ctx.lineTo(13, 5);
+      ctx.closePath();
+      ctx.fill();
+      ctx.strokeStyle = '#ca8a04';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+
+      // Anillo ocular blanco distintivo
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath();
+      ctx.arc(9, -4, 4.5, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Ojo negro con brillo
+      ctx.fillStyle = '#0f172a';
+      ctx.beginPath();
+      ctx.arc(9.5, -4, 2.5, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath();
+      ctx.arc(8.5, -5, 1, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Ala verde con animación de aleteo
+      const wingSweep = Math.sin(wingTimer) * 8;
+      ctx.fillStyle = '#15803d';
+      ctx.beginPath();
+      ctx.ellipse(-3, 1 + wingSweep * 0.3, 11, 7 + Math.abs(wingSweep * 0.5), -0.2, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = '#14532d';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+
+      // Sombrerito de campo o pañuelo liceano
+      ctx.fillStyle = '#ffd83d';
+      ctx.beginPath();
+      ctx.ellipse(5, -10, 8, 3, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#b45309';
+      ctx.fillRect(3, -15, 6, 5);
+
+      ctx.restore();
+    },
+
+    drawGameOverScreen(ctx, w, h) {
+      ctx.save();
+      // Telón oscuro suave
+      ctx.fillStyle = 'rgba(15, 23, 42, 0.65)';
+      ctx.fillRect(0, 0, w, h);
+
+      // Tarjeta central de resultados
+      const cardW = Math.min(500, w - 40);
+      const cardH = 260;
+      const cardX = (w - cardW) * 0.5;
+      const cardY = (h - cardH) * 0.5;
+
+      ctx.fillStyle = '#ffffff';
+      ctx.strokeStyle = '#1e293b';
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.roundRect(cardX, cardY, cardW, cardH, 16);
+      ctx.fill();
+      ctx.stroke();
+
+      // Título
+      ctx.font = "bold 24px 'Fraunces', serif";
+      ctx.fillStyle = '#166534';
+      ctx.textAlign = 'center';
+      ctx.fillText("🏁 ¡Fin del Vuelo!", w * 0.5, cardY + 38);
+
+      // Estadísticas
+      ctx.font = "bold 16px 'Karla', sans-serif";
+      ctx.fillStyle = '#334155';
+      ctx.fillText(`Puntos: ${this.score}   |   Semillas: ${this.seedsCollected} 🌻   |   Récord: ${this.highScore}`, w * 0.5, cardY + 70);
+
+      // Franja de dato curioso zootécnico
+      ctx.fillStyle = '#f8fafc';
+      ctx.strokeStyle = '#cbd5e1';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.roundRect(cardX + 16, cardY + 86, cardW - 32, 90, 8);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.font = "bold 11px 'Space Mono', monospace";
+      ctx.fillStyle = '#16a34a';
+      ctx.textAlign = 'left';
+      ctx.fillText("🌿 SABIDURÍA DE CAMPO B-13:", cardX + 26, cardY + 104);
+
+      // Texto de sabiduría biológica con ajuste de línea
+      ctx.font = "13px 'Karla', sans-serif";
+      ctx.fillStyle = '#1e293b';
+      this.wrapText(ctx, this.activeFact || this.facts[0], cardX + 26, cardY + 124, cardW - 52, 17);
+
+      // Botón interactivo de reinicio
+      ctx.textAlign = 'center';
+      ctx.font = "bold 15px 'Karla', sans-serif";
+      ctx.fillStyle = '#15803d';
+      ctx.fillText("Toca la pantalla o presiona ESPACIO para volar otra vez 🪽", w * 0.5, cardY + 235);
+
+      ctx.restore();
+    },
+
+    wrapText(ctx, text, x, y, maxWidth, lineHeight) {
+      const words = text.split(' ');
+      let line = '';
+      for (let n = 0; n < words.length; n++) {
+        const testLine = line + words[n] + ' ';
+        const metrics = ctx.measureText(testLine);
+        if (metrics.width > maxWidth && n > 0) {
+          ctx.fillText(line, x, y);
+          line = words[n] + ' ';
+          y += lineHeight;
+        } else {
+          line = testLine;
+        }
+      }
+      ctx.fillText(line, x, y);
+    },
+
+    drawIdle() {
+      if (!this.ctx || !this.canvas) return;
+      const ctx = this.ctx;
+      const w = this.canvas.width;
+      const h = this.canvas.height;
+      ctx.clearRect(0, 0, w, h);
+
+      // Fondo simple
+      const skyGrad = ctx.createLinearGradient(0, 0, 0, h);
+      skyGrad.addColorStop(0, '#38bdf8');
+      skyGrad.addColorStop(1, '#86efac');
+      ctx.fillStyle = skyGrad;
+      ctx.fillRect(0, 0, w, h);
+
+      // Suelo
+      ctx.fillStyle = '#65a30d';
+      ctx.fillRect(0, h - 45, w, 45);
+
+      // Ave en reposo
+      this.drawAgapornis(ctx, w * 0.5, h * 0.45, 0, 0);
+    },
+
+    loop() {
+      if (!this.isRunning) return;
+      this.update();
+      this.draw();
+      this.animId = requestAnimationFrame(() => this.loop());
+    }
+  };
+
+  window.FlappyGame = FlappyGame;
 
   /* Función para refrescar el puntaje oficial de quizzes en el scorebox general */
   function updateHeaderScore() {
@@ -3434,6 +4430,7 @@
     MemoryGame.start();
     WordSearchGame.start();
     PlatformerGame.start();
+    FlappyGame.init();
 
     const memResetBtn = document.getElementById('memResetBtn');
     if (memResetBtn) memResetBtn.addEventListener('click', () => MemoryGame.showStartScreen());
@@ -3443,6 +4440,9 @@
 
     const platResetBtn = document.getElementById('platResetBtn');
     if (platResetBtn) platResetBtn.addEventListener('click', () => PlatformerGame.showStartScreen());
+
+    const flappyResetBtn = document.getElementById('flappyResetBtn');
+    if (flappyResetBtn) flappyResetBtn.addEventListener('click', () => FlappyGame.showStartScreen());
 
     // Conexión garantizada de botones de la barra de herramientas
     const rulesBtn = document.getElementById('rulesBtn');

@@ -59,6 +59,37 @@ const Auth = {
       localStorage.setItem(CLAVE_QUIZZES_ZONA, JSON.stringify(QUIZZES_INICIALES));
     }
 
+    // Sincronizar bidireccionalmente los estudiantes registrados en el servidor backend
+    if (typeof fetch === 'function') {
+      fetch('/api/students')
+        .then(res => res.json())
+        .then(data => {
+          if (data && data.success && Array.isArray(data.students)) {
+            const locales = Auth.getEstudiantes();
+            let huboCambios = false;
+            data.students.forEach(s => {
+              if (!s || !s.studentName) return;
+              const existe = locales.some(l => l.nombre.toLowerCase() === s.studentName.toLowerCase() || (s.correo && l.correo && l.correo.toLowerCase() === s.correo.toLowerCase()));
+              if (!existe) {
+                locales.push({
+                  nombre: s.studentName,
+                  curso: s.studentGrade || '',
+                  genero: s.genero || 'No especificado',
+                  correo: s.correo || `${s.studentName.toLowerCase().replace(/\s+/g, '.')}@granja.cl`,
+                  clave: '123456', // clave placeholder para cuentas remotas sincronizadas
+                  fechaRegistro: s.updatedAt || new Date().toISOString()
+                });
+                huboCambios = true;
+              }
+            });
+            if (huboCambios) {
+              Auth.guardarEstudiantes(locales);
+            }
+          }
+        })
+        .catch(() => {});
+    }
+
     // Sincronizar estado global con la sesión activa
     const sesion = Auth.getSesion();
     if (typeof state !== 'undefined') {
@@ -198,9 +229,81 @@ const Auth = {
     estudiantes.push(nuevo);
     Auth.guardarEstudiantes(estudiantes);
 
+    // Asegurar inicialización inmediata del perfil en el cuaderno de campo
+    if (typeof setActiveStudent === 'function') {
+      try {
+        setActiveStudent(nombre, curso);
+      } catch (e) {}
+    }
+
+    // Persistir de forma robusta e inmediata en la base de datos del servidor backend
+    if (typeof fetch === 'function') {
+      fetch('/api/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nombre, curso, genero, correo, clave, avatar: '🧑‍🌾' })
+      }).then(r => r.json()).then(data => {
+        if (data && data.success) {
+          console.log('✅ Estudiante persistido en el servidor:', nombre);
+        }
+      }).catch(err => {
+        console.warn('Servidor no disponible para registro inmediato, guardado en almacenamiento local:', err);
+      });
+    }
+
     // Iniciar sesión automáticamente
     Auth.setSesion({ rol: 'estudiante', nombre, correo, curso, genero, nameChangesCount: 0 });
     return { ok: true, usuario: nuevo };
+  },
+
+  async loginEstudianteAsync(correo, clave) {
+    correo = (correo || '').trim().toLowerCase();
+    clave = (clave || '');
+
+    // Intentar primero con el servidor para máxima sincronización
+    if (typeof fetch === 'function') {
+      try {
+        const resp = await fetch('/api/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ correo, clave })
+        });
+        const resData = await resp.json();
+        if (resp.ok && resData && resData.success) {
+          // Guardar en la lista local si no estaba
+          const estudiantes = Auth.getEstudiantes();
+          let local = estudiantes.find(e => e.correo.toLowerCase() === correo);
+          if (!local) {
+            local = {
+              nombre: resData.nombre,
+              curso: resData.curso,
+              genero: resData.genero,
+              correo: resData.correo,
+              clave,
+              fechaRegistro: new Date().toISOString()
+            };
+            estudiantes.push(local);
+            Auth.guardarEstudiantes(estudiantes);
+          }
+          Auth.setSesion({
+            rol: 'estudiante',
+            nombre: resData.nombre,
+            correo: resData.correo,
+            curso: resData.curso,
+            genero: resData.genero,
+            nameChangesCount: 0
+          });
+          return { ok: true };
+        } else if (resData && resData.error && resp.status === 401) {
+          return { ok: false, error: resData.error, code: 'WRONG_PASSWORD' };
+        }
+      } catch (netErr) {
+        // En caso de modo offline, continúa con fallback local
+      }
+    }
+
+    // Fallback local instantáneo
+    return Auth.loginEstudiante(correo, clave);
   },
 
   loginEstudiante(correo, clave) {
@@ -341,17 +444,21 @@ const Auth = {
         let unit = 'FICHAS';
 
         if (isGallery) {
-          count = document.getElementById('galleryCount')?.textContent || '13';
-          total = '13';
+          const galTotal = (typeof REAL_GALLERY_ITEMS !== 'undefined' && Array.isArray(REAL_GALLERY_ITEMS)) ? REAL_GALLERY_ITEMS.length : 17;
+          count = galTotal;
+          total = String(galTotal);
           unit = 'REGISTROS';
         } else if (isMap) {
+          const mapTotal = (typeof MAP_ANIMALS !== 'undefined' && Array.isArray(MAP_ANIMALS)) ? MAP_ANIMALS.length : 23;
           count = (typeof mapDiscoveredSet !== 'undefined') ? mapDiscoveredSet.size : ((typeof state !== 'undefined' && state.mapDiscovered) ? state.mapDiscovered.length : 0);
-          total = '10';
+          total = String(mapTotal);
           unit = 'ANIMALES';
         } else if (isFicha) {
+          const fichaTotal = (typeof MAP_ANIMALS !== 'undefined' && Array.isArray(MAP_ANIMALS)) ? MAP_ANIMALS.length : 23;
           const allDisc = (typeof state !== 'undefined' && Array.isArray(state.discovered)) ? state.discovered.length : (typeof discoveredSet !== 'undefined' ? discoveredSet.size : 0);
-          count = Math.min(10, allDisc);
-          total = '10';
+          const mapDisc = (typeof state !== 'undefined' && Array.isArray(state.mapDiscovered)) ? state.mapDiscovered.length : (typeof mapDiscoveredSet !== 'undefined' ? mapDiscoveredSet.size : 0);
+          count = Math.min(fichaTotal, allDisc + mapDisc);
+          total = String(fichaTotal);
           unit = 'FICHAS';
         } else {
           // Potrero: estrictamente especies reales del potrero (0 a 5)
@@ -410,17 +517,21 @@ const Auth = {
           let unit = 'FICHAS';
 
           if (isGallery) {
-            count = document.getElementById('galleryCount')?.textContent || '13';
-            total = '13';
+            const galTotal = (typeof REAL_GALLERY_ITEMS !== 'undefined' && Array.isArray(REAL_GALLERY_ITEMS)) ? REAL_GALLERY_ITEMS.length : 17;
+            count = galTotal;
+            total = String(galTotal);
             unit = 'REGISTROS';
           } else if (isMap) {
+            const mapTotal = (typeof MAP_ANIMALS !== 'undefined' && Array.isArray(MAP_ANIMALS)) ? MAP_ANIMALS.length : 23;
             count = (typeof mapDiscoveredSet !== 'undefined') ? mapDiscoveredSet.size : ((typeof state !== 'undefined' && state.mapDiscovered) ? state.mapDiscovered.length : 0);
-            total = '10';
+            total = String(mapTotal);
             unit = 'ANIMALES';
           } else if (isFicha) {
+            const fichaTotal = (typeof MAP_ANIMALS !== 'undefined' && Array.isArray(MAP_ANIMALS)) ? MAP_ANIMALS.length : 23;
             const allDisc = (typeof state !== 'undefined' && Array.isArray(state.discovered)) ? state.discovered.length : (typeof discoveredSet !== 'undefined' ? discoveredSet.size : 0);
-            count = Math.min(10, allDisc);
-            total = '10';
+            const mapDisc = (typeof state !== 'undefined' && Array.isArray(state.mapDiscovered)) ? state.mapDiscovered.length : (typeof mapDiscoveredSet !== 'undefined' ? mapDiscoveredSet.size : 0);
+            count = Math.min(fichaTotal, allDisc + mapDisc);
+            total = String(fichaTotal);
             unit = 'FICHAS';
           } else {
             // Potrero: estrictamente especies reales del potrero (0 a 5)

@@ -52,8 +52,8 @@
       <button id="cluesBtn" class="tool-btn clues-tool-btn" type="button" title="Ver mi cuaderno de pistas recolectadas">💡 Mis Pistas <span class="clues-count-pill" id="toolbarCluesCount">0</span></button>
       <button id="achievementsBtn" class="tool-btn" type="button">🏅 Logros</button>
       <button id="rulesBtn" class="tool-btn" type="button">📋 Normas</button>
+      <button id="commentsBtn" class="tool-btn" type="button" title="Muro comunitario de preguntas y observaciones de la granja">💬 Muro Granja</button>
       <button id="soundBtn" class="tool-btn" type="button">🔊 Sonido</button>
-      <button id="btnPortalRegresarInicio" class="tool-btn btn-portal-inicio" type="button" title="Cerrar sesión actual">🚪 Cerrar Sesión</button>
     </div>
   </div>
 
@@ -67,6 +67,9 @@
     </button>
     <button type="button" class="game-tab-btn" data-game="game-platformer">
       <span>🏃‍♂️</span> Aventura 2D (Plataformas)
+    </button>
+    <button type="button" class="game-tab-btn" data-game="game-flappy">
+      <span>🦜</span> Flappy Loro B-13
     </button>
   </div>
 
@@ -277,6 +280,7 @@
         <button type="button" class="diff-pill-btn" data-diff="media">🟡 Media (Huerto)</button>
         <button type="button" class="diff-pill-btn" data-diff="dificil">🔴 Difícil (Caverna Hollow)</button>
         <button type="button" class="diff-pill-btn locked" data-diff="extrema" id="pillDiffExtrema" title="Completa el nivel Difícil para desbloquear este modo">🟣 Extrema <span id="pillLockIcon">🔒</span></button>
+        <button type="button" class="diff-pill-btn" data-diff="legendaria" id="pillDiffLegendaria" title="¡Modo Legendario! ⏱️ 45s de tiempo límite y persecución implacable del Lobo Sombra 🐺">👑 Legendaria 🐺</button>
       </div>
     </div>
 
@@ -353,6 +357,10 @@
                     <span class="diff-badge">🟣 EXTREMA <span class="lock-icon" id="modalLockIcon">🔒</span></span>
                     <span class="diff-desc">Celeste · 1 ❤️</span>
                   </button>
+                  <button type="button" class="diff-card-btn" data-diff="legendaria" id="modalDiffLegendaria">
+                    <span class="diff-badge">👑 LEGENDARIA 🐺</span>
+                    <span class="diff-desc">Persecución · ⏱️ 45s</span>
+                  </button>
                 </div>
               </div>
             </div>
@@ -382,6 +390,99 @@
 
           <button type="button" class="stage-play-btn" id="platStartPlayBtn">
             <span>▶</span> ¡Empezar la Carrera!
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       JUEGO 4: FLAPPY LORO B-13 (AGAPORNIS VOLADOR)
+       ============================================================ -->
+  <section class="game-panel" id="game-flappy">
+    <div class="game-header-box">
+      <div class="game-title-group">
+        <h2>🦜 Flappy Loro B-13 (Vuelo Libre)</h2>
+        <p>¡Ayuda a Pepe el Agapornis a sobrevolar los cercados de la granja escolar, recolectar semillas de girasol 🌻 y esquivar obstáculos!</p>
+      </div>
+      <div class="game-scoreboard">
+        <div class="game-stat-chip" id="flappyDiffChip" title="Dificultad actual">
+          <span>🎯 Dificultad:</span> <b id="flappyDiffVal" style="color:#16a34a;">🟢 Paseo</b>
+        </div>
+        <div class="game-stat-chip">
+          <span>🌻 Semillas:</span> <b id="flappySeedsVal">0</b>
+        </div>
+        <div class="game-stat-chip">
+          <span>🏆 Puntos:</span> <b id="flappyScoreVal">0</b>
+        </div>
+        <div class="game-stat-chip">
+          <span>👑 Récord:</span> <b id="flappyBestVal">0</b>
+        </div>
+        <button type="button" class="game-action-btn" id="flappyResetBtn">🔄 Reiniciar Vuelo</button>
+      </div>
+    </div>
+
+    <!-- Envoltorio del Canvas con Pantalla de Inicio -->
+    <div class="flappy-board-wrap game-board-wrap">
+      <div class="flappy-canvas-wrap">
+        <canvas id="flappyCanvas" width="800" height="450"></canvas>
+        <div class="flappy-touch-bar">
+          <button type="button" class="flappy-touch-btn" id="flappyTouchFlapBtn">
+            🪽 ¡Aletear / Saltar! <span style="font-size:0.75rem;opacity:0.8;">(O toca la pantalla / Espacio)</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Pantalla previa de inicio de Flappy Loro -->
+      <div class="game-start-overlay" id="flappyStartOverlay">
+        <div class="stage-content-wrap">
+          <div class="stage-badge-pill">🦜✨ ARCADE AGROECOLÓGICO B-13</div>
+          <h3 class="stage-title">Pepe el Agapornis en Vuelo Libre</h3>
+          <p class="stage-subtitle">Sobrepasa los postes de madera del cercado, recolecta semillas de girasol y demuestra tus reflejos de vuelo.</p>
+
+          <div class="stage-grid">
+            <div class="stage-card">
+              <div class="stage-card-icon">🪽</div>
+              <div class="stage-card-body">
+                <h4>Mecánica de Vuelo</h4>
+                <p>Presiona <kbd class="kbd-chip">Espacio</kbd>, haz <kbd class="kbd-chip">Clic</kbd> o toca el botón para aletear. La gravedad tira hacia abajo, ¡mantén la altura justa!</p>
+              </div>
+            </div>
+
+            <!-- Selector de Dificultad -->
+            <div class="stage-card">
+              <div class="stage-card-icon">🎯</div>
+              <div class="stage-card-body">
+                <h4>Nivel de Vuelo</h4>
+                <div class="diff-modal-grid" id="flappyDiffSelector">
+                  <button type="button" class="diff-card-btn active" data-diff="facil">
+                    <span class="diff-badge">🟢 PASEO</span>
+                    <span class="diff-desc">Vuelo suave · Cercos amplios</span>
+                  </button>
+                  <button type="button" class="diff-card-btn" data-diff="media">
+                    <span class="diff-badge">🟡 POTRERO</span>
+                    <span class="diff-desc">Velocidad media · Semillas 🌻</span>
+                  </button>
+                  <button type="button" class="diff-card-btn" data-diff="dificil">
+                    <span class="diff-badge">🔴 DESAFÍO B-13</span>
+                    <span class="diff-desc">Vuelo veloz · Brechas estrechas</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Controles y Tips -->
+            <div class="stage-card stage-card-plat-centered">
+              <div class="stage-card-icon">🌻</div>
+              <div class="stage-card-body">
+                <h4>Bonificaciones Biológicas</h4>
+                <p>Cada semilla dorada otorga <b>+5 puntos extra</b> y al superar tu récord desbloquearás sabias curiosidades zootécnicas de las aves del liceo.</p>
+              </div>
+            </div>
+          </div>
+
+          <button type="button" class="stage-play-btn" id="flappyStartPlayBtn">
+            <span>▶</span> ¡Comenzar Vuelo!
           </button>
         </div>
       </div>

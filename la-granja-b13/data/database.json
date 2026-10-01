@@ -1,4 +1,131 @@
 {
-  "students": {},
-  "createdAt": "2026-09-29T16:16:46.214Z"
+  "students": {
+    "estudiante prueba_1_ medio a": {
+      "id": "estudiante prueba_1_ medio a",
+      "studentName": "Estudiante Prueba",
+      "studentGrade": "1� Medio A",
+      "genero": "Prefiero no decirlo",
+      "correo": "estudiante.prueba@b13.cl",
+      "score": 0,
+      "pureScore": 0,
+      "avatarIcon": "?????",
+      "discoveredCount": 0,
+      "mapDiscoveredCount": 0,
+      "potreroQuizCompleted": 0,
+      "mapQuizCompleted": 0,
+      "badgesCount": 0,
+      "updatedAt": "2026-10-01T20:29:21.063Z",
+      "stateData": {
+        "score": 0,
+        "pureScore": 0,
+        "avatarIcon": "?????",
+        "badges": [],
+        "discovered": [],
+        "mapDiscovered": []
+      }
+    }
+  },
+  "createdAt": "2026-09-29T16:16:46.214Z",
+  "users": {
+    "estudiante.prueba@b13.cl": {
+      "nombre": "Estudiante Prueba",
+      "curso": "1� Medio A",
+      "genero": "Prefiero no decirlo",
+      "correo": "estudiante.prueba@b13.cl",
+      "clave": "clave123",
+      "rol": "estudiante",
+      "avatar": "?????",
+      "registradoEn": "2026-10-01T20:29:21.063Z"
+    }
+  },
+  "activityLogs": [
+    {
+      "id": "act_1790886807375_79g1o",
+      "type": "reply",
+      "user": "Profesor/a B-13",
+      "course": "Docente",
+      "role": "profesor",
+      "detail": "Respondió a la consulta de Estudiante Prueba: A los agapornis les encanta la manzana roja en rod...",
+      "icon": "↩️",
+      "timestamp": "2026-10-01T20:33:27.375Z"
+    },
+    {
+      "id": "act_1790886790860_g4nz4",
+      "type": "comment",
+      "user": "Estudiante Prueba",
+      "course": "1� Medio A",
+      "role": "estudiante",
+      "detail": "Publicó un comentario en la Granja: �Cu�l es la fruta favorita de los agapornis de la ...",
+      "icon": "💬",
+      "timestamp": "2026-10-01T20:33:10.860Z"
+    },
+    {
+      "id": "act_1790886567617_wm2gd",
+      "type": "login",
+      "user": "Estudiante Prueba",
+      "course": "1� Medio A",
+      "role": "estudiante",
+      "detail": "Inició sesión en la plataforma escolar.",
+      "icon": "🔑",
+      "timestamp": "2026-10-01T20:29:27.618Z"
+    },
+    {
+      "id": "act_1790886561066_mnlkp",
+      "type": "register",
+      "user": "Estudiante Prueba",
+      "course": "1� Medio A",
+      "role": "estudiante",
+      "detail": "Nuevo estudiante registrado en 1� Medio A.",
+      "icon": "🎓",
+      "timestamp": "2026-10-01T20:29:21.066Z"
+    }
+  ],
+  "comments": [
+    {
+      "id": "com_1790886790860_t2st",
+      "autor": "Estudiante Prueba",
+      "author": "Estudiante Prueba",
+      "curso": "1� Medio A",
+      "course": "1� Medio A",
+      "rol": "estudiante",
+      "role": "estudiante",
+      "avatar": "💬",
+      "mensaje": "�Cu�l es la fruta favorita de los agapornis de la granja?",
+      "text": "�Cu�l es la fruta favorita de los agapornis de la granja?",
+      "animalId": "agapornis",
+      "categoria": "pregunta",
+      "isQuestion": true,
+      "fecha": "2026-10-01T20:33:10.857Z",
+      "timestamp": "2026-10-01T20:33:10.857Z",
+      "respuestas": [
+        {
+          "id": "rep_1790886807375_saew",
+          "autor": "Profesor/a B-13",
+          "author": "Profesor/a B-13",
+          "rol": "profesor",
+          "role": "profesor",
+          "avatar": "🍎",
+          "mensaje": "A los agapornis les encanta la manzana roja en rodajas finas y la espinaca fresca!",
+          "text": "A los agapornis les encanta la manzana roja en rodajas finas y la espinaca fresca!",
+          "fecha": "2026-10-01T20:33:27.375Z",
+          "timestamp": "2026-10-01T20:33:27.375Z"
+        }
+      ],
+      "replies": [
+        {
+          "id": "rep_1790886807375_saew",
+          "autor": "Profesor/a B-13",
+          "author": "Profesor/a B-13",
+          "rol": "profesor",
+          "role": "profesor",
+          "avatar": "🍎",
+          "mensaje": "A los agapornis les encanta la manzana roja en rodajas finas y la espinaca fresca!",
+          "text": "A los agapornis les encanta la manzana roja en rodajas finas y la espinaca fresca!",
+          "fecha": "2026-10-01T20:33:27.375Z",
+          "timestamp": "2026-10-01T20:33:27.375Z"
+        }
+      ]
+    }
+  ],
+  "quizzes": {}
 }

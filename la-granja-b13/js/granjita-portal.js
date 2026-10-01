@@ -845,14 +845,17 @@
     // Submit Login Estudiante
     const portalLoginForm = document.getElementById('portalLoginForm');
     if (portalLoginForm) {
-      portalLoginForm.onsubmit = (e) => {
+      portalLoginForm.onsubmit = async (e) => {
         e.preventDefault();
         const correo = document.getElementById('portalLoginCorreo').value.trim();
         const clave = document.getElementById('portalLoginClave').value;
         const errEl = document.getElementById('portalLoginError');
 
         if (typeof Auth !== 'undefined') {
-          const res = Auth.loginEstudiante(correo, clave);
+          const res = (typeof Auth.loginEstudianteAsync === 'function')
+            ? await Auth.loginEstudianteAsync(correo, clave)
+            : Auth.loginEstudiante(correo, clave);
+
           if (!res.ok) {
             let errorHtml = `<span>${res.error}</span>`;
             if (res.code === 'USER_NOT_FOUND') {

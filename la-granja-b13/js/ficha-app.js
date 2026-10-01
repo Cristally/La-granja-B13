@@ -432,7 +432,23 @@
         <div class="ficha-fact-card-k">🌾 Dato de Terreno del Liceo B-13 (Observación Práctica)</div>
         <div class="ficha-fact-card-v">${facts.dato || 'Especie clave en el aprendizaje práctico de ciencias naturales y agroecología.'}</div>
       </div>
+
+      <div class="ficha-fact-card full-col" style="background:#f0f9ff;border:1.5px solid #0284c7;text-align:center;padding:16px;">
+        <p style="margin:0 0 10px;font-size:0.86rem;color:#0369a1;font-weight:700;">¿Tienes dudas o hiciste una observación interesante sobre ${a.name}?</p>
+        <button type="button" class="tool-btn" id="btnFichaComment_${a.id}" style="padding:10px 20px;font-size:0.88rem;font-weight:700;background:#0284c7;color:#fff;border-radius:8px;cursor:pointer;border:none;box-shadow:0 2px 4px rgba(2,132,199,0.25);">
+          💬 Abrir Muro Comunitario para ${a.name}
+        </button>
+      </div>
     `;
+
+    const cBtn = document.getElementById(`btnFichaComment_${a.id}`);
+    if (cBtn) {
+      cBtn.addEventListener('click', () => {
+        if (typeof openCommentsModal === 'function') {
+          openCommentsModal(a.id);
+        }
+      });
+    }
   }
 
   function renderWideJokes(a) {
@@ -484,15 +500,20 @@
       <div class="animal-joke-box" id="fichaWideJokeBox_${a.id}" style="margin-bottom:18px;">
         <div class="joke-header">
           <span class="joke-title-tag">🌾 Chiste de Granja</span>
-          <span class="joke-sub">¡Toca para adivinar y reírte con humor campesino B-13!</span>
+          <span class="joke-sub">¡Humor zootécnico del Liceo B-13!</span>
         </div>
         <div class="joke-q">${funProfile.joke.question}</div>
         <div class="joke-punchline" id="punchlineWide_${a.id}" style="display:none;background:#fef3c7;border:2px dashed #d97706;border-radius:10px;padding:12px;margin:12px 0;font-size:1.02rem;color:#78350f;">
           <span>🎭</span> <b>${funProfile.joke.punchline}</b>
         </div>
-        <button type="button" class="joke-reveal-btn" id="jokeWideBtn_${a.id}">
-          <span>👀 ¡Ver Remate!</span>
-        </button>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:8px;">
+          <button type="button" class="joke-reveal-btn" id="jokeWideBtn_${a.id}">
+            <span>👀 ¡Ver Remate!</span>
+          </button>
+          <button type="button" class="joke-audio-btn tool-btn" id="jokeWideAudioBtn_${a.id}" style="padding:7px 14px;font-size:0.82rem;font-weight:700;background:#fef3c7;border:1.5px solid #d97706;color:#78350f;border-radius:20px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;">
+            <span>🗣️ Escuchar Chiste</span>
+          </button>
+        </div>
       </div>
 
       <!-- Tarjeta de Superpoder Biológico -->
@@ -514,14 +535,36 @@
       </div>
     `;
 
+    function playRimshotWide() {
+      try {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (!AudioCtx) return;
+        const ctx = new AudioCtx();
+        const now = ctx.currentTime;
+        const osc = ctx.createOscillator();
+        const g = ctx.createGain();
+        osc.frequency.setValueAtTime(150, now);
+        osc.frequency.exponentialRampToValueAtTime(50, now + 0.2);
+        g.gain.setValueAtTime(0.3, now);
+        g.gain.linearRampToValueAtTime(0, now + 0.2);
+        osc.connect(g);
+        g.connect(ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.21);
+      } catch (e) {}
+    }
+
     const jokeBtn = document.getElementById(`jokeWideBtn_${a.id}`);
+    const jokeAudioBtn = document.getElementById(`jokeWideAudioBtn_${a.id}`);
     const punchlineEl = document.getElementById(`punchlineWide_${a.id}`);
+
     if (jokeBtn && punchlineEl) {
       jokeBtn.addEventListener('click', () => {
         const isHidden = punchlineEl.style.display === 'none';
         if (isHidden) {
           punchlineEl.style.display = 'flex';
           jokeBtn.innerHTML = '<span>🤫 Ocultar Remate</span>';
+          playRimshotWide();
           if (typeof state !== 'undefined') {
             if (!state.jokesRevealedCount) state.jokesRevealedCount = 0;
             state.jokesRevealedCount++;
@@ -534,6 +577,30 @@
         } else {
           punchlineEl.style.display = 'none';
           jokeBtn.innerHTML = '<span>👀 ¡Ver Remate!</span>';
+        }
+      });
+    }
+
+    if (jokeAudioBtn && punchlineEl) {
+      jokeAudioBtn.addEventListener('click', () => {
+        const q = funProfile.joke.question;
+        const ans = funProfile.joke.punchline.replace(/[^\w\sáéíóúüñ¿?¡!]/gi, '');
+        punchlineEl.style.display = 'flex';
+        if (jokeBtn) jokeBtn.innerHTML = '<span>🤫 Ocultar Remate</span>';
+
+        if ('speechSynthesis' in window) {
+          window.speechSynthesis.cancel();
+          const utterQ = new SpeechSynthesisUtterance(q);
+          utterQ.lang = 'es-CL';
+          const utterA = new SpeechSynthesisUtterance(ans);
+          utterA.lang = 'es-CL';
+          utterA.onend = playRimshotWide;
+          utterQ.onend = () => {
+            setTimeout(() => window.speechSynthesis.speak(utterA), 300);
+          };
+          window.speechSynthesis.speak(utterQ);
+        } else {
+          playRimshotWide();
         }
       });
     }

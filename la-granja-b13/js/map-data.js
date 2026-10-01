@@ -81,9 +81,9 @@ const FARM_ZONES_3D = [
   { id: 'huerto', label: 'Bancales de Cultivo', kind: 'deco', icon: '🫐', left: 20.0, top: 48.0,
     flavor: 'Bancales y cultivos vegetales complementarios para enriquecimiento ambiental y nutrición zootécnica.',
     image: 'assets/img/real/tomates_maceta.jpg' },
-  { id: 'gallinas', label: 'Gallinero y Gallos', kind: 'animals', icon: '🐔', left: 80.5, top: 45.0,
-    intro: 'El gallinero del liceo con sus 9 gallinas y gallos oficiales (Vicente, Matías, Cleo, Tormenta, etc.). Toca a cada ave para abrir su ficha y quiz.',
-    animalIds: ['vicente', 'matias', 'cleo', 'tormenta', 'milagro', 'mama', 'violeta', 'fernanda_chica', 'avellana'] },
+  { id: 'gallinas', label: 'Gallinero Principal', kind: 'animals', icon: '🐔', left: 80.5, top: 45.0,
+    intro: 'El gallinero del liceo con Vicente, Matías, Cleo, Mamá, Violeta y Fernanda chica. Toca a cada ave para abrir su ficha y quiz.',
+    animalIds: ['vicente', 'matias', 'cleo', 'mama', 'violeta', 'fernanda_chica'] },
   { id: 'jaula-gallo', label: 'Nidos y Crianza del Corral', kind: 'animals', icon: '🐓', left: 80.5, top: 63.0,
     intro: 'Sector de nidos protegidos, crianza y descanso de gallos y ponedoras.',
     animalIds: ['avellana', 'vicente'] },
@@ -96,8 +96,11 @@ const FARM_ZONES_3D = [
   { id: 'taller', label: 'Taller de Palets y Camas', kind: 'deco', icon: '🌾', left: 22.0, top: 81.0,
     flavor: 'Sector de acopio de paja, sustratos y herramientas de cultivo construidas con maderas recicladas de la comunidad.',
     image: 'assets/img/real/canasto_huevos_taller.jpg' },
-  { id: 'gato', label: 'Gato de la Granja', kind: 'deco', icon: '🐈', left: 64.0, top: 58.0,
-    flavor: 'El felino guardián de la granja. Ronda los alrededores del almacén y los corrales, ayudando de forma natural en el control biológico de roedores sin necesidad de químicos nocivos.',
+  { id: 'nido-tormenta-milagro', label: 'Nido de Tormenta y Milagro', kind: 'animals', icon: '🐔', left: 64.0, top: 58.0,
+    intro: 'El cajón de descanso y postura protegido donde conviven y empollandan las queridas gallinas Tormenta y Milagro.',
+    animalIds: ['tormenta', 'milagro'] },
+  { id: 'gato', label: 'Gato Guardián de la Granja', kind: 'deco', icon: '🐈', left: 35.0, top: 16.0,
+    flavor: 'El felino guardián de la granja. Ronda sigilosamente sobre los muros de piedra y techos de madera del almacén, controlando roedores de forma biológica y cuidando a la comunidad sin químicos dañinos.',
     sound: 'assets/audio/gato.mp3' }
 ];
 
@@ -195,7 +198,7 @@ const MAP_ANIMALS = [
     sound: 'assets/audio/gallina.mp3'
   },
   {
-    id: 'tormenta', name: 'Tormenta', store: 'mapQuiz', zoneId: 'gallinas',
+    id: 'tormenta', name: 'Tormenta', store: 'mapQuiz', zoneId: 'nido-tormenta-milagro',
     photo: 'assets/img/animals/tormenta.png', emoji: '🐔',
     color: '#4b5563', accessory: 'none', group: 'gallinas',
     blurb: 'Gallina sedosa japonesa de tono gris nube esponjoso. Su plumaje es suave como el algodón y tiene un carácter muy dócil.',
@@ -203,7 +206,7 @@ const MAP_ANIMALS = [
     sound: 'assets/audio/gallina.mp3'
   },
   {
-    id: 'milagro', name: 'Milagro', store: 'mapQuiz', zoneId: 'gallinas',
+    id: 'milagro', name: 'Milagro', store: 'mapQuiz', zoneId: 'nido-tormenta-milagro',
     photo: 'assets/img/animals/milagro.png', emoji: '🐔',
     color: '#b45309', accessory: 'none', group: 'gallinas',
     blurb: 'Gallina con singular copete de plumas en la cabeza tono capuchino y beige. Alegre, curiosa y muy querida en el liceo.',

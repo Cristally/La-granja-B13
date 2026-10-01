@@ -110,6 +110,10 @@ function initDatabase() {
   if (!fs.existsSync(DB_FILE)) {
     const initialData = {
       students: Object.create(null),
+      users: Object.create(null),
+      activityLogs: [],
+      comments: [],
+      quizzes: Object.create(null),
       createdAt: new Date().toISOString()
     };
     fs.writeFileSync(DB_FILE, JSON.stringify(initialData, null, 2), 'utf8');
@@ -124,15 +128,53 @@ function readDatabase() {
     if (!parsed.students || typeof parsed.students !== 'object') {
       parsed.students = Object.create(null);
     }
+    if (!parsed.users || typeof parsed.users !== 'object') {
+      parsed.users = Object.create(null);
+    }
+    if (!Array.isArray(parsed.activityLogs)) {
+      parsed.activityLogs = [];
+    }
+    if (!Array.isArray(parsed.comments)) {
+      parsed.comments = [];
+    }
+    if (!parsed.quizzes || typeof parsed.quizzes !== 'object') {
+      parsed.quizzes = Object.create(null);
+    }
     return parsed;
   } catch (e) {
-    return { students: Object.create(null), createdAt: new Date().toISOString() };
+    return {
+      students: Object.create(null),
+      users: Object.create(null),
+      activityLogs: [],
+      comments: [],
+      quizzes: Object.create(null),
+      createdAt: new Date().toISOString()
+    };
   }
 }
 
 function writeDatabase(data) {
   initDatabase();
   fs.writeFileSync(DB_FILE, JSON.stringify(data, null, 2), 'utf8');
+}
+
+function addActivityLog(db, logEntry) {
+  if (!Array.isArray(db.activityLogs)) db.activityLogs = [];
+  const entry = {
+    id: 'act_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7),
+    type: sanitizeForSecurity(logEntry.type || 'info', 40),
+    user: sanitizeForSecurity(logEntry.user || 'Usuario', 80),
+    course: sanitizeForSecurity(logEntry.course || '', 40),
+    role: sanitizeForSecurity(logEntry.role || 'estudiante', 25),
+    detail: sanitizeForSecurity(logEntry.detail || '', 300),
+    icon: sanitizeForSecurity(logEntry.icon || '📌', 12),
+    timestamp: new Date().toISOString()
+  };
+  db.activityLogs.unshift(entry);
+  if (db.activityLogs.length > 250) {
+    db.activityLogs = db.activityLogs.slice(0, 250);
+  }
+  return entry;
 }
 
 /* ============================================================
@@ -147,6 +189,198 @@ app.get('/api/health', (req, res) => {
     uptime: process.uptime(),
     timestamp: new Date().toISOString()
   });
+});
+
+// Registro oficial persistente de estudiantes
+app.post('/api/register', (req, res) => {
+  try {
+    const { nombre, curso, genero, correo, clave, password, avatar } = req.body || {};
+    const cleanNombre = sanitizeForSecurity(nombre || '', 80);
+    const cleanCurso = sanitizeForSecurity(curso || '', 35);
+    const cleanGenero = sanitizeForSecurity(genero || 'Prefiero no decirlo', 30);
+    const cleanCorreo = sanitizeForSecurity((correo || '').toLowerCase(), 90);
+    const cleanClave = String(clave || password || '').trim().slice(0, 100);
+    const cleanAvatar = sanitizeForSecurity(avatar || '🧑‍🌾', 12) || '🧑‍🌾';
+
+    if (!cleanNombre || cleanNombre.length < 3) {
+      return res.status(400).json({ error: 'Nombre de estudiante inválido o muy corto.' });
+    }
+    if (/\d/.test(cleanNombre)) {
+      return res.status(400).json({ error: 'El nombre no debe contener números.' });
+    }
+    if (!cleanCurso) {
+      return res.status(400).json({ error: 'Debes seleccionar un curso válido.' });
+    }
+    if (!cleanCorreo || !cleanCorreo.includes('@')) {
+      return res.status(400).json({ error: 'Correo electrónico institucional o escolar inválido.' });
+    }
+    if (!cleanClave || cleanClave.length < 6) {
+      return res.status(400).json({ error: 'La contraseña debe tener al menos 6 caracteres.' });
+    }
+
+    if (isDangerousKey(cleanCorreo) || isDangerousKey(cleanNombre)) {
+      return res.status(400).json({ error: 'Identificador no permitido.' });
+    }
+
+    const db = readDatabase();
+    if (!db.users) db.users = Object.create(null);
+    if (!db.students) db.students = Object.create(null);
+
+    // Verificar si el correo ya existe
+    if (db.users[cleanCorreo]) {
+      return res.status(409).json({ error: 'Este correo electrónico ya se encuentra registrado.' });
+    }
+
+    const studentKey = (cleanNombre + '_' + cleanCurso).toLowerCase().replace(/[^a-z0-9_\-\. ]/g, '_');
+    const nowIso = new Date().toISOString();
+
+    const userData = {
+      nombre: cleanNombre,
+      curso: cleanCurso,
+      genero: cleanGenero,
+      correo: cleanCorreo,
+      clave: cleanClave,
+      rol: 'estudiante',
+      avatar: cleanAvatar,
+      registradoEn: nowIso
+    };
+    db.users[cleanCorreo] = userData;
+
+    // Asegurar registro inicial en la tabla consolidada de estudiantes
+    if (!db.students[studentKey]) {
+      db.students[studentKey] = {
+        id: studentKey,
+        studentName: cleanNombre,
+        studentGrade: cleanCurso,
+        genero: cleanGenero,
+        correo: cleanCorreo,
+        score: 0,
+        pureScore: 0,
+        avatarIcon: cleanAvatar,
+        discoveredCount: 0,
+        mapDiscoveredCount: 0,
+        potreroQuizCompleted: 0,
+        mapQuizCompleted: 0,
+        badgesCount: 0,
+        updatedAt: nowIso,
+        stateData: {
+          score: 0,
+          pureScore: 0,
+          avatarIcon: cleanAvatar,
+          badges: [],
+          discovered: [],
+          mapDiscovered: []
+        }
+      };
+    } else {
+      db.students[studentKey].correo = cleanCorreo;
+      db.students[studentKey].genero = cleanGenero;
+    }
+
+    // Registrar en el historial de acciones en tiempo real
+    addActivityLog(db, {
+      type: 'register',
+      user: cleanNombre,
+      course: cleanCurso,
+      role: 'estudiante',
+      detail: `Nuevo estudiante registrado en ${cleanCurso}.`,
+      icon: '🎓'
+    });
+
+    writeDatabase(db);
+    res.json({
+      success: true,
+      message: 'Estudiante registrado y persistido con éxito.',
+      student: {
+        nombre: cleanNombre,
+        curso: cleanCurso,
+        genero: cleanGenero,
+        correo: cleanCorreo,
+        avatar: cleanAvatar
+      }
+    });
+  } catch (err) {
+    res.status(500).json({ error: 'Error interno al registrar estudiante.' });
+  }
+});
+
+// Inicio de sesión validado en el servidor
+app.post('/api/login', (req, res) => {
+  try {
+    const { correo, clave, password } = req.body || {};
+    const cleanCorreo = sanitizeForSecurity((correo || '').toLowerCase(), 90);
+    const cleanClave = String(clave || password || '').trim();
+
+    if (!cleanCorreo || !cleanClave) {
+      return res.status(400).json({ error: 'Correo y contraseña requeridos.' });
+    }
+
+    // Cuenta de profesor oficial
+    if (cleanCorreo === 'profesor@granja.cl' && cleanClave === 'profesor1234') {
+      const db = readDatabase();
+      addActivityLog(db, {
+        type: 'login',
+        user: 'Profesor/a B-13',
+        course: 'Docencia',
+        role: 'profesor',
+        detail: 'Profesor inició sesión en el panel docente.',
+        icon: '🍎'
+      });
+      writeDatabase(db);
+      return res.json({
+        success: true,
+        rol: 'profesor',
+        nombre: 'Profesor/a B-13',
+        correo: 'profesor@granja.cl'
+      });
+    }
+
+    // Cuenta demo
+    if (cleanCorreo === 'demo@granja.cl' && cleanClave === 'demo1234') {
+      return res.json({
+        success: true,
+        rol: 'estudiante',
+        nombre: 'Estudiante Demo',
+        curso: '2°B',
+        correo: 'demo@granja.cl',
+        genero: 'Prefiero no decirlo',
+        avatar: '🧑‍🌾'
+      });
+    }
+
+    const db = readDatabase();
+    const user = db.users ? db.users[cleanCorreo] : null;
+
+    if (!user) {
+      return res.status(404).json({ error: 'Esta cuenta no está registrada en el Liceo B-13.' });
+    }
+
+    if (user.clave !== cleanClave) {
+      return res.status(401).json({ error: 'Contraseña incorrecta.' });
+    }
+
+    addActivityLog(db, {
+      type: 'login',
+      user: user.nombre,
+      course: user.curso || '',
+      role: user.rol || 'estudiante',
+      detail: 'Inició sesión en la plataforma escolar.',
+      icon: '🔑'
+    });
+    writeDatabase(db);
+
+    res.json({
+      success: true,
+      rol: user.rol || 'estudiante',
+      nombre: user.nombre,
+      curso: user.curso,
+      genero: user.genero,
+      correo: user.correo,
+      avatar: user.avatar || '🧑‍🌾'
+    });
+  } catch (err) {
+    res.status(500).json({ error: 'Error al procesar el inicio de sesión.' });
+  }
 });
 
 // Guardar o sincronizar progreso de un estudiante
@@ -188,7 +422,8 @@ app.post('/api/sync', (req, res) => {
     const cleanAvatar = sanitizeForSecurity(rawAvatar, 12) || '🧑‍🌾';
 
     const db = readDatabase();
-    
+    const prevScore = db.students[key] ? (db.students[key].pureScore || 0) : 0;
+
     // Asignación segura sin riesgo de contaminar el prototipo
     db.students[key] = {
       id: key,
@@ -217,6 +452,18 @@ app.post('/api/sync', (req, res) => {
       }
     };
 
+    // Registrar en tiempo real si hubo aumento significativo de puntaje
+    if (validPureScore > prevScore && validPureScore > 0) {
+      addActivityLog(db, {
+        type: 'score_up',
+        user: cleanName,
+        course: cleanGrade,
+        role: 'estudiante',
+        detail: `Actualizó su progreso y alcanzó ${validPureScore} pts oficiales (+${validPureScore - prevScore} pts).`,
+        icon: '⭐'
+      });
+    }
+
     writeDatabase(db);
     res.json({ success: true, message: 'Progreso guardado correctamente.', studentId: key });
   } catch (err) {
@@ -228,10 +475,42 @@ app.post('/api/sync', (req, res) => {
 app.get('/api/students', (req, res) => {
   try {
     const db = readDatabase();
-    const list = Object.values(db.students || {}).map(s => ({
+    if (!db.students) db.students = Object.create(null);
+    if (!db.users) db.users = Object.create(null);
+
+    // Asegurar que usuarios registrados en db.users figuren en db.students
+    Object.values(db.users).forEach(u => {
+      if (!u || !u.nombre) return;
+      const key = (u.nombre + '_' + (u.curso || '')).toLowerCase().replace(/[^a-z0-9_\-\. ]/g, '_');
+      if (!db.students[key]) {
+        db.students[key] = {
+          id: key,
+          studentName: u.nombre,
+          studentGrade: u.curso || '',
+          genero: u.genero || 'No especificado',
+          correo: u.correo || '',
+          score: 0,
+          pureScore: 0,
+          avatarIcon: u.avatar || '🧑‍🌾',
+          discoveredCount: 0,
+          mapDiscoveredCount: 0,
+          potreroQuizCompleted: 0,
+          mapQuizCompleted: 0,
+          badgesCount: 0,
+          updatedAt: u.registradoEn || new Date().toISOString()
+        };
+      } else {
+        if (!db.students[key].correo && u.correo) db.students[key].correo = u.correo;
+        if (!db.students[key].genero && u.genero) db.students[key].genero = u.genero;
+      }
+    });
+
+    const list = Object.values(db.students).map(s => ({
       id: s.id,
       studentName: s.studentName,
       studentGrade: s.studentGrade,
+      correo: s.correo || '',
+      genero: s.genero || 'No especificado',
       score: Number.isFinite(s.pureScore) ? s.pureScore : (s.score || 0),
       pureScore: Number.isFinite(s.pureScore) ? s.pureScore : (s.score || 0),
       avatarIcon: s.avatarIcon || '🧑‍🌾',
@@ -243,6 +522,187 @@ app.get('/api/students', (req, res) => {
     res.json({ success: true, total: list.length, students: list });
   } catch (err) {
     res.status(500).json({ error: 'Error al consultar estudiantes.' });
+  }
+});
+
+// Historial de actividad y acciones en tiempo real para docentes
+app.get('/api/activity', (req, res) => {
+  try {
+    const db = readDatabase();
+    const logs = Array.isArray(db.activityLogs) ? db.activityLogs : [];
+    res.json({ success: true, total: logs.length, logs });
+  } catch (err) {
+    res.status(500).json({ error: 'Error al consultar el historial de actividades.' });
+  }
+});
+
+app.post('/api/activity', (req, res) => {
+  try {
+    const { type, user, course, role, detail, icon } = req.body || {};
+    const db = readDatabase();
+    const entry = addActivityLog(db, { type, user, course, role, detail, icon });
+    writeDatabase(db);
+    res.json({ success: true, log: entry });
+  } catch (err) {
+    res.status(500).json({ error: 'Error al registrar la acción.' });
+  }
+});
+
+// Sistema de Comentarios y Dudas Pedagógicas
+app.get('/api/comments', (req, res) => {
+  try {
+    const db = readDatabase();
+    let comments = Array.isArray(db.comments) ? db.comments : [];
+    const animalFilter = sanitizeId(req.query.animalId || '');
+    if (animalFilter && animalFilter !== 'all') {
+      comments = comments.filter(c => c.animalId === animalFilter);
+    }
+    // Normalizar propiedades en cada comentario para interoperabilidad total
+    const normalized = comments.map(c => {
+      const replies = Array.isArray(c.replies || c.respuestas) ? (c.replies || c.respuestas) : [];
+      const normReplies = replies.map(r => ({
+        id: r.id,
+        author: r.author || r.autor || 'Docente',
+        autor: r.autor || r.author || 'Docente',
+        role: r.role || r.rol || 'profesor',
+        rol: r.rol || r.role || 'profesor',
+        text: r.text || r.mensaje || '',
+        mensaje: r.mensaje || r.text || '',
+        timestamp: r.timestamp || r.fecha || new Date().toISOString()
+      }));
+      return {
+        ...c,
+        author: c.author || c.autor || 'Estudiante',
+        autor: c.autor || c.author || 'Estudiante',
+        role: c.role || c.rol || 'estudiante',
+        rol: c.rol || c.role || 'estudiante',
+        course: c.course || c.curso || '',
+        curso: c.curso || c.course || '',
+        text: c.text || c.mensaje || '',
+        mensaje: c.mensaje || c.text || '',
+        isQuestion: c.isQuestion !== undefined ? c.isQuestion : (c.categoria === 'pregunta'),
+        timestamp: c.timestamp || c.fecha || new Date().toISOString(),
+        replies: normReplies,
+        respuestas: normReplies
+      };
+    });
+    res.json({ success: true, total: normalized.length, comments: normalized });
+  } catch (err) {
+    res.status(500).json({ error: 'Error al obtener comentarios.' });
+  }
+});
+
+app.post('/api/comments', (req, res) => {
+  try {
+    const { autor, author, curso, course, rol, role, avatar, mensaje, text, comment, animalId, categoria, isQuestion } = req.body || {};
+    const cleanAutor = sanitizeForSecurity(autor || author || 'Anónimo', 80);
+    const cleanCurso = sanitizeForSecurity(curso || course || '', 40);
+    const cleanRol = sanitizeForSecurity(rol || role || 'estudiante', 25);
+    const cleanAvatar = sanitizeForSecurity(avatar || '💬', 12) || '💬';
+    const cleanMensaje = sanitizeForSecurity(mensaje || text || comment || '', 500);
+    const cleanAnimalId = sanitizeId(animalId || 'general').slice(0, 40);
+    const cleanIsQuestion = isQuestion !== undefined ? !!isQuestion : (categoria === 'pregunta');
+    const cleanCategoria = sanitizeForSecurity(categoria || (cleanIsQuestion ? 'pregunta' : 'observacion') || 'general', 40);
+
+    if (!cleanMensaje || cleanMensaje.length < 3) {
+      return res.status(400).json({ error: 'El comentario no puede estar vacío.' });
+    }
+
+    const db = readDatabase();
+    if (!Array.isArray(db.comments)) db.comments = [];
+
+    const nowIso = new Date().toISOString();
+    const newComment = {
+      id: 'com_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
+      autor: cleanAutor,
+      author: cleanAutor,
+      curso: cleanCurso,
+      course: cleanCurso,
+      rol: cleanRol,
+      role: cleanRol,
+      avatar: cleanAvatar,
+      mensaje: cleanMensaje,
+      text: cleanMensaje,
+      animalId: cleanAnimalId,
+      categoria: cleanCategoria,
+      isQuestion: cleanIsQuestion,
+      fecha: nowIso,
+      timestamp: nowIso,
+      respuestas: [],
+      replies: []
+    };
+
+    db.comments.unshift(newComment);
+    if (db.comments.length > 300) db.comments = db.comments.slice(0, 300);
+
+    addActivityLog(db, {
+      type: 'comment',
+      user: cleanAutor,
+      course: cleanCurso,
+      role: cleanRol,
+      detail: `Publicó un comentario en la Granja: "${cleanMensaje.slice(0, 50)}..."`,
+      icon: '💬'
+    });
+
+    writeDatabase(db);
+    res.json({ success: true, comment: newComment });
+  } catch (err) {
+    res.status(500).json({ error: 'Error al publicar comentario.' });
+  }
+});
+
+app.post('/api/comments/:id/reply', (req, res) => {
+  try {
+    const commentId = sanitizeId(req.params.id);
+    const { autor, author, rol, role, avatar, mensaje, text } = req.body || {};
+    const cleanAutor = sanitizeForSecurity(autor || author || 'Docente B-13', 80);
+    const cleanRol = sanitizeForSecurity(rol || role || 'profesor', 25);
+    const cleanAvatar = sanitizeForSecurity(avatar || '🍎', 12) || '🍎';
+    const cleanMensaje = sanitizeForSecurity(mensaje || text || '', 400);
+
+    if (!cleanMensaje) {
+      return res.status(400).json({ error: 'La respuesta no puede estar vacía.' });
+    }
+
+    const db = readDatabase();
+    const comment = (db.comments || []).find(c => c.id === commentId);
+
+    if (!comment) {
+      return res.status(404).json({ error: 'Comentario no encontrado.' });
+    }
+
+    if (!Array.isArray(comment.respuestas)) comment.respuestas = [];
+    if (!Array.isArray(comment.replies)) comment.replies = [];
+
+    const nowIso = new Date().toISOString();
+    const reply = {
+      id: 'rep_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
+      autor: cleanAutor,
+      author: cleanAutor,
+      rol: cleanRol,
+      role: cleanRol,
+      avatar: cleanAvatar,
+      mensaje: cleanMensaje,
+      text: cleanMensaje,
+      fecha: nowIso,
+      timestamp: nowIso
+    };
+    comment.respuestas.push(reply);
+    comment.replies.push(reply);
+
+    addActivityLog(db, {
+      type: 'reply',
+      user: cleanAutor,
+      course: 'Docente',
+      role: cleanRol,
+      detail: `Respondió a la consulta de ${comment.autor || comment.author}: "${cleanMensaje.slice(0, 50)}..."`,
+      icon: '↩️'
+    });
+
+    writeDatabase(db);
+    res.json({ success: true, reply, comment });
+  } catch (err) {
+    res.status(500).json({ error: 'Error al agregar respuesta.' });
   }
 });
 
@@ -363,6 +823,15 @@ app.post('/api/quizzes', (req, res) => {
       decimas: cleanDecimas,
       profesor: cleanProfesor,
       createdAt: new Date().toISOString()
+    });
+
+    addActivityLog(db, {
+      type: 'quiz_created',
+      user: cleanProfesor,
+      course: 'Docente',
+      role: 'profesor',
+      detail: `Publicó una nueva pregunta de quiz formativo en zona "${cleanZona}".`,
+      icon: '📝'
     });
 
     writeDatabase(db);
