@@ -22,7 +22,7 @@ function tone(freq, start, dur, type, gainVal) {
   const ctx = ensureAudioCtx();
   if (!ctx) return;
   type = type || 'sine';
-  gainVal = gainVal === undefined ? 0.15 : gainVal;
+  gainVal = gainVal === undefined ? 0.08 : gainVal;
   const osc = ctx.createOscillator();
   const gain = ctx.createGain();
   osc.type = type;
@@ -37,20 +37,20 @@ function tone(freq, start, dur, type, gainVal) {
 }
 
 function playCorrect() {
-  tone(523.25, 0, 0.12, 'sine', 0.16);   // C5
-  tone(659.25, 0.09, 0.12, 'sine', 0.16); // E5
-  tone(783.99, 0.18, 0.2, 'sine', 0.18);  // G5
+  tone(523.25, 0, 0.12, 'sine', 0.08);   // C5
+  tone(659.25, 0.09, 0.12, 'sine', 0.08); // E5
+  tone(783.99, 0.18, 0.2, 'sine', 0.09);  // G5
 }
 
 function playWrong() {
-  tone(220, 0, 0.28, 'sawtooth', 0.09);
+  tone(220, 0, 0.28, 'sawtooth', 0.05);
 }
 
 function playBadge() {
-  tone(587.33, 0, 0.1, 'triangle', 0.16);
-  tone(739.99, 0.1, 0.1, 'triangle', 0.16);
-  tone(880, 0.2, 0.1, 'triangle', 0.16);
-  tone(1174.66, 0.32, 0.3, 'triangle', 0.2);
+  tone(587.33, 0, 0.1, 'triangle', 0.08);
+  tone(739.99, 0.1, 0.1, 'triangle', 0.08);
+  tone(880, 0.2, 0.1, 'triangle', 0.09);
+  tone(1174.66, 0.32, 0.3, 'triangle', 0.10);
 }
 
 // Reproduce el sonido de victoria oficial al completar un quiz o desbloquear un logro mayor
@@ -78,7 +78,8 @@ function playRealSound(src) {
   try {
     if (realAudioEl) { realAudioEl.pause(); }
     realAudioEl = new Audio(src);
-    realAudioEl.volume = 0.85;
+    // Volumen atenuado y confortable (22%) para proteger oídos de estudiantes
+    realAudioEl.volume = 0.22;
     realAudioEl.play().catch(() => {});
   } catch (e) {
     // Fallback silencioso si el navegador bloquea autoplay

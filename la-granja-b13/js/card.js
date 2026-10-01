@@ -934,7 +934,9 @@ function openFichaOverlay(a, opts) {
   activeAnimal = a;
 
   const spriteEl = document.getElementById('cardSprite');
-  const accEmoji = (typeof ACCESSORIES !== 'undefined' ? ACCESSORIES.find(x => x.id === a.accessory)?.emoji : '') || '';
+  const accEmoji = (typeof getAnimalAccessoryEmoji === 'function')
+    ? getAnimalAccessoryEmoji(a.id, a.accessory)
+    : ((typeof ACCESSORIES !== 'undefined' ? ACCESSORIES.find(x => x.id === a.accessory)?.emoji : '') || '');
   if (a.photo) {
     spriteEl.innerHTML = `<img src="${a.photo}" alt="${a.name}">${accEmoji ? `<span class="card-sprite-acc">${accEmoji}</span>` : ''}`;
     spriteEl.classList.add('has-photo');
@@ -1274,7 +1276,9 @@ function saveCustom(a) {
 
 function renderPersonalizar(a) {
   const panel = document.getElementById('panel-personalizar');
-  const currentAccEmoji = (typeof ACCESSORIES !== 'undefined' ? ACCESSORIES.find(x => x.id === a.accessory)?.emoji : '') || '';
+  const currentAccEmoji = (typeof getAnimalAccessoryEmoji === 'function')
+    ? getAnimalAccessoryEmoji(a.id, a.accessory)
+    : ((typeof ACCESSORIES !== 'undefined' ? ACCESSORIES.find(x => x.id === a.accessory)?.emoji : '') || '');
 
   panel.innerHTML = `
     <!-- Previsualización en vivo del espécimen personalizado -->
@@ -1311,7 +1315,9 @@ function renderPersonalizar(a) {
   function updateHeaderSprite() {
     const spriteEl = document.getElementById('cardSprite');
     if (!spriteEl) return;
-    const accEmoji = (typeof ACCESSORIES !== 'undefined' ? ACCESSORIES.find(x => x.id === a.accessory)?.emoji : '') || '';
+    const accEmoji = (typeof getAnimalAccessoryEmoji === 'function')
+      ? getAnimalAccessoryEmoji(a.id, a.accessory)
+      : ((typeof ACCESSORIES !== 'undefined' ? ACCESSORIES.find(x => x.id === a.accessory)?.emoji : '') || '');
     if (a.photo) {
       spriteEl.innerHTML = `<img src="${a.photo}" alt="${a.name}">${accEmoji ? `<span class="card-sprite-acc">${accEmoji}</span>` : ''}`;
     } else {
@@ -1353,11 +1359,15 @@ function renderPersonalizar(a) {
     const b = document.createElement('button');
     b.type = 'button';
     b.className = 'acc-btn' + (a.accessory === acc.id ? ' sel' : '');
-    b.textContent = (acc.emoji || '—') + ' ' + acc.label;
+    const displayEmoji = (typeof getAnimalAccessoryEmoji === 'function')
+      ? getAnimalAccessoryEmoji(a.id, acc.id)
+      : acc.emoji;
+    const displayLabel = (acc.id === 'hat' && a.id === 'gallo') ? 'Sombrero Vaquero' : acc.label;
+    b.textContent = (displayEmoji || '—') + ' ' + displayLabel;
     b.addEventListener('click', () => {
       a.accessory = acc.id;
       const persoAcc = document.getElementById('persoAcc');
-      if (persoAcc) persoAcc.textContent = acc.emoji || '';
+      if (persoAcc) persoAcc.textContent = displayEmoji || '';
       updateHeaderSprite();
       if (typeof refreshSprite === 'function') refreshSprite(a);
       accBox.querySelectorAll('.acc-btn').forEach(x => x.classList.remove('sel'));
@@ -1878,7 +1888,7 @@ function renderTeacherPanel() {
   if (profileKeys.length > 1) {
     const options = profileKeys.map(k => {
       const p = allProfiles[k];
-      const isCur = (state.studentName.trim().toLowerCase() + '_' + (state.studentGrade || '').trim().toLowerCase()) === k;
+      const isCur = ((state.studentName || '').trim().toLowerCase() + '_' + (state.studentGrade || '').trim().toLowerCase()) === k;
       return `<option value="${k}" ${isCur ? 'selected' : ''}>${p.studentName} (${p.studentGrade || 'Sin curso'}) — ${p.score} pts</option>`;
     }).join('');
 
@@ -2347,18 +2357,32 @@ if (achievementsBtn) {
   });
 }
 
+function openTeacherPanelSafe() {
+  const sesion = (typeof Auth !== 'undefined' && typeof Auth.getSesion === 'function') ? Auth.getSesion() : null;
+  if (!sesion || (sesion.rol !== 'profesor' && sesion.rol !== 'admin')) {
+    if (typeof Auth !== 'undefined' && typeof Auth.mostrarNotificacion === 'function') {
+      Auth.mostrarNotificacion('El panel docente requiere acceso de profesor.');
+    }
+    return;
+  }
+  renderTeacherPanel();
+  openOverlayId('teacherOverlay');
+}
+
 const teacherBtn = document.getElementById('teacherBtn');
 if (teacherBtn) {
-  teacherBtn.addEventListener('click', () => {
-    const sesion = (typeof Auth !== 'undefined') ? Auth.getSesion() : null;
-    if (!sesion || (sesion.rol !== 'profesor' && sesion.rol !== 'admin')) {
-      if (typeof Auth !== 'undefined') Auth.mostrarNotificacion('El panel docente requiere acceso de profesor.');
-      return;
-    }
-    renderTeacherPanel();
-    openOverlayId('teacherOverlay');
+  teacherBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    openTeacherPanelSafe();
   });
 }
+document.addEventListener('click', (e) => {
+  const tBtn = e.target.closest('#teacherBtn');
+  if (tBtn) {
+    e.preventDefault();
+    openTeacherPanelSafe();
+  }
+});
 
 // Abrir modal de Escudo Oficial al hacer clic en el Logo
 document.querySelectorAll('.app-logo').forEach(logoEl => {

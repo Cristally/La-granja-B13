@@ -390,17 +390,19 @@
 }
 
 .stage-runner-preview {
-  font-size: 0.72rem;
+  font-size: 0.78rem;
   color: #065f46;
   background: #ecfdf5;
-  padding: 3px 10px;
-  border-radius: 6px;
+  padding: 4px 10px;
+  border-radius: 8px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  margin: 3px auto 0;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin: 4px auto 0;
   font-weight: 600;
-  border: 1px solid rgba(5, 150, 105, 0.2);
+  border: 1.5px solid rgba(5, 150, 105, 0.3);
   text-align: center;
 }
 
@@ -905,14 +907,16 @@
 }
 
 .char-avatar-preview {
-  font-size: 1.5rem;
+  font-size: 1.55rem;
   line-height: 1;
   display: inline-flex;
   align-items: center;
+  gap: 4px;
   background: #ffffff;
-  padding: 3px 8px;
-  border-radius: 8px;
-  border: 1px solid #cbd5e1;
+  padding: 4px 10px;
+  border-radius: 10px;
+  border: 1.5px solid #2e3821;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
 }
 
 .platformer-wrap {

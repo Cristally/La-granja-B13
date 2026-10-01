@@ -2214,6 +2214,14 @@ body.rol-admin .badges-bar {
 .auth-error-box[hidden] {
   display: none !important;
 }
+.auth-error-box.error-shake {
+  animation: authShake 0.45s ease-in-out;
+}
+@keyframes authShake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-6px); }
+  40%, 80% { transform: translateX(6px); }
+}
 
 /* Botones de Envío */
 .modern-btn-submit {

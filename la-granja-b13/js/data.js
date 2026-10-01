@@ -17,13 +17,24 @@ const POTRERO_IDS = ['gallo', 'gallina', 'conejo', 'catita', 'agapornis'];
 const ACCESSORIES = [
   { id: 'none', label: 'Ninguno', emoji: '' },
   { id: 'bow', label: 'Moño Rosa', emoji: '🎀' },
-  { id: 'hat', label: 'Sombrero Campestre', emoji: '🤠' },
+  { id: 'hat', label: 'Sombrero Campestre', emoji: '👒' },
+  { id: 'cowboy', label: 'Sombrero Vaquero', emoji: '🤠' },
   { id: 'cap', label: 'Gorra Deportiva', emoji: '🧢' },
   { id: 'flower', label: 'Flor de Cerezo', emoji: '🌸' },
   { id: 'sunflower', label: 'Girasol', emoji: '🌻' },
   { id: 'glasses', label: 'Lentes de Sol', emoji: '🕶️' },
   { id: 'crown', label: 'Corona Dorada', emoji: '👑' }
 ];
+
+// Helper para resolver el accesorio adecuado según especie (Menos al gallo: sombrero vaquero 🤠 en lugar de pamela 👒)
+function getAnimalAccessoryEmoji(animalId, accId) {
+  if (!accId || accId === 'none') return '';
+  if (accId === 'hat') {
+    return (animalId === 'gallo') ? '🤠' : '👒';
+  }
+  const found = ACCESSORIES.find(x => x.id === accId);
+  return (found && found.emoji) ? found.emoji : '';
+}
 
 // Normas de comportamiento antes de visitar la granja física
 // (basadas en la sección "Problemática u Oportunidad" del formulario)

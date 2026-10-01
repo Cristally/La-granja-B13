@@ -1569,12 +1569,16 @@
       const modalPreview = document.getElementById('modalCharPreview');
       if (modalPreview) {
         const nameCap = this.selectedAnimal.charAt(0).toUpperCase() + this.selectedAnimal.slice(1);
-        modalPreview.innerHTML = `Corredor activo: <b>${this.player.emoji} ${nameCap}</b>${this.player.accEmoji ? ` (Accesorio: ${this.player.accEmoji})` : ''}`;
+        const accInfo = this.player.accEmoji
+          ? `<span style="display:inline-flex;align-items:center;gap:5px;background:#eef7e6;border:1.5px solid #2e3821;border-radius:6px;padding:3px 8px;margin-left:6px;font-size:0.82rem;font-weight:700;color:#183610;"><span style="font-size:1.15rem;">${this.player.accEmoji}</span> ${this.player.accLabel || 'Accesorio'}</span>`
+          : `<span style="font-size:0.78rem;color:#666;font-style:italic;margin-left:6px;">(Sin accesorio equipado)</span>`;
+        modalPreview.innerHTML = `Corredor activo: <b>${this.player.emoji} ${nameCap}</b> · ${accInfo}`;
       }
     },
 
     loadAccessory() {
       this.player.accEmoji = '';
+      this.player.accLabel = 'Ninguno';
       if (typeof state !== 'undefined') {
         let accId = 'none';
         if (state.custom && state.custom[this.selectedAnimal] && state.custom[this.selectedAnimal].accessory) {
@@ -1582,9 +1586,17 @@
         } else if (state.custom && state.custom.conejo && state.custom.conejo.accessory) {
           accId = state.custom.conejo.accessory;
         }
-        if (typeof ACCESSORIES !== 'undefined') {
+        if (typeof getAnimalAccessoryEmoji === 'function') {
+          this.player.accEmoji = getAnimalAccessoryEmoji(this.selectedAnimal, accId);
+        } else if (typeof ACCESSORIES !== 'undefined') {
           const found = ACCESSORIES.find(x => x.id === accId);
           if (found && found.emoji) this.player.accEmoji = found.emoji;
+        }
+        if (typeof ACCESSORIES !== 'undefined') {
+          const found = ACCESSORIES.find(x => x.id === accId);
+          if (found) {
+            this.player.accLabel = (accId === 'hat' && this.selectedAnimal === 'gallo') ? 'Sombrero Vaquero' : found.label;
+          }
         }
       }
     },
@@ -1592,7 +1604,8 @@
     updateCharPreview() {
       const charEl = document.getElementById('charPreviewIcon');
       if (charEl) {
-        charEl.innerHTML = `${this.player.emoji}${this.player.accEmoji ? ` <span style="font-size:1.1rem;margin-left:2px;">${this.player.accEmoji}</span>` : ''}`;
+        charEl.innerHTML = `${this.player.emoji}${this.player.accEmoji ? ` <span style="font-size:1.2rem;margin-left:2px;filter:drop-shadow(0 1px 2px rgba(0,0,0,0.35));">${this.player.accEmoji}</span>` : ''}`;
+        charEl.title = `Corredor: ${this.selectedAnimal}${this.player.accEmoji ? ` con accesorio ${this.player.accLabel} (${this.player.accEmoji})` : ''}`;
       }
     },
 
@@ -3352,8 +3365,14 @@
 
       // Accesorio oficial
       if (p.accEmoji) {
-        ctx.font = '18px Arial';
-        ctx.fillText(p.accEmoji, 0, -20);
+        ctx.save();
+        ctx.font = '22px Arial, sans-serif';
+        const yOff = (this.selectedAnimal === 'gallo') ? -24 : -21;
+        const xOff = (this.selectedAnimal === 'gallo') ? 2 : 0;
+        ctx.shadowColor = 'rgba(0, 0, 0, 0.45)';
+        ctx.shadowBlur = 3;
+        ctx.fillText(p.accEmoji, xOff, yOff);
+        ctx.restore();
       }
 
       // Aura de Air Dash lista en Extrema

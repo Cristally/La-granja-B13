@@ -162,7 +162,9 @@ function refreshSprite(a) {
     tag.style.borderColor = a.color;
     tag.style.color = a.color;
   }
-  const accEmoji = (typeof ACCESSORIES !== 'undefined' ? ACCESSORIES.find(x => x.id === a.accessory)?.emoji : '') || '';
+  const accEmoji = (typeof getAnimalAccessoryEmoji === 'function')
+    ? getAnimalAccessoryEmoji(a.id, a.accessory)
+    : ((typeof ACCESSORIES !== 'undefined' ? ACCESSORIES.find(x => x.id === a.accessory)?.emoji : '') || '');
   const acc = el.querySelector('.accessory');
   if (acc) acc.textContent = accEmoji;
 }

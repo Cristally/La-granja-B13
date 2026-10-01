@@ -153,12 +153,32 @@ const Auth = {
   },
 
   registroEstudiante(nombre, curso, genero, correo, clave) {
+    nombre = (nombre || '').trim();
+    if (!nombre) {
+      return { ok: false, error: 'Por favor ingresa tu nombre completo.' };
+    }
+    if (/\d/.test(nombre)) {
+      return { ok: false, error: 'El nombre completo no puede contener números. Por favor escribe tu nombre y apellido reales.' };
+    }
+    if (nombre.length < 3) {
+      return { ok: false, error: 'El nombre debe tener al menos 3 caracteres.' };
+    }
+    if (!curso) {
+      return { ok: false, error: 'Por favor selecciona tu curso o nivel.' };
+    }
+    if (!correo || !correo.includes('@')) {
+      return { ok: false, error: 'Por favor ingresa un correo electrónico válido.' };
+    }
+    if (!clave || clave.length < 6) {
+      return { ok: false, error: 'La contraseña debe tener al menos 6 caracteres.' };
+    }
+
     const estudiantes = Auth.getEstudiantes();
     const existe = estudiantes.some(e => e.correo.toLowerCase() === correo.toLowerCase())
       || correo.toLowerCase() === CUENTA_DEMO_ESTUDIANTE.correo;
 
     if (existe) {
-      return { ok: false, error: 'Ese correo ya está registrado.' };
+      return { ok: false, error: 'Este correo electrónico ya está registrado en la base de datos escolar.' };
     }
 
     const nuevo = { nombre, curso, genero, correo, clave, fechaRegistro: new Date().toISOString() };
@@ -167,11 +187,18 @@ const Auth = {
 
     // Iniciar sesión automáticamente
     Auth.setSesion({ rol: 'estudiante', nombre, correo, curso, genero });
-    return { ok: true };
+    return { ok: true, usuario: nuevo };
   },
 
   loginEstudiante(correo, clave) {
-    if (correo.toLowerCase() === CUENTA_DEMO_ESTUDIANTE.correo && clave === CUENTA_DEMO_ESTUDIANTE.clave) {
+    correo = (correo || '').trim().toLowerCase();
+    clave = (clave || '');
+
+    if (!correo || !clave) {
+      return { ok: false, error: 'Por favor ingresa tu correo y contraseña.' };
+    }
+
+    if (correo === CUENTA_DEMO_ESTUDIANTE.correo && clave === CUENTA_DEMO_ESTUDIANTE.clave) {
       Auth.setSesion({
         rol: 'estudiante',
         nombre: CUENTA_DEMO_ESTUDIANTE.nombre,
@@ -183,17 +210,37 @@ const Auth = {
     }
 
     const estudiantes = Auth.getEstudiantes();
-    const encontrado = estudiantes.find(e => e.correo.toLowerCase() === correo.toLowerCase() && e.clave === clave);
-    if (!encontrado) {
-      return { ok: false, error: 'Correo o contraseña incorrectos.' };
+    const usuarioPorCorreo = estudiantes.find(e => e.correo.toLowerCase() === correo);
+    if (!usuarioPorCorreo && correo !== CUENTA_DEMO_ESTUDIANTE.correo) {
+      return {
+        ok: false,
+        error: '⚠️ Esta cuenta no está registrada en el Liceo B-13. Si eres estudiante nuevo/a, puedes registrarte en la pestaña "Crear Cuenta".',
+        code: 'USER_NOT_FOUND'
+      };
+    }
+
+    if (usuarioPorCorreo && usuarioPorCorreo.clave !== clave) {
+      return {
+        ok: false,
+        error: '🔑 La contraseña ingresada no es correcta. Verifica mayúsculas y minúsculas o vuelve a escribirla.',
+        code: 'WRONG_PASSWORD'
+      };
+    }
+
+    if (correo === CUENTA_DEMO_ESTUDIANTE.correo && clave !== CUENTA_DEMO_ESTUDIANTE.clave) {
+      return {
+        ok: false,
+        error: '🔑 Contraseña incorrecta para la cuenta demo (clave de prueba: demo1234).',
+        code: 'WRONG_PASSWORD'
+      };
     }
 
     Auth.setSesion({
       rol: 'estudiante',
-      nombre: encontrado.nombre,
-      correo: encontrado.correo,
-      curso: encontrado.curso,
-      genero: encontrado.genero
+      nombre: usuarioPorCorreo.nombre,
+      correo: usuarioPorCorreo.correo,
+      curso: usuarioPorCorreo.curso,
+      genero: usuarioPorCorreo.genero
     });
     return { ok: true };
   },

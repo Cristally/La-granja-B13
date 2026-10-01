@@ -171,19 +171,59 @@
 
               <form class="modern-form" id="portalRegisterForm">
                 <div class="form-field">
-                  <label for="portalRegNombre">Nombre completo</label>
+                  <label for="portalRegNombre">Nombre completo (solo letras y espacios)</label>
                   <div class="input-box">
                     <span class="input-ic">👤</span>
-                    <input type="text" id="portalRegNombre" placeholder="Tu nombre y apellido" autocomplete="name" required>
+                    <input type="text" id="portalRegNombre" placeholder="Tu nombre y apellido (sin números)" autocomplete="name" required>
                   </div>
                 </div>
 
                 <div class="form-row-2col">
                   <div class="form-field">
-                    <label for="portalRegCurso">Curso / Nivel</label>
+                    <label for="portalRegCurso">Curso / Nivel oficial</label>
                     <div class="input-box">
                       <span class="input-ic">🏫</span>
-                      <input type="text" id="portalRegCurso" placeholder="Ej: 1° Medio A" required>
+                      <select id="portalRegCurso" required>
+                        <option value="" disabled selected>Selecciona tu curso...</option>
+                        <optgroup label="1° Medios">
+                          <option value="1° Medio A">1° Medio A</option>
+                          <option value="1° Medio B">1° Medio B</option>
+                          <option value="1° Medio C">1° Medio C</option>
+                          <option value="1° Medio D">1° Medio D</option>
+                          <option value="1° Medio E">1° Medio E</option>
+                          <option value="1° Medio F">1° Medio F</option>
+                        </optgroup>
+                        <optgroup label="2° Medios">
+                          <option value="2° Medio A">2° Medio A</option>
+                          <option value="2° Medio B">2° Medio B</option>
+                          <option value="2° Medio C">2° Medio C</option>
+                          <option value="2° Medio D">2° Medio D</option>
+                          <option value="2° Medio E">2° Medio E</option>
+                          <option value="2° Medio F">2° Medio F</option>
+                        </optgroup>
+                        <optgroup label="3° Medios">
+                          <option value="3° Medio A">3° Medio A</option>
+                          <option value="3° Medio B">3° Medio B</option>
+                          <option value="3° Medio C">3° Medio C</option>
+                          <option value="3° Medio D">3° Medio D</option>
+                          <option value="3° Medio E">3° Medio E</option>
+                          <option value="3° Medio F">3° Medio F</option>
+                        </optgroup>
+                        <optgroup label="4° Medios">
+                          <option value="4° Medio A">4° Medio A</option>
+                          <option value="4° Medio B">4° Medio B</option>
+                          <option value="4° Medio C">4° Medio C</option>
+                          <option value="4° Medio D">4° Medio D</option>
+                          <option value="4° Medio E">4° Medio E</option>
+                          <option value="4° Medio F">4° Medio F</option>
+                        </optgroup>
+                        <optgroup label="Talleres y Academias B-13">
+                          <option value="Brigada Ecológica B-13">Brigada Ecológica B-13</option>
+                          <option value="Academia de Ciencias B-13">Academia de Ciencias B-13</option>
+                          <option value="Taller Agroecológico B-13">Taller Agroecológico B-13</option>
+                          <option value="Otro Curso / Nivel B-13">Otro Curso / Nivel B-13</option>
+                        </optgroup>
+                      </select>
                     </div>
                   </div>
 
@@ -292,8 +332,8 @@
               <button class="admin-btn-action admin-btn-info" id="btnProfesorAbrirPlanilla" type="button">
                 <span>📋</span> Ver Calificaciones del Curso en el Juego
               </button>
-              <a href="/api/export-csv" class="admin-btn-action admin-btn-success" style="text-decoration:none;">
-                <span>📊</span> Descargar Planilla Excel / CSV
+              <a href="/api/export-csv" class="admin-btn-action admin-btn-success" id="btnDescargarPlanillaDocente" style="text-decoration:none;">
+                <span>📊</span> Descargar Planilla Excel (.csv)
               </a>
             </div>
           </div>
@@ -303,17 +343,35 @@
             <p class="auth-hint" style="text-align:left;color:#ffeed1;margin-bottom:12px;">Máximo 10 preguntas por zona con puntaje en décimas.</p>
             <form class="auth-form modern-form" id="portalQuizEditorForm">
               <div class="form-field">
-                <label for="portalQuizAutor">Tu nombre (profesor/a)</label>
+                <label for="portalQuizAutor">Profesor/a Docente Guía</label>
                 <div class="input-box">
                   <span class="input-ic">👤</span>
-                  <input type="text" id="portalQuizAutor" placeholder="Tu nombre (profesor/a)" value="Profesor Demo" required>
+                  <select id="portalQuizAutor" required>
+                    <option value="Profesor/a B-13">Profesor/a B-13 (Docente Guía)</option>
+                    <option value="Prof. Carlos Soto">Prof. Carlos Soto (Ciencias Naturales)</option>
+                    <option value="Prof. Ana Reyes">Prof. Ana Reyes (Biología y Ecosistemas)</option>
+                    <option value="Prof. Valentina Rojas">Prof. Valentina Rojas (Educación Ambiental)</option>
+                    <option value="Prof. Francisco Tapia">Prof. Francisco Tapia (Taller Agroecológico)</option>
+                  </select>
                 </div>
               </div>
               <div class="form-field">
                 <label for="portalQuizZona">Zona del mapa</label>
                 <div class="input-box">
                   <span class="input-ic">📍</span>
-                  <select id="portalQuizZona" required></select>
+                  <select id="portalQuizZona" required>
+                    <option value="" disabled selected>Selecciona una zona...</option>
+                    <option value="conejos">🐰 Conejeras Escolares</option>
+                    <option value="gallinas">🐔 Gallinero B-13</option>
+                    <option value="jaula-gallo">🐓 Jaula del Gallo Fino</option>
+                    <option value="arboleda">🌳 Arboleda y Pajarera</option>
+                    <option value="aviario">🦜 Aviario Australiano</option>
+                    <option value="potrero">🌾 Potrero Central</option>
+                    <option value="huerto">🥕 Huerto Orgánico</option>
+                    <option value="invernadero">🌱 Invernadero Pedagógico</option>
+                    <option value="compostera">🍂 Compostera Escolar</option>
+                    <option value="lombricultura">🪱 Lombricultura y Vermicompost</option>
+                  </select>
                 </div>
               </div>
               <div class="form-field">
@@ -439,6 +497,27 @@
           <p class="auth-hint" style="margin-top:10px;opacity:0.85;">Docente demo: <b>profesor@granja.cl</b> / <b>profesor1234</b></p>
         </div>
       </div>
+
+      <!-- MODAL CELEBRATORIO DE REGISTRO EXITOSO -->
+      <div class="granjita-modal" id="portalRegSuccessModal" hidden>
+        <div class="granjita-modal-card" style="text-align:center;max-width:440px;">
+          <div class="modal-card-icon" style="font-size:3.2rem;">🎉</div>
+          <h3 class="brand-heading brand-heading-sm" style="color:#ffd83d;margin-bottom:6px;">¡Cuenta Creada con Éxito!</h3>
+          <p class="auth-hint" style="font-size:0.95rem;color:#ffffff;line-height:1.5;margin:8px 0 14px;">
+            ¡Bienvenido/a a La Granja B-13, <b id="regSuccessNombre" style="color:#ffd83d;">Estudiante</b>!<br>
+            Tu Cuaderno de Campo individual del curso <b id="regSuccessCurso" style="color:#a7f3d0;">1° Medio</b> ha sido activado en el sistema escolar.
+          </p>
+          <div style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,216,61,0.3);border-radius:8px;padding:10px 14px;margin-bottom:16px;text-align:left;font-size:0.82rem;color:#ffeed1;line-height:1.55;">
+            🌾 <b>Cuaderno Individual:</b> Tu puntaje y décimas quedarán guardados en este equipo.<br>
+            🐾 <b>Animales de la Granja:</b> Descubre las 5 especies del potrero y los 10 registros del mapa.<br>
+            🎖️ <b>Insignias y Certificado:</b> Podrás ganar insignias oficiales del Liceo B-13.
+          </div>
+          <button class="modern-btn-submit modern-btn-gold" id="btnRegSuccessContinuar" type="button" style="width:100%;font-size:1.02rem;padding:12px;">
+            <span>Comenzar Aventura en la Granja</span>
+            <span class="btn-ic">🌾</span>
+          </button>
+        </div>
+      </div>
     `;
 
     document.body.appendChild(portalWrap);
@@ -513,7 +592,7 @@
   }
 
   function ocultarTodasLasPantallas() {
-    ['startScreen', 'modeScreen', 'authScreen', 'adminScreen', 'profesorScreen', 'portalAdminPinModal', 'portalProfesorLoginModal'].forEach(id => {
+    ['startScreen', 'modeScreen', 'authScreen', 'adminScreen', 'profesorScreen', 'portalAdminPinModal', 'portalProfesorLoginModal', 'portalRegSuccessModal'].forEach(id => {
       const el = document.getElementById(id);
       if (el) el.hidden = true;
     });
@@ -709,6 +788,25 @@
       };
     });
 
+    // Filtro en tiempo real para Nombre Completo (sin números)
+    const inputRegNombre = document.getElementById('portalRegNombre');
+    if (inputRegNombre) {
+      inputRegNombre.addEventListener('input', function() {
+        const cleaned = this.value.replace(/[0-9]/g, '');
+        if (cleaned !== this.value) {
+          this.value = cleaned;
+          const errEl = document.getElementById('portalRegisterError');
+          if (errEl) {
+            errEl.textContent = 'ℹ️ Los números no están permitidos en el nombre completo (solo letras y espacios).';
+            errEl.hidden = false;
+            setTimeout(() => {
+              if (errEl && errEl.textContent.includes('números')) errEl.hidden = true;
+            }, 3000);
+          }
+        }
+      });
+    }
+
     // Submit Login Estudiante
     const portalLoginForm = document.getElementById('portalLoginForm');
     if (portalLoginForm) {
@@ -721,8 +819,25 @@
         if (typeof Auth !== 'undefined') {
           const res = Auth.loginEstudiante(correo, clave);
           if (!res.ok) {
-            errEl.textContent = res.error;
+            let errorHtml = `<span>${res.error}</span>`;
+            if (res.code === 'USER_NOT_FOUND') {
+              errorHtml += `
+                <div style="margin-top:10px;">
+                  <button type="button" class="modern-btn-submit modern-btn-gold" style="padding:6px 14px;font-size:0.84rem;width:auto;display:inline-flex;align-items:center;gap:6px;" id="btnErrGoToReg">
+                    <span>✨ Crear Cuenta Gratis Ahora</span>
+                  </button>
+                </div>`;
+            }
+            errEl.innerHTML = errorHtml;
             errEl.hidden = false;
+
+            const btnGoReg = document.getElementById('btnErrGoToReg');
+            if (btnGoReg) {
+              btnGoReg.onclick = () => {
+                const navReg = document.getElementById('btnGoToRegister');
+                if (navReg) navReg.click();
+              };
+            }
             return;
           }
           errEl.hidden = true;
@@ -739,7 +854,7 @@
       portalRegisterForm.onsubmit = (e) => {
         e.preventDefault();
         const nombre = document.getElementById('portalRegNombre').value.trim();
-        const curso = document.getElementById('portalRegCurso').value.trim();
+        const curso = document.getElementById('portalRegCurso').value;
         const genero = document.getElementById('portalRegGenero').value;
         const correo = document.getElementById('portalRegCorreo').value.trim();
         const clave = document.getElementById('portalRegClave').value;
@@ -753,8 +868,28 @@
             return;
           }
           errEl.hidden = true;
-          entrarAlJuego('estudiante', { nombre, curso, genero, correo });
-          Auth.mostrarNotificacion(`¡Cuenta creada con éxito! Bienvenido/a, ${nombre}.`);
+
+          // Mostrar modal afirmativo y claro de confirmación de cuenta
+          const successModal = document.getElementById('portalRegSuccessModal');
+          const successNombre = document.getElementById('regSuccessNombre');
+          const successCurso = document.getElementById('regSuccessCurso');
+          const btnContinuar = document.getElementById('btnRegSuccessContinuar');
+
+          if (successModal && successNombre && successCurso && btnContinuar) {
+            successNombre.textContent = nombre;
+            successCurso.textContent = curso;
+            successModal.hidden = false;
+
+            btnContinuar.onclick = () => {
+              successModal.hidden = true;
+              entrarAlJuego('estudiante', { nombre, curso, genero, correo });
+              if (typeof playVictory === 'function') playVictory();
+              Auth.mostrarNotificacion(`¡Bienvenido/a a La Granja B-13, ${nombre}!`);
+            };
+          } else {
+            entrarAlJuego('estudiante', { nombre, curso, genero, correo });
+            Auth.mostrarNotificacion(`¡Cuenta creada con éxito! Bienvenido/a, ${nombre}.`);
+          }
         }
       };
     }
@@ -847,18 +982,82 @@
     };
 
     // Botón para ver calificaciones dentro del juego desde el panel profesor
-    document.getElementById('btnProfesorAbrirPlanilla').onclick = () => {
-      entrarAlJuego('profesor', { nombre: 'Profesor/a B-13' });
-      if (typeof openOverlayId === 'function') {
-        openOverlayId('teacherOverlay');
-      }
-    };
+    const btnAbrirPlanilla = document.getElementById('btnProfesorAbrirPlanilla');
+    if (btnAbrirPlanilla) {
+      btnAbrirPlanilla.onclick = () => {
+        entrarAlJuego('profesor', { nombre: 'Profesor/a B-13' });
+        if (typeof renderTeacherPanel === 'function') {
+          renderTeacherPanel();
+        }
+        if (typeof openOverlayId === 'function') {
+          openOverlayId('teacherOverlay');
+        }
+      };
+    }
 
     const btnEntrarDocente = document.getElementById('btnProfesorEntrarJuego');
     if (btnEntrarDocente) {
       btnEntrarDocente.onclick = () => {
         entrarAlJuego('profesor', { nombre: 'Profesor/a B-13' });
       };
+    }
+
+    // Botón de Descargar Planilla Excel (.csv) con respaldo autónomo
+    const btnDescargarCsv = document.getElementById('btnDescargarPlanillaDocente');
+    if (btnDescargarCsv) {
+      btnDescargarCsv.onclick = (e) => {
+        if (window.location.protocol === 'file:' || !window.location.host) {
+          e.preventDefault();
+          exportarCsvLocalDocente();
+        }
+      };
+    }
+
+    function exportarCsvLocalDocente() {
+      let estudiantes = [];
+      if (typeof Auth !== 'undefined' && typeof Auth.getEstudiantes === 'function') {
+        estudiantes = Auth.getEstudiantes();
+      }
+      const allProfiles = (typeof loadAllProfiles === 'function') ? loadAllProfiles() : {};
+
+      let csv = 'Nombre,Curso,Genero,Correo,Puntaje,Fichas Potrero,Fichas Mapa,Insignias,Fecha Registro\n';
+
+      if (estudiantes.length === 0 && Object.keys(allProfiles).length === 0) {
+        const sName = (typeof state !== 'undefined' && state.studentName) ? state.studentName : 'Estudiante Demo';
+        const sGrade = (typeof state !== 'undefined' && state.studentGrade) ? state.studentGrade : '1° Medio A';
+        const sScore = (typeof state !== 'undefined' && state.score) ? state.score : 0;
+        csv += `"${sName}","${sGrade}","No especificado","demo@granja.cl",${sScore},0,0,0,"${new Date().toLocaleDateString()}"\n`;
+      } else {
+        estudiantes.forEach(est => {
+          const key = ((est.nombre || '').trim().toLowerCase() + '_' + (est.curso || '').trim().toLowerCase());
+          const prof = allProfiles[key] || {};
+          const stData = prof.stateData || {};
+          const score = stData.score || prof.score || 0;
+          const potreroDisc = (stData.discovered || []).length;
+          const mapDisc = (stData.mapDiscovered || []).length;
+          const badgesCount = (stData.badges || []).length;
+          const cleanName = (est.nombre || '').replace(/"/g, '""');
+          const cleanCurso = (est.curso || '').replace(/"/g, '""');
+          const cleanGenero = (est.genero || '').replace(/"/g, '""');
+          const cleanCorreo = (est.correo || '').replace(/"/g, '""');
+          const fecha = est.fechaRegistro ? new Date(est.fechaRegistro).toLocaleDateString() : new Date().toLocaleDateString();
+
+          csv += `"${cleanName}","${cleanCurso}","${cleanGenero}","${cleanCorreo}",${score},${potreroDisc},${mapDisc},${badgesCount},"${fecha}"\n`;
+        });
+      }
+
+      const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `planilla_calificaciones_granja_b13_${new Date().toISOString().slice(0, 10)}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(() => {
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }, 150);
+      if (typeof Auth !== 'undefined') Auth.mostrarNotificacion('📊 Planilla Excel (.csv) descargada con éxito.');
     }
 
     function mostrarNotifAdmin(msg) {
@@ -967,15 +1166,44 @@
     }
   }
 
+  const DEFAULT_FARM_ZONES = [
+    { id: 'conejos', label: 'Conejeras Escolares', icon: '🐰' },
+    { id: 'gallinas', label: 'Gallinero B-13', icon: '🐔' },
+    { id: 'jaula-gallo', label: 'Jaula del Gallo Fino', icon: '🐓' },
+    { id: 'arboleda', label: 'Arboleda y Pajarera', icon: '🌳' },
+    { id: 'aviario', label: 'Aviario Australiano', icon: '🦜' },
+    { id: 'potrero', label: 'Potrero Central', icon: '🌾' },
+    { id: 'huerto', label: 'Huerto Orgánico', icon: '🥕' },
+    { id: 'invernadero', label: 'Invernadero Pedagógico', icon: '🌱' },
+    { id: 'compostera', label: 'Compostera Escolar', icon: '🍂' },
+    { id: 'lombricultura', label: 'Lombricultura y Vermicompost', icon: '🪱' }
+  ];
+
   // Renderizar Panel del Profesor (Zonas y lista de quizzes)
   function renderizarPanelProfesorPortal() {
     const selectZona = document.getElementById('portalQuizZona');
+    const selectAutor = document.getElementById('portalQuizAutor');
     const lista = document.getElementById('portalQuizListaProfesor');
-    const zonas = (typeof FARM_ZONES !== 'undefined') ? FARM_ZONES : [];
+    const zonas = (typeof FARM_ZONES !== 'undefined' && FARM_ZONES.length > 0) ? FARM_ZONES : DEFAULT_FARM_ZONES;
 
     if (selectZona) {
-      selectZona.innerHTML = '<option value="" disabled selected>Zona del mapa</option>' +
-        zonas.map(z => `<option value="${z.id}">${z.icon} ${z.label}</option>`).join('');
+      const prevVal = selectZona.value;
+      selectZona.innerHTML = '<option value="" disabled ' + (!prevVal ? 'selected' : '') + '>Selecciona una zona...</option>' +
+        zonas.map(z => `<option value="${z.id}" ${prevVal === z.id ? 'selected' : ''}>${z.icon} ${z.label}</option>`).join('');
+    }
+
+    if (selectAutor && typeof Auth !== 'undefined') {
+      const sesion = Auth.getSesion();
+      if (sesion && sesion.nombre && (sesion.rol === 'profesor' || sesion.rol === 'admin')) {
+        const exists = Array.from(selectAutor.options).some(o => o.value === sesion.nombre);
+        if (!exists) {
+          const opt = document.createElement('option');
+          opt.value = sesion.nombre;
+          opt.textContent = `${sesion.nombre} (Docente en sesión)`;
+          selectAutor.appendChild(opt);
+        }
+        selectAutor.value = sesion.nombre;
+      }
     }
 
     if (lista && typeof TeacherQuizzes !== 'undefined') {
