@@ -953,10 +953,15 @@ function closeFichaOverlay() {
   }
 }
 
-document.getElementById('closeBtn').addEventListener('click', closeFichaOverlay);
-document.getElementById('overlay').addEventListener('click', e => {
-  if (e.target === document.getElementById('overlay')) closeFichaOverlay();
-});
+const mainCloseBtn = document.getElementById('closeBtn');
+if (mainCloseBtn) mainCloseBtn.addEventListener('click', closeFichaOverlay);
+
+const mainOverlay = document.getElementById('overlay');
+if (mainOverlay) {
+  mainOverlay.addEventListener('click', e => {
+    if (e.target === mainOverlay) closeFichaOverlay();
+  });
+}
 
 /* ============ Pestañas ============ */
 
@@ -1563,7 +1568,71 @@ function drawFeedbackAndNext(a, qState, idx, q, isCorrect, container, ptsVal) {
 function renderRules() {
   const list = document.getElementById('rulesList');
   if (list) {
-    list.innerHTML = RULES.map(r => `<li>${r}</li>`).join('');
+    const rulesData = [
+      {
+        icon: '🤫',
+        title: 'Silencio y Respeto',
+        tag: 'BIENESTAR ACÚSTICO',
+        desc: 'Observa con calma y respeto. Los ruidos fuertes, gritos o golpes en los cercados asustan y estresan profundamente a los animales.'
+      },
+      {
+        icon: '🥕',
+        title: 'Alimentación Autorizada',
+        tag: 'NUTRICIÓN SEGURA',
+        desc: 'No alimentes a los animales sin autorización del docente o técnico. Recuerda: alimentos como pan blanco o palta pueden ser letales.'
+      },
+      {
+        icon: '📏',
+        title: 'Distancia y Espacio Vital',
+        tag: 'RESPETO ANIMAL',
+        desc: 'Mantén una distancia prudente y no invadas sus nidos. No todos los animales toleran ser acariciados o manipulados constantemente.'
+      },
+      {
+        icon: '🧼',
+        title: 'Higiene y Bioseguridad',
+        tag: 'SALUD COMPARTIDA',
+        desc: 'Lávate muy bien las manos con agua y jabón antes y después de cualquier contacto con los animales, sus jaulas o comederos.'
+      },
+      {
+        icon: '🚶',
+        title: 'Paso Firme y Tranquilo',
+        tag: 'PREVENCIÓN DE ESTRÉS',
+        desc: 'Camina siempre con calma. Correr o hacer aspavientos activa los instintos de presa y huida de conejos, patos y aves.'
+      },
+      {
+        icon: '👨‍🏫',
+        title: 'Guía y Liderazgo Docente',
+        tag: 'SEGURIDAD ESCOLAR',
+        desc: 'Sigue en todo momento las instrucciones de tu profesor/a o encargado de la granja para que la visita sea enriquecedora y segura.'
+      }
+    ];
+
+    list.innerHTML = `
+      <div class="rules-modern-grid">
+        ${rulesData.map(r => `
+          <div class="rule-modern-card">
+            <div class="rule-card-icon-box">${r.icon}</div>
+            <div class="rule-card-content">
+              <div class="rule-card-header">
+                <span class="rule-card-title">${r.title}</span>
+                <span class="rule-card-tag">${r.tag}</span>
+              </div>
+              <p class="rule-card-desc">${r.desc}</p>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    `;
+
+    const acceptBtn = document.getElementById('rulesAcceptBtn');
+    if (acceptBtn) {
+      acceptBtn.onclick = () => {
+        closeOverlayId('rulesOverlay');
+        if (typeof unlockSecretBadge === 'function') unlockSecretBadge('devoralibros');
+        if (typeof AudioFX !== 'undefined' && AudioFX.success) AudioFX.success();
+        if (typeof showToast === 'function') showToast('🌟 ¡Compromiso con el bienestar de la granja confirmado!');
+      };
+    }
   }
 }
 

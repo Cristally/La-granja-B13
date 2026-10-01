@@ -162,19 +162,21 @@
 
 <!-- Normas de la granja -->
 <div class="overlay" id="rulesOverlay">
-  <div class="card small-card">
+  <div class="card rules-card">
     <button class="close-btn" data-close="rulesOverlay" aria-label="Cerrar">✕</button>
-    <div class="card-head">
-      <div class="big-sprite">📋</div>
-      <div>
-        <h2>Antes de visitar la granja</h2>
-        <div class="lat">Normas de comportamiento y cuidado animal (ODS 15)</div>
-      </div>
+    <div class="card-head" style="flex-direction:column;align-items:center;text-align:center;gap:4px;padding-bottom:6px;">
+      <div class="rules-badge-pill">🌱 CUIDADO Y BIENESTAR ANIMAL · ODS 15</div>
+      <h2 style="font-family:'Fraunces',serif;color:#14532d;font-size:1.4rem;margin:0;">Antes de Visitar La Granja B-13</h2>
+      <div class="lat" style="color:#64748b;font-size:0.86rem;">Guía de convivencia, respeto y bioseguridad para estudiantes y visitas</div>
     </div>
-    <div class="card-body">
-      <div class="stamp">CUADERNO DE CAMPO</div>
-      <ul class="rules-list" id="rulesList"></ul>
-      <div class="save-note">Aprender estas normas antes de ir a la granja física ayuda a cuidar a los animales y a evitar que se estresen.</div>
+    <div class="card-body" style="padding-top:4px;">
+      <div id="rulesList"></div>
+      <div class="rules-save-note">
+        ✨ <b>Compromiso Escolar:</b> Practicar estas normas protege a nuestras especies y asegura un entorno educativo armónico.
+      </div>
+      <button type="button" class="rules-accept-btn" id="rulesAcceptBtn">
+        <span>🌟</span> ¡Entendido! Me Comprometo a Cuidar la Granja
+      </button>
     </div>
   </div>
 </div>

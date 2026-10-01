@@ -8,8 +8,9 @@
 (function() {
   'use strict';
 
-  // Estado inicial colapsado por defecto para no invadir márgenes ni tapar el potrero
-  let currentFilter = 'general'; // 'general' | 'curso'
+  // Detectar si estamos en la vista de minijuegos para priorizar la pestaña correspondiente
+  const isJuegosPage = typeof window !== 'undefined' && window.location && window.location.pathname.includes('juegos');
+  let currentFilter = isJuegosPage ? 'juegos' : 'general'; // 'general' | 'curso' | 'juegos'
   let isSidebarCollapsed = true;
 
   // Cargar preferencia de colapso desde localStorage si el usuario ya interactuó
@@ -17,6 +18,16 @@
     const savedCol = localStorage.getItem('granja_ranking_collapsed');
     if (savedCol !== null) isSidebarCollapsed = (savedCol === 'true');
   } catch (e) {}
+
+  function parseMinigamesStats(src) {
+    if (!src) return { memScore: 0, wsScore: 0, platScore: 0, gamesScore: 0 };
+    const mg = src.minigames || {};
+    const memScore = (mg.memory && typeof mg.memory.bestScore === 'number') ? mg.memory.bestScore : 0;
+    const wsScore = (mg.wordsearch && typeof mg.wordsearch.bestScore === 'number') ? mg.wordsearch.bestScore : 0;
+    const platScore = (mg.platformer && typeof mg.platformer.bestScore === 'number') ? mg.platformer.bestScore : 0;
+    const gamesScore = memScore + wsScore + platScore;
+    return { memScore, wsScore, platScore, gamesScore };
+  }
 
   /**
    * Obtiene la lista unificada de estudiantes reales y calcula su puntaje puro (sin repetición)
@@ -58,6 +69,7 @@
     let estudianteActivo = null;
     if (typeof state !== 'undefined' && state.studentName && state.studentName.trim() !== '') {
       const pure = typeof window.computePureScore === 'function' ? window.computePureScore(state) : (state.pureScore || state.score || 0);
+      const activeMg = parseMinigamesStats(state);
       estudianteActivo = {
         id: (state.studentName.trim() + '_' + (state.studentGrade || '').trim()).toLowerCase(),
         studentName: state.studentName.trim(),
@@ -67,6 +79,10 @@
         score: pure,
         quizzesCount: (Object.keys(state.mapQuiz || {}).filter(k => state.mapQuiz[k] && state.mapQuiz[k].completed).length),
         badgesCount: (state.badges || []).length,
+        memScore: activeMg.memScore,
+        wsScore: activeMg.wsScore,
+        platScore: activeMg.platScore,
+        gamesScore: activeMg.gamesScore,
         isCurrent: true
       };
     }
@@ -86,7 +102,11 @@
         pureScore: 0,
         score: 0,
         badgesCount: 0,
-        quizzesCount: 0
+        quizzesCount: 0,
+        memScore: 0,
+        wsScore: 0,
+        platScore: 0,
+        gamesScore: 0
       });
     });
 
@@ -98,6 +118,7 @@
         ? window.computePureScore(p.stateData || p)
         : (p.pureScore || p.score || 0);
 
+      const pMg = parseMinigamesStats(p.stateData || p);
       const existing = mapaEstudiantes.get(id);
       mapaEstudiantes.set(id, {
         id,
@@ -107,7 +128,11 @@
         pureScore: pure,
         score: pure,
         badgesCount: p.badgesCount || 0,
-        quizzesCount: (p.mapQuizCompleted || 0)
+        quizzesCount: (p.mapQuizCompleted || 0),
+        memScore: pMg.memScore || (existing ? existing.memScore : 0),
+        wsScore: pMg.wsScore || (existing ? existing.wsScore : 0),
+        platScore: pMg.platScore || (existing ? existing.platScore : 0),
+        gamesScore: pMg.gamesScore || (existing ? existing.gamesScore : 0)
       });
     });
 
@@ -118,6 +143,7 @@
         const id = (s.studentName.trim() + '_' + (s.studentGrade || '').trim()).toLowerCase();
         const pure = Number.isFinite(s.pureScore) ? s.pureScore : (s.score || 0);
         const existing = mapaEstudiantes.get(id);
+        const sMg = parseMinigamesStats(s);
         mapaEstudiantes.set(id, {
           id,
           studentName: s.studentName.trim(),
@@ -126,7 +152,11 @@
           pureScore: pure,
           score: pure,
           badgesCount: s.badgesCount || (existing ? existing.badgesCount : 0),
-          quizzesCount: s.quizzesCount || (existing ? existing.quizzesCount : 0)
+          quizzesCount: s.quizzesCount || (existing ? existing.quizzesCount : 0),
+          memScore: sMg.memScore || (existing ? existing.memScore : 0),
+          wsScore: sMg.wsScore || (existing ? existing.wsScore : 0),
+          platScore: sMg.platScore || (existing ? existing.platScore : 0),
+          gamesScore: sMg.gamesScore || (existing ? existing.gamesScore : 0)
         });
       });
     }
@@ -136,8 +166,13 @@
       mapaEstudiantes.set(estudianteActivo.id, estudianteActivo);
     }
 
-    // Convertir a lista y ordenar por Puntaje Puro descendente
+    // Convertir a lista y ordenar según el filtro activo
     const lista = Array.from(mapaEstudiantes.values()).sort((a, b) => {
+      if (currentFilter === 'juegos') {
+        const diffGames = (b.gamesScore || 0) - (a.gamesScore || 0);
+        if (diffGames !== 0) return diffGames;
+        return (b.pureScore || 0) - (a.pureScore || 0);
+      }
       if (b.pureScore !== a.pureScore) {
         return b.pureScore - a.pureScore;
       }
@@ -177,23 +212,26 @@
             <div>
               <h3 class="ranking-title">Salón de Honor B-13</h3>
               <div class="ranking-subtitle-row">
-                <span class="pure-badge" title="Puntaje Puro: Suma de mejores puntajes por cada animal/desafío único. Sin repetición acumulativa.">
-                  ⭐ Puntaje Puro
+                <span class="pure-badge" id="rankingBadgeType" title="Modo de puntuación activo">
+                  ${currentFilter === 'juegos' ? '🎮 Récords Arcade' : '⭐ Puntaje Puro'}
                 </span>
-                <button type="button" class="ranking-info-trigger" id="rankingInfoBtn" title="¿Qué es el Puntaje Puro?">ℹ️</button>
+                <button type="button" class="ranking-info-trigger" id="rankingInfoBtn" title="¿Cómo funciona este Ranking?">ℹ️</button>
               </div>
             </div>
           </div>
           <button class="ranking-header-close" id="rankingHeaderCloseBtn" type="button" title="Cerrar panel">✕</button>
         </div>
 
-        <!-- Filtros: General vs Mi Curso -->
+        <!-- Filtros: General vs Mi Curso vs Minijuegos -->
         <div class="ranking-filter-bar">
           <button type="button" class="ranking-filter-btn ${currentFilter === 'general' ? 'active' : ''}" data-filter="general">
             <span>🌐</span> Todo el Liceo
           </button>
           <button type="button" class="ranking-filter-btn ${currentFilter === 'curso' ? 'active' : ''}" data-filter="curso">
             <span>🏫</span> Mi Curso
+          </button>
+          <button type="button" class="ranking-filter-btn ${currentFilter === 'juegos' ? 'active' : ''}" data-filter="juegos">
+            <span>🎮</span> Minijuegos
           </button>
         </div>
 
@@ -209,29 +247,15 @@
 
     document.body.appendChild(aside);
 
-    // Modal explicativo de Puntaje Puro
+    // Modal explicativo de Puntaje y Récords
     const infoModal = document.createElement('div');
     infoModal.id = 'pureScoreInfoModal';
     infoModal.className = 'overlay';
     infoModal.style.display = 'none';
     infoModal.innerHTML = `
-      <div class="card" style="max-width:440px;text-align:center;padding:22px 20px;">
+      <div class="card" style="max-width:460px;text-align:center;padding:22px 20px;">
         <button class="close-btn" id="closePureInfoBtn" aria-label="Cerrar">✕</button>
-        <div style="font-size:3rem;margin-bottom:8px;">⚖️⭐</div>
-        <h3 style="margin:0 0 8px;font-family:'Fraunces',serif;color:var(--grass-dark);font-size:1.3rem;">
-          ¿Qué es el Puntaje Puro?
-        </h3>
-        <p style="font-size:0.88rem;line-height:1.5;color:var(--ink);text-align:left;margin-bottom:14px;">
-          En <b>La Granja B-13</b> premiamos el conocimiento auténtico y el aprendizaje integral de todas las especies.
-        </p>
-        <div style="background:var(--paper-dark);border:2px solid var(--ink);border-radius:8px;padding:12px 14px;text-align:left;font-size:0.83rem;line-height:1.45;margin-bottom:16px;">
-          ✔️ <b>Sin Repetición:</b> Cada quiz que rindes te otorga hasta 90 puntos puros. Si reintentas el quiz para mejorar, solo se conserva tu <b>mejor calificación</b> en esa especie.
-          <br><br>
-          🚫 <b>Juego Limpio:</b> Repetir el mismo animal varias veces no suma puntos extra infinitos. ¡Para llegar al <b>Top 1</b> debes dominar todos los animales y zonas de la granja!
-        </div>
-        <button type="button" class="tool-btn" id="acceptPureInfoBtn" style="width:100%;padding:10px;background:var(--hay);color:var(--ink);font-weight:700;border:2px solid var(--ink);border-radius:6px;cursor:pointer;">
-          ¡Entendido! 🚀
-        </button>
+        <div id="pureInfoModalContent"></div>
       </div>
     `;
     document.body.appendChild(infoModal);
@@ -284,7 +308,53 @@
     // Configurar listeners de interacción
     document.getElementById('rankingTabHandle').addEventListener('click', toggleSidebarCollapse);
 
+    const renderInfoModalContent = () => {
+      const contentEl = document.getElementById('pureInfoModalContent');
+      if (!contentEl) return;
+      if (currentFilter === 'juegos') {
+        contentEl.innerHTML = `
+          <div style="font-size:3rem;margin-bottom:8px;">🎮🏆</div>
+          <h3 style="margin:0 0 8px;font-family:'Fraunces',serif;color:var(--grass-dark);font-size:1.3rem;">
+            Ranking de Minijuegos Arcade
+          </h3>
+          <p style="font-size:0.88rem;line-height:1.5;color:var(--ink);text-align:left;margin-bottom:14px;">
+            El Salón Arcade premia tu destreza, agilidad y dominio zootécnico en los tres juegos educativos de La Granja B-13:
+          </p>
+          <div style="background:var(--paper-dark);border:2px solid var(--ink);border-radius:8px;padding:12px 14px;text-align:left;font-size:0.83rem;line-height:1.45;margin-bottom:16px;">
+            🃏 <b>Parejas de Curiosidades:</b> Empareja animales y curiosidades. Las dificultades Media y Difícil otorgan multiplicadores de x1.5 y x2.0.<br><br>
+            🔤 <b>Sopa de Letras:</b> Descubre vocabulario clave en matrices de 10x10, 12x12 y 14x14 con diagonales y palabras invertidas.<br><br>
+            🏃 <b>Aventura 2D (Plataformas):</b> Llega al Granero Rojo sorteando obstáculos y fango. ¡El nivel Extremo activa Air Dash estilo Celeste y Pink Parries de Cuphead!<br><br>
+            ⭐ <b>Puntaje Total Arcade:</b> Suma tus mejores récords en las tres disciplinas.
+          </div>
+          <button type="button" class="tool-btn" id="acceptPureInfoBtn" style="width:100%;padding:10px;background:var(--hay);color:var(--ink);font-weight:700;border:2px solid var(--ink);border-radius:6px;cursor:pointer;">
+            ¡A Jugar! 🕹️
+          </button>
+        `;
+      } else {
+        contentEl.innerHTML = `
+          <div style="font-size:3rem;margin-bottom:8px;">⚖️⭐</div>
+          <h3 style="margin:0 0 8px;font-family:'Fraunces',serif;color:var(--grass-dark);font-size:1.3rem;">
+            ¿Qué es el Puntaje Puro?
+          </h3>
+          <p style="font-size:0.88rem;line-height:1.5;color:var(--ink);text-align:left;margin-bottom:14px;">
+            En <b>La Granja B-13</b> premiamos el conocimiento auténtico y el aprendizaje integral de todas las especies.
+          </p>
+          <div style="background:var(--paper-dark);border:2px solid var(--ink);border-radius:8px;padding:12px 14px;text-align:left;font-size:0.83rem;line-height:1.45;margin-bottom:16px;">
+            ✔️ <b>Sin Repetición:</b> Cada quiz que rindes te otorga hasta 90 puntos puros. Si reintentas el quiz para mejorar, solo se conserva tu <b>mejor calificación</b> en esa especie.
+            <br><br>
+            🚫 <b>Juego Limpio:</b> Repetir el mismo animal varias veces no suma puntos extra infinitos. ¡Para llegar al <b>Top 1</b> debes dominar todos los animales y zonas de la granja!
+          </div>
+          <button type="button" class="tool-btn" id="acceptPureInfoBtn" style="width:100%;padding:10px;background:var(--hay);color:var(--ink);font-weight:700;border:2px solid var(--ink);border-radius:6px;cursor:pointer;">
+            ¡Entendido! 🚀
+          </button>
+        `;
+      }
+      const closeBtn = document.getElementById('acceptPureInfoBtn');
+      if (closeBtn) closeBtn.onclick = cerrarInfo;
+    };
+
     document.getElementById('rankingInfoBtn').addEventListener('click', () => {
+      renderInfoModalContent();
       infoModal.style.display = 'flex';
       infoModal.classList.add('active');
     });
@@ -294,7 +364,6 @@
       infoModal.classList.remove('active');
     };
     document.getElementById('closePureInfoBtn').addEventListener('click', cerrarInfo);
-    document.getElementById('acceptPureInfoBtn').addEventListener('click', cerrarInfo);
 
     // Pestañas de filtro
     aside.querySelectorAll('.ranking-filter-btn').forEach(btn => {
@@ -349,6 +418,12 @@
     const myStatusEl = document.getElementById('rankingMyStatus');
     if (!listEl) return;
 
+    // Actualizar badge de encabezado
+    const badgeType = document.getElementById('rankingBadgeType');
+    if (badgeType) {
+      badgeType.textContent = (currentFilter === 'juegos') ? '🎮 Récords Arcade' : '⭐ Puntaje Puro';
+    }
+
     const data = await obtenerListaRanking();
     let ranking = data.ranking || [];
     const estudianteActivo = data.estudianteActivo;
@@ -387,6 +462,7 @@
       miPosicion = ranking.findIndex(s => s.id === estudianteActivo.id) + 1;
     }
 
+    const isGames = (currentFilter === 'juegos');
     let html = '';
     // 1. Mostrar los estudiantes reales registrados (máx 10)
     const realCount = Math.min(ranking.length, 10);
@@ -411,7 +487,6 @@
       let badgeHtml = '';
       let crownVfx = '';
       let shimmerVfx = '';
-      let particleVfx = '';
 
       if (isTop1) {
         crownVfx = `<span class="vfx-crown" title="Gran Campeón/a B-13">👑</span>`;
@@ -425,6 +500,12 @@
       } else {
         badgeHtml = `<span class="rank-pos-badge other-badge">#${rankNum}</span>`;
       }
+
+      const scoreValue = isGames ? (st.gamesScore || 0) : st.pureScore;
+      const scoreLabel = isGames ? 'pts arcade' : 'pts puros';
+      const breakdownOrGrade = isGames
+        ? `<span>🎮</span> 🃏 ${st.memScore || 0} · 🔤 ${st.wsScore || 0} · 🏃 ${st.platScore || 0}`
+        : `<span>🏫</span> ${st.studentGrade || 'Enseñanza Media'}`;
 
       html += `
         <div class="${cardClass}" data-rank="${rankNum}">
@@ -442,15 +523,15 @@
                 ${isMe ? '<span class="me-tag">Tú</span>' : ''}
               </div>
               <div class="ranking-grade-tag">
-                <span>🏫</span> ${st.studentGrade || 'Enseñanza Media'}
+                ${breakdownOrGrade}
               </div>
             </div>
           </div>
           <div class="ranking-card-right">
             ${badgeHtml}
             <div class="ranking-pts-box">
-              <b class="ranking-pts-val">${st.pureScore}</b>
-              <span class="ranking-pts-lbl">pts puros</span>
+              <b class="ranking-pts-val">${scoreValue}</b>
+              <span class="ranking-pts-lbl">${scoreLabel}</span>
             </div>
           </div>
         </div>
@@ -469,12 +550,15 @@
             ? `<span class="rank-pos-badge empty-bronze-badge">3° BRONCE</span>`
             : `<span class="rank-pos-badge other-badge">#${slotNum}</span>`));
 
+      const emptyScoreLabel = isGames ? 'pts arcade' : 'pts puros';
+      const emptyGradeText = isGames ? '🎮 ¡Juega minijuegos para clasificar!' : '⭐ ¡Rinde quizzes para reclamar!';
+
       html += `
         <div class="ranking-card slot-empty rank-other ${isPodiumSlot ? 'podium-empty' : ''}" data-rank="${slotNum}">
           <div class="ranking-card-left">
             <div class="ranking-avatar-wrap">
               <div class="ranking-avatar-box empty-avatar-box">
-                <span class="ranking-avatar-icon">${isPodiumSlot ? '🏆' : '🌱'}</span>
+                <span class="ranking-avatar-icon">${isPodiumSlot ? '🏆' : (isGames ? '🕹️' : '🌱')}</span>
               </div>
             </div>
             <div class="ranking-user-info">
@@ -482,7 +566,7 @@
                 <span class="ranking-name empty-name">[Espacio Disponible]</span>
               </div>
               <div class="ranking-grade-tag empty-grade">
-                <span>⭐</span> ¡Rinde quizzes para reclamar!
+                <span>⭐</span> ${emptyGradeText}
               </div>
             </div>
           </div>
@@ -490,7 +574,7 @@
             ${slotBadge}
             <div class="ranking-pts-box">
               <b class="ranking-pts-val empty-pts">---</b>
-              <span class="ranking-pts-lbl">pts puros</span>
+              <span class="ranking-pts-lbl">${emptyScoreLabel}</span>
             </div>
           </div>
         </div>
@@ -513,20 +597,35 @@
           <div class="my-status-ic">🧭</div>
           <div class="my-status-text">
             <b>Modo Visita Activo</b>
-            <span>Ingresa como estudiante para sumar puntos puros y entrar al Salón de Honor.</span>
+            <span>Ingresa como estudiante para sumar puntos y entrar al Salón de Honor.</span>
           </div>
         </div>
       `;
       return;
     }
 
+    const isGames = (currentFilter === 'juegos');
     const posTxt = (miPosicion > 0) ? `#${miPosicion} Lugar` : 'Sin Clasificar';
-    const pts = estudianteActivo.pureScore || 0;
+    const pts = isGames ? (estudianteActivo.gamesScore || 0) : (estudianteActivo.pureScore || 0);
+    const ptsUnit = isGames ? 'pts arcade' : 'pts puros';
 
-    let mensajeMotivacional = '¡Rinde desafíos en el Mapa 3D para subir posiciones! 🚀';
-    if (miPosicion === 1) mensajeMotivacional = '👑 ¡Eres el Campeón Supremo de La Granja B-13!';
-    else if (miPosicion === 2 || miPosicion === 3) mensajeMotivacional = '🔥 ¡Estás en el Podio de Honor! ¡Defiende tu lugar!';
-    else if (miPosicion <= 10 && miPosicion > 0) mensajeMotivacional = '✨ ¡Estás dentro del TOP 10 oficial del Liceo!';
+    let mensajeMotivacional = isGames
+      ? '¡Juega Parejas, Sopa de Letras y Carrera 2D para sumar puntos arcade! 🕹️'
+      : '¡Rinde desafíos en el Mapa 3D para subir posiciones! 🚀';
+
+    if (miPosicion === 1) {
+      mensajeMotivacional = isGames
+        ? '👑 ¡Eres el Rey / Reina del Arcade de La Granja B-13!'
+        : '👑 ¡Eres el Campeón Supremo de La Granja B-13!';
+    } else if (miPosicion === 2 || miPosicion === 3) {
+      mensajeMotivacional = isGames
+        ? '🔥 ¡Estás en el Podio Arcade! ¡Supera tus récords en Difícil/Extrema!'
+        : '🔥 ¡Estás en el Podio de Honor! ¡Defiende tu lugar!';
+    } else if (miPosicion <= 10 && miPosicion > 0) {
+      mensajeMotivacional = isGames
+        ? '✨ ¡Estás dentro del TOP 10 Arcade del Liceo!'
+        : '✨ ¡Estás dentro del TOP 10 oficial del Liceo!';
+    }
 
     container.innerHTML = `
       <div class="my-status-box active-student">
@@ -539,7 +638,7 @@
             <span class="my-status-rank-pill">${posTxt}</span>
           </div>
           <div class="my-status-bottom-row">
-            <span class="my-status-pts"><b>${pts}</b> pts puros</span>
+            <span class="my-status-pts"><b>${pts}</b> ${ptsUnit}</span>
             <span class="my-status-motto">${mensajeMotivacional}</span>
           </div>
         </div>

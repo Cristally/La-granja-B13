@@ -1544,4 +1544,173 @@
   filter: drop-shadow(0 2px 3px rgba(0,0,0,0.3));
 }
 
+/* ============================================================
+   APARTADO "MIS PISTAS" Y CUADERNO DE REPASO
+   ============================================================ */
+.clues-count-pill {
+  background: #f59e0b;
+  color: #ffffff;
+  font-family: 'Space Mono', monospace;
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 999px;
+  margin-left: 4px;
+}
+
+.clues-modal-card {
+  max-width: 680px !important;
+  width: 95% !important;
+  border-radius: 18px !important;
+  padding: 22px 20px !important;
+  background: #ffffff !important;
+  border: 2px solid #fde68a !important;
+  box-shadow: 0 20px 45px rgba(217, 119, 6, 0.2) !important;
+  max-height: 88vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.clues-filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 12px;
+  justify-content: center;
+}
+
+.clues-filter-btn {
+  background: #f8fafc;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-family: 'Karla', sans-serif;
+  font-weight: 700;
+  font-size: 0.78rem;
+  color: #475569;
+  cursor: pointer;
+  transition: all 0.16s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.clues-filter-btn:hover {
+  border-color: #f59e0b;
+  background: #fffbeb;
+  color: #92400e;
+}
+
+.clues-filter-btn.active {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  border-color: #b45309;
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(217, 119, 6, 0.3);
+}
+
+.clues-collection-scroll {
+  max-height: 52vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 4px;
+  scrollbar-width: thin;
+}
+
+.clue-item-card {
+  background: linear-gradient(145deg, #ffffff 0%, #fffbeb 100%);
+  border: 1.5px solid #fde68a;
+  border-radius: 12px;
+  padding: 12px 14px;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  transition: all 0.2s ease;
+  text-align: left;
+}
+
+.clue-item-card:hover {
+  transform: translateY(-2px);
+  border-color: #f59e0b;
+  box-shadow: 0 6px 16px rgba(217, 119, 6, 0.15);
+}
+
+.clue-item-icon-box {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  background: #ffffff;
+  border: 1.5px solid #fcd34d;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+.clue-item-content {
+  flex: 1;
+}
+
+.clue-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.clue-item-title {
+  font-family: 'Fraunces', serif;
+  font-weight: 700;
+  font-size: 0.94rem;
+  color: #1e293b;
+  margin: 0;
+}
+
+.clue-game-badge {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.62rem;
+  font-weight: 700;
+  background: #fef3c7;
+  color: #92400e;
+  padding: 2px 8px;
+  border-radius: 6px;
+  border: 1px solid rgba(217, 119, 6, 0.25);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.clue-item-fact {
+  font-size: 0.82rem;
+  color: #334155;
+  line-height: 1.42;
+  margin: 0;
+}
+
+.clues-empty-state {
+  text-align: center;
+  padding: 30px 20px;
+  color: #64748b;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.clues-empty-icon {
+  font-size: 3rem;
+  line-height: 1;
+}
+
+.clues-modal-footer {
+  margin-top: 14px;
+  padding-top: 10px;
+  border-top: 1px solid #f1f5f9;
+}
+
 

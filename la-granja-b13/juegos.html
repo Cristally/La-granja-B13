@@ -49,7 +49,8 @@
     </div>
     <div class="tool-buttons">
       <button id="leaderboardBtn" class="tool-btn leaderboard-tool-btn" type="button" title="Ver Salón de Honor y Ranking">🏆 Ranking</button>
-      <button id="achievementsBtn" class="tool-btn" type="button">🎖️ Logros</button>
+      <button id="cluesBtn" class="tool-btn clues-tool-btn" type="button" title="Ver mi cuaderno de pistas recolectadas">💡 Mis Pistas <span class="clues-count-pill" id="toolbarCluesCount">0</span></button>
+      <button id="achievementsBtn" class="tool-btn" type="button">🏅 Logros</button>
       <button id="rulesBtn" class="tool-btn" type="button">📋 Normas</button>
       <button id="soundBtn" class="tool-btn" type="button">🔊 Sonido</button>
       <button id="btnPortalRegresarInicio" class="tool-btn btn-portal-inicio" type="button" title="Regresar a selección de rol o inicio">🚪 Salir / Modo</button>
@@ -79,6 +80,9 @@
         <p>Voltea las cartas numeradas y empareja cada curiosidad zootécnica con el animal correspondiente de la granja.</p>
       </div>
       <div class="game-scoreboard">
+        <div class="game-stat-chip" id="memDiffChip" title="Dificultad actual">
+          <span>🎯 Dificultad:</span> <b id="memDiffVal" style="color:#16a34a;">🟢 Fácil</b>
+        </div>
         <div class="game-stat-chip">
           <span>🔄 Intentos:</span> <b id="memMovesVal">0</b>
         </div>
@@ -108,14 +112,28 @@
               <div class="stage-card-icon">🧠</div>
               <div class="stage-card-body">
                 <h4>Dinámica de Memoria</h4>
-                <p>12 cartas numeradas que ocultan 6 animales y 6 curiosidades de campo. Voltea dos cartas por turno para encontrar la pareja correcta.</p>
+                <p id="memStageDynamicDesc">6 parejas zootécnicas (12 cartas). Empareja cada animal con su curiosidad biológica.</p>
               </div>
             </div>
+            <!-- Selector de Dificultad -->
             <div class="stage-card">
-              <div class="stage-card-icon">⏱️</div>
+              <div class="stage-card-icon">🎯</div>
               <div class="stage-card-body">
-                <h4>Cronómetro Justo & Puntos</h4>
-                <p>El tiempo arrancará exactamente en <b>00:00</b> al presionar el botón. Menos intentos y menor tiempo se traducen en mayor reconocimiento.</p>
+                <h4>Nivel de Desafío</h4>
+                <div class="diff-modal-grid" id="memDiffSelector">
+                  <button type="button" class="diff-card-btn active" data-diff="facil">
+                    <span class="diff-badge">🟢 FÁCIL</span>
+                    <span class="diff-desc">6 Pares · 12 Cartas</span>
+                  </button>
+                  <button type="button" class="diff-card-btn" data-diff="media">
+                    <span class="diff-badge">🟡 MEDIA</span>
+                    <span class="diff-desc">8 Pares · 16 Cartas</span>
+                  </button>
+                  <button type="button" class="diff-card-btn" data-diff="dificil">
+                    <span class="diff-badge">🔴 DIFÍCIL</span>
+                    <span class="diff-desc">10 Pares · 20 Cartas</span>
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -138,8 +156,11 @@
         <p>Encuentra las 10 palabras esenciales sobre anatomía, alimentación y bienestar animal de La Granja B-13.</p>
       </div>
       <div class="game-scoreboard">
+        <div class="game-stat-chip" id="wsDiffChip" title="Dificultad actual">
+          <span>🎯 Dificultad:</span> <b id="wsDiffVal" style="color:#16a34a;">🟢 Fácil</b>
+        </div>
         <div class="game-stat-chip">
-          <span>🎯 Encontradas:</span> <b id="wsCountVal">0/10</b>
+          <span>🎯 Encontradas:</span> <b id="wsCountVal">0/6</b>
         </div>
         <div class="game-stat-chip">
           <span>⏱️ Tiempo:</span> <b id="wsTimeVal">00:00</b>
@@ -150,7 +171,7 @@
 
     <div class="wordsearch-wrap game-board-wrap">
       <div class="wordsearch-layout">
-        <!-- Cuadrícula 12x12 -->
+        <!-- Cuadrícula -->
         <div class="wordsearch-grid-box">
           <div class="wordsearch-grid" id="wsGrid"></div>
         </div>
@@ -166,21 +187,35 @@
         <div class="stage-content-wrap">
           <div class="stage-badge-pill">🔤📜 LÉXICO AGROECOLÓGICO B-13</div>
           <h3 class="stage-title">Sopa de Letras Agroecológica</h3>
-          <p class="stage-subtitle">Encuentra los 10 conceptos fundamentales sobre nutrición, anatomía y bienestar de los animales del Liceo B-13.</p>
+          <p class="stage-subtitle">Encuentra los conceptos fundamentales sobre nutrición, anatomía y bienestar de los animales del Liceo B-13.</p>
 
           <div class="stage-grid">
             <div class="stage-card">
-              <div class="stage-card-icon">🎯</div>
+              <div class="stage-card-icon">🧠</div>
               <div class="stage-card-body">
-                <h4>10 Conceptos Clave</h4>
-                <p>Localiza términos como <i>Cecotrofia</i>, <i>Molleja</i>, <i>Cresta</i>, <i>Heno</i>, <i>Incubación</i>, <i>Agapornis</i>, <i>Patos</i>, <i>Forraje</i>, <i>Bienestar</i> y <i>Gallinero</i>.</p>
+                <h4>Léxico Agroecológico</h4>
+                <p id="wsStageDynamicDesc">6 términos zootécnicos en cuadrícula 10x10. Arrastra en horizontal o vertical para encontrar las palabras.</p>
               </div>
             </div>
+            <!-- Selector de Dificultad -->
             <div class="stage-card">
-              <div class="stage-card-icon">⏱️</div>
+              <div class="stage-card-icon">🎯</div>
               <div class="stage-card-body">
-                <h4>Inicio Parejo & Controles</h4>
-                <p>El cronómetro comenzará a contar en <b>00:00</b> al iniciar. Haz clic en la primera letra y arrastra hasta la última (horizontal, vertical o diagonal).</p>
+                <h4>Nivel de Desafío</h4>
+                <div class="diff-modal-grid" id="wsDiffSelector">
+                  <button type="button" class="diff-card-btn active" data-diff="facil">
+                    <span class="diff-badge">🟢 FÁCIL</span>
+                    <span class="diff-desc">6 Palabras · 10x10</span>
+                  </button>
+                  <button type="button" class="diff-card-btn" data-diff="media">
+                    <span class="diff-badge">🟡 MEDIA</span>
+                    <span class="diff-desc">8 Palabras · 12x12</span>
+                  </button>
+                  <button type="button" class="diff-card-btn" data-diff="dificil">
+                    <span class="diff-badge">🔴 DIFÍCIL</span>
+                    <span class="diff-desc">10 Palabras · Invertidas</span>
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -413,21 +448,23 @@
   </div>
 </div>
 
-<!-- Modal de Normas de la Granja -->
+<!-- Modal de Normas de la Granja (Rediseño visual, atractivo y pedagógico) -->
 <div class="overlay" id="rulesOverlay">
-  <div class="card small-card">
+  <div class="card rules-card">
     <button class="close-btn" data-close="rulesOverlay" aria-label="Cerrar">✕</button>
-    <div class="card-head">
-      <div class="big-sprite">📋</div>
-      <div>
-        <h2>Antes de visitar la granja</h2>
-        <div class="lat">Normas de comportamiento y cuidado animal (ODS 15)</div>
-      </div>
+    <div class="card-head" style="flex-direction:column;align-items:center;text-align:center;gap:4px;padding-bottom:6px;">
+      <div class="rules-badge-pill">🌱 CUIDADO Y BIENESTAR ANIMAL · ODS 15</div>
+      <h2 style="font-family:'Fraunces',serif;color:#14532d;font-size:1.4rem;margin:0;">Antes de Visitar La Granja B-13</h2>
+      <div class="lat" style="color:#64748b;font-size:0.86rem;">Guía de convivencia, respeto y bioseguridad para estudiantes y visitas</div>
     </div>
-    <div class="card-body">
-      <div class="stamp">CUADERNO DE CAMPO</div>
-      <ul class="rules-list" id="rulesList"></ul>
-      <div class="save-note">Aprender estas normas antes de ir a la granja física ayuda a cuidar a los animales y a evitar que se estresen.</div>
+    <div class="card-body" style="padding-top:4px;">
+      <div id="rulesList"></div>
+      <div class="rules-save-note">
+        ✨ <b>Compromiso Escolar:</b> Practicar estas normas protege a nuestras especies y asegura un entorno educativo armónico.
+      </div>
+      <button type="button" class="rules-accept-btn" id="rulesAcceptBtn">
+        <span>🌟</span> ¡Entendido! Me Comprometo a Cuidar la Granja
+      </button>
     </div>
   </div>
 </div>
@@ -481,6 +518,52 @@
         <button class="tool-btn victory-btn-accept" id="victoryAcceptBtn" data-close="victoryOverlay" type="button">
           ✓ Aceptar
         </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de "Mis Pistas" (Cuaderno de Pistas Desbloqueadas en Minijuegos) -->
+<div class="overlay" id="cluesOverlay" style="display:none;">
+  <div class="card clues-modal-card">
+    <button class="close-btn" data-close="cluesOverlay" id="cluesCloseBtn" aria-label="Cerrar">✕</button>
+    <div class="card-head" style="flex-direction:column;align-items:center;text-align:center;gap:4px;padding-bottom:10px;">
+      <div class="rules-badge-pill" style="background:#fef3c7;color:#92400e;border-color:#fde68a;">
+        💡 CUADERNO DE CAMPO · BANCO DE PISTAS DESBLOQUEADAS
+      </div>
+      <h2 style="font-family:'Fraunces',serif;color:#1e293b;font-size:1.45rem;margin:0;">
+        Mis Pistas Zootécnicas Coleccionadas
+      </h2>
+      <div class="lat" style="color:#64748b;font-size:0.86rem;">
+        Conceptos clave descubiertos en los minijuegos para asegurar tus décimas en los Quizzes del Mapa 3D
+      </div>
+    </div>
+    <div class="card-body" style="padding-top:4px;">
+      <!-- Filtros por Minijuego -->
+      <div class="clues-filter-bar" id="cluesFilterBar">
+        <button type="button" class="clues-filter-btn active" data-filter="todas">
+          <span>🌐</span> Todas (<span id="cluesFilterCountAll">0</span>)
+        </button>
+        <button type="button" class="clues-filter-btn" data-filter="Parejas de Curiosidades">
+          <span>🃏</span> Parejas (<span id="cluesFilterCountMem">0</span>)
+        </button>
+        <button type="button" class="clues-filter-btn" data-filter="Sopa de Letras">
+          <span>🔤</span> Sopa de Letras (<span id="cluesFilterCountWs">0</span>)
+        </button>
+        <button type="button" class="clues-filter-btn" data-filter="Aventura 2D (Plataformas)">
+          <span>🏃</span> Carrera 2D (<span id="cluesFilterCountPlat">0</span>)
+        </button>
+      </div>
+
+      <!-- Contenedor con scroll para las pistas -->
+      <div class="clues-collection-scroll" id="cluesCollectionContainer">
+        <!-- Se inyecta dinámicamente -->
+      </div>
+
+      <div class="clues-modal-footer">
+        <a href="mapa.html" class="tool-btn victory-btn-quiz" style="width:100%;justify-content:center;text-decoration:none;">
+          <span>🎯</span> Ir al Mapa 3D y Responder Quizzes por Décimas
+        </a>
       </div>
     </div>
   </div>

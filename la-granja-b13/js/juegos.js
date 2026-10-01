@@ -313,13 +313,197 @@
   }
 
   /* ============================================================
+     SISTEMA PEDAGÓGICO: "MIS PISTAS" (CUADERNO DE APUNTES DE MINIJUEGOS)
+     Recolecta y persiste los conceptos clave zootécnicos descubiertos
+     para que los estudiantes los repasen antes de rendir los Quizzes
+     ============================================================ */
+  const CluesNotebook = {
+    STORAGE_KEY: 'granja_student_clues',
+
+    getClues() {
+      try {
+        const raw = localStorage.getItem(this.STORAGE_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (Array.isArray(parsed)) return parsed;
+        }
+      } catch (e) {}
+      if (typeof state !== 'undefined' && Array.isArray(state.collectedClues)) {
+        return state.collectedClues;
+      }
+      return [];
+    },
+
+    saveClues(clues) {
+      try {
+        localStorage.setItem(this.STORAGE_KEY, JSON.stringify(clues));
+      } catch (e) {}
+      if (typeof state !== 'undefined') {
+        state.collectedClues = clues;
+        if (typeof saveState === 'function') saveState();
+      }
+      this.updateCounter();
+    },
+
+    addClue({ title, fact, game, icon }) {
+      if (!fact || !fact.trim()) return;
+      const clues = this.getClues();
+      const normFact = fact.trim();
+      const exists = clues.some(c => c.fact.trim().toLowerCase() === normFact.toLowerCase());
+      if (exists) return; // Ya aprendida
+
+      const newClue = {
+        id: 'clue_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4),
+        title: title || 'Concepto de Granja',
+        fact: normFact,
+        game: game || 'Minijuegos B-13',
+        icon: icon || '💡',
+        date: new Date().toLocaleDateString('es-CL')
+      };
+
+      clues.unshift(newClue);
+      this.saveClues(clues);
+
+      // Si el modal está visible, re-renderizar
+      const overlay = document.getElementById('cluesOverlay');
+      if (overlay && overlay.style.display !== 'none' && !overlay.classList.contains('hidden')) {
+        this.renderClues();
+      }
+    },
+
+    updateCounter() {
+      const clues = this.getClues();
+      const counterEl = document.getElementById('toolbarCluesCount');
+      if (counterEl) counterEl.textContent = clues.length;
+    },
+
+    renderClues(filter = 'todas') {
+      const container = document.getElementById('cluesCollectionContainer');
+      if (!container) return;
+
+      const clues = this.getClues();
+      const countAll = clues.length;
+      const countMem = clues.filter(c => c.game.toLowerCase().includes('parejas') || c.game.toLowerCase().includes('memoria')).length;
+      const countWs = clues.filter(c => c.game.toLowerCase().includes('sopa')).length;
+      const countPlat = clues.filter(c => c.game.toLowerCase().includes('aventura') || c.game.toLowerCase().includes('plataformas') || c.game.toLowerCase().includes('carrera')).length;
+
+      const elAll = document.getElementById('cluesFilterCountAll');
+      const elMem = document.getElementById('cluesFilterCountMem');
+      const elWs = document.getElementById('cluesFilterCountWs');
+      const elPlat = document.getElementById('cluesFilterCountPlat');
+
+      if (elAll) elAll.textContent = countAll;
+      if (elMem) elMem.textContent = countMem;
+      if (elWs) elWs.textContent = countWs;
+      if (elPlat) elPlat.textContent = countPlat;
+
+      let filtered = clues;
+      if (filter !== 'todas') {
+        const lowF = filter.toLowerCase();
+        filtered = clues.filter(c => c.game.toLowerCase().includes(lowF));
+      }
+
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div class="clues-empty-state">
+            <span class="clues-empty-icon">📖🌾</span>
+            <h4 style="margin:0;font-family:'Fraunces',serif;color:#1e293b;font-size:1.1rem;">
+              ${countAll === 0 ? '¡Tu Cuaderno de Campo está esperando!' : 'No hay pistas en esta categoría'}
+            </h4>
+            <p style="margin:0;max-width:380px;font-size:0.85rem;line-height:1.45;">
+              ${countAll === 0
+                ? 'Juega a las <b>Parejas de Curiosidades</b>, la <b>Sopa de Letras</b> o la <b>Carrera 2D</b> para descubrir pistas zootécnicas clave que te ayudarán a asegurar tus décimas en los Quizzes oficiales.'
+                : 'Explora los otros minijuegos para desbloquear los conceptos que faltan.'}
+            </p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = filtered.map(c => `
+        <div class="clue-item-card">
+          <div class="clue-item-icon-box">${c.icon}</div>
+          <div class="clue-item-content">
+            <div class="clue-item-header">
+              <h4 class="clue-item-title">${c.title}</h4>
+              <span class="clue-game-badge">🎮 ${c.game}</span>
+            </div>
+            <p class="clue-item-fact">${c.fact}</p>
+          </div>
+        </div>
+      `).join('');
+    },
+
+    init() {
+      this.updateCounter();
+
+      const cluesBtn = document.getElementById('cluesBtn');
+      const overlay = document.getElementById('cluesOverlay');
+      const closeBtn = document.getElementById('cluesCloseBtn');
+      const filterBar = document.getElementById('cluesFilterBar');
+
+      let currentClueFilter = 'todas';
+
+      const openModal = () => {
+        if (!overlay) return;
+        this.renderClues(currentClueFilter);
+        overlay.style.display = 'flex';
+        overlay.classList.add('active');
+        overlay.classList.remove('hidden');
+      };
+
+      const closeModal = () => {
+        if (!overlay) return;
+        overlay.style.display = 'none';
+        overlay.classList.remove('active');
+        overlay.classList.add('hidden');
+      };
+
+      if (cluesBtn) cluesBtn.addEventListener('click', openModal);
+      if (closeBtn) closeBtn.addEventListener('click', closeModal);
+
+      if (overlay) {
+        overlay.addEventListener('click', (e) => {
+          if (e.target === overlay) closeModal();
+        });
+      }
+
+      if (filterBar) {
+        filterBar.querySelectorAll('.clues-filter-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            filterBar.querySelectorAll('.clues-filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            currentClueFilter = btn.dataset.filter || 'todas';
+            this.renderClues(currentClueFilter);
+          });
+        });
+      }
+
+      window.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && overlay && overlay.style.display !== 'none' && !overlay.classList.contains('hidden')) {
+          closeModal();
+        }
+      });
+    }
+  };
+
+  // Exponer a nivel de ventana para llamadas modulares
+  window.addStudentClue = (clueData) => CluesNotebook.addClue(clueData);
+
+  /* ============================================================
      JUEGO 1: BUSCA LAS PAREJAS (MEMORIA CURIOSIDAD ↔ ANIMAL)
-     Pool de 18 parejas maestras: Cada partida elige al azar 6 parejas
+     Pool de 18 parejas maestras: Cada partida elige al azar parejas según dificultad
      y ofrece pistas directas para responder los Quizzes del liceo
      ============================================================ */
   const MemoryGame = {
     initialized: false,
     isStarted: false,
+    difficulty: 'facil',
+    diffConfig: {
+      facil: { pairs: 6, cols: 4, name: '🟢 Fácil', multiplier: 1.0, desc: '6 parejas zootécnicas (12 cartas). Empareja cada animal con su curiosidad biológica.' },
+      media: { pairs: 8, cols: 4, name: '🟡 Media', multiplier: 1.5, desc: '8 parejas zootécnicas (16 cartas). Mayor reto de memoria y conceptos.' },
+      dificil: { pairs: 10, cols: 5, name: '🔴 Difícil', multiplier: 2.0, desc: '10 parejas zootécnicas (20 cartas). Cuadrícula expandida para expertos.' }
+    },
     masterPairs: [
       { id: 'conejo', name: 'Conejo', emoji: '🐰', fact: 'Sus incisivos crecen toda la vida y practica cecotrofia (reingerir heces blandas con vitamina B).' },
       { id: 'gallo', name: 'Gallo', emoji: '🐓', fact: 'Cresta vascularizada que actúa como radiador térmico y espolones para proteger el orden de picoteo.' },
@@ -360,6 +544,31 @@
       if (playBtn) {
         playBtn.onclick = () => this.startPlaying();
       }
+
+      const diffSelector = document.getElementById('memDiffSelector');
+      if (diffSelector) {
+        diffSelector.querySelectorAll('.diff-card-btn').forEach(btn => {
+          btn.onclick = () => {
+            diffSelector.querySelectorAll('.diff-card-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            this.difficulty = btn.dataset.diff || 'facil';
+            this.updateDifficultyUI();
+            this.buildDeckAndRender();
+          };
+        });
+      }
+      this.updateDifficultyUI();
+    },
+
+    updateDifficultyUI() {
+      const cfg = this.diffConfig[this.difficulty] || this.diffConfig.facil;
+      const diffValEl = document.getElementById('memDiffVal');
+      if (diffValEl) {
+        diffValEl.textContent = cfg.name;
+        diffValEl.style.color = (this.difficulty === 'facil') ? '#16a34a' : ((this.difficulty === 'media') ? '#d97706' : '#dc2626');
+      }
+      const descEl = document.getElementById('memStageDynamicDesc');
+      if (descEl) descEl.textContent = cfg.desc;
     },
 
     showStartScreen() {
@@ -370,6 +579,7 @@
       this.moves = 0;
       this.timerSeconds = 0;
       this.learnedClues = [];
+      this.updateDifficultyUI();
       this.updateStats();
 
       const overlay = document.getElementById('memStartOverlay');
@@ -388,6 +598,7 @@
       this.matchedCount = 0;
       this.flippedCards = [];
       this.learnedClues = [];
+      this.updateDifficultyUI();
       this.updateStats();
 
       clearInterval(this.timerInterval);
@@ -404,11 +615,12 @@
     },
 
     buildDeckAndRender() {
-      // Elegir 6 parejas al azar del banco maestro para que cada intento sea único
+      const cfg = this.diffConfig[this.difficulty] || this.diffConfig.facil;
+      // Elegir parejas al azar según dificultad
       const shuffledMaster = [...this.masterPairs].sort(() => Math.random() - 0.5);
-      this.currentPairs = shuffledMaster.slice(0, 6);
+      this.currentPairs = shuffledMaster.slice(0, cfg.pairs);
 
-      // Construir baraja de 12 cartas (6 animales y 6 curiosidades)
+      // Construir baraja
       const deck = [];
       this.currentPairs.forEach(p => {
         deck.push({ pairId: p.id, type: 'animal', name: p.name, emoji: p.emoji, fact: p.fact });
@@ -428,6 +640,9 @@
     render() {
       const board = document.getElementById('memoryBoard');
       if (!board) return;
+
+      const cfg = this.diffConfig[this.difficulty] || this.diffConfig.facil;
+      board.style.gridTemplateColumns = `repeat(${cfg.cols}, 1fr)`;
 
       board.innerHTML = '';
       this.cards.forEach((card, idx) => {
@@ -485,10 +700,24 @@
         if (c1.data.pairId === c2.data.pairId && c1.data.type !== c2.data.type) {
           AudioFX.match();
           const clueFact = c1.data.fact || c2.data.text;
+          const clueAnimal = c1.data.name || c2.data.pairName || 'Granja B-13';
+          const clueEmoji = c1.data.emoji || c2.data.emoji || '💡';
+
           if (clueFact && !this.learnedClues.includes(clueFact)) {
             this.learnedClues.push(clueFact);
           }
-          showQuizClueToast(`💡 Pista Quiz Desbloqueada: ${clueFact}`, '🧠');
+
+          // Guardar en el cuaderno permanente "Mis Pistas"
+          if (typeof CluesNotebook !== 'undefined') {
+            CluesNotebook.addClue({
+              title: clueAnimal,
+              fact: clueFact,
+              game: 'Parejas de Curiosidades',
+              icon: clueEmoji
+            });
+          }
+
+          showQuizClueToast(`💡 Pista Quiz Guardada en "Mis Pistas": ${clueFact}`, clueEmoji);
 
           setTimeout(() => {
             c1.el.classList.add('matched');
@@ -504,18 +733,38 @@
               const secs = this.timerSeconds % 60;
               const timeStr = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
 
+              // Cálculo de puntuación para el Ranking Arcade
+              const cfg = this.diffConfig[this.difficulty] || this.diffConfig.facil;
+              const baseScore = cfg.pairs * 120;
+              const timeBonus = Math.max(0, 300 - this.timerSeconds * 2);
+              const movesBonus = Math.max(0, 200 - Math.max(0, this.moves - cfg.pairs) * 10);
+              const totalScore = Math.round((baseScore + timeBonus + movesBonus) * cfg.multiplier);
+
+              // Guardar récord en el estado del estudiante y persistir
+              if (typeof state !== 'undefined') {
+                state.minigames = state.minigames || {};
+                state.minigames.memory = state.minigames.memory || {};
+                const prevBest = state.minigames.memory.bestScore || 0;
+                state.minigames.memory.bestScore = Math.max(prevBest, totalScore);
+                state.minigames.memory.bestTime = Math.min(state.minigames.memory.bestTime || 9999, this.timerSeconds);
+                if (typeof saveState === 'function') saveState();
+              }
+              if (typeof window.refreshRankingWidget === 'function') {
+                window.refreshRankingWidget();
+              }
+
               const cluesListHtml = this.learnedClues.length > 0
-                ? `<div style="margin-top:10px;text-align:left;background:rgba(255,255,255,0.9);padding:10px 14px;border-radius:10px;border:1px solid #cbd5e1;font-size:0.82rem;color:#1e293b;"><b>💡 Pistas Clave para tus Quizzes:</b><ul style="margin:6px 0 0 16px;padding:0;">${this.learnedClues.map(c => `<li>${c}</li>`).join('')}</ul></div>`
+                ? `<div style="margin-top:10px;text-align:left;background:rgba(255,255,255,0.9);padding:10px 14px;border-radius:10px;border:1px solid #cbd5e1;font-size:0.82rem;color:#1e293b;"><b>💡 Pistas Clave para tus Quizzes (Guardadas en "Mis Pistas"):</b><ul style="margin:6px 0 0 16px;padding:0;">${this.learnedClues.map(c => `<li>${c}</li>`).join('')}</ul></div>`
                 : '';
 
               setTimeout(() => {
                 showGameVictory({
                   icon: '🧠',
                   title: '¡Memoria Zootécnica Completada!',
-                  subtitle: 'Pistas y Conceptos para Quizzes Desbloqueados',
+                  subtitle: `Dificultad: ${cfg.name} — Pistas Guardadas en tu Cuaderno`,
                   stamp: 'EXCELENCIA BIOLÓGICA',
-                  msg: 'Has emparejado con éxito todos los conceptos clave de la granja. ¡Usa estas pistas en los Quizzes del Mapa 3D para asegurar tus décimas!',
-                  stats: `⏱️ <b>Tiempo empleado:</b> ${timeStr} &nbsp;|&nbsp; 🔄 <b>Intentos realizados:</b> ${this.moves} movimientos${cluesListHtml}`,
+                  msg: `¡Gran trabajo! Has emparejado con éxito todos los conceptos biológicos en nivel <b>${cfg.name}</b>. Los puntos se sumaron al Salón de Honor Arcade y las pistas fueron añadidas a tu cuaderno de <b>Mis Pistas</b>.`,
+                  stats: `⭐ <b>Puntaje Obtenido:</b> ${totalScore} pts (${cfg.name}) &nbsp;|&nbsp; ⏱️ <b>Tiempo empleado:</b> ${timeStr} &nbsp;|&nbsp; 🔄 <b>Movimientos:</b> ${this.moves}${cluesListHtml}`,
                   onRestart: () => this.showStartScreen()
                 });
               }, 350);
@@ -549,15 +798,21 @@
 
   /* ============================================================
      JUEGO 2: SOPA DE LETRAS ZOOTÉCNICA
-     Pool de 24 palabras maestras: Cada partida elige al azar 8 palabras
-     y genera una cuadrícula 12x12 totalmente nueva con pistas de quiz
+     Pool de 24 palabras maestras: Cada partida genera una sopa única
+     según la dificultad elegida con pistas de quiz para el liceo
      ============================================================ */
   const WordSearchGame = {
     initialized: false,
     isStarted: false,
+    difficulty: 'facil',
+    diffConfig: {
+      facil: { size: 10, count: 6, allowReverse: false, allowDiag: false, name: '🟢 Fácil', multiplier: 1.0, desc: '6 conceptos (cuadrícula 10x10). Palabras en sentido horizontal y vertical.' },
+      media: { size: 12, count: 8, allowReverse: false, allowDiag: true, name: '🟡 Media', multiplier: 1.5, desc: '8 conceptos (cuadrícula 12x12). Incluye palabras en diagonal.' },
+      dificil: { size: 14, count: 10, allowReverse: true, allowDiag: true, name: '🔴 Difícil', multiplier: 2.0, desc: '10 conceptos (cuadrícula 14x14). Incluye diagonales y palabras invertidas.' }
+    },
     timerSeconds: 0,
     timerInterval: null,
-    size: 12,
+    size: 10,
     masterWords: [
       { word: 'CECOTROFIA', desc: 'Heces blandas ricas en vitamina B y aminoácidos que el conejo reingiere.' },
       { word: 'MOLLEJA', desc: 'Estómago muscular de las aves que muele granos con ayuda de piedrecillas.' },
@@ -601,6 +856,31 @@
       if (playBtn) {
         playBtn.onclick = () => this.startPlaying();
       }
+
+      const diffSelector = document.getElementById('wsDiffSelector');
+      if (diffSelector) {
+        diffSelector.querySelectorAll('.diff-card-btn').forEach(btn => {
+          btn.onclick = () => {
+            diffSelector.querySelectorAll('.diff-card-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            this.difficulty = btn.dataset.diff || 'facil';
+            this.updateDifficultyUI();
+            this.showStartScreen();
+          };
+        });
+      }
+      this.updateDifficultyUI();
+    },
+
+    updateDifficultyUI() {
+      const cfg = this.diffConfig[this.difficulty] || this.diffConfig.facil;
+      const diffValEl = document.getElementById('wsDiffVal');
+      if (diffValEl) {
+        diffValEl.textContent = cfg.name;
+        diffValEl.style.color = (this.difficulty === 'facil') ? '#16a34a' : ((this.difficulty === 'media') ? '#d97706' : '#dc2626');
+      }
+      const descEl = document.getElementById('wsStageDynamicDesc');
+      if (descEl) descEl.textContent = cfg.desc;
     },
 
     showStartScreen() {
@@ -608,6 +888,7 @@
       this.isStarted = false;
       this.timerSeconds = 0;
       this.clearSelection();
+      this.updateDifficultyUI();
 
       const overlay = document.getElementById('wsStartOverlay');
       if (overlay) overlay.classList.remove('hidden');
@@ -623,6 +904,7 @@
 
       this.isStarted = true;
       this.timerSeconds = 0;
+      this.updateDifficultyUI();
       this.updateProgress();
 
       clearInterval(this.timerInterval);
@@ -639,40 +921,46 @@
     },
 
     generateGrid() {
+      const cfg = this.diffConfig[this.difficulty] || this.diffConfig.facil;
+      this.size = cfg.size;
       this.foundWords.clear();
       this.grid = Array(this.size).fill(null).map(() => Array(this.size).fill(''));
 
-      // Seleccionar 8 palabras aleatorias de la biblioteca maestra de 24 términos
+      // Seleccionar palabras aleatorias de la biblioteca según dificultad
       const shuffled = [...this.masterWords].sort(() => Math.random() - 0.5);
-      this.words = shuffled.slice(0, 8);
+      this.words = shuffled.slice(0, cfg.count);
 
-      // Colocar cada palabra en la matriz (horizontal, vertical o diagonal)
+      // Colocar cada palabra en la matriz
       this.words.forEach(wObj => {
         const word = wObj.word;
         let placed = false;
         let attempts = 0;
 
-        while (!placed && attempts < 150) {
+        while (!placed && attempts < 250) {
           attempts++;
-          const dir = Math.floor(Math.random() * 3); // 0: horizontal, 1: vertical, 2: diagonal
+          const maxDir = cfg.allowDiag ? 3 : 2;
+          const dir = Math.floor(Math.random() * maxDir); // 0: horizontal, 1: vertical, 2: diagonal
           let r = Math.floor(Math.random() * this.size);
           let c = Math.floor(Math.random() * this.size);
 
+          const shouldReverse = cfg.allowReverse && Math.random() < 0.4;
+          const targetStr = shouldReverse ? word.split('').reverse().join('') : word;
+
           let canPlace = true;
-          for (let k = 0; k < word.length; k++) {
+          for (let k = 0; k < targetStr.length; k++) {
             let nr = r + (dir === 1 || dir === 2 ? k : 0);
             let nc = c + (dir === 0 || dir === 2 ? k : 0);
             if (nr >= this.size || nc >= this.size) { canPlace = false; break; }
-            if (this.grid[nr][nc] !== '' && this.grid[nr][nc] !== word[k]) { canPlace = false; break; }
+            if (this.grid[nr][nc] !== '' && this.grid[nr][nc] !== targetStr[k]) { canPlace = false; break; }
           }
 
           if (canPlace) {
-            for (let k = 0; k < word.length; k++) {
+            for (let k = 0; k < targetStr.length; k++) {
               let nr = r + (dir === 1 || dir === 2 ? k : 0);
               let nc = c + (dir === 0 || dir === 2 ? k : 0);
-              this.grid[nr][nc] = word[k];
+              this.grid[nr][nc] = targetStr[k];
             }
-            wObj.coords = { r, c, dir, len: word.length };
+            wObj.coords = { r, c, dir, len: targetStr.length, isReversed: shouldReverse };
             placed = true;
           }
         }
@@ -693,6 +981,9 @@
       const gridEl = document.getElementById('wsGrid');
       const cluesEl = document.getElementById('wsCluesList');
       if (!gridEl || !cluesEl) return;
+
+      // Configurar columnas de cuadrícula según tamaño
+      gridEl.style.gridTemplateColumns = `repeat(${this.size}, 1fr)`;
 
       // Renderizar cuadrícula
       gridEl.innerHTML = '';
@@ -770,7 +1061,17 @@
           clueEl.querySelector('.clue-check').textContent = '✅';
         }
 
-        showQuizClueToast(`💡 Concepto Descubierto: ${matchedWord.word} — ${matchedWord.desc}`, '🔤');
+        // Guardar concepto en el cuaderno "Mis Pistas"
+        if (typeof CluesNotebook !== 'undefined') {
+          CluesNotebook.addClue({
+            title: matchedWord.word,
+            fact: matchedWord.desc,
+            game: 'Sopa de Letras',
+            icon: '🔤'
+          });
+        }
+
+        showQuizClueToast(`💡 Concepto Guardado en "Mis Pistas": ${matchedWord.word} — ${matchedWord.desc}`, '🔤');
         this.updateProgress();
 
         if (this.foundWords.size === this.words.length) {
@@ -780,16 +1081,35 @@
           const secs = this.timerSeconds % 60;
           const timeStr = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
 
-          const conceptsListHtml = `<div style="margin-top:10px;text-align:left;background:rgba(255,255,255,0.9);padding:10px 14px;border-radius:10px;border:1px solid #cbd5e1;font-size:0.82rem;color:#1e293b;"><b>💡 Conceptos Dominados para tus Quizzes:</b><ul style="margin:6px 0 0 16px;padding:0;">${this.words.map(w => `<li><b>${w.word}:</b> ${w.desc}</li>`).join('')}</ul></div>`;
+          // Cálculo de puntuación para el Ranking Arcade
+          const cfg = this.diffConfig[this.difficulty] || this.diffConfig.facil;
+          const baseScore = cfg.count * 130;
+          const timeBonus = Math.max(0, 400 - this.timerSeconds * 2);
+          const totalScore = Math.round((baseScore + timeBonus) * cfg.multiplier);
+
+          // Guardar récord en el estado del estudiante y persistir
+          if (typeof state !== 'undefined') {
+            state.minigames = state.minigames || {};
+            state.minigames.wordsearch = state.minigames.wordsearch || {};
+            const prevBest = state.minigames.wordsearch.bestScore || 0;
+            state.minigames.wordsearch.bestScore = Math.max(prevBest, totalScore);
+            state.minigames.wordsearch.bestTime = Math.min(state.minigames.wordsearch.bestTime || 9999, this.timerSeconds);
+            if (typeof saveState === 'function') saveState();
+          }
+          if (typeof window.refreshRankingWidget === 'function') {
+            window.refreshRankingWidget();
+          }
+
+          const conceptsListHtml = `<div style="margin-top:10px;text-align:left;background:rgba(255,255,255,0.9);padding:10px 14px;border-radius:10px;border:1px solid #cbd5e1;font-size:0.82rem;color:#1e293b;"><b>💡 Conceptos Dominados (Guardados en "Mis Pistas"):</b><ul style="margin:6px 0 0 16px;padding:0;">${this.words.map(w => `<li><b>${w.word}:</b> ${w.desc}</li>`).join('')}</ul></div>`;
 
           setTimeout(() => {
             showGameVictory({
               icon: '🔍',
               title: '¡Sopa de Letras Agroecológica Superada!',
-              subtitle: 'Vocabulario y Bienestar Animal Liceo B-13',
+              subtitle: `Dificultad: ${cfg.name} — Conceptos Guardados en tu Cuaderno`,
               stamp: 'ZOOTECNIA COMUNITARIA',
-              msg: `¡Excelente trabajo! Has identificado los ${this.words.length} conceptos clave. Cada uno de estos términos aparece en las preguntas de los Quizzes del liceo.`,
-              stats: `🎯 <b>Palabras identificadas:</b> ${this.words.length}/${this.words.length} conceptos &nbsp;|&nbsp; ⏱️ <b>Tiempo:</b> ${timeStr}${conceptsListHtml}`,
+              msg: `¡Excelente trabajo! Has identificado los ${this.words.length} conceptos clave en nivel <b>${cfg.name}</b>. Los puntos se sumaron al Salón de Honor Arcade y los términos quedaron registrados en <b>Mis Pistas</b> para tus Quizzes por décimas.`,
+              stats: `⭐ <b>Puntaje Obtenido:</b> ${totalScore} pts (${cfg.name}) &nbsp;|&nbsp; 🎯 <b>Conceptos:</b> ${this.words.length}/${this.words.length} &nbsp;|&nbsp; ⏱️ <b>Tiempo:</b> ${timeStr}${conceptsListHtml}`,
               onRestart: () => this.showStartScreen()
             });
           }, 300);
@@ -1772,6 +2092,18 @@
         </div>
       `;
 
+      // Guardar puntaje parcial en el ranking si supera el récord personal
+      if (this.score > 0 && typeof state !== 'undefined') {
+        state.minigames = state.minigames || {};
+        state.minigames.platformer = state.minigames.platformer || {};
+        const prevBest = state.minigames.platformer.bestScore || 0;
+        if (this.score > prevBest) {
+          state.minigames.platformer.bestScore = this.score;
+          if (typeof saveState === 'function') saveState();
+          if (typeof window.refreshRankingWidget === 'function') window.refreshRankingWidget();
+        }
+      }
+
       setTimeout(() => {
         showGameVictory({
           isDefeat: true,
@@ -2091,7 +2423,21 @@
             if (!this.unlockedClues.includes(clueText)) {
               this.unlockedClues.push(clueText);
             }
-            showQuizClueToast(clueText, '📜');
+
+            // Registrar en cuaderno permanente "Mis Pistas"
+            const parts = clueText.split(':');
+            const clueTitle = parts.length > 1 ? parts[0].trim() : 'Pista de Campo';
+            const clueFact = parts.length > 1 ? parts.slice(1).join(':').trim() : clueText;
+            if (typeof CluesNotebook !== 'undefined') {
+              CluesNotebook.addClue({
+                title: clueTitle,
+                fact: clueFact,
+                game: 'Aventura 2D (Plataformas)',
+                icon: '🏃'
+              });
+            }
+
+            showQuizClueToast(`💡 Pista Guardada en "Mis Pistas": ${clueText}`, '📜');
           }
         }
       }
@@ -2129,13 +2475,21 @@
         if (this.difficulty === 'dificil' && !this.unlockedDifficulties.includes('extrema')) {
           this.unlockedDifficulties.push('extrema');
           unlockedExtremaNotice = true;
-          if (typeof state !== 'undefined') {
-            state.minigames = state.minigames || {};
-            state.minigames.platformer = state.minigames.platformer || {};
-            state.minigames.platformer.unlockedDifficulties = this.unlockedDifficulties;
-            if (typeof saveState === 'function') saveState();
-          }
           this.updateDifficultyUI();
+        }
+
+        // Guardar récord de carrera en el estado del estudiante y persistir
+        if (typeof state !== 'undefined') {
+          state.minigames = state.minigames || {};
+          state.minigames.platformer = state.minigames.platformer || {};
+          state.minigames.platformer.unlockedDifficulties = this.unlockedDifficulties;
+          const prevBest = state.minigames.platformer.bestScore || 0;
+          state.minigames.platformer.bestScore = Math.max(prevBest, this.score);
+          state.minigames.platformer.bestTime = Math.min(state.minigames.platformer.bestTime || 9999, this.timerSeconds);
+          if (typeof saveState === 'function') saveState();
+        }
+        if (typeof window.refreshRankingWidget === 'function') {
+          window.refreshRankingWidget();
         }
 
         const mins = Math.floor(this.timerSeconds / 60);
@@ -2156,9 +2510,9 @@
           : '';
 
         const winIcon = (this.difficulty === 'extrema') ? '🏆👑' : (this.difficulty === 'dificil') ? '🗡️🏆' : '🏆';
-        const winTitle = (this.difficulty === 'extrema') ? '¡A+ GRADE! ¡KNOCKOUT!' : '¡Llegaste al Granero B-13!';
-        const winSubtitle = (this.difficulty === 'extrema') ? '¡Has Conquistado la Pesadilla Arcade!' : `¡Carrera Campestre Completada (${cfg.name})!`;
-        const winStamp = (this.difficulty === 'extrema') ? 'LEYENDA SUPREMA B-13' : 'MISIÓN CUMPLIDA';
+        const winTitle = (this.difficulty === 'extrema') ? '¡VICTORIA TOTAL! ¡CALIFICACIÓN SOBRESALIENTE!' : '¡Llegaste al Granero B-13!';
+        const winSubtitle = (this.difficulty === 'extrema') ? '¡Has Conquistado la Pesadilla Arcade con Honores!' : `¡Carrera Campestre Completada (${cfg.name})!`;
+        const winStamp = (this.difficulty === 'extrema') ? 'MAESTRÍA SUPREMA B-13' : 'MISIÓN CUMPLIDA';
 
         setTimeout(() => {
           showGameVictory({
@@ -2764,7 +3118,8 @@
         ctx.textBaseline = 'middle';
         ctx.shadowColor = '#000000';
         ctx.shadowBlur = 10;
-        ctx.fillText('READY? WALLOP!', w / 2, h / 2);
+        // Banner universal "READY? GO!" al inicio de carrera
+        ctx.fillText('READY? GO!', w / 2, h / 2);
         ctx.restore();
       }
 
@@ -3005,10 +3360,11 @@
   }
   window.updateHeaderScore = updateHeaderScore;
 
-  // Inicializar todos los minijuegos al cargar el DOM
+  // Inicializar todos los minijuegos, cuaderno de pistas y botones al cargar el DOM
   document.addEventListener('DOMContentLoaded', () => {
     updateHeaderScore();
     initGameTabs();
+    CluesNotebook.init();
     MemoryGame.start();
     WordSearchGame.start();
     PlatformerGame.start();
@@ -3021,6 +3377,33 @@
 
     const platResetBtn = document.getElementById('platResetBtn');
     if (platResetBtn) platResetBtn.addEventListener('click', () => PlatformerGame.showStartScreen());
+
+    // Conexión garantizada de botones de la barra de herramientas
+    const rulesBtn = document.getElementById('rulesBtn');
+    if (rulesBtn) {
+      rulesBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (typeof renderRules === 'function') renderRules();
+        if (typeof openOverlayId === 'function') openOverlayId('rulesOverlay');
+        else {
+          const ov = document.getElementById('rulesOverlay');
+          if (ov) { ov.style.display = 'flex'; ov.classList.add('active'); }
+        }
+      });
+    }
+
+    const achievementsBtn = document.getElementById('achievementsBtn');
+    if (achievementsBtn) {
+      achievementsBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (typeof renderAchievementsList === 'function') renderAchievementsList();
+        if (typeof openOverlayId === 'function') openOverlayId('achievementsOverlay');
+        else {
+          const ov = document.getElementById('achievementsOverlay');
+          if (ov) { ov.style.display = 'flex'; ov.classList.add('active'); }
+        }
+      });
+    }
   });
 
 })();
