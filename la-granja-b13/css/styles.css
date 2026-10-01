@@ -15,7 +15,35 @@
   --barn:#944336;
   --card-shadow: 0 6px 20px rgba(40,49,27,0.12), 3px 3px 0 rgba(40,49,27,0.16);
   --bg-canvas: #FAF7EE;
+  --text-on-bg: #1c2616;
+  --text-sub-on-bg: #2d4624;
+  --border-on-bg: #28311B;
 }
+
+@supports (color: contrast-color(red)) {
+  :root {
+    --text-on-bg: contrast-color(var(--bg-canvas, #FAF7EE));
+  }
+}
+
+body.bg-is-light {
+  --text-on-bg: #1c2616;
+  --text-sub-on-bg: #2d4624;
+  --border-on-bg: #28311B;
+  --ink: #28311B;
+  --grass-dark: #2d4624;
+  color: #1c2616;
+}
+
+body.bg-is-dark {
+  --text-on-bg: #ffffff;
+  --text-sub-on-bg: #c5e1a5;
+  --border-on-bg: #4a5e42;
+  --ink: #eef3e5;
+  --grass-dark: #81c784;
+  color: #eef3e5;
+}
+
 *{box-sizing:border-box;}
 body{
   margin:0;
@@ -88,7 +116,7 @@ body.theme-dark .tabs button.active {
   color: var(--hay);
 }
 
-body.theme-dark .top h1,
+body.theme-dark.bg-is-dark .top h1,
 body.theme-dark .card-head h2,
 body.theme-dark #modalNamePreview {
   color: #ffffff;
@@ -129,7 +157,7 @@ body.theme-dark .nav-switch-btn {
 /* ---------- Header ---------- */
 header.top{
   display:flex;justify-content:space-between;align-items:center;
-  border-bottom:3px solid var(--ink);
+  border-bottom:3px solid var(--border-on-bg, var(--ink));
   padding-bottom:12px;margin-bottom:14px;flex-wrap:wrap;gap:12px;
 }
 .brand-wrap{
@@ -137,7 +165,7 @@ header.top{
 }
 .app-logo{
   width:62px;height:62px;object-fit:contain;border-radius:50%;
-  filter:drop-shadow(2px 3px 4px rgba(40,49,27,0.22));border:2.5px solid var(--ink);background:#FAF7EE;
+  filter:drop-shadow(2px 3px 4px rgba(40,49,27,0.22));border:2.5px solid var(--border-on-bg, var(--ink));background:#FAF7EE;
   transition:transform .18s ease, box-shadow .18s ease;flex-shrink:0;cursor:pointer;
 }
 .app-logo:hover{
@@ -146,9 +174,31 @@ header.top{
 }
 header.top h1{
   font-family:'Fraunces', serif;font-weight:700;font-size:2rem;
-  margin:0;letter-spacing:-0.01em;color:var(--ink);line-height:1.15;
+  margin:0;letter-spacing:-0.01em;color:var(--text-on-bg, var(--ink)) !important;line-height:1.15;
 }
-header.top .sub{font-size:0.85rem;color:var(--grass-dark);margin-top:3px;font-weight:500;}
+header.top .sub{
+  font-size:0.85rem;color:var(--text-sub-on-bg, var(--grass-dark)) !important;margin-top:3px;font-weight:600;
+}
+
+body.bg-is-light header.top h1 {
+  color: #1c2616 !important;
+}
+body.bg-is-light header.top .sub {
+  color: #2d4624 !important;
+}
+body.bg-is-light header.top {
+  border-bottom-color: #28311B !important;
+}
+
+body.bg-is-dark header.top h1 {
+  color: #ffffff !important;
+}
+body.bg-is-dark header.top .sub {
+  color: #c5e1a5 !important;
+}
+body.bg-is-dark header.top {
+  border-bottom-color: #4a5e42 !important;
+}
 .scorebox{
   font-family:'Space Mono', monospace;background:linear-gradient(180deg, #2E3821, #1C2314);
   color:#FAF7EE;padding:8px 16px;border-radius:6px;font-size:0.85rem;text-align:right;
@@ -1406,7 +1456,7 @@ footer.ods{
    ESTILOS DE ROLES, AUTENTICACIÓN Y QUIZZES DEL PROFESOR
    ============================================================ */
 
-/* Píldora de rol en la barra superior */
+/* Píldora de rol en la barra superior con alto contraste dinámico */
 .student-pill.role-profesor {
   background: #FFE8E8;
   border-color: #B22222;
@@ -1426,6 +1476,252 @@ footer.ods{
   background: #E8F4D9;
   border-color: var(--grass-dark);
   color: var(--grass-dark);
+}
+
+body.bg-is-light .student-pill {
+  background: #ffffff !important;
+  border: 2px solid #28311B !important;
+  box-shadow: 2px 2px 0 rgba(40,49,27,0.18) !important;
+}
+body.bg-is-light .student-pill .student-info b {
+  color: #1c2616 !important;
+  font-weight: 700 !important;
+}
+body.bg-is-light .student-pill .student-label {
+  color: #2e5927 !important;
+  font-weight: 800 !important;
+}
+body.bg-is-light .student-pill .student-change-btn {
+  background: #f1f5f9 !important;
+  color: #1e293b !important;
+  border: 1px solid #28311B !important;
+}
+
+body.bg-is-light .student-pill.role-estudiante {
+  background: #f4faee !important;
+  border-color: #2e5927 !important;
+}
+body.bg-is-light .student-pill.role-estudiante .student-label {
+  color: #1b4d1b !important;
+}
+body.bg-is-light .student-pill.role-estudiante .student-info b {
+  color: #143514 !important;
+}
+
+body.bg-is-light .student-pill.role-profesor {
+  background: #fff5f5 !important;
+  border-color: #991b1b !important;
+}
+body.bg-is-light .student-pill.role-profesor .student-label {
+  color: #991b1b !important;
+}
+body.bg-is-light .student-pill.role-profesor .student-info b {
+  color: #7f1d1d !important;
+}
+
+body.bg-is-light .student-pill.role-admin {
+  background: #fffbeb !important;
+  border-color: #92400e !important;
+}
+body.bg-is-light .student-pill.role-admin .student-label {
+  color: #92400e !important;
+}
+body.bg-is-light .student-pill.role-admin .student-info b {
+  color: #78350f !important;
+}
+
+body.bg-is-light .student-pill.role-visita {
+  background: #f8fafc !important;
+  border-color: #334155 !important;
+}
+body.bg-is-light .student-pill.role-visita .student-label {
+  color: #334155 !important;
+}
+body.bg-is-light .student-pill.role-visita .student-info b {
+  color: #0f172a !important;
+}
+
+/* Modo Fondo Oscuro para la Píldora */
+body.bg-is-dark .student-pill {
+  background: #1a2417 !important;
+  border: 2px solid #81c784 !important;
+  box-shadow: 2px 2px 0 rgba(0,0,0,0.4) !important;
+}
+body.bg-is-dark .student-pill .student-info b {
+  color: #ffffff !important;
+  font-weight: 700 !important;
+}
+body.bg-is-dark .student-pill .student-label {
+  color: #a5d6a7 !important;
+  font-weight: 800 !important;
+}
+body.bg-is-dark .student-pill .student-change-btn {
+  background: #253521 !important;
+  color: #ffffff !important;
+  border: 1px solid #81c784 !important;
+}
+
+body.bg-is-dark .student-pill.role-estudiante {
+  background: #182617 !important;
+  border-color: #81c784 !important;
+}
+body.bg-is-dark .student-pill.role-estudiante .student-label {
+  color: #a5d6a7 !important;
+}
+body.bg-is-dark .student-pill.role-estudiante .student-info b {
+  color: #ffffff !important;
+}
+
+body.bg-is-dark .student-pill.role-profesor {
+  background: #2c1418 !important;
+  border-color: #ef5350 !important;
+}
+body.bg-is-dark .student-pill.role-profesor .student-label {
+  color: #ff8a80 !important;
+}
+body.bg-is-dark .student-pill.role-profesor .student-info b {
+  color: #ffffff !important;
+}
+
+body.bg-is-dark .student-pill.role-admin {
+  background: #2b200d !important;
+  border-color: #ffd54f !important;
+}
+body.bg-is-dark .student-pill.role-admin .student-label {
+  color: #ffe082 !important;
+}
+body.bg-is-dark .student-pill.role-admin .student-info b {
+  color: #ffffff !important;
+}
+
+body.bg-is-dark .student-pill.role-visita {
+  background: #1e242c !important;
+  border-color: #94a3b8 !important;
+}
+body.bg-is-dark .student-pill.role-visita .student-label {
+  color: #cbd5e1 !important;
+}
+body.bg-is-dark .student-pill.role-visita .student-info b {
+  color: #ffffff !important;
+}
+
+/* Botones de Barra de Herramientas y Navegación Adaptativos */
+body.bg-is-light .toolbar .tool-btn:not(.btn-portal-inicio) {
+  background: #ffffff !important;
+  color: #1c2616 !important;
+  border: 2px solid #28311B !important;
+  box-shadow: 2px 2px 0 rgba(40,49,27,0.18) !important;
+}
+body.bg-is-light .toolbar .tool-btn:not(.btn-portal-inicio):hover {
+  background: #f0f7ea !important;
+  color: #1c2616 !important;
+}
+body.bg-is-light .clues-count-pill {
+  background: #166534 !important;
+  color: #ffffff !important;
+}
+
+body.bg-is-dark .toolbar .tool-btn:not(.btn-portal-inicio) {
+  background: #1f2a1c !important;
+  color: #eef3e5 !important;
+  border: 2px solid #4a5e42 !important;
+  box-shadow: 2px 2px 0 rgba(0,0,0,0.3) !important;
+}
+body.bg-is-dark .toolbar .tool-btn:not(.btn-portal-inicio):hover {
+  background: #2c3c28 !important;
+  color: #ffffff !important;
+}
+body.bg-is-dark .clues-count-pill {
+  background: #ffd54f !important;
+  color: #1a2215 !important;
+}
+
+/* Navegación entre vistas y Leyenda */
+body.bg-is-light .view-nav a {
+  background: #ffffff !important;
+  color: #1c2616 !important;
+  border: 2px solid #28311B !important;
+  box-shadow: 2px 2px 0 rgba(40,49,27,0.15) !important;
+}
+body.bg-is-light .view-nav a:hover:not(.active) {
+  background: #f4faee !important;
+}
+body.bg-is-light .view-nav a.active {
+  background: #28311B !important;
+  color: #ffffff !important;
+  border-color: #28311B !important;
+}
+
+body.bg-is-dark .view-nav a {
+  background: #1f2a1c !important;
+  color: #eef3e5 !important;
+  border: 2px solid #4a5e42 !important;
+  box-shadow: 2px 2px 0 rgba(0,0,0,0.3) !important;
+}
+body.bg-is-dark .view-nav a:hover:not(.active) {
+  background: #2c3c28 !important;
+}
+body.bg-is-dark .view-nav a.active {
+  background: #32442c !important;
+  color: #ffd54f !important;
+  border-color: #ffd54f !important;
+}
+
+body.bg-is-light footer.ods {
+  color: #2d4624 !important;
+  border-top: 1px solid rgba(40, 49, 27, 0.2) !important;
+}
+body.bg-is-dark footer.ods {
+  color: #a5d6a7 !important;
+  border-top: 1px solid rgba(129, 199, 132, 0.2) !important;
+}
+
+body.bg-is-light .legend {
+  color: #2d4624 !important;
+}
+body.bg-is-dark .legend {
+  color: #c5e1a5 !important;
+}
+
+/* Selector de juegos en juegos.html */
+body.bg-is-light .games-nav-bar {
+  background: rgba(255, 255, 255, 0.95) !important;
+  border: 2px solid #28311B !important;
+  box-shadow: 0 4px 12px rgba(40, 49, 27, 0.12) !important;
+}
+body.bg-is-light .game-tab-btn {
+  color: #1e293b !important;
+  font-weight: 700 !important;
+}
+body.bg-is-light .game-tab-btn:hover {
+  background: rgba(45, 70, 36, 0.08) !important;
+  color: #1b4332 !important;
+}
+body.bg-is-light .game-tab-btn.active {
+  background: #2d4624 !important;
+  color: #ffffff !important;
+  border: 2px solid #1c2616 !important;
+  box-shadow: 0 4px 12px rgba(45, 70, 36, 0.25) !important;
+}
+
+body.bg-is-dark .games-nav-bar {
+  background: #172015 !important;
+  border: 2px solid #3e5237 !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4) !important;
+}
+body.bg-is-dark .game-tab-btn {
+  color: #cbd5e1 !important;
+  font-weight: 700 !important;
+}
+body.bg-is-dark .game-tab-btn:hover {
+  background: rgba(129, 199, 132, 0.15) !important;
+  color: #81c784 !important;
+}
+body.bg-is-dark .game-tab-btn.active {
+  background: #283a24 !important;
+  color: #ffd54f !important;
+  border: 2px solid #81c784 !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4) !important;
 }
 
 /* ============================================================
@@ -4458,6 +4754,28 @@ body.rol-admin .badges-bar {
   background: var(--hay);
   transform: translate(-1px, -1px);
   box-shadow: 3px 3px 0 var(--ink);
+}
+
+body.bg-is-light .nav-back-btn {
+  background: #ffffff !important;
+  color: #1c2616 !important;
+  border-color: #28311B !important;
+  box-shadow: 2px 2px 0 #28311B !important;
+}
+body.bg-is-light .nav-back-btn:hover {
+  background: #f59e0b !important;
+  color: #1c2616 !important;
+}
+
+body.bg-is-dark .nav-back-btn {
+  background: #1f2a1c !important;
+  color: #ffffff !important;
+  border-color: #4a5e42 !important;
+  box-shadow: 2px 2px 0 #4a5e42 !important;
+}
+body.bg-is-dark .nav-back-btn:hover {
+  background: #ffd54f !important;
+  color: #1a2215 !important;
 }
 
 /* Selector horizontal de animales */

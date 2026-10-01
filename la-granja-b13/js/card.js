@@ -149,8 +149,9 @@ function renderStudentProfileModal() {
   const currentTitle = state.studentTitle || 'Explorador/a de Campo';
   const currentName = state.studentName || '';
   const currentGrade = state.studentGrade || '';
-  const currentThemeMode = state.themeMode || 'light';
-  const currentThemeBg = state.themeBg || '#FAF7EE';
+  const currentThemeBg = state.themeBg || localStorage.getItem('granja_theme_bg') || '#FAF7EE';
+  const isDarkInit = (typeof getBgLuminance === 'function' ? getBgLuminance(currentThemeBg) : 0.9) <= 0.38;
+  const currentThemeMode = isDarkInit ? 'dark' : 'light';
   const score = state.score || 0;
   const badgesEarned = (state.badges || []).length;
   const secretsEarned = (state.secretBadges || []).length;
@@ -408,8 +409,13 @@ function renderStudentProfileModal() {
   const bgCustom = document.getElementById('themeBgCustomInput');
 
   function updateThemeUI(mode, bg) {
+    const isDark = (typeof getBgLuminance === 'function' ? getBgLuminance(bg) : 0.9) <= 0.38;
+    const effectiveMode = isDark ? 'dark' : 'light';
+    tempThemeMode = effectiveMode;
+    tempThemeBg = bg;
+
     if (btnLight && btnDark) {
-      if (mode === 'dark') {
+      if (effectiveMode === 'dark') {
         btnDark.style.borderColor = 'var(--grass-dark)';
         btnDark.style.background = '#141c13';
         btnDark.style.color = '#fff';
@@ -419,7 +425,7 @@ function renderStudentProfileModal() {
       } else {
         btnLight.style.borderColor = 'var(--grass-dark)';
         btnLight.style.background = '#fff';
-        btnLight.style.color = 'var(--ink)';
+        btnLight.style.color = '#1c2616';
         btnDark.style.borderColor = '#bbb';
         btnDark.style.background = 'transparent';
         btnDark.style.color = 'inherit';
@@ -430,43 +436,52 @@ function renderStudentProfileModal() {
         const isMatch = (btn.dataset.color.toLowerCase() === bg.toLowerCase());
         btn.style.borderColor = isMatch ? '#1a1a1a' : '#bbb';
         btn.style.transform = isMatch ? 'scale(1.15)' : 'none';
+        btn.style.boxShadow = isMatch ? '0 0 0 2.5px #e8a838' : '0 1px 3px rgba(0,0,0,0.15)';
       });
     }
+    if (bgCustom && bgCustom.value.toLowerCase() !== bg.toLowerCase()) {
+      try { bgCustom.value = bg; } catch(e) {}
+    }
     if (typeof applyGranjaTheme === 'function') {
-      applyGranjaTheme(mode, bg);
+      applyGranjaTheme(effectiveMode, bg);
     }
   }
 
   if (btnLight) {
     btnLight.addEventListener('click', () => {
-      tempThemeMode = 'light';
-      if (tempThemeBg === '#151C14' || tempThemeBg === '#141c13') tempThemeBg = '#FAF7EE';
-      updateThemeUI(tempThemeMode, tempThemeBg);
+      let bg = tempThemeBg;
+      if ((typeof getBgLuminance === 'function' ? getBgLuminance(bg) : 0.9) <= 0.38) {
+        bg = '#FAF7EE';
+      }
+      updateThemeUI('light', bg);
     });
   }
 
   if (btnDark) {
     btnDark.addEventListener('click', () => {
-      tempThemeMode = 'dark';
-      if (tempThemeBg === '#FAF7EE' || tempThemeBg === '#faf7ee') tempThemeBg = '#151C14';
-      updateThemeUI(tempThemeMode, tempThemeBg);
+      let bg = tempThemeBg;
+      if ((typeof getBgLuminance === 'function' ? getBgLuminance(bg) : 0.9) > 0.38) {
+        bg = '#151C14';
+      }
+      updateThemeUI('dark', bg);
     });
   }
 
   if (bgPalette) {
     bgPalette.querySelectorAll('.theme-swatch-btn').forEach(btn => {
       btn.addEventListener('click', () => {
-        tempThemeBg = btn.dataset.color;
-        if (tempThemeBg === '#151C14') tempThemeMode = 'dark';
-        updateThemeUI(tempThemeMode, tempThemeBg);
+        const chosenBg = btn.dataset.color;
+        const isDark = (typeof getBgLuminance === 'function' ? getBgLuminance(chosenBg) : 0.9) <= 0.38;
+        updateThemeUI(isDark ? 'dark' : 'light', chosenBg);
       });
     });
   }
 
   if (bgCustom) {
     bgCustom.addEventListener('input', () => {
-      tempThemeBg = bgCustom.value;
-      updateThemeUI(tempThemeMode, tempThemeBg);
+      const chosenBg = bgCustom.value;
+      const isDark = (typeof getBgLuminance === 'function' ? getBgLuminance(chosenBg) : 0.9) <= 0.38;
+      updateThemeUI(isDark ? 'dark' : 'light', chosenBg);
     });
   }
 
@@ -556,9 +571,10 @@ function saveStudentProfile(avatar, frame, title, themeMode, themeBg) {
   if (ok) {
     state.avatarIcon = avatar || state.avatarIcon || '🧑‍🌾';
     state.avatarColor = frame || state.avatarColor || '#ffd83d';
-    state.studentTitle = title || state.studentTitle || 'Explorador/a de Campo';
-    if (themeMode) state.themeMode = themeMode;
-    if (themeBg) state.themeBg = themeBg;
+    const isDark = (typeof getBgLuminance === 'function' ? getBgLuminance(themeBg) : 0.9) <= 0.38;
+    const finalMode = isDark ? 'dark' : 'light';
+    state.themeMode = finalMode;
+    state.themeBg = themeBg || (isDark ? '#141c13' : '#FAF7EE');
     if (typeof applyGranjaTheme === 'function') {
       applyGranjaTheme(state.themeMode, state.themeBg);
     }

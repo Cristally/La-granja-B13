@@ -323,31 +323,97 @@ function clearAllProfiles() {
 // Estado global de la sesión
 let state = loadState();
 
-function applyGranjaTheme(themeMode, themeBg) {
-  const mode = themeMode || (typeof state !== 'undefined' ? state.themeMode : null) || localStorage.getItem('granja_theme_mode') || 'light';
-  const bg = themeBg || (typeof state !== 'undefined' ? state.themeBg : null) || localStorage.getItem('granja_theme_bg') || '#FAF7EE';
+// Cálculo matemático universal de luminancia relativa (W3C WCAG 2.1)
+function getBgLuminance(colorStr) {
+  if (!colorStr || typeof colorStr !== 'string') return 0.9;
+  const s = colorStr.trim();
+  if (s.startsWith('rgb')) {
+    const match = s.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/i);
+    if (match) {
+      const r = parseInt(match[1], 10) / 255;
+      const g = parseInt(match[2], 10) / 255;
+      const b = parseInt(match[3], 10) / 255;
+      const toLinear = (c) => (c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4));
+      return 0.2126 * toLinear(r) + 0.7152 * toLinear(g) + 0.0722 * toLinear(b);
+    }
+  }
+  let hex = s.replace('#', '').trim();
+  if (hex.length === 3) hex = hex.split('').map(c => c + c).join('');
+  if (hex.length !== 6) return 0.9;
+  const r = parseInt(hex.substring(0, 2), 16) / 255;
+  const g = parseInt(hex.substring(2, 4), 16) / 255;
+  const b = parseInt(hex.substring(4, 6), 16) / 255;
+  const toLinear = (c) => (c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4));
+  return 0.2126 * toLinear(r) + 0.7152 * toLinear(g) + 0.0722 * toLinear(b);
+}
+window.getBgLuminance = getBgLuminance;
 
-  const isDark = (mode === 'dark');
-  if (isDark) {
-    document.documentElement.classList.add('theme-dark');
-    if (document.body) document.body.classList.add('theme-dark');
-    const darkBg = (bg && bg !== '#FAF7EE' && bg !== '#faf7ee') ? bg : '#141c13';
-    document.documentElement.style.setProperty('--bg-canvas', darkBg);
-    if (document.body) document.body.style.backgroundColor = darkBg;
+function applyGranjaTheme(themeMode, themeBg) {
+  let bg = themeBg || (typeof state !== 'undefined' && state ? state.themeBg : null) || localStorage.getItem('granja_theme_bg');
+  let mode = themeMode || (typeof state !== 'undefined' && state ? state.themeMode : null) || localStorage.getItem('granja_theme_mode');
+
+  // Si no hay color definido, asignar según modo
+  if (!bg) {
+    bg = (mode === 'dark') ? '#141c13' : '#FAF7EE';
   } else {
-    document.documentElement.classList.remove('theme-dark');
-    if (document.body) document.body.classList.remove('theme-dark');
-    const lightBg = bg || '#FAF7EE';
-    document.documentElement.style.setProperty('--bg-canvas', lightBg);
-    if (document.body) document.body.style.backgroundColor = lightBg;
+    // Si se pasa modo explícito 'dark' y el color sigue siendo el beige claro por defecto
+    if (mode === 'dark' && (bg.toLowerCase() === '#faf7ee' || bg.toLowerCase() === '#ffffff')) {
+      bg = '#141c13';
+    } else if (mode === 'light' && (bg.toLowerCase() === '#141c13' || bg.toLowerCase() === '#151c14' || bg.toLowerCase() === '#000000')) {
+      bg = '#FAF7EE';
+    }
+  }
+
+  // Evaluar matemáticamente la luminosidad real del fondo para garantizar contraste estricto
+  const lum = getBgLuminance(bg);
+  const isDark = (lum <= 0.38);
+  const effectiveMode = isDark ? 'dark' : 'light';
+
+  const docEl = document.documentElement;
+  const docBody = document.body;
+
+  if (isDark) {
+    docEl.classList.add('theme-dark', 'bg-is-dark');
+    docEl.classList.remove('bg-is-light');
+    if (docBody) {
+      docBody.classList.add('theme-dark', 'bg-is-dark');
+      docBody.classList.remove('bg-is-light');
+    }
+    docEl.style.setProperty('--bg-canvas', bg);
+    docEl.style.setProperty('--text-on-bg', '#FFFFFF');
+    docEl.style.setProperty('--text-sub-on-bg', '#d7e2cb');
+    docEl.style.setProperty('--border-on-bg', '#4a5e42');
+    docEl.style.setProperty('--ink', '#eef3e5');
+    docEl.style.setProperty('--grass-dark', '#81c784');
+    docEl.style.setProperty('--paper-dark', '#1f2a1c');
+    docEl.style.setProperty('--paper-card', '#222d1e');
+  } else {
+    docEl.classList.remove('theme-dark', 'bg-is-dark');
+    docEl.classList.add('bg-is-light');
+    if (docBody) {
+      docBody.classList.remove('theme-dark', 'bg-is-dark');
+      docBody.classList.add('bg-is-light');
+    }
+    docEl.style.setProperty('--bg-canvas', bg);
+    docEl.style.setProperty('--text-on-bg', '#1c2616');
+    docEl.style.setProperty('--text-sub-on-bg', '#2d4624');
+    docEl.style.setProperty('--border-on-bg', '#28311B');
+    docEl.style.setProperty('--ink', '#28311B');
+    docEl.style.setProperty('--grass-dark', '#2d4624');
+    docEl.style.setProperty('--paper-dark', '#EADBBE');
+    docEl.style.setProperty('--paper-card', '#FFFDF7');
+  }
+
+  if (docBody) {
+    docBody.style.backgroundColor = bg;
   }
 
   if (typeof state !== 'undefined' && state) {
-    state.themeMode = mode;
+    state.themeMode = effectiveMode;
     state.themeBg = bg;
   }
   try {
-    localStorage.setItem('granja_theme_mode', mode);
+    localStorage.setItem('granja_theme_mode', effectiveMode);
     localStorage.setItem('granja_theme_bg', bg);
   } catch (e) {}
 }
