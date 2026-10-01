@@ -155,10 +155,29 @@ function renderStudentProfileModal() {
   const badgesEarned = (state.badges || []).length;
   const secretsEarned = (state.secretBadges || []).length;
 
-  const MAX_NAME_CHANGES = 3;
+  const MAX_NAME_CHANGES = 2;
   const changesDone = typeof state.nameChangesCount === 'number' ? state.nameChangesCount : 0;
   const changesLeft = Math.max(0, MAX_NAME_CHANGES - changesDone);
   const isNameLocked = changesLeft <= 0;
+
+  // Reglas de desbloqueo de títulos por mérito académico y exploración
+  const potreroCount = Object.keys(state.quiz || {}).filter(k => state.quiz[k] && state.quiz[k].completed).length;
+  const isBirdUnlocked = !!(state.discovered && (state.discovered.includes('agapornis') || state.discovered.includes('catita') || state.discovered.includes('gallina')));
+  const isRabbitUnlocked = !!(state.discovered && state.discovered.includes('conejo'));
+  const isBioUnlocked = (state.pureScore || 0) >= 30 || potreroCount >= 3;
+  const isSciUnlocked = (state.pureScore || 0) >= 60;
+  const isVetUnlocked = (state.badges && state.badges.includes('veterinario')) || (state.organsInspected && state.organsInspected.length >= 3);
+  const isGuardianUnlocked = !!state.certificateUnlocked || (state.badges && state.badges.includes('guardian')) || potreroCount >= 5;
+
+  const TITLE_RULES = {
+    'Explorador/a de Campo': { unlocked: true, hint: 'Inicial' },
+    'Observador/a de Aves': { unlocked: isBirdUnlocked, hint: 'Explora aves o aviario' },
+    'Amigo/a de los Conejos': { unlocked: isRabbitUnlocked, hint: 'Explora la conejera' },
+    'Protector/a de la Biodiversidad': { unlocked: isBioUnlocked, hint: '30+ pts en quizzes' },
+    'Científico/a Juvenil B-13': { unlocked: isSciUnlocked, hint: '60+ pts en quizzes' },
+    'Veterinario/a Honorífico/a': { unlocked: isVetUnlocked, hint: 'Inspecciona anatomía o logro veterinario' },
+    'Guardián/a de la Granja': { unlocked: isGuardianUnlocked, hint: 'Diploma oficial B-13' }
+  };
 
   const isEligibleForCert = state.certificateUnlocked ||
     (state.badges && (state.badges.includes('guardian') || state.badges.includes('veterinario'))) ||
@@ -232,7 +251,7 @@ function renderStudentProfileModal() {
           <label for="studentNameInput" style="font-size:0.82rem;font-weight:700;">Nombre y Apellido *</label>
           ${isNameLocked ? `
             <span id="nameChangeBadge" style="font-size:0.72rem;font-weight:700;padding:2px 8px;border-radius:12px;background:#ffebee;color:#c62828;border:1px solid #ef9a9a;display:inline-flex;align-items:center;gap:4px;">
-              🔒 Límite de 3 cambios alcanzado
+              🔒 Límite de 2 cambios alcanzado
             </span>
           ` : `
             <span id="nameChangeBadge" style="font-size:0.72rem;font-weight:700;padding:2px 8px;border-radius:12px;background:#e8f5e9;color:#2e7d32;border:1px solid #a5d6a7;display:inline-flex;align-items:center;gap:4px;">
@@ -242,20 +261,40 @@ function renderStudentProfileModal() {
         </div>
         <input type="text" id="studentNameInput" value="${currentName}" placeholder="Ej: Yefrin González" maxlength="30" required autocomplete="off" ${isNameLocked ? 'readonly' : ''} style="width:100%;padding:8px 10px;border:2px solid var(--ink);border-radius:6px;font-size:0.9rem;${isNameLocked ? 'background:#f0f0f0;cursor:not-allowed;color:#555;opacity:0.9;' : ''}">
         <div style="font-size:0.72rem;color:${isNameLocked ? '#c62828' : '#666'};margin-top:4px;">
-          ${isNameLocked ? '⚠️ Has alcanzado el límite máximo de 3 cambios de nombre permitidos para tu cuenta de estudiante.' : `ℹ️ Cada estudiante puede cambiar su nombre oficial hasta un máximo de 3 veces (te quedan ${changesLeft} disponibles).`}
+          ${isNameLocked ? '⚠️ Has alcanzado el límite máximo de 2 cambios de nombre permitidos para tu cuenta de estudiante.' : `ℹ️ Cada estudiante puede cambiar su nombre oficial hasta un máximo de 2 veces (te quedan ${changesLeft} disponibles).`}
         </div>
       </div>
-      <div class="field-row" style="margin-bottom:10px;">
-        <label for="studentGradeInput" style="font-size:0.82rem;font-weight:700;">Curso / Nivel *</label>
-        <input type="text" id="studentGradeInput" value="${currentGrade}" placeholder="Ej: 3°F o 2° Medio" maxlength="20" required autocomplete="off" style="width:100%;padding:8px 10px;border:2px solid var(--ink);border-radius:6px;font-size:0.9rem;">
+
+      <!-- Curso / Nivel (Inmutable: asignado oficialmente al registrarse) -->
+      <div class="field-row" style="margin-bottom:12px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;flex-wrap:wrap;gap:4px;">
+          <label for="studentGradeInput" style="font-size:0.82rem;font-weight:700;">Curso / Nivel</label>
+          <span style="font-size:0.72rem;font-weight:700;padding:2px 8px;border-radius:12px;background:#ede7f6;color:#512da8;border:1px solid #d1c4e9;display:inline-flex;align-items:center;gap:4px;">
+            🔒 Registro Oficial (Fijo)
+          </span>
+        </div>
+        <input type="text" id="studentGradeInput" value="${currentGrade}" readonly tabindex="-1" style="width:100%;padding:8px 10px;border:2px solid #ccc;border-radius:6px;font-size:0.9rem;background:#f5f5f5;cursor:not-allowed;color:#555;opacity:0.9;user-select:none;">
+        <div style="font-size:0.72rem;color:#777;margin-top:4px;">
+          🔒 El curso queda fijado en tu cuenta escolar y no puede ser alterado por estudiantes (consulta con tu docente para rectificación).
+        </div>
       </div>
 
-      <!-- Selector de Título Honorífico -->
+      <!-- Selector de Título Honorífico (Desbloqueado por mérito) -->
       <div class="field-row" style="margin-bottom:12px;">
         <label for="studentTitleSelect" style="font-size:0.82rem;font-weight:700;">Título Honorífico de Campo</label>
         <select id="studentTitleSelect" style="width:100%;padding:8px 10px;border:2px solid var(--ink);border-radius:6px;font-size:0.88rem;background:#fff;">
-          ${(typeof STUDENT_TITLES !== 'undefined' ? STUDENT_TITLES : []).map(t => `<option value="${t}" ${t === currentTitle ? 'selected' : ''}>${t}</option>`).join('')}
+          ${(typeof STUDENT_TITLES !== 'undefined' ? STUDENT_TITLES : []).map(t => {
+            const rule = TITLE_RULES[t] || { unlocked: true };
+            if (rule.unlocked || t === currentTitle) {
+              return `<option value="${t}" ${t === currentTitle ? 'selected' : ''}>🎖️ ${t}</option>`;
+            } else {
+              return `<option value="${t}" disabled style="color:#888;">🔒 ${t} (${rule.hint})</option>`;
+            }
+          }).join('')}
         </select>
+        <div style="font-size:0.72rem;color:#777;margin-top:4px;">
+          ℹ️ Los títulos se desbloquean rindiendo quizzes, explorando especies y ganando insignias de mérito.
+        </div>
       </div>
 
       <!-- Selector de Avatar con pestañas de categoría -->
@@ -415,14 +454,14 @@ function renderStudentProfileModal() {
     if (isNameLocked) {
       nameInp.addEventListener('click', () => {
         if (typeof showToast === 'function') {
-          showToast('🔒 Has alcanzado el límite máximo de 3 cambios de nombre.');
+          showToast('🔒 Has alcanzado el límite máximo de 2 cambios de nombre.');
         }
       });
       nameInp.addEventListener('keydown', (e) => {
         if (e.key.length === 1 || e.key === 'Backspace' || e.key === 'Delete') {
           e.preventDefault();
           if (typeof showToast === 'function') {
-            showToast('🔒 Has alcanzado el límite máximo de 3 cambios de nombre.');
+            showToast('🔒 Has alcanzado el límite máximo de 2 cambios de nombre.');
           }
         }
       });
@@ -432,6 +471,21 @@ function renderStudentProfileModal() {
         if (prev) prev.textContent = nameInp.value || 'Estudiante Sin Registrar';
       });
     }
+  }
+
+  const gradeInp = document.getElementById('studentGradeInput');
+  if (gradeInp) {
+    gradeInp.addEventListener('click', () => {
+      if (typeof showToast === 'function') {
+        showToast('🔒 El curso queda registrado en tu cuenta institucional y no puede ser alterado.');
+      }
+    });
+    gradeInp.addEventListener('keydown', (e) => {
+      e.preventDefault();
+      if (typeof showToast === 'function') {
+        showToast('🔒 El curso queda registrado en tu cuenta institucional y no puede ser alterado.');
+      }
+    });
   }
 
   let tempThemeMode = currentThemeMode;
@@ -576,14 +630,10 @@ function handleSaveStudent() {
 
 function saveStudentProfile(avatar, frame, title, themeMode, themeBg) {
   const nameInput = document.getElementById('studentNameInput');
-  const gradeInput = document.getElementById('studentGradeInput');
   const errEl = document.getElementById('studentError');
 
   const rawName = nameInput ? nameInput.value : '';
-  const rawGrade = gradeInput ? gradeInput.value : '';
-
   const cleanName = sanitizeInput(rawName);
-  const cleanGrade = sanitizeInput(rawGrade);
 
   const nameVal = validateStudentName(cleanName);
   if (!nameVal.valid) {
@@ -592,41 +642,34 @@ function saveStudentProfile(avatar, frame, title, themeMode, themeBg) {
     return;
   }
 
-  const gradeVal = validateStudentGrade(cleanGrade);
-  if (!gradeVal.valid) {
-    if (errEl) { errEl.textContent = gradeVal.msg; errEl.style.display = 'block'; }
-    if (gradeInput) { gradeInput.focus(); gradeInput.classList.add('input-error'); }
-    return;
-  }
+  // El curso queda fijado institucionalmente y no puede ser alterado por estudiantes
+  const oldGrade = (state.studentGrade || '').trim();
+  const sesionActual = (typeof Auth !== 'undefined' && typeof Auth.getSesion === 'function') ? Auth.getSesion() : null;
+  const cleanGrade = oldGrade || (sesionActual && sesionActual.curso) || 'Enseñanza Media';
 
   if (errEl) errEl.style.display = 'none';
   if (nameInput) nameInput.classList.remove('input-error');
-  if (gradeInput) gradeInput.classList.remove('input-error');
 
   const oldName = (state.studentName || '').trim();
-  const oldGrade = (state.studentGrade || '').trim();
   const isNameChanged = (oldName !== '' && cleanName.toLowerCase() !== oldName.toLowerCase());
-  const isGradeChanged = (oldGrade !== '' && cleanGrade.toLowerCase() !== oldGrade.toLowerCase());
 
   if (isNameChanged) {
     const currentCount = typeof state.nameChangesCount === 'number' ? state.nameChangesCount : 0;
-    if (currentCount >= 3) {
+    if (currentCount >= 2) {
       if (errEl) {
-        errEl.textContent = '🔒 Has alcanzado el límite máximo de 3 cambios de nombre.';
+        errEl.textContent = '🔒 Has alcanzado el límite máximo de 2 cambios de nombre.';
         errEl.style.display = 'block';
       }
       if (nameInput) {
         nameInput.value = oldName;
       }
       if (typeof showToast === 'function') {
-        showToast('🔒 No puedes cambiar más veces tu nombre (límite de 3 cambios alcanzado).');
+        showToast('🔒 No puedes cambiar más veces tu nombre (límite de 2 cambios alcanzado).');
       }
       return;
     }
     state.nameChangesCount = currentCount + 1;
-    renameStudent(oldName, oldGrade, cleanName, cleanGrade);
-  } else if (isGradeChanged) {
-    renameStudent(oldName, oldGrade, cleanName, cleanGrade);
+    renameStudent(oldName, cleanGrade, cleanName, cleanGrade);
   } else if (!oldName) {
     setActiveStudent(cleanName, cleanGrade);
   }
@@ -659,9 +702,31 @@ function saveStudentProfile(avatar, frame, title, themeMode, themeBg) {
     console.warn('Error sincronizando Auth:', e);
   }
 
+  // Título honorífico: Solo permitir títulos que el estudiante haya desbloqueado por mérito
+  const potreroCount = Object.keys(state.quiz || {}).filter(k => state.quiz[k] && state.quiz[k].completed).length;
+  const isBirdUnlocked = !!(state.discovered && (state.discovered.includes('agapornis') || state.discovered.includes('catita') || state.discovered.includes('gallina')));
+  const isRabbitUnlocked = !!(state.discovered && state.discovered.includes('conejo'));
+  const isBioUnlocked = (state.pureScore || 0) >= 30 || potreroCount >= 3;
+  const isSciUnlocked = (state.pureScore || 0) >= 60;
+  const isVetUnlocked = (state.badges && state.badges.includes('veterinario')) || (state.organsInspected && state.organsInspected.length >= 3);
+  const isGuardianUnlocked = !!state.certificateUnlocked || (state.badges && state.badges.includes('guardian')) || potreroCount >= 5;
+
+  const TITLE_RULES = {
+    'Explorador/a de Campo': true,
+    'Observador/a de Aves': isBirdUnlocked,
+    'Amigo/a de los Conejos': isRabbitUnlocked,
+    'Protector/a de la Biodiversidad': isBioUnlocked,
+    'Científico/a Juvenil B-13': isSciUnlocked,
+    'Veterinario/a Honorífico/a': isVetUnlocked,
+    'Guardián/a de la Granja': isGuardianUnlocked
+  };
+
+  const requestedTitle = title || state.studentTitle || 'Explorador/a de Campo';
+  const isTitleAllowed = TITLE_RULES[requestedTitle] !== false;
+  state.studentTitle = isTitleAllowed ? requestedTitle : (state.studentTitle || 'Explorador/a de Campo');
+
   state.avatarIcon = avatar || state.avatarIcon || '🧑‍🌾';
   state.avatarColor = frame || state.avatarColor || '#ffd83d';
-  state.studentTitle = title || state.studentTitle || 'Explorador/a de Campo';
   const isDark = (typeof getBgLuminance === 'function' ? getBgLuminance(themeBg) : 0.9) <= 0.38;
   const finalMode = isDark ? 'dark' : 'light';
   state.themeMode = finalMode;
@@ -682,8 +747,8 @@ function saveStudentProfile(avatar, frame, title, themeMode, themeBg) {
   renderBadgesBar();
 
   if (isNameChanged) {
-    const changesLeft = Math.max(0, 3 - (state.nameChangesCount || 0));
-    showToast(`✏️ Nombre actualizado a "${cleanName}". (Te quedan ${changesLeft} cambio${changesLeft === 1 ? '' : 's'})`);
+    const changesLeft = Math.max(0, 2 - (state.nameChangesCount || 0));
+    showToast(`✏️ Nombre actualizado a "${cleanName}". (Te queda ${changesLeft} cambio${changesLeft === 1 ? '' : 's'})`);
   } else {
     showToast(`🎒 Perfil actualizado: ${cleanName} (${state.studentTitle})`);
   }
