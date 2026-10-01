@@ -5,6 +5,90 @@
 
 const REAL_GALLERY_ITEMS = [
   {
+    id: 'poster-conejos',
+    category: 'fauna',
+    title: 'Póster Oficial: Nuestros Conejos B-13',
+    subtitle: 'Conejeras Escolares — 9 Ejemplares Oficiales',
+    photo: 'assets/img/animals/poster_conejos.png',
+    gameRef: {
+      type: 'map',
+      label: 'Conejeras Oficiales',
+      icon: '🐇',
+      link: 'ficha.html?id=nesquik'
+    },
+    specs: [
+      { k: 'Ejemplares', v: 'Nesquik, Vainilla, Tasmi, Quesito, Narizita, Canela, Chaucha, Segunda, Ceniza' },
+      { k: 'Especie', v: 'Oryctolagus cuniculus domesticus' },
+      { k: 'Hábitat', v: 'Conejeras con madrigueras térmicas y zona de forrajeo' },
+      { k: 'Dieta', v: 'Heno de alfalfa, pellets balanceados y verduras frescas del huerto' }
+    ],
+    desc: 'Póster oficial de campo con los 9 conejos del Liceo B-13. Cada uno cuenta con rasgos fenotípicos y personalidades únicas que los estudiantes reconocen y cuidan a diario.',
+    pedagogy: '💡 Fomenta el respeto hacia la individualidad y etología lagomorfa en la granja pedagógica.'
+  },
+  {
+    id: 'poster-gallinas',
+    category: 'fauna',
+    title: 'Póster Oficial: Nuestras Gallinas y Gallos B-13',
+    subtitle: 'Gallinero Escolar — 9 Ejemplares Oficiales',
+    photo: 'assets/img/animals/poster_gallinas.jpg',
+    gameRef: {
+      type: 'map',
+      label: 'Gallinero Protegido',
+      icon: '🐔',
+      link: 'ficha.html?id=vicente'
+    },
+    specs: [
+      { k: 'Ejemplares', v: 'Vicente, Matías, Cleo, Tormenta, Milagro, Mamá, Violeta, Fernanda chica, Avellana' },
+      { k: 'Especie', v: 'Gallus gallus domesticus (Razas Sedosa, Bantam, Barrada y Criolla)' },
+      { k: 'Hábitat', v: 'Gallinero protegido con toldo, perchas y nidos de postura' },
+      { k: 'Nutrición', v: 'Granos partidos, forraje verde y suplemento de calcio' }
+    ],
+    desc: 'Póster de identificación oficial de las aves de corral del liceo: gallos Bantam de patas calzadas, gallinas sedosas japonesas y ponedoras rústicas.',
+    pedagogy: '💡 Enseña diversidad genética aviar, jerarquías de parvada y producción agroecológica escolar.'
+  },
+  {
+    id: 'poster-loros',
+    category: 'fauna',
+    title: 'Póster Oficial: Nuestros Loros y Aves B-13',
+    subtitle: 'Aviario Escolar — Agapornis y Periquitos',
+    photo: 'assets/img/animals/poster_loros.jpg',
+    gameRef: {
+      type: 'map',
+      label: 'Aviario de Aves Menores',
+      icon: '🦜',
+      link: 'ficha.html?id=pastelito'
+    },
+    specs: [
+      { k: 'Grupos', v: 'Pastelito (Agapornis estrella), Los manguitos (clan inseparables), Las Catitas (periquitos)' },
+      { k: 'Especies', v: 'Agapornis roseicollis & Melopsittacus undulatus' },
+      { k: 'Hábitat', v: 'Aviario amplio con perchas naturales y enriquecimiento ambiental' },
+      { k: 'Dieta', v: 'Mix de semillas balanceadas, brotes frescos y frutas' }
+    ],
+    desc: 'Cartel oficial de las aves psitácidas del liceo, destacando la inteligencia, sociabilidad y cuidados específicos de estas especies trepadoras.',
+    pedagogy: '💡 Aprendizaje sobre aves psitaciformes, motricidad zigodáctila y bienestar animal en cautiverio educativo.'
+  },
+  {
+    id: 'poster-patos',
+    category: 'fauna',
+    title: 'Póster Oficial: Nuestros Patos B-13',
+    subtitle: 'Estanque y Pozo de Agua — Sal y Pimienta',
+    photo: 'assets/img/animals/poster_patos.png',
+    gameRef: {
+      type: 'map',
+      label: 'Estanque de los Patos',
+      icon: '🦆',
+      link: 'ficha.html?id=sal'
+    },
+    specs: [
+      { k: 'Ejemplares', v: 'Sal (Pato blanco Pekín) y Pimienta (Pato negro Cayuga iridiscente)' },
+      { k: 'Especie', v: 'Anas platyrhynchos domesticus' },
+      { k: 'Hábitat', v: 'Estanque con agua limpia para sumersión cefálica y nado' },
+      { k: 'Alimentación', v: 'Vegetales flotantes, guisantes, forraje fresco y granos triturados' }
+    ],
+    desc: 'Póster oficial de Sal y Pimienta, los dos patos emblemáticos de la granja escolar, expertos en natación y termorregulación hidrofóbica.',
+    pedagogy: '💡 Sensibiliza sobre las necesidades anatómicas acuáticas y prohíbe la alimentación dañina con pan procesado.'
+  },
+  {
     id: 'cartel-vainilla',
     category: 'fauna',
     title: 'Conejo Vainilla — Cartel Oficial de Identidad',

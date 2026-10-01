@@ -436,16 +436,442 @@ const ANIMAL_FUN_PROFILES = {
       desc: "Esparce aceite de su glándula uropígea sobre sus plumas, creando un colchón de aire microscópico que le permite flotar sin esfuerzo alguno."
     },
     curiosity: "Sus patitas no se congelan en agua fría gracias a un intercambiador de calor biológico en sus venas y arterias llamado flujo contracorriente."
+  },
+
+  /* ========================================================
+     ANIMALES REALES Y OFICIALES DEL LICEO B-13 (23 EJEMPLARES)
+     ======================================================== */
+
+  // --- CONEJOS OFICIALES (9) ---
+  nesquik: {
+    name: "Nesquik",
+    themeColor: "#6c3012",
+    themeGradient: "linear-gradient(135deg, #3d1a0e 0%, #78350f 50%, #9a3412 100%)",
+    accentColor: "#f59e0b",
+    glowColor: "rgba(245, 158, 11, 0.45)",
+    lightText: true,
+    quote: "¡Oye! No me mires tan fijo que me pongo tímido... pero si traes un pedacito de manzana dulce, ¡te dejo acariciar mis patitas esponjosas!",
+    joke: {
+      question: "¿Por qué Nesquik nunca juega a las escondidas con los otros conejos?",
+      punchline: "¡Porque con ese pelaje esponjoso parece un brownie con patas, y si se esconde en el huerto todos gritan: '¡Encontré la merienda!'! 😂🍫🐇"
+    },
+    superpower: {
+      name: "⚡ Manto Aislante Térmico y Sigilo Total",
+      desc: "Posee una doble capa de pelaje hiperdenso con subpelo lanoso que disipa el calor en las tardes y conserva la temperatura en las madrugadas costeras de Antofagasta."
+    },
+    curiosity: "Nesquik es capaz de reconocer el sonido específico del picaporte de su conejera y el tono de voz de quien le trae alimento, distinguiéndolo entre cientos de voces escolares."
+  },
+  vainilla: {
+    name: "Vainilla",
+    themeColor: "#d97706",
+    themeGradient: "linear-gradient(135deg, #78350f 0%, #d97706 50%, #fef3c7 100%)",
+    accentColor: "#f59e0b",
+    glowColor: "rgba(217, 119, 6, 0.4)",
+    lightText: true,
+    quote: "¡Hola corazón! Dicen que soy el conejo más dulce de todo el liceo. Mis orejitas color miel sienten tu cariño a kilómetros de distancia.",
+    joke: {
+      question: "¿Qué le dijo Vainilla a su enamorada cuando le ofreció una ramita de apio?",
+      punchline: "—'Eres la lechuguita que le faltaba a mi ensalada... ¡pero si no me das un besito en la nariz, me como el heno yo solito!' 🥕💕😂"
+    },
+    superpower: {
+      name: "⚡ Radar Auditivo Biorientable",
+      desc: "Sus orejas giran de forma totalmente independiente hasta 270 grados para captar vibraciones sónicas y regular el flujo sanguíneo de su cuerpo."
+    },
+    curiosity: "Con 5 años de edad, Vainilla es uno de los conejos más sabios y respetados de la conejera: enseña a los más jóvenes a convivir en paz."
+  },
+  tasmi: {
+    name: "Tasmi",
+    themeColor: "#b45309",
+    themeGradient: "linear-gradient(135deg, #451a03 0%, #b45309 60%, #fed7aa 100%)",
+    accentColor: "#ea580c",
+    glowColor: "rgba(234, 88, 12, 0.4)",
+    lightText: true,
+    quote: "¿Quién dijo que los conejos somos tranquilos? ¡Si me descuidas dos segundos te muerdo la libreta, desarmo el cajón y te bailo un zapateo!",
+    joke: {
+      question: "¿Por qué a Tasmi le prohibieron entrar a la sala de profesores del B-13?",
+      punchline: "¡Porque en menos de dos minutos se comió los cables del proyector, tres pruebas de matemáticas y firmó el libro de clases con los dientes! ⚡📚😂"
+    },
+    superpower: {
+      name: "⚡ Mandíbula de Roedor Incansable",
+      desc: "Sus incisivos crecen a un ritmo vertiginoso de hasta 12 cm por año; por eso roe maderas no tóxicas continuamente para mantenerlos afilados y funcionales."
+    },
+    curiosity: "Aunque lo llamen 'destructor', su actividad de roer es una necesidad zootécnica instintiva vital para prevenir maloclusiones dentales."
+  },
+  quesito: {
+    name: "Quesito",
+    themeColor: "#0284c7",
+    themeGradient: "linear-gradient(135deg, #0c4a6e 0%, #0284c7 50%, #e0f2fe 100%)",
+    accentColor: "#38bdf8",
+    glowColor: "rgba(56, 189, 248, 0.45)",
+    lightText: true,
+    quote: "¿Viste mis ojos azules? No son de mentira, ¡son pura genética fascinante! Y sí, soy el conejo más curioso y metiche de este patio.",
+    joke: {
+      question: "¿Por qué Quesito no necesita usar reloj en la conejera?",
+      punchline: "¡Porque con esos ojos azules y su cara de metiche, mira fijamente a los profes y ya sabe con exactitud cuántos segundos faltan para el recreo! ⏰👀😂"
+    },
+    superpower: {
+      name: "⚡ Visión Panorámica de 360 Grados",
+      desc: "La ubicación lateral de sus ojos le permite un campo de visión casi esférico para vigilar todo el patio escolar sin girar la cabeza."
+    },
+    curiosity: "Su pelaje blanco inmaculado y ojos azules son el resultado de una mutación en la distribución de melanocitos conocida en conejos domésticos."
+  },
+  narizita: {
+    name: "Narizita",
+    themeColor: "#475569",
+    themeGradient: "linear-gradient(135deg, #0f172a 0%, #334155 50%, #94a3b8 100%)",
+    accentColor: "#cbd5e1",
+    glowColor: "rgba(148, 163, 184, 0.4)",
+    lightText: true,
+    quote: "¡Mi bigote negro no es suciedad, es elegancia pura! Huele que te huele, sé qué trajiste de colación antes de que abras la mochila.",
+    joke: {
+      question: "¿Por qué Narizita siempre aprueba los exámenes de química del liceo?",
+      punchline: "¡Porque con esa mancha negra tipo mostacho tiene cara de científico loco, y si no sabe la respuesta, mueve la nariz rápido hasta que el profe se distrae! 👃🔬😂"
+    },
+    superpower: {
+      name: "⚡ Olfato Quimiosensorial Ultrasensible",
+      desc: "Posee más de 100 millones de receptores olfativos en su mucosa nasal, pudiendo detectar diferencias mínimas en la frescura de las hojas."
+    },
+    curiosity: "Mueve su nariz entre 20 y 120 veces por minuto: cuando está relajado la desacelera, y cuando investiga algo nuevo la pone en máxima frecuencia."
+  },
+  canela: {
+    name: "Canela",
+    themeColor: "#c2410c",
+    themeGradient: "linear-gradient(135deg, #7c2d12 0%, #c2410c 50%, #ffedd5 100%)",
+    accentColor: "#ea580c",
+    glowColor: "rgba(234, 88, 12, 0.45)",
+    lightText: true,
+    quote: "¡Color tostado, orejas arriba y reflejos de relámpago! Si hay una carrera por una hojita de acelga fresca, ¡ya gané antes de empezar!",
+    joke: {
+      question: "¿Cómo hace Canela para correr tan rápido por el potrero sin chocar?",
+      punchline: "¡Activa el modo turbo en las orejas! Si ve una lechuga fresca a 50 metros, ¡rompe la barrera del sonido antes de que las gallinas pestañeen! 💨🥬😂"
+    },
+    superpower: {
+      name: "⚡ Propulsión Podal Elástica",
+      desc: "Los tendones de sus patas traseras acumulan energía cinética como resortes de precisión, permitiéndole saltos de hasta 1 metro de longitud sin fatiga muscular."
+    },
+    curiosity: "Su coloración tipo 'canela agutí' es un patrón de camuflaje ancestral que combina pelos con bandas de eumelanina y feomelanina."
+  },
+  chaucha: {
+    name: "Chaucha",
+    themeColor: "#1e1b4b",
+    themeGradient: "linear-gradient(135deg, #09090b 0%, #1e1b4b 50%, #4c1d95 100%)",
+    accentColor: "#a855f7",
+    glowColor: "rgba(168, 85, 247, 0.45)",
+    lightText: true,
+    quote: "Mis orejitas caídas son mi sello personal. Soy tranquilo, regalón y me gusta que me hagan cariño despacito detrás de la nuca.",
+    joke: {
+      question: "¿Qué dijo Chaucha cuando le preguntaron por qué tiene las orejas tan caídas?",
+      punchline: "—'¡No están caídas, están en modo ahorro de batería para no escuchar los regaños de los profes un lunes a las 8 de la mañana!' 🔋👂😂"
+    },
+    superpower: {
+      name: "⚡ Temperamento Flemático de Terapia",
+      desc: "Pertenece a la estirpe de conejos Belier (Lop), cuyo umbral de estrés es naturalmente bajo, haciéndolo ideal para la interacción afectiva y contención estudiantil."
+    },
+    curiosity: "Sus orejas caídas son resultado de una modificación cartilaginosa de la corona auricular que no le impide una excelente audición direccional."
+  },
+  segunda: {
+    name: "Segunda",
+    themeColor: "#134e4a",
+    themeGradient: "linear-gradient(135deg, #022c22 0%, #134e4a 50%, #2dd4bf 100%)",
+    accentColor: "#14b8a6",
+    glowColor: "rgba(20, 184, 166, 0.45)",
+    lightText: true,
+    quote: "Negro brillante como la noche del desierto de Atacama. Me tomo mi tiempo para todo: comer, descansar y observar el mundo con calma.",
+    joke: {
+      question: "¿Por qué a Segunda le dicen el conejo ninja del B-13?",
+      punchline: "¡Porque es tan negro que de noche apagan la luz del galpón y lo único que se ve son dos dientecitos flotando mordisqueando heno! 🥷🌑😂"
+    },
+    superpower: {
+      name: "⚡ Pelaje de Ébano Absorbedor Térmico",
+      desc: "Su pigmentación hiperconcentrada de melanina capta la radiación solar matutina con máxima eficiencia, calentando su organismo rápidamente en invierno."
+    },
+    curiosity: "Segunda prefiere comer en horas crepusculares, respetando fielmente el ritmo natural de forrajeo de los lagomorfos."
+  },
+  ceniza: {
+    name: "Ceniza",
+    themeColor: "#334155",
+    themeGradient: "linear-gradient(135deg, #1e293b 0%, #475569 50%, #cbd5e1 100%)",
+    accentColor: "#94a3b8",
+    glowColor: "rgba(148, 163, 184, 0.4)",
+    lightText: true,
+    quote: "Ni blanco ni negro: ¡gris perlado aristocrático! Dicen que parezco de peluche, pero soy un explorador nato de cada rincón de la conejera.",
+    joke: {
+      question: "¿Por qué Ceniza se acuesta arriba del montón de heno más alto del corral?",
+      punchline: "¡Porque dice que desde ahí arriba su pelaje plateado combina mejor con la cordillera y se cree estatua del museo! 🗿🌾😂"
+    },
+    superpower: {
+      name: "⚡ Camuflaje Mineral Chinchilla",
+      desc: "El tono moteado de su manto dispersa las sombras de contorno, haciéndolo prácticamente invisible sobre sustratos de gravilla o paja seca."
+    },
+    curiosity: "Ceniza es extraordinariamente limpio: dedica más de 4 horas diarias al acicalamiento minucioso de sus patas, cara y vientre."
+  },
+
+  // --- GALLINAS Y GALLOS OFICIALES (9) ---
+  vicente: {
+    name: "Vicente",
+    themeColor: "#881337",
+    themeGradient: "linear-gradient(135deg, #4c0519 0%, #9f1239 50%, #ffe4e6 100%)",
+    accentColor: "#f43f5e",
+    glowColor: "rgba(244, 63, 94, 0.45)",
+    lightText: true,
+    quote: "¡Cocoricó! Con mi cresta roja y mi plumaje blanco de seda, cuido a mis compañeras del gallinero con honor y disciplina.",
+    joke: {
+      question: "¿Por qué Vicente canta con el pecho tan inflado a las 6:30 de la mañana?",
+      punchline: "¡Porque se cree el director de la orquesta sinfónica del liceo y si los profes no se despiertan, les mete un do de pecho en la ventana! 🎺🎶😂"
+    },
+    superpower: {
+      name: "⚡ Corona Termorreguladora y Liderazgo",
+      desc: "Su prominente cresta carmesí regula la presión vascular craneal disipando calor y emite señales de vigor inmunológico ante el grupo."
+    },
+    curiosity: "Vicente es un gallo Bantam japonés que comparte amistosamente el liderazgo del corral con su inseparable compañero Matías."
+  },
+  matias: {
+    name: "Matías",
+    themeColor: "#1e3a8a",
+    themeGradient: "linear-gradient(135deg, #172554 0%, #1e40af 50%, #fef3c7 100%)",
+    accentColor: "#60a5fa",
+    glowColor: "rgba(96, 165, 250, 0.45)",
+    lightText: true,
+    quote: "¡Hola amigos del B-13! Mi tono crema marfil y mis patitas con plumas me hacen el gallito más cariñoso de toda la región.",
+    joke: {
+      question: "¿Por qué Matías y Vicente nunca se pelean por la comida?",
+      punchline: "¡Porque se miran las patitas con plumas y dicen: 'Hermanito, somos demasiado elegantes para pelear por granos en el barro... ¡pero esa lombriz es mía!' 👑🪱😂"
+    },
+    superpower: {
+      name: "⚡ Tarsos Calzados Térmicos",
+      desc: "Las plumas que descienden hasta sus dedos protegen las articulaciones de sus patas contra la abrasión del suelo y el frío nocturno."
+    },
+    curiosity: "A Matías le encanta que los estudiantes se acerquen con tranquilidad; a menudo emite un suave arrullo social en lugar de cantar estridente."
+  },
+  cleo: {
+    name: "Cleo",
+    themeColor: "#713f12",
+    themeGradient: "linear-gradient(135deg, #3f2008 0%, #713f12 50%, #fde68a 100%)",
+    accentColor: "#d97706",
+    glowColor: "rgba(217, 119, 6, 0.45)",
+    lightText: true,
+    quote: "¡Cloc cloc! Mi patrón barrado es el más rústico y resistente. No hay gusano ni semilla que escape de mi pico experto.",
+    joke: {
+      question: "¿Cuál es el postre favorito de Cleo la gallina barrada?",
+      punchline: "¡Flan de lombriz con chispas de choclo! Dice que es rico en proteínas y le deja las plumas con más brillo que champú de peluquería! 🍮✨😂"
+    },
+    superpower: {
+      name: "⚡ Geometría Óptica de Búsqueda",
+      desc: "Alterna el foco monocular y binocular con una cadencia de micro-movimientos sacádicos para identificar insectos a milímetros de distancia."
+    },
+    curiosity: "El plumaje barrado de Cleo (Plymouth Rock Barred) es una de las variedades genéticas más valoradas históricamente por su resistencia al clima."
+  },
+  tormenta: {
+    name: "Tormenta",
+    themeColor: "#374151",
+    themeGradient: "linear-gradient(135deg, #111827 0%, #374151 50%, #e5e7eb 100%)",
+    accentColor: "#9ca3af",
+    glowColor: "rgba(156, 163, 175, 0.45)",
+    lightText: true,
+    quote: "Parezco una nube gris esponjosa que bajó del cielo. Mi plumaje sedoso es tan suave que acariciarme relaja a cualquiera.",
+    joke: {
+      question: "¿Por qué a Tormenta las otras gallinas le piden que les adivine el clima?",
+      punchline: "¡Porque si se le esponjan las plumas grises, seguro que llueve... o es que el gallo Vicente le contó un chiste terrible de malo! 🌧️😂"
+    },
+    superpower: {
+      name: "⚡ Plumaje Sedoso Sin Bárbulas Enganchadas",
+      desc: "Sus plumas carecen de los ganchitos microscópicos que las mantienen rígidas, creando una textura similar a pelaje de felpa de altísimo aislamiento."
+    },
+    curiosity: "Las gallinas sedosas japonesas tienen la piel y los huesos de una tonalidad azul oscuro única causada por fibromelanosis genética."
+  },
+  milagro: {
+    name: "Milagro",
+    themeColor: "#92400e",
+    themeGradient: "linear-gradient(135deg, #451a03 0%, #92400e 50%, #fde68a 100%)",
+    accentColor: "#f59e0b",
+    glowColor: "rgba(245, 158, 11, 0.45)",
+    lightText: true,
+    quote: "¡Nací con un peinado salvaje y un corazón gigante! Mi copete me da estilo y mi alegría contagia a todo el gallinero escolar.",
+    joke: {
+      question: "¿Por qué Milagro tiene ese peinado con copete tan alocado?",
+      punchline: "¡Porque intentó imitar a un roquero de los 80, pero se le acabó el fijador y ahora su cabeza parece una mota de algodón rebelde! 🎸🧑‍🎤😂"
+    },
+    superpower: {
+      name: "⚡ Moño Crestado Craneal Protector",
+      desc: "Las plumas de su moño superior crean un parasol biológico que protege sus ojos de la radiación cenital directa del norte chileno."
+    },
+    curiosity: "Se llama Milagro porque superó desafíos de crianza cuando era pollita gracias a los cuidados esmerados de los estudiantes y docentes del liceo."
+  },
+  mama: {
+    name: "Mamá",
+    themeColor: "#9a3412",
+    themeGradient: "linear-gradient(135deg, #431407 0%, #9a3412 50%, #fed7aa 100%)",
+    accentColor: "#ea580c",
+    glowColor: "rgba(234, 88, 12, 0.45)",
+    lightText: true,
+    quote: "Si un pollito tiene frío o se siente perdido, bajo mis alas siempre hay calor, seguridad y ternura materna.",
+    joke: {
+      question: "¿Qué hace Mamá gallina cuando sus pollitos no quieren comer las verduras del huerto?",
+      punchline: "¡Les dice: '¡Se comen toda la espinaca o llamo al profe de educación física para que les haga hacer 50 sentadillas en el corral!' 🥦🐣😂"
+    },
+    superpower: {
+      name: "⚡ Placa de Incubación Hipervascularizada",
+      desc: "Durante la cloquez, desprende plumas de su pecho dejando la piel en contacto directo con los huevos, transmitiendo calor a exactamente 37.8°C."
+    },
+    curiosity: "Mamá es capaz de comunicarse con sus polluelos mediante chasquidos guturales rítmicos incluso días antes de que rompan el cascarón."
+  },
+  violeta: {
+    name: "Violeta",
+    themeColor: "#b91c1c",
+    themeGradient: "linear-gradient(135deg, #450a0a 0%, #b91c1c 50%, #fef08a 100%)",
+    accentColor: "#ef4444",
+    glowColor: "rgba(239, 68, 68, 0.45)",
+    lightText: true,
+    quote: "Castaña, dorada y con una cresta roja radiante. Mis huevos tienen una cáscara tan firme y nutritiva que es el orgullo de la granja.",
+    joke: {
+      question: "¿Por qué Violeta pone los huevos más redonditos de toda la granja?",
+      punchline: "¡Porque antes de ponerlos hace yoga zootécnico y respira hondo: 'Inhala maíz, exhala estrés... y ¡plop!, sale un huevo con nota 7!' 🧘‍♀️🥚😂"
+    },
+    superpower: {
+      name: "⚡ Calcificación Ovárica Expres",
+      desc: "Es capaz de movilizar calcio de sus huesos medulares para formar una cáscara perfecta de carbonato cálcico en menos de 20 horas continuas."
+    },
+    curiosity: "El color de la cáscara de los huevos de Violeta depende de pigmentos naturales llamados protoporfirinas secretadas en el útero del oviducto."
+  },
+  fernanda_chica: {
+    name: "Fernanda chica",
+    themeColor: "#18181b",
+    themeGradient: "linear-gradient(135deg, #09090b 0%, #27272a 50%, #e4e4e7 100%)",
+    accentColor: "#a1a1aa",
+    glowColor: "rgba(161, 161, 170, 0.45)",
+    lightText: true,
+    quote: "Blanco y negro en damero perfecto. Soy la más rápida y pícara para picotear granos entre los bancales.",
+    joke: {
+      question: "¿Por qué Fernanda chica nunca pierde en el juego de ajedrez del liceo?",
+      punchline: "¡Porque con su plumaje a cuadros blancos y negros se para en el tablero y el rival no sabe si comerse un peón o abrazar una gallina! ♟️🏁😂"
+    },
+    superpower: {
+      name: "⚡ Moteado Disruptivo de Escape",
+      desc: "Su plumaje bicolor genera un efecto estroboscópico al correr que confunde a cualquier posible amenaza aérea o terrestre."
+    },
+    curiosity: "A pesar de su tamaño compacto ('chica'), posee una agilidad atlética notable y es la primera en subir a las perchas altas a dormir."
+  },
+  avellana: {
+    name: "Avellana",
+    themeColor: "#78350f",
+    themeGradient: "linear-gradient(135deg, #064e3b 0%, #78350f 50%, #f59e0b 100%)",
+    accentColor: "#10b981",
+    glowColor: "rgba(16, 185, 129, 0.45)",
+    lightText: true,
+    quote: "Manto de plumas doradas como avellanas tostadas y cola oscura con destellos verde botella. ¡El gallo más fotogénico del B-13!",
+    joke: {
+      question: "¿Por qué Avellana luce su cola verde esmeralda con tanto orgullo frente al gallinero?",
+      punchline: "¡Porque jura de guata que es el hermano perdido del Pavo Real, aunque cuando intenta hacer la rueda se le enredan las plumas en el alambre! 🦚🌳😂"
+    },
+    superpower: {
+      name: "⚡ Iridiscencia Estructural Caudal",
+      desc: "Las microláminas de queratina en las plumas de su cola refractan la luz del sol, cambiando de negro a verde brillante según el ángulo de visión."
+    },
+    curiosity: "Sus espolones córneos en las patas indican madurez zootécnica y le sirven para afirmarse firmemente sobre ramas rugosas."
+  },
+
+  // --- LOROS Y AVES OFICIALES (3) ---
+  pastelito: {
+    name: "Pastelito",
+    themeColor: "#15803d",
+    themeGradient: "linear-gradient(135deg, #14532d 0%, #16a34a 45%, #f97316 100%)",
+    accentColor: "#f97316",
+    glowColor: "rgba(249, 115, 22, 0.45)",
+    lightText: true,
+    quote: "¡Pío pío! Soy Pastelito, el agapornis estrella. Mi carita rosada melocotón y mi cuerpo verde selva alegran todo el aviario escolar.",
+    joke: {
+      question: "¿Qué le dice Pastelito a los estudiantes cuando se asoman a la jaula?",
+      punchline: "—'¡Si no trajeron semillas de girasol, el show de acrobacias aéreas cuesta 500 pesos o una décima para la prueba de Ciencias!' 🎪🦜😂"
+    },
+    superpower: {
+      name: "⚡ Pico Cincel Multipropósito y Pata Zigodáctila",
+      desc: "Posee dos dedos hacia adelante y dos hacia atrás que actúan como una mano prensil perfecta, mientras su pico funciona como una tercera pata para trepar."
+    },
+    curiosity: "Los Agapornis son conocidos mundialmente como 'Inseparables' (Lovebirds) porque forjan lazos monogámicos de por vida con su pareja."
+  },
+  los_manguitos: {
+    name: "Los manguitos",
+    themeColor: "#ea580c",
+    themeGradient: "linear-gradient(135deg, #c2410c 0%, #f97316 40%, #16a34a 100%)",
+    accentColor: "#eab308",
+    glowColor: "rgba(234, 179, 8, 0.45)",
+    lightText: true,
+    quote: "¡Somos el clan más alegre y colorido! Tonos de mango, lima y melón... ¡charlamos y jugamos en equipo todo el santo día!",
+    joke: {
+      question: "¿Por qué Los Manguitos siempre andan todos apretados en la misma rama?",
+      punchline: "¡Porque tienen un grupo de WhatsApp interno y si uno se separa 5 centímetros se pierde el último cahuín del gallinero! 📱🦜😂"
+    },
+    superpower: {
+      name: "⚡ Comunicación Vocal de Bandada y Cohesión",
+      desc: "Utilizan modulaciones de frecuencia ultrasónicas para mantener a todos los integrantes coordinados en vuelo y alertar sobre movimientos sospechosos."
+    },
+    curiosity: "Se acicalan las plumas mutuamente (alogrooming) para afianzar lazos afectivos y eliminar parásitos de las zonas inaccesibles para el propio pico."
+  },
+  las_catitas: {
+    name: "Las Catitas",
+    themeColor: "#0284c7",
+    themeGradient: "linear-gradient(135deg, #0369a1 0%, #0284c7 45%, #65a30d 100%)",
+    accentColor: "#38bdf8",
+    glowColor: "rgba(56, 189, 248, 0.45)",
+    lightText: true,
+    quote: "Una verde con amarillo silvestre y la otra azul cielo cristalino. ¡Las periquitas australianas más conversadoras del B-13!",
+    joke: {
+      question: "¿Por qué las Catitas hablan tanto entre ellas durante la clase de Biología?",
+      punchline: "¡Porque una le sopla las respuestas a la otra: 'Dile que es fotosíntesis, tontita, ¡y que después nos convide lechuga fresca!' 🗣️🌿😂"
+    },
+    superpower: {
+      name: "⚡ Mimetismo Sonoro y Plasticidad Neuronal",
+      desc: "Su siringe y corteza cerebral les permiten aprender, imitar silbidos y vocalizaciones del entorno con sorprendente precisión rítmica."
+    },
+    curiosity: "La cera sobre el pico (la zona donde están los orificios nasales) cambia de color: marrón en hembras en celo y azul en machos adultos."
+  },
+
+  // --- PATOS OFICIALES (2) ---
+  sal: {
+    name: "Sal",
+    themeColor: "#0284c7",
+    themeGradient: "linear-gradient(135deg, #0c4a6e 0%, #0284c7 45%, #38bdf8 100%)",
+    accentColor: "#f97316",
+    glowColor: "rgba(56, 189, 248, 0.45)",
+    lightText: true,
+    quote: "¡Cuac! Blanco como la sal marina, pico anaranjado y nado elegante. Cuando entro al agua, parezco un barco de vela en miniatura.",
+    joke: {
+      question: "¿Por qué Sal el pato se cruzó toda la calle frente al Liceo B-13?",
+      punchline: "—'¡Para demostrarle a los profes de física que los patos sí sabemos usar el paso de cebra sin perder la elegancia del cuac!' 🚸🦆😂"
+    },
+    superpower: {
+      name: "⚡ Manto Hidrofóbico y Timón Palmeado",
+      desc: "Impermeabiliza cada milímetro de su plumaje con cera de la glándula uropígea, mientras sus patas palmeadas actúan como turbinas gemelas de propulsión acuática."
+    },
+    curiosity: "Sal es un pato Pekín doméstico (Anas platyrhynchos domesticus), famoso por su docilidad, plumaje níveo y apetito por plantas acuáticas e insectos."
+  },
+  pimienta: {
+    name: "Pimienta",
+    themeColor: "#064e3b",
+    themeGradient: "linear-gradient(135deg, #022c22 0%, #064e3b 50%, #10b981 100%)",
+    accentColor: "#10b981",
+    glowColor: "rgba(16, 185, 129, 0.5)",
+    lightText: true,
+    quote: "¡Cuac cuac! A simple vista parezco negro, pero mírame bajo el sol: ¡mis plumas brillan con un verde esmeralda deslumbrante!",
+    joke: {
+      question: "¿Por qué Pimienta el pato negro nada con gafas de sol imaginarias en el estanque?",
+      punchline: "¡Porque con esos reflejos verde esmeralda al sol dice que es el James Bond de los patos: agente 00-Cuac con licencia para chapotear! 🕶️🦆😂"
+    },
+    superpower: {
+      name: "⚡ Plumaje Iridiscente Cayuga y Termorregulación",
+      desc: "Sus plumas de pigmento negro con reflejos verde petróleo capturan la radiación solar y proporcionan una refracción luminosa que asombra a quien lo observe."
+    },
+    curiosity: "Pimienta pertenece a la prestigiosa raza de patos Cayuga, originaria de América del Norte y criada por la belleza incomparable de sus destellos tornasolados."
   }
 };
 
 // Aliases para identificadores en mapas y minijuegos
-ANIMAL_FUN_PROFILES.m_rooster = ANIMAL_FUN_PROFILES.gallo;
-ANIMAL_FUN_PROFILES.m_gallinas_grupo = ANIMAL_FUN_PROFILES.gallina;
-ANIMAL_FUN_PROFILES.m_conejo_grupo = ANIMAL_FUN_PROFILES.conejo;
-ANIMAL_FUN_PROFILES.m_matias_vicente = ANIMAL_FUN_PROFILES.matias_vicente;
-ANIMAL_FUN_PROFILES.m_catitas = ANIMAL_FUN_PROFILES.catita;
-ANIMAL_FUN_PROFILES.m_agapornis = ANIMAL_FUN_PROFILES.agapornis;
+ANIMAL_FUN_PROFILES.m_rooster = ANIMAL_FUN_PROFILES.avellana || ANIMAL_FUN_PROFILES.gallo;
+ANIMAL_FUN_PROFILES.m_gallinas_grupo = ANIMAL_FUN_PROFILES.cleo || ANIMAL_FUN_PROFILES.gallina;
+ANIMAL_FUN_PROFILES.m_conejo_grupo = ANIMAL_FUN_PROFILES.canela || ANIMAL_FUN_PROFILES.conejo;
+ANIMAL_FUN_PROFILES.m_matias_vicente = ANIMAL_FUN_PROFILES.vicente || ANIMAL_FUN_PROFILES.matias;
+ANIMAL_FUN_PROFILES.m_catitas = ANIMAL_FUN_PROFILES.las_catitas || ANIMAL_FUN_PROFILES.catita;
+ANIMAL_FUN_PROFILES.m_agapornis = ANIMAL_FUN_PROFILES.pastelito || ANIMAL_FUN_PROFILES.agapornis;
 
 const ANIMALS = [
   {

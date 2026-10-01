@@ -1114,21 +1114,21 @@ footer.ods{
    Mini-vista: grilla de retratos de una zona
    ============================================================ */
 .portrait-grid{
-  display:grid;grid-template-columns:1fr 1fr;gap:12px;
+  display:grid;grid-template-columns:repeat(auto-fill, minmax(130px, 1fr));gap:12px;
 }
 @media (max-width: 420px){
-  .portrait-grid{grid-template-columns:1fr;}
+  .portrait-grid{grid-template-columns:1fr 1fr;gap:8px;}
 }
 .portrait-card{
-  border:2px solid var(--ink);border-radius:6px;background:#fff;cursor:pointer;
-  padding:0;overflow:hidden;text-align:left;box-shadow:2px 2px 0 rgba(46,52,33,0.15);
-  font-family:'Karla',sans-serif;
+  border:2.5px solid var(--ink);border-radius:12px;background:#fff;cursor:pointer;
+  padding:0;overflow:hidden;text-align:center;box-shadow:3px 3px 0 rgba(46,52,33,0.18);
+  font-family:'Karla',sans-serif;transition:transform 0.2s ease, box-shadow 0.2s ease;
 }
-.portrait-card:hover{transform:translateY(-2px);box-shadow:3px 4px 0 rgba(46,52,33,0.2);}
-.portrait-photo{width:100%;aspect-ratio:4/3;overflow:hidden;background:var(--paper-dark);}
-.portrait-photo img{width:100%;height:100%;object-fit:cover;display:block;}
-.portrait-name{padding:7px 9px 3px;font-weight:700;font-size:0.85rem;}
-.portrait-done{padding:0 9px 7px;font-size:0.68rem;color:var(--grass-dark);font-weight:700;}
+.portrait-card:hover{transform:translateY(-3px);box-shadow:4px 6px 14px rgba(46,52,33,0.22);}
+.portrait-photo{width:100%;aspect-ratio:1/1;overflow:hidden;background:var(--paper-dark);}
+.portrait-photo img{width:100%;height:100%;object-fit:cover;display:block;image-rendering:pixelated;image-rendering:crisp-edges;}
+.portrait-name{padding:8px 8px 3px;font-weight:800;font-size:0.9rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.portrait-done{padding:0 8px 8px;font-size:0.72rem;color:var(--grass-dark);font-weight:700;}
 
 /* ============================================================
    Foto del animal dentro de la ficha (Mapa de la Granja)
@@ -4778,12 +4778,55 @@ body.bg-is-dark .nav-back-btn:hover {
   color: #1a2215 !important;
 }
 
+/* Barra de Categorías Oficiales B-13 */
+.ficha-category-bar {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 4px 4px 10px;
+  margin-bottom: 8px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.ficha-cat-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(8px);
+  color: var(--ink);
+  border: 2px solid var(--ink);
+  border-radius: 20px;
+  font-family: 'Karla', sans-serif;
+  font-weight: 800;
+  font-size: 0.84rem;
+  cursor: pointer;
+  white-space: nowrap;
+  box-shadow: 2px 2px 0 rgba(40,49,27,0.12);
+  transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.ficha-cat-btn:hover {
+  background: #ffffff;
+  transform: translateY(-2px);
+  box-shadow: 2px 4px 8px rgba(0,0,0,0.15);
+}
+
+.ficha-cat-btn.active {
+  background: var(--animal-theme-color, #2d5a27);
+  color: #ffffff;
+  border-color: var(--animal-accent, #f59e0b);
+  box-shadow: 0 4px 14px var(--animal-glow, rgba(45, 90, 39, 0.4));
+  transform: scale(1.03);
+}
+
 /* Selector horizontal de animales */
 .ficha-species-ribbon {
   display: flex;
   gap: 8px;
   overflow-x: auto;
-  padding: 6px 4px 12px;
+  padding: 6px 4px 14px;
   margin-bottom: 18px;
   -webkit-overflow-scrolling: touch;
 }
@@ -4791,46 +4834,67 @@ body.bg-is-dark .nav-back-btn:hover {
 .ficha-species-btn {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 8px 14px;
-  background: var(--paper-card);
+  gap: 8px;
+  padding: 6px 14px;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(6px);
   color: var(--ink);
   border: 2px solid var(--ink);
   border-radius: 20px;
   font-family: 'Karla', sans-serif;
   font-weight: 700;
-  font-size: 0.84rem;
+  font-size: 0.86rem;
   cursor: pointer;
   white-space: nowrap;
   box-shadow: 2px 2px 0 rgba(40,49,27,0.1);
-  transition: all 0.15s ease;
+  transition: all 0.2s ease;
   text-decoration: none;
 }
 
 .ficha-species-btn:hover {
-  background: var(--paper-dark);
+  background: #ffffff;
   transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
 }
 
 .ficha-species-btn.active {
-  background: var(--grass-dark);
+  background: var(--animal-theme-color, var(--grass-dark));
   color: #ffffff;
-  border-color: var(--ink);
-  box-shadow: 0 3px 8px rgba(59,88,50,0.35);
+  border-color: var(--animal-accent, var(--ink));
+  box-shadow: 0 4px 14px var(--animal-glow, rgba(59,88,50,0.35));
+}
+
+.ficha-species-btn-thumb {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  object-fit: cover;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  border: 1.5px solid rgba(0,0,0,0.25);
+  flex-shrink: 0;
+  background: #fff;
+}
+
+.ficha-page-app {
+  min-height: 100vh;
+  transition: background 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* Hero Banner del Animal */
 .ficha-hero-banner {
-  background: var(--paper-card);
-  border: 3px solid var(--ink);
-  border-radius: 14px;
-  padding: 22px;
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(12px);
+  border: 3px solid var(--animal-accent, var(--ink));
+  border-radius: 16px;
+  padding: 24px;
   margin-bottom: 20px;
-  box-shadow: 6px 6px 0 rgba(40,49,27,0.18);
+  box-shadow: 0 12px 35px var(--animal-glow, rgba(40,49,27,0.18));
   display: grid;
   grid-template-columns: 240px 1fr;
   gap: 24px;
   align-items: center;
+  transition: border-color 0.4s ease, box-shadow 0.4s ease, border-top 0.4s ease;
 }
 
 @media (max-width: 720px) {
@@ -4847,21 +4911,29 @@ body.bg-is-dark .nav-back-btn:hover {
   aspect-ratio: 1 / 1;
   max-width: 240px;
   margin: 0 auto;
-  border-radius: 12px;
+  border-radius: 18px;
   overflow: hidden;
-  border: 3px solid var(--ink);
-  box-shadow: 4px 4px 0 rgba(40,49,27,0.15);
+  border: 3.5px solid var(--animal-accent, var(--ink));
+  box-shadow: 0 8px 24px var(--animal-glow, rgba(40,49,27,0.2));
   background: #fff;
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: border-color 0.4s ease, box-shadow 0.4s ease;
 }
 
 .ficha-hero-photo {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
   display: block;
+  transition: transform 0.35s ease;
+}
+
+.ficha-hero-photo:hover {
+  transform: scale(1.05);
 }
 
 .ficha-hero-emoji {

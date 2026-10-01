@@ -7,14 +7,14 @@
 (function() {
   'use strict';
 
-  // Lista consolidada de animales oficiales del Liceo B-13
+  // Lista consolidada de animales oficiales del Liceo B-13 (23 ejemplares reales)
   function getAllSpeciesList() {
     const list = [];
     const seen = new Set();
 
-    // 1. Animales del Potrero principal
-    if (typeof ANIMALS !== 'undefined' && Array.isArray(ANIMALS)) {
-      ANIMALS.forEach(a => {
+    // 1. Animales específicos del Liceo B-13 (los 23 ejemplares oficiales de los pósters)
+    if (typeof MAP_ANIMALS !== 'undefined' && Array.isArray(MAP_ANIMALS)) {
+      MAP_ANIMALS.forEach(a => {
         if (!seen.has(a.id)) {
           seen.add(a.id);
           list.push(a);
@@ -22,9 +22,9 @@
       });
     }
 
-    // 2. Animales específicos del Mapa 3D (Conejos individuales y razas especiales)
-    if (typeof MAP_ANIMALS !== 'undefined' && Array.isArray(MAP_ANIMALS)) {
-      MAP_ANIMALS.forEach(a => {
+    // 2. Animales del Potrero principal (especies generales de soporte)
+    if (typeof ANIMALS !== 'undefined' && Array.isArray(ANIMALS)) {
+      ANIMALS.forEach(a => {
         if (!seen.has(a.id)) {
           seen.add(a.id);
           list.push(a);
@@ -42,8 +42,9 @@
 
   let currentAnimal = null;
   let currentTab = 'facts';
+  let currentCategory = 'all';
   const fromParam = getQueryParam('from') || 'index.html';
-  const initialId = getQueryParam('id') || 'conejo';
+  const initialId = getQueryParam('id') || 'nesquik';
 
   function init() {
     setupBackButton();
@@ -79,16 +80,46 @@
   }
 
   function setupRibbon() {
+    const catBtns = document.querySelectorAll('#fichaCategoryBar .ficha-cat-btn');
+    catBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        catBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentCategory = btn.dataset.cat || 'all';
+        renderRibbonButtons();
+      });
+    });
+
+    renderRibbonButtons();
+  }
+
+  function renderRibbonButtons() {
     const ribbon = document.getElementById('fichaSpeciesRibbon');
     if (!ribbon) return;
 
     const allSpecies = getAllSpeciesList();
-    ribbon.innerHTML = allSpecies.map(a => `
-      <button type="button" class="ficha-species-btn ${a.id === initialId ? 'active' : ''}" data-id="${a.id}">
-        <span>${a.emoji || '🐾'}</span>
-        <span>${a.name}</span>
-      </button>
-    `).join('');
+    const filtered = allSpecies.filter(a => {
+      if (currentCategory === 'all') return true;
+      if (a.group) return a.group === currentCategory;
+      if (currentCategory === 'conejos') return a.id.includes('conejo') || a.species === 'conejo';
+      if (currentCategory === 'gallinas') return a.id.includes('gallo') || a.id.includes('gallina');
+      if (currentCategory === 'loros') return a.id.includes('catita') || a.id.includes('agapornis');
+      if (currentCategory === 'patos') return a.id.includes('pato');
+      return true;
+    });
+
+    ribbon.innerHTML = filtered.map(a => {
+      const isCur = currentAnimal ? (a.id === currentAnimal.id) : (a.id === initialId);
+      const thumbHtml = a.photo
+        ? `<img src="${a.photo}" alt="${a.name}" class="ficha-species-btn-thumb">`
+        : `<span class="ficha-species-btn-emoji">${a.emoji || '🐾'}</span>`;
+      return `
+        <button type="button" class="ficha-species-btn ${isCur ? 'active' : ''}" data-id="${a.id}">
+          ${thumbHtml}
+          <span>${a.name}</span>
+        </button>
+      `;
+    }).join('');
 
     ribbon.querySelectorAll('.ficha-species-btn').forEach(btn => {
       btn.addEventListener('click', () => {
@@ -160,6 +191,48 @@
       saveState();
     }
 
+    // === RECOLORIZACIÓN DINÁMICA DEL FONDO SEGÚN EL ANIMAL ===
+    const profile = (typeof ANIMAL_FUN_PROFILES !== 'undefined' && (ANIMAL_FUN_PROFILES[a.id] || ANIMAL_FUN_PROFILES[a.species])) || null;
+    const themeGrad = profile?.themeGradient || 'linear-gradient(135deg, #1b3815 0%, #305822 50%, #447a32 100%)';
+    const themeColor = profile?.themeColor || '#305822';
+    const accentColor = profile?.accentColor || '#f59e0b';
+    const glowColor = profile?.glowColor || 'rgba(245, 158, 11, 0.4)';
+
+    document.documentElement.style.setProperty('--animal-theme-grad', themeGrad);
+    document.documentElement.style.setProperty('--animal-theme-color', themeColor);
+    document.documentElement.style.setProperty('--animal-accent', accentColor);
+    document.documentElement.style.setProperty('--animal-glow', glowColor);
+
+    const appWrap = document.getElementById('fichaAppWrap');
+    if (appWrap) {
+      appWrap.style.background = themeGrad;
+      appWrap.style.transition = 'background 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
+    }
+
+    const heroBanner = document.getElementById('fichaHeroBanner');
+    if (heroBanner) {
+      heroBanner.style.borderColor = accentColor;
+      heroBanner.style.boxShadow = `0 12px 35px ${glowColor}`;
+      heroBanner.style.borderTop = `6px solid ${accentColor}`;
+    }
+
+    // Actualizar botones de cinta
+    document.querySelectorAll('#fichaSpeciesRibbon .ficha-species-btn').forEach(btn => {
+      const isThis = btn.dataset.id === a.id;
+      btn.classList.toggle('active', isThis);
+      if (isThis) {
+        btn.style.background = themeColor;
+        btn.style.color = '#ffffff';
+        btn.style.borderColor = accentColor;
+        btn.style.boxShadow = `0 4px 14px ${glowColor}`;
+      } else {
+        btn.style.background = '';
+        btn.style.color = '';
+        btn.style.borderColor = '';
+        btn.style.boxShadow = '';
+      }
+    });
+
     // Actualizar Hero Banner
     const photoWrap = document.getElementById('fichaPhotoWrap');
     const heroEmoji = document.getElementById('fichaHeroEmoji');
@@ -201,6 +274,11 @@
       }
     }
 
+    if (photoWrap) {
+      photoWrap.style.borderColor = accentColor;
+      photoWrap.style.boxShadow = `0 8px 24px ${glowColor}`;
+    }
+
     if (accBadge) {
       if (accEmoji) {
         accBadge.textContent = accEmoji;
@@ -214,6 +292,9 @@
     if (soundBtn) {
       if (a.sound) {
         soundBtn.style.display = 'inline-flex';
+        soundBtn.style.background = accentColor;
+        soundBtn.style.color = '#ffffff';
+        soundBtn.style.boxShadow = `0 4px 12px ${glowColor}`;
         soundBtn.onclick = () => {
           if (typeof playRealSound === 'function') playRealSound(a.sound);
         };
