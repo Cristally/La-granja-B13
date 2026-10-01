@@ -216,6 +216,36 @@
       heroBanner.style.borderTop = `6px solid ${accentColor}`;
     }
 
+    const appHeader = document.querySelector('.ficha-page-app header.top');
+    if (appHeader) appHeader.style.borderColor = accentColor;
+
+    const appTabs = document.getElementById('fichaMainTabs');
+    if (appTabs) appTabs.style.borderColor = accentColor;
+
+    const appContainer = document.querySelector('.ficha-view-container');
+    if (appContainer) appContainer.style.borderColor = accentColor;
+
+    const appFooter = document.querySelector('.ficha-page-app footer.ods');
+    if (appFooter) appFooter.style.borderColor = accentColor;
+
+    const appBadges = document.querySelector('.ficha-page-app .badges-bar');
+    if (appBadges) appBadges.style.borderColor = accentColor;
+
+    // Actualizar botones de categoría activos con el color del animal
+    document.querySelectorAll('#fichaCategoryBar .ficha-cat-btn').forEach(btn => {
+      if (btn.classList.contains('active')) {
+        btn.style.background = themeColor;
+        btn.style.color = '#ffffff';
+        btn.style.borderColor = accentColor;
+        btn.style.boxShadow = `0 4px 14px ${glowColor}`;
+      } else {
+        btn.style.background = '';
+        btn.style.color = '';
+        btn.style.borderColor = '';
+        btn.style.boxShadow = '';
+      }
+    });
+
     // Actualizar botones de cinta
     document.querySelectorAll('#fichaSpeciesRibbon .ficha-species-btn').forEach(btn => {
       const isThis = btn.dataset.id === a.id;

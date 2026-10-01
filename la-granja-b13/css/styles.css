@@ -4721,9 +4721,91 @@ body.rol-admin .badges-bar {
   max-width: 1040px;
   margin: 0 auto;
   padding: 16px 16px 60px;
+  min-height: 100vh;
+  transition: background 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.nav-back-bar {
+/* Encabezado con tarjeta de alto contraste y sombra suave */
+.ficha-page-app header.top {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 2.5px solid var(--animal-accent, var(--ink));
+  border-radius: 14px;
+  padding: 14px 20px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.14);
+  margin-bottom: 16px;
+  border-bottom: 2.5px solid var(--animal-accent, var(--ink));
+}
+
+.ficha-page-app header.top h1,
+.ficha-page-app header.top .pixel-title {
+  color: #1a2215 !important;
+  text-shadow: none !important;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+.ficha-page-app header.top .sub {
+  color: #2e4a22 !important;
+  text-shadow: none !important;
+  font-weight: 700;
+  font-size: 0.88rem;
+}
+
+.ficha-page-app .scorebox {
+  background: linear-gradient(180deg, #243018, #141c0e) !important;
+  color: #FAF7EE !important;
+  border: 1.5px solid var(--animal-accent, #e9c46a) !important;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+.ficha-page-app .scorebox b {
+  color: #ffd54f !important;
+}
+
+.ficha-page-app .scorebox span {
+  color: #ffffff !important;
+}
+
+/* Barra de herramientas y perfil en ficha */
+.ficha-page-app .toolbar {
+  margin-bottom: 14px;
+}
+
+.ficha-page-app .student-pill {
+  background: rgba(255, 255, 255, 0.95) !important;
+  backdrop-filter: blur(10px);
+  border: 2px solid var(--animal-accent, var(--ink)) !important;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+}
+
+.ficha-page-app .student-pill .student-label {
+  color: #2e4a22 !important;
+  font-weight: 800;
+}
+
+.ficha-page-app .student-pill b {
+  color: #1a2215 !important;
+}
+
+.ficha-page-app .tool-btn {
+  background: rgba(255, 255, 255, 0.94) !important;
+  backdrop-filter: blur(8px);
+  color: #1a2215 !important;
+  border: 2px solid #1a2215 !important;
+  font-weight: 800;
+  box-shadow: 2px 2px 0 #1a2215;
+}
+
+.ficha-page-app .tool-btn:hover {
+  background: #ffffff !important;
+  color: #15803d !important;
+  transform: translate(-1px, -1px);
+}
+
+.ficha-page-app .nav-back-bar {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -4732,50 +4814,79 @@ body.rol-admin .badges-bar {
   gap: 10px;
 }
 
-.nav-back-btn {
+.ficha-page-app .nav-back-btn {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  background: var(--paper-dark);
-  color: var(--ink);
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(8px);
+  color: #1a2215 !important;
   font-family: 'Karla', sans-serif;
   font-weight: 800;
   font-size: 0.88rem;
   padding: 8px 16px;
-  border: 2px solid var(--ink);
+  border: 2px solid #1a2215;
   border-radius: 8px;
   text-decoration: none;
-  box-shadow: 2px 2px 0 var(--ink);
+  box-shadow: 2px 2px 0 #1a2215;
   transition: all 0.15s ease;
   cursor: pointer;
 }
 
-.nav-back-btn:hover {
-  background: var(--hay);
-  transform: translate(-1px, -1px);
-  box-shadow: 3px 3px 0 var(--ink);
-}
-
-body.bg-is-light .nav-back-btn {
-  background: #ffffff !important;
-  color: #1c2616 !important;
-  border-color: #28311B !important;
-  box-shadow: 2px 2px 0 #28311B !important;
-}
-body.bg-is-light .nav-back-btn:hover {
-  background: #f59e0b !important;
-  color: #1c2616 !important;
-}
-
-body.bg-is-dark .nav-back-btn {
-  background: #1f2a1c !important;
-  color: #ffffff !important;
-  border-color: #4a5e42 !important;
-  box-shadow: 2px 2px 0 #4a5e42 !important;
-}
-body.bg-is-dark .nav-back-btn:hover {
-  background: #ffd54f !important;
+.ficha-page-app .nav-back-btn:hover {
+  background: var(--animal-accent, #f59e0b) !important;
   color: #1a2215 !important;
+  transform: translate(-1px, -1px);
+}
+
+.ficha-page-app .view-nav a {
+  background: rgba(255, 255, 255, 0.92) !important;
+  backdrop-filter: blur(8px);
+  color: #1a2215 !important;
+  border: 2px solid #1a2215 !important;
+  font-weight: 800;
+  box-shadow: 2px 2px 0 #1a2215;
+}
+
+.ficha-page-app .view-nav a:hover {
+  background: #ffffff !important;
+  color: #15803d !important;
+}
+
+.ficha-page-app .view-nav a.active {
+  background: #1a2215 !important;
+  color: #ffffff !important;
+}
+
+/* Badges y Footer en Ficha con soporte de alto contraste */
+.ficha-page-app .badges-bar {
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(10px);
+  border: 2px solid var(--animal-accent, var(--ink));
+  border-radius: 12px;
+  padding: 12px 16px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+  margin-top: 18px;
+}
+
+.ficha-page-app footer.ods {
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(10px);
+  border: 2px solid var(--animal-accent, var(--ink));
+  border-radius: 12px;
+  padding: 12px 18px;
+  color: #1a2215 !important;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+  margin-top: 24px;
+  text-align: center;
+  line-height: 1.5;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.ficha-page-app footer.ods b {
+  color: #15803d !important;
+  font-weight: 800;
 }
 
 /* Barra de Categorías Oficiales B-13 */
