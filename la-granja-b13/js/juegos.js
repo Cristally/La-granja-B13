@@ -494,12 +494,7 @@
         overlay.classList.add('hidden');
       };
 
-      if (cluesBtn) {
-        cluesBtn.addEventListener('click', (e) => {
-          e.preventDefault();
-          window.location.href = 'perfil.html#pistas';
-        });
-      }
+      if (cluesBtn) cluesBtn.addEventListener('click', openModal);
       if (closeBtn) closeBtn.addEventListener('click', closeModal);
 
       if (overlay) {

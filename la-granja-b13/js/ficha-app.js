@@ -64,19 +64,17 @@
 
   function setupBackButton() {
     const btn = document.getElementById('fichaNavBackBtn');
-    const textEl = document.getElementById('fichaNavBackText');
+    const textEl = btn ? (btn.querySelector('.btn-volver-text') || document.getElementById('fichaNavBackText')) : null;
     if (!btn) return;
 
     if (fromParam.includes('mapa')) {
       btn.href = 'mapa.html';
-      if (textEl) textEl.textContent = 'Volver al Mapa 3D';
     } else if (fromParam.includes('juegos')) {
       btn.href = 'juegos.html';
-      if (textEl) textEl.textContent = 'Volver a los Minijuegos';
     } else {
       btn.href = 'index.html';
-      if (textEl) textEl.textContent = 'Volver al Potrero';
     }
+    if (textEl) textEl.textContent = 'Volver';
   }
 
   function setupRibbon() {

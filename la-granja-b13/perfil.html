@@ -206,6 +206,61 @@
   align-items: flex-start;
   gap: 10px;
 }
+
+/* Botón Volver de Alta Estética */
+.btn-volver-estetico {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #ffffff;
+  color: #1a2215 !important;
+  font-family: 'Karla', sans-serif;
+  font-weight: 800;
+  font-size: 0.95rem;
+  padding: 8px 18px;
+  border: 2px solid #1a2215;
+  border-radius: 9999px;
+  text-decoration: none !important;
+  box-shadow: 0 3px 0 #1a2215, 0 4px 10px rgba(0, 0, 0, 0.08);
+  transition: all 0.18s ease;
+  cursor: pointer;
+}
+
+.btn-volver-estetico:hover {
+  background: var(--hay, #fef08a) !important;
+  color: #1a2215 !important;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 0 #1a2215, 0 6px 14px rgba(0, 0, 0, 0.14);
+}
+
+.btn-volver-estetico:active {
+  transform: translateY(1px);
+  box-shadow: 0 1px 0 #1a2215;
+}
+
+.btn-volver-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--paper-dark, #e2e8f0);
+  font-size: 0.95rem;
+  font-weight: 800;
+  border: 1.5px solid #1a2215;
+  transition: transform 0.18s ease;
+}
+
+.btn-volver-estetico:hover .btn-volver-icon {
+  transform: translateX(-3px);
+  background: #ffffff;
+}
+
+.btn-volver-text {
+  font-weight: 800;
+  letter-spacing: 0.3px;
+}
 </style>
 </head>
 <body>
@@ -213,19 +268,15 @@
 
   <!-- Barra de regreso y navegación oficial -->
   <div class="nav-back-bar">
-    <a href="index.html" id="perfilNavBackBtn" class="nav-back-btn">
-      <span style="font-size:1.1rem;">←</span> <span id="perfilNavBackText">Volver a la Granja</span>
+    <a href="index.html" id="perfilNavBackBtn" class="btn-volver-estetico" title="Regresar al potrero principal">
+      <span class="btn-volver-icon">←</span>
+      <span class="btn-volver-text">Volver</span>
     </a>
     <nav class="view-nav" style="margin:0;">
       <a href="index.html">🌾 Potrero</a>
-      <a href="mapa.html">🗺️ Mapa 3D</a>
-      <a href="galeria-real.html">📸 Granja Real</a>
-      <a href="juegos.html">🎮 Minijuegos</a>
-      <a href="ranking.html">🏆 Ranking</a>
-      <a href="muro.html">💬 Muro</a>
-      <a href="perfil.html" class="active">🎒 Mi Perfil</a>
-      <a href="normas.html">📜 Normas</a>
-      <a href="docente.html">👩‍🏫 Docente</a>
+      <a href="mapa.html">🗺️ Mapa de la Granja</a>
+      <a href="galeria-real.html">📸 Granja Real B-13</a>
+      <a href="juegos.html">🎮 Juega en la Granja</a>
       <button id="navBtnCambiarModo" class="nav-switch-btn" type="button" title="Cerrar sesión actual">🚪 Cerrar Sesión</button>
     </nav>
   </div>
