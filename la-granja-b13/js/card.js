@@ -27,17 +27,37 @@ function showToast(msg) {
 }
 
 function openOverlayId(id) {
-  const el = document.getElementById(id);
-  if (el) {
-    el.style.display = 'flex';
-    el.classList.add('open');
+  // Redirección a vistas completas dedicadas para evitar superposiciones apretadas
+  if (id === 'studentOverlay') {
+    window.location.href = 'perfil.html';
+    return;
   }
-  if (id === 'rulesOverlay' && typeof unlockSecretBadge === 'function') {
-    unlockSecretBadge('devoralibros');
+  if (id === 'achievementsOverlay') {
+    window.location.href = 'perfil.html#logros';
+    return;
+  }
+  if (id === 'rulesOverlay') {
+    if (typeof unlockSecretBadge === 'function') unlockSecretBadge('devoralibros');
     if (typeof state !== 'undefined') {
       state.rulesRead = true;
       if (typeof saveState === 'function') saveState();
     }
+    window.location.href = 'normas.html';
+    return;
+  }
+  if (id === 'teacherOverlay') {
+    window.location.href = 'docente.html';
+    return;
+  }
+  if (id === 'commentsOverlay') {
+    window.location.href = 'muro.html';
+    return;
+  }
+
+  const el = document.getElementById(id);
+  if (el) {
+    el.style.display = 'flex';
+    el.classList.add('open');
   }
 }
 
@@ -99,12 +119,13 @@ function openStudentModal() {
       volverAlEspacioModos();
     } else if (typeof volverAlInicio === 'function') {
       volverAlInicio();
+    } else {
+      window.location.href = 'login.html';
     }
     return;
   }
 
-  renderStudentProfileModal();
-  openOverlayId('studentOverlay');
+  window.location.href = 'perfil.html';
 }
 
 /* ============ Validación y Registro de Estudiante ============ */
@@ -3180,29 +3201,8 @@ function fallbackReplyLocally(cid, replyData) {
 }
 
 function openCommentsModal(animalId) {
-  ensureCommentsModal();
-  const sesion = (typeof Auth !== 'undefined' && typeof Auth.getSesion === 'function') ? Auth.getSesion() : null;
-  const authorDisplay = document.getElementById('commentAuthorDisplay');
-  if (authorDisplay) {
-    const curName = (sesion && sesion.nombre) || state.studentName || 'Estudiante';
-    const curRole = (sesion && sesion.rol === 'profesor') ? 'Docente B-13' : 'Estudiante';
-    authorDisplay.innerHTML = `Publicando como: <b>${sanitizeInput(curName)}</b> (${curRole})`;
-  }
-
-  if (animalId) {
-    currentCommentAnimalFilter = animalId;
-    const filterSel = document.getElementById('commentFilterAnimal');
-    if (filterSel) filterSel.value = animalId;
-    const postSel = document.getElementById('commentPostAnimal');
-    if (postSel) postSel.value = animalId;
-  } else {
-    currentCommentAnimalFilter = 'all';
-    const filterSel = document.getElementById('commentFilterAnimal');
-    if (filterSel) filterSel.value = 'all';
-  }
-
-  loadCommunityComments(currentCommentAnimalFilter);
-  openOverlayId('commentsOverlay');
+  const targetUrl = 'muro.html' + (animalId ? `?animal=${encodeURIComponent(animalId)}` : '');
+  window.location.href = targetUrl;
 }
 
 window.openCommentsModal = openCommentsModal;
@@ -3294,30 +3294,22 @@ if (soundBtn) {
 
 const rulesBtn = document.getElementById('rulesBtn');
 if (rulesBtn) {
-  rulesBtn.addEventListener('click', () => {
-    renderRules();
-    openOverlayId('rulesOverlay');
+  rulesBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    window.location.href = 'normas.html';
   });
 }
 
 const achievementsBtn = document.getElementById('achievementsBtn');
 if (achievementsBtn) {
-  achievementsBtn.addEventListener('click', () => {
-    renderAchievementsList();
-    openOverlayId('achievementsOverlay');
+  achievementsBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    window.location.href = 'perfil.html#logros';
   });
 }
 
 function openTeacherPanelSafe() {
-  const sesion = (typeof Auth !== 'undefined' && typeof Auth.getSesion === 'function') ? Auth.getSesion() : null;
-  if (!sesion || (sesion.rol !== 'profesor' && sesion.rol !== 'admin')) {
-    if (typeof Auth !== 'undefined' && typeof Auth.mostrarNotificacion === 'function') {
-      Auth.mostrarNotificacion('El panel docente requiere acceso de profesor.');
-    }
-    return;
-  }
-  renderTeacherPanel();
-  openOverlayId('teacherOverlay');
+  window.location.href = 'docente.html';
 }
 
 const teacherBtn = document.getElementById('teacherBtn');

@@ -933,6 +933,26 @@ app.get('/ficha', (req, res) => {
   res.sendFile(path.join(__dirname, 'ficha.html'));
 });
 
+app.get(['/perfil', '/cuaderno'], (req, res) => {
+  res.sendFile(path.join(__dirname, 'perfil.html'));
+});
+
+app.get('/ranking', (req, res) => {
+  res.sendFile(path.join(__dirname, 'ranking.html'));
+});
+
+app.get('/muro', (req, res) => {
+  res.sendFile(path.join(__dirname, 'muro.html'));
+});
+
+app.get('/normas', (req, res) => {
+  res.sendFile(path.join(__dirname, 'normas.html'));
+});
+
+app.get('/docente', (req, res) => {
+  res.sendFile(path.join(__dirname, 'docente.html'));
+});
+
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });

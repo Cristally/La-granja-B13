@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Panel Docente & Evaluación — La Granja B-13</title>
+<meta name="description" content="Panel pedagógico oficial del Liceo Domingo Herrera Rivera B-13: Planilla de evaluación, décimas, creación de quizzes formativos y métricas Go Innova.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700;9..144,800&family=Karla:wght@400;500;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+<link rel="stylesheet" href="css/juegos.css">
+<style>
+/* Estilos dedicados para la vista de Panel Docente */
+.docente-page-app {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 16px 16px 70px;
+  min-height: 100vh;
+}
+
+.docente-card {
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(12px);
+  border: 2.5px solid var(--ink);
+  border-radius: 14px;
+  padding: 24px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+  margin-bottom: 24px;
+}
+
+.docente-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  border-bottom: 2px solid var(--paper-dark);
+  padding-bottom: 12px;
+}
+
+.docente-tab-btn {
+  padding: 10px 18px;
+  font-family: 'Karla', sans-serif;
+  font-weight: 800;
+  font-size: 0.95rem;
+  border: 2px solid var(--ink);
+  border-radius: 10px;
+  background: var(--paper-dark);
+  color: var(--ink);
+  cursor: pointer;
+  transition: all 0.18s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.docente-tab-btn:hover {
+  background: var(--hay);
+  transform: translateY(-2px);
+}
+
+.docente-tab-btn.active {
+  background: var(--grass-dark);
+  color: #ffffff;
+  border-color: var(--ink);
+  box-shadow: 0 3px 0 var(--ink);
+}
+
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.kpi-card {
+  background: #ffffff;
+  border: 2px solid var(--ink);
+  border-radius: 10px;
+  padding: 14px;
+  text-align: center;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.04);
+}
+
+.kpi-card .kpi-label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+
+.kpi-card .kpi-val {
+  font-family: 'Space Mono', monospace;
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--ink);
+}
+
+.docente-table-wrap {
+  overflow-x: auto;
+  border: 2px solid var(--ink);
+  border-radius: 10px;
+  background: #ffffff;
+  margin-bottom: 16px;
+}
+
+.docente-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+  text-align: left;
+}
+
+.docente-table th {
+  background: var(--paper-dark);
+  color: var(--ink);
+  font-weight: 800;
+  padding: 12px 14px;
+  border-bottom: 2px solid var(--ink);
+  white-space: nowrap;
+}
+
+.docente-table td {
+  padding: 10px 14px;
+  border-bottom: 1px solid #e2e8f0;
+  vertical-align: middle;
+}
+
+.docente-table tr:last-child td {
+  border-bottom: none;
+}
+
+.docente-table tr:hover {
+  background: #f8fafc;
+}
+
+.badge-tag {
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.badge-tag.success {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.badge-tag.pending {
+  background: #fef3c7;
+  color: #b45309;
+}
+
+.badge-tag.info {
+  background: #e0f2fe;
+  color: #0369a1;
+}
+
+.form-field-group {
+  margin-bottom: 14px;
+}
+
+.form-field-group label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 800;
+  margin-bottom: 5px;
+  color: var(--ink);
+}
+
+.form-field-group input,
+.form-field-group select,
+.form-field-group textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 2px solid var(--ink);
+  border-radius: 8px;
+  font-family: 'Karla', sans-serif;
+  font-size: 0.9rem;
+  box-sizing: border-box;
+  background: #ffffff;
+}
+
+.act-filter-btn {
+  padding: 6px 12px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  border: 1.5px solid var(--ink);
+  border-radius: 6px;
+  background: var(--paper-dark);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.act-filter-btn.active {
+  background: var(--ink);
+  color: #ffffff;
+}
+
+.feed-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 10px 12px;
+  background: #ffffff;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 8px;
+  font-size: 0.85rem;
+}
+
+.auth-lock-card {
+  max-width: 440px;
+  margin: 40px auto;
+  text-align: center;
+  padding: 32px 24px;
+}
+</style>
+</head>
+<body>
+<div class="app docente-page-app" id="docenteAppWrap">
+
+  <!-- Barra de regreso y navegación oficial -->
+  <div class="nav-back-bar">
+    <a href="index.html" class="nav-back-btn">
+      <span style="font-size:1.1rem;">←</span> <span>Volver a la Granja</span>
+    </a>
+    <nav class="view-nav" style="margin:0;">
+      <a href="index.html">🌾 Potrero</a>
+      <a href="mapa.html">🗺️ Mapa 3D</a>
+      <a href="galeria-real.html">📸 Granja Real</a>
+      <a href="juegos.html">🎮 Minijuegos</a>
+      <a href="ranking.html">🏆 Ranking</a>
+      <a href="muro.html">💬 Muro</a>
+      <a href="perfil.html">🎒 Mi Perfil</a>
+      <a href="normas.html">📜 Normas</a>
+      <a href="docente.html" class="active">👩‍🏫 Docente</a>
+      <button id="navBtnCambiarModo" class="nav-switch-btn" type="button" title="Cerrar sesión actual">🚪 Cerrar Sesión</button>
+    </nav>
+  </div>
+
+  <!-- Encabezado de la Vista -->
+  <header class="top" style="margin-top:14px;margin-bottom:14px;">
+    <div class="brand-wrap">
+      <img src="assets/img/logo.png" alt="Logo Granja B-13" class="app-logo">
+      <div>
+        <h1 class="pixel-title">Panel Docente & Evaluación</h1>
+        <div class="sub">Liceo Domingo Herrera Rivera B-13 — Gestión Curricular y Décimas Go Innova</div>
+      </div>
+    </div>
+    <div class="scorebox">
+      ESTADO DOCENTE:<br>
+      <b style="color:var(--grass-dark);" id="teacherSessionBadge">🔒 Verificando...</b>
+    </div>
+  </header>
+
+  <!-- Tarjeta de Desbloqueo si no ha iniciado como profesor -->
+  <div id="teacherLockScreen" class="docente-card auth-lock-card" style="display:none;">
+    <div style="font-size:3rem;margin-bottom:12px;">👩‍🏫</div>
+    <h2 style="font-family:'Fraunces',serif;font-size:1.35rem;margin:0 0 8px;color:var(--ink);">Acceso Exclusivo Docente</h2>
+    <p style="font-size:0.88rem;color:#555;margin-bottom:18px;">
+      Este módulo permite calificar a los estudiantes, asignar décimas al libro de clases y publicar nuevos desafíos pedagógicos.
+    </p>
+
+    <form id="formTeacherUnlock">
+      <div class="form-field-group" style="text-align:left;">
+        <label for="teacherPassInput">Contraseña de Profesor o PIN de Acceso:</label>
+        <input type="password" id="teacherPassInput" placeholder="Ingresa clave docente (ej. profesor1234)" required autocomplete="current-password">
+      </div>
+      <div id="teacherUnlockError" style="color:var(--clay);font-size:0.82rem;font-weight:700;margin-bottom:12px;display:none;"></div>
+      <button type="submit" class="tool-btn" style="width:100%;padding:12px;background:var(--grass-dark);color:#fff;font-weight:800;font-size:0.95rem;margin-bottom:12px;">
+        🔑 Desbloquear Panel Docente
+      </button>
+      <a href="login.html" style="font-size:0.82rem;color:var(--ink);text-decoration:underline;">
+        ¿Iniciar sesión formal con correo institucional?
+      </a>
+    </form>
+  </div>
+
+  <!-- Contenedor Principal del Panel Docente -->
+  <main id="teacherWorkspace" style="display:none;">
+
+    <!-- Barra de Pestañas Docentes -->
+    <div class="docente-tabs">
+      <button type="button" class="docente-tab-btn active" data-tab="calificaciones">
+        📋 Calificaciones & Décimas
+      </button>
+      <button type="button" class="docente-tab-btn" data-tab="quizzes">
+        ➕ Crear Quizzes en el Mapa
+      </button>
+      <button type="button" class="docente-tab-btn" data-tab="metricas">
+        📊 Métricas del Liceo
+      </button>
+      <button type="button" class="docente-tab-btn" data-tab="historial">
+        📡 Historial en Vivo
+      </button>
+    </div>
+
+    <!-- PESTAÑA 1: Calificaciones & Décimas -->
+    <section id="tabDocenteCalificaciones" class="docente-tab-content">
+      <div class="docente-card">
+        
+        <!-- Selector de Estudiante -->
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px;flex-wrap:wrap;background:var(--paper-dark);padding:12px 16px;border-radius:10px;border:1.5px solid var(--ink);">
+          <div style="display:flex;align-items:center;gap:10px;flex:1;min-width:260px;">
+            <label for="studentSelect" style="font-weight:800;font-size:0.9rem;white-space:nowrap;">👤 Estudiante a Evaluar:</label>
+            <select id="studentSelect" style="flex:1;padding:8px 12px;border:2px solid var(--ink);border-radius:8px;font-weight:700;background:#fff;">
+              <!-- Llenado dinámicamente -->
+            </select>
+          </div>
+          <div style="display:flex;gap:8px;">
+            <button type="button" id="btnExportTxt" class="tool-btn" style="padding:8px 14px;font-size:0.85rem;background:#fff;">⬇️ Informe .txt</button>
+            <button type="button" id="btnExportCsv" class="tool-btn" style="padding:8px 14px;font-size:0.85rem;background:var(--hay);color:var(--ink);font-weight:800;">📊 Planilla Excel (.csv)</button>
+          </div>
+        </div>
+
+        <!-- KPI Resumen del Estudiante Seleccionado -->
+        <div class="kpi-grid">
+          <div class="kpi-card">
+            <div class="kpi-label">Estudiante Activo</div>
+            <div class="kpi-val" id="kpiStudentName" style="font-size:1.05rem;">-</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Puntaje Total</div>
+            <div class="kpi-val" id="kpiStudentScore" style="color:var(--grass-dark);">0 pts</div>
+          </div>
+          <div class="kpi-card" style="background:#f0fdf4;border-color:#22c55e;">
+            <div class="kpi-label" style="color:#166534;">Décimas Sugeridas</div>
+            <div class="kpi-val" id="kpiStudentDecimas" style="color:#15803d;font-size:1.6rem;">0.0</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Insignias Logradas</div>
+            <div class="kpi-val" id="kpiStudentBadges">0/15</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Potrero / Quizzes</div>
+            <div class="kpi-val" id="kpiStudentPotrero">0 / 0</div>
+          </div>
+        </div>
+
+        <!-- Tabla de Detalle de Aprendizaje y Módulos -->
+        <h3 style="font-family:'Fraunces',serif;font-size:1.15rem;margin:0 0 12px;color:var(--ink);">
+          📋 Desglose de Desafíos por Animal y Zona
+        </h3>
+        <div class="docente-table-wrap">
+          <table class="docente-table" id="studentActivitiesTable">
+            <thead>
+              <tr>
+                <th>Animal o Sector</th>
+                <th>Estado Exploración</th>
+                <th>Desafío Anatómico / Quiz</th>
+                <th>Puntos Ganados</th>
+              </tr>
+            </thead>
+            <tbody id="studentActivitiesBody">
+              <!-- Filas dinámicas -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Nota Pedagógica y Acciones Rápidas -->
+        <div style="background:#eff6ff;border:1.5px solid #93c5fd;border-radius:10px;padding:14px;font-size:0.85rem;color:#1e3a8a;margin-top:16px;">
+          💡 <b>Cálculo de Décimas Pedagógicas:</b> Cada desafío anatómico completado con éxito otorga décimas acumulativas para la asignatura de Ciencias Naturales / Biología (hasta un máximo sugerido de +1.0 décima por unidad pedagógica).
+        </div>
+
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:16px;flex-wrap:wrap;gap:10px;">
+          <a href="login.html" class="tool-btn" style="text-decoration:none;padding:8px 14px;font-size:0.85rem;">
+            ➕ Registrar Nuevo Estudiante
+          </a>
+          <button type="button" id="btnResetStudentData" class="tool-btn" style="padding:8px 14px;font-size:0.85rem;color:var(--clay);">
+            🔄 Reiniciar datos de este navegador
+          </button>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- PESTAÑA 2: Creador y Gestor de Quizzes en el Mapa -->
+    <section id="tabDocenteQuizzes" class="docente-tab-content" style="display:none;">
+      <div class="docente-card">
+        <h3 style="font-family:'Fraunces',serif;font-size:1.25rem;margin:0 0 6px;color:var(--ink);">
+          ➕ Publicar Nueva Pregunta Formativa en el Mapa
+        </h3>
+        <p style="font-size:0.85rem;color:#555;margin-bottom:16px;">
+          Los estudiantes que exploren la zona seleccionada en el Mapa 3D encontrarán este pin con tu desafío y podrán ganar décimas.
+        </p>
+
+        <form id="formCreateTeacherQuiz" style="background:var(--paper-dark);padding:18px;border-radius:10px;border:2px solid var(--ink);margin-bottom:24px;">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+            <div class="form-field-group">
+              <label for="quizZoneSelect">Zona del Mapa de la Granja: *</label>
+              <select id="quizZoneSelect" required>
+                <!-- Zonas del mapa dinámicas -->
+              </select>
+            </div>
+            <div class="form-field-group">
+              <label for="quizDecimasInput">Décimas al acertar: *</label>
+              <input type="number" id="quizDecimasInput" step="0.1" min="0.1" max="1.0" value="0.3" required>
+            </div>
+          </div>
+
+          <div class="form-field-group">
+            <label for="quizQuestionInput">Pregunta Formativa: *</label>
+            <input type="text" id="quizQuestionInput" placeholder="Ej: ¿Cuál es el rol de los bancales en el ahorro hídrico de Antofagasta?" required>
+          </div>
+
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+            <div class="form-field-group">
+              <label for="quizOptA">Alternativa A: *</label>
+              <input type="text" id="quizOptA" placeholder="Opción A" required>
+            </div>
+            <div class="form-field-group">
+              <label for="quizOptB">Alternativa B: *</label>
+              <input type="text" id="quizOptB" placeholder="Opción B" required>
+            </div>
+            <div class="form-field-group">
+              <label for="quizOptC">Alternativa C: *</label>
+              <input type="text" id="quizOptC" placeholder="Opción C" required>
+            </div>
+            <div class="form-field-group">
+              <label for="quizOptD">Alternativa D: *</label>
+              <input type="text" id="quizOptD" placeholder="Opción D" required>
+            </div>
+          </div>
+
+          <div class="form-field-group" style="max-width:320px;">
+            <label for="quizCorrectSelect">¿Cuál es la alternativa correcta?: *</label>
+            <select id="quizCorrectSelect" required>
+              <option value="0">Alternativa A</option>
+              <option value="1">Alternativa B</option>
+              <option value="2">Alternativa C</option>
+              <option value="3">Alternativa D</option>
+            </select>
+          </div>
+
+          <button type="submit" class="tool-btn" style="width:100%;padding:12px;background:var(--grass-dark);color:#fff;font-weight:800;font-size:1rem;margin-top:6px;">
+            📢 Publicar Desafío en el Mapa
+          </button>
+        </form>
+
+        <!-- Lista de Quizzes Existentes -->
+        <h4 style="font-family:'Fraunces',serif;font-size:1.15rem;margin:0 0 10px;color:var(--ink);">
+          📌 Quizzes Docentes Activos en el Mapa
+        </h4>
+        <div id="publishedQuizzesContainer" style="display:flex;flex-direction:column;gap:10px;">
+          <!-- Llenado con JS -->
+        </div>
+      </div>
+    </section>
+
+    <!-- PESTAÑA 3: Métricas del Liceo -->
+    <section id="tabDocenteMetricas" class="docente-tab-content" style="display:none;">
+      <div class="docente-card">
+        <h3 style="font-family:'Fraunces',serif;font-size:1.25rem;margin:0 0 16px;color:var(--ink);">
+          📊 Métricas y Participación de la Comunidad Escolar
+        </h3>
+
+        <div class="kpi-grid">
+          <div class="kpi-card">
+            <div class="kpi-label">Estudiantes Registrados</div>
+            <div class="kpi-val" id="kpiTotalEstudiantes">0</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Quizzes Respondidos</div>
+            <div class="kpi-val" id="kpiTotalRespuestas">0</div>
+          </div>
+          <div class="kpi-card" style="background:#f0fdf4;border-color:#22c55e;">
+            <div class="kpi-label" style="color:#166534;">Tasa de Aciertos</div>
+            <div class="kpi-val" id="kpiTasaAciertos" style="color:#15803d;">0%</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Zonas con Quizzes</div>
+            <div class="kpi-val" id="kpiZonasActivas">0</div>
+          </div>
+        </div>
+
+        <!-- Ranking de Zonas Más Visitadas -->
+        <h4 style="font-family:'Fraunces',serif;font-size:1.05rem;margin:20px 0 10px;color:var(--ink);">
+          🗺️ Zonas de la Granja Más Visitadas por Estudiantes
+        </h4>
+        <div id="zoneVisitsRankingContainer" style="background:var(--paper-dark);padding:14px;border-radius:10px;border:1.5px solid var(--ink);margin-bottom:24px;">
+          <!-- Inyectado con JS -->
+        </div>
+
+        <!-- Nómina de Estudiantes Registrados -->
+        <h4 style="font-family:'Fraunces',serif;font-size:1.05rem;margin:0 0 10px;color:var(--ink);">
+          👥 Nómina Oficial de Estudiantes
+        </h4>
+        <div class="docente-table-wrap">
+          <table class="docente-table" id="studentsRosterTable">
+            <thead>
+              <tr>
+                <th>Nombre</th>
+                <th>Curso / Nivel</th>
+                <th>Correo Institucional</th>
+                <th>Rol</th>
+              </tr>
+            </thead>
+            <tbody id="studentsRosterBody">
+              <!-- Filas dinámicas -->
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- PESTAÑA 4: Historial en Vivo -->
+    <section id="tabDocenteHistorial" class="docente-tab-content" style="display:none;">
+      <div class="docente-card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:10px;">
+          <div>
+            <span style="display:inline-flex;align-items:center;gap:6px;background:#dcfce7;color:#166534;padding:4px 10px;border-radius:12px;font-size:0.75rem;font-weight:700;">
+              <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#22c55e;"></span>
+              MONITOREO EN TIEMPO REAL
+            </span>
+            <h3 style="font-family:'Fraunces',serif;font-size:1.25rem;margin:4px 0 0;color:var(--ink);">
+              📡 Historial de Actividades en el Liceo B-13
+            </h3>
+          </div>
+          <div style="display:flex;gap:8px;">
+            <button type="button" id="btnRefreshFeed" class="tool-btn" style="padding:6px 12px;font-size:0.85rem;">🔄 Actualizar</button>
+            <button type="button" id="btnClearFeed" class="tool-btn" style="padding:6px 12px;font-size:0.85rem;color:var(--clay);">🗑️ Limpiar Historial</button>
+          </div>
+        </div>
+
+        <!-- Filtros de Actividad -->
+        <div style="display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap;">
+          <button type="button" class="act-filter-btn active" data-filter="all">Todos</button>
+          <button type="button" class="act-filter-btn" data-filter="register">🎓 Registros</button>
+          <button type="button" class="act-filter-btn" data-filter="score_up">⭐ Puntajes</button>
+          <button type="button" class="act-filter-btn" data-filter="comment">💬 Comentarios</button>
+          <button type="button" class="act-filter-btn" data-filter="quiz_created">📝 Quizzes</button>
+        </div>
+
+        <!-- Contenedor del Feed -->
+        <div id="liveActivityFeedList" style="max-height:480px;overflow-y:auto;display:flex;flex-direction:column;gap:8px;padding-right:4px;">
+          <!-- Inyectado dinámicamente -->
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+</div>
+
+<!-- Scripts esenciales del sistema -->
+<script src="js/data.js"></script>
+<script src="js/map-data.js"></script>
+<script src="js/state.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/docente-app.js"></script>
+</body>
+</html>

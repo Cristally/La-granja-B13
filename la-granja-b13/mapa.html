@@ -14,9 +14,14 @@
 
   <nav class="view-nav">
     <a href="index.html">🌾 Potrero</a>
-    <a href="mapa.html" class="active">🗺️ Mapa de la Granja</a>
-    <a href="galeria-real.html">📸 Granja Real B-13</a>
-    <a href="juegos.html">🎮 Juega en la Granja</a>
+    <a href="mapa.html" class="active">🗺️ Mapa 3D</a>
+    <a href="galeria-real.html">📸 Granja Real</a>
+    <a href="juegos.html">🎮 Minijuegos</a>
+    <a href="ranking.html">🏆 Ranking</a>
+    <a href="muro.html">💬 Muro</a>
+    <a href="perfil.html">🎒 Mi Perfil</a>
+    <a href="normas.html">📜 Normas</a>
+    <a href="docente.html">👩‍🏫 Docente</a>
     <button id="navBtnCambiarModo" class="nav-switch-btn" type="button" title="Cerrar sesión actual">🚪 Cerrar Sesión</button>
   </nav>
 
@@ -35,7 +40,7 @@
   </header>
 
   <div class="toolbar">
-    <div class="student-pill" id="studentPill" title="Toca para cambiar o ingresar tus datos de estudiante">
+    <div class="student-pill" id="studentPill" title="Toca para ir a tu Cuaderno de Campo y Perfil" style="cursor:pointer;">
       <span class="student-icon">🎒</span>
       <div class="student-info">
         <span class="student-label">ESTUDIANTE</span>
@@ -45,12 +50,12 @@
     </div>
     <div class="tool-buttons">
       <a href="juegos.html" class="tool-btn" style="text-decoration:none;display:inline-flex;align-items:center;" title="Minijuegos educativos">🎮 Juegos</a>
-      <button id="leaderboardBtn" class="tool-btn leaderboard-tool-btn" type="button" title="Ver Salón de Honor y Ranking">🏆 Ranking</button>
-      <button id="achievementsBtn" class="tool-btn" type="button">🎖️ Logros</button>
-      <button id="rulesBtn" class="tool-btn" type="button">📋 Normas</button>
-      <button id="commentsBtn" class="tool-btn" type="button" title="Muro comunitario de preguntas y observaciones de la granja">💬 Muro Granja</button>
+      <a href="ranking.html" id="leaderboardBtn" class="tool-btn leaderboard-tool-btn" style="text-decoration:none;display:inline-flex;align-items:center;" title="Ver Salón de Honor y Ranking">🏆 Ranking</a>
+      <a href="perfil.html#logros" id="achievementsBtn" class="tool-btn" style="text-decoration:none;display:inline-flex;align-items:center;" title="Ver Vitrina de Logros e Insignias">🎖️ Logros</a>
+      <a href="normas.html" id="rulesBtn" class="tool-btn" style="text-decoration:none;display:inline-flex;align-items:center;" title="Decálogo de Normas y Bioética B-13">📋 Normas</a>
+      <a href="muro.html" id="commentsBtn" class="tool-btn" style="text-decoration:none;display:inline-flex;align-items:center;" title="Muro comunitario de preguntas y observaciones de la granja">💬 Muro Granja</a>
       <button id="soundBtn" class="tool-btn" type="button">🔊 Sonido</button>
-      <button id="teacherBtn" class="tool-btn" type="button">👩‍🏫 Panel docente</button>
+      <a href="docente.html" id="teacherBtn" class="tool-btn" style="text-decoration:none;display:inline-flex;align-items:center;" title="Panel Docente y Gestión Pedagógica">👩‍🏫 Panel docente</a>
     </div>
   </div>
 

@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Normas de la Granja & Bioética — La Granja B-13</title>
+<meta name="description" content="Decálogo oficial de bioética, normas de convivencia y bienestar animal del Liceo Domingo Herrera Rivera B-13.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700;9..144,800&family=Karla:wght@400;500;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+<link rel="stylesheet" href="css/juegos.css">
+<style>
+/* Estilos dedicados para la vista de Normas de la Granja */
+.normas-page-app {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 16px 16px 70px;
+  min-height: 100vh;
+}
+
+.normas-card {
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(12px);
+  border: 2.5px solid var(--ink);
+  border-radius: 14px;
+  padding: 24px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+  margin-bottom: 24px;
+}
+
+.normas-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.norma-item-box {
+  background: #ffffff;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 18px;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+
+.norma-item-box:hover {
+  border-color: var(--grass-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(59, 88, 50, 0.12);
+}
+
+.norma-number {
+  font-family: 'Space Mono', monospace;
+  font-weight: 800;
+  font-size: 1.15rem;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: var(--paper-dark);
+  color: var(--ink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border: 1.5px solid var(--ink);
+}
+
+.norma-title {
+  font-family: 'Fraunces', serif;
+  font-weight: 800;
+  font-size: 1.1rem;
+  color: #1e293b;
+  margin-bottom: 4px;
+}
+
+.norma-desc {
+  font-size: 0.88rem;
+  color: #475569;
+  line-height: 1.5;
+}
+
+.ods-badge-box {
+  background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+  border: 2px solid #10b981;
+  border-radius: 12px;
+  padding: 18px 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 24px;
+}
+</style>
+</head>
+<body>
+<div class="app normas-page-app" id="normasAppWrap">
+
+  <!-- Barra de regreso y navegación oficial -->
+  <div class="nav-back-bar">
+    <a href="index.html" class="nav-back-btn">
+      <span style="font-size:1.1rem;">←</span> <span>Volver a la Granja</span>
+    </a>
+    <nav class="view-nav" style="margin:0;">
+      <a href="index.html">🌾 Potrero</a>
+      <a href="mapa.html">🗺️ Mapa 3D</a>
+      <a href="galeria-real.html">📸 Granja Real</a>
+      <a href="juegos.html">🎮 Minijuegos</a>
+      <a href="ranking.html">🏆 Ranking</a>
+      <a href="muro.html">💬 Muro</a>
+      <a href="perfil.html">🎒 Mi Perfil</a>
+      <a href="normas.html" class="active">📜 Normas</a>
+      <a href="docente.html">👩‍🏫 Docente</a>
+      <button id="navBtnCambiarModo" class="nav-switch-btn" type="button" title="Cerrar sesión actual">🚪 Cerrar Sesión</button>
+    </nav>
+  </div>
+
+  <!-- Encabezado de la Vista -->
+  <header class="top" style="margin-top:14px;margin-bottom:14px;">
+    <div class="brand-wrap">
+      <img src="assets/img/logo.png" alt="Logo Granja B-13" class="app-logo">
+      <div>
+        <h1 class="pixel-title">Decálogo de Normas & Bioética</h1>
+        <div class="sub">Protocolo de Cuidado Animal y Bienestar Escolar — Liceo Domingo Herrera Rivera B-13</div>
+      </div>
+    </div>
+    <div class="scorebox">
+      COMPROMISO ÉTICO:<br>
+      <b style="color:#10b981;">ODS 15 Biodiversidad</b>
+    </div>
+  </header>
+
+  <!-- Tarjeta Principal con el Decálogo -->
+  <div class="normas-card">
+    <div style="border-bottom: 2px solid var(--paper-dark); padding-bottom: 12px; margin-bottom: 16px;">
+      <h2 style="font-family:'Fraunces',serif;font-size:1.4rem;margin:0 0 4px;color:var(--ink);">
+        📜 Los 10 Principios del Cuidado y Bienestar Animal
+      </h2>
+      <p style="font-size:0.9rem;color:#555;margin:0;">
+        La granja del Liceo B-13 es un aula viva de biodiversidad. El respeto y los protocolos aseguran que cada animal viva saludable, seguro y querido por toda la comunidad escolar.
+      </p>
+    </div>
+
+    <div class="normas-grid">
+      <!-- Norma 1 -->
+      <div class="norma-item-box">
+        <div class="norma-number">1</div>
+        <div>
+          <div class="norma-title">🤫 Silencio y Respeto Auditivo</div>
+          <div class="norma-desc">Los conejos y aves tienen un sistema auditivo muy sensible. Evita gritar, correr abruptamente o golpear las rejas de los corrales para no causarles estrés cardíaco.</div>
+        </div>
+      </div>
+
+      <!-- Norma 2 -->
+      <div class="norma-item-box">
+        <div class="norma-number">2</div>
+        <div>
+          <div class="norma-title">🚫🍬 Dieta Segura: Sin Comida Chatarra</div>
+          <div class="norma-desc">Jamás ofrezcas pan, galletas, golosinas o comida procesada. Los animales solo deben ingerir heno, granos específicos y forraje verde fresco cosechado en el huerto escolar bajo pauta docente.</div>
+        </div>
+      </div>
+
+      <!-- Norma 3 -->
+      <div class="norma-item-box">
+        <div class="norma-number">3</div>
+        <div>
+          <div class="norma-title">🧼 Higiene y Lavado de Manos</div>
+          <div class="norma-desc">Lávate siempre las manos antes y después de acercarte a las áreas de manejo. Previene la transmisión de gérmenes y garantiza una bioseguridad recíproca entre humanos y animales.</div>
+        </div>
+      </div>
+
+      <!-- Norma 4 -->
+      <div class="norma-item-box">
+        <div class="norma-number">4</div>
+        <div>
+          <div class="norma-title">🪣 Agua Fresca y Bebederos Limpios</div>
+          <div class="norma-desc">Los bebederos deben revisarse y enjuagarse a diario. El agua estancada acumula polvo del desierto y bacterias perjudiciales para la salud digestiva.</div>
+        </div>
+      </div>
+
+      <!-- Norma 5 -->
+      <div class="norma-item-box">
+        <div class="norma-number">5</div>
+        <div>
+          <div class="norma-title">🐇 Trato Paciente: No Acorralar</div>
+          <div class="norma-desc">Acércate despacio y deja que el animal huela tu presencia. Nunca los tomes bruscamente de las orejas o extremidades. La sujeción correcta debe ser enseñada por el equipo docente.</div>
+        </div>
+      </div>
+
+      <!-- Norma 6 -->
+      <div class="norma-item-box">
+        <div class="norma-number">6</div>
+        <div>
+          <div class="norma-title">🥚 Protección de Nidos y Postura</div>
+          <div class="norma-desc">Respeta los nidos y cajones oscuros donde gallinas como Tormenta y Milagro descansan y empollan. No toques huevos tibios sin la indicación expresa de los encargados.</div>
+        </div>
+      </div>
+
+      <!-- Norma 7 -->
+      <div class="norma-item-box">
+        <div class="norma-number">7</div>
+        <div>
+          <div class="norma-title">🌱 Respeto por el Huerto Escolar</div>
+          <div class="norma-desc">No pises los bancales ni arranques hojas sin orientación. Los cultivos del liceo complementan la dieta fresca de las especies y regulan la temperatura ambiental.</div>
+        </div>
+      </div>
+
+      <!-- Norma 8 -->
+      <div class="norma-item-box">
+        <div class="norma-number">8</div>
+        <div>
+          <div class="norma-title">👩‍🏫 Supervisión de Adultos Responsables</div>
+          <div class="norma-desc">El ingreso directo a los corrales interiores, jaulas de gallos o aviario requiere siempre de la compañía de un profesor o monitor de granja acreditado.</div>
+        </div>
+      </div>
+
+      <!-- Norma 9 -->
+      <div class="norma-item-box">
+        <div class="norma-number">9</div>
+        <div>
+          <div class="norma-title">🩺 Reporte Inmediato de Síntomas</div>
+          <div class="norma-desc">Si notas que un conejo no se mueve, un ave tose o hay plumas erizadas en exceso, avisa inmediatamente a tu profesor para activar la revisión de bienestar zootécnico.</div>
+        </div>
+      </div>
+
+      <!-- Norma 10 -->
+      <div class="norma-item-box">
+        <div class="norma-number">10</div>
+        <div>
+          <div class="norma-title">🌍 Compromiso Sustentable (ODS 15)</div>
+          <div class="norma-desc">Nuestra granja escolar educa para la empatía y la protección de los ecosistemas terrestres. Cada acción de cuidado aquí refleja nuestro respeto por la vida en el planeta.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Banner de los ODS -->
+    <div class="ods-badge-box">
+      <span style="font-size:2.8rem;">🌿</span>
+      <div>
+        <div style="font-weight:800;color:#065f46;font-size:1.05rem;">
+          Compromiso con el Objetivo de Desarrollo Sostenible 15 (ODS 15)
+        </div>
+        <div style="font-size:0.85rem;color:#047857;margin-top:2px;line-height:1.4;">
+          <i>"Gestionar sosteniblemente los bosques, luchar contra la desertificación, detener e invertir la degradación de las tierras y frenar la pérdida de biodiversidad."</i>
+        </div>
+      </div>
+    </div>
+
+    <!-- Botón de Compromiso -->
+    <div style="margin-top:24px;text-align:center;">
+      <button type="button" id="btnAceptarNormas" class="tool-btn" style="padding:14px 28px;background:var(--grass-dark);color:#fff;font-weight:800;font-size:1rem;border-radius:10px;border:2px solid var(--ink);cursor:pointer;box-shadow:0 4px 14px rgba(59,88,50,0.3);">
+        ✓ He leído y me comprometo a cumplir las Normas de la Granja B-13
+      </button>
+    </div>
+  </div>
+
+</div>
+
+<!-- Scripts esenciales del sistema -->
+<script src="js/data.js"></script>
+<script src="js/state.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/audio.js"></script>
+<script>
+(function() {
+  'use strict';
+  if (typeof state === 'undefined' || !state) {
+    if (typeof loadState === 'function') loadState();
+  }
+  if (typeof applyGranjaTheme === 'function' && state) {
+    applyGranjaTheme(state.themeMode || 'light', state.themeBg || '#FAF7EE');
+  }
+
+  // Desbloquear logro al leer las normas
+  if (typeof unlockSecretBadge === 'function') {
+    unlockSecretBadge('devoralibros');
+  }
+  if (state) {
+    state.rulesRead = true;
+    if (typeof saveState === 'function') saveState();
+  }
+
+  const btn = document.getElementById('btnAceptarNormas');
+  if (btn) {
+    btn.addEventListener('click', () => {
+      if (typeof AudioFX !== 'undefined' && typeof AudioFX.coin === 'function') {
+        AudioFX.coin();
+      }
+      alert('🌟 ¡Gracias por tu compromiso con el bienestar y la bioética animal en La Granja B-13!');
+      window.location.href = 'index.html';
+    });
+  }
+
+  const logoutBtn = document.getElementById('navBtnCambiarModo');
+  if (logoutBtn) {
+    logoutBtn.addEventListener('click', () => {
+      if (typeof Auth !== 'undefined' && typeof Auth.cerrarSesion === 'function') {
+        Auth.cerrarSesion();
+      } else {
+        localStorage.removeItem('granjaSesion');
+        window.location.href = 'login.html';
+      }
+    });
+  }
+})();
+</script>
+</body>
+</html>

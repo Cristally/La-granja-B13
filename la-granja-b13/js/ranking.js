@@ -378,7 +378,10 @@
     // Conectar botón en la barra superior si existe
     const topBarBtn = document.getElementById('leaderboardBtn');
     if (topBarBtn) {
-      topBarBtn.addEventListener('click', toggleRankingWidget);
+      topBarBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        window.location.href = 'ranking.html';
+      });
     }
   }
 
