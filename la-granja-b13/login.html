@@ -9,13 +9,14 @@
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Karla:wght@400;500;700&family=Space+Mono:wght@400;700&family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/styles.css">
 <style>
-  /* Ajustes específicos para el portal standalone con paleta fresca de granja */
+  /* Ajustes específicos para el portal standalone con paleta roja institucional B-13 moderna */
   body.login-page {
     margin: 0;
     padding: 0;
     background:
-      radial-gradient(ellipse 90% 65% at 50% -10%, rgba(74, 222, 128, 0.28) 0%, transparent 65%),
-      radial-gradient(circle at 50% 20%, #15803d 0%, #166534 38%, #052e16 100%);
+      radial-gradient(ellipse 95% 60% at 50% -10%, rgba(244, 63, 94, 0.38) 0%, transparent 70%),
+      radial-gradient(ellipse 80% 50% at 85% 90%, rgba(225, 29, 72, 0.22) 0%, transparent 60%),
+      radial-gradient(circle at 50% 25%, #881337 0%, #580a22 42%, #2a0410 100%);
     min-height: 100vh;
     min-height: 100dvh;
     font-family: 'Fredoka', 'Baloo 2', 'Trebuchet MS', 'Karla', sans-serif;
@@ -23,19 +24,19 @@
     overflow-x: hidden;
   }
   .active-session-banner {
-    background: rgba(22, 101, 52, 0.55);
-    border: 2px solid #4ade80;
+    background: rgba(88, 10, 34, 0.8);
+    border: 2px solid #fb7185;
     border-radius: 14px;
     padding: 12px 18px;
     margin: 0 auto 16px;
     max-width: 440px;
     text-align: center;
-    color: #f0fdf4;
+    color: #fff1f2;
     display: flex;
     flex-direction: column;
     gap: 10px;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.4), 0 0 20px rgba(74, 222, 128, 0.2);
-    backdrop-filter: blur(8px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.5), 0 0 24px rgba(225, 29, 72, 0.3);
+    backdrop-filter: blur(10px);
   }
   .active-session-banner b {
     color: #facc15;
@@ -57,7 +58,7 @@
   }
   .active-session-btn.btn-continue {
     background: linear-gradient(135deg, #facc15 0%, #eab308 100%);
-    color: #14532d;
+    color: #3b0713;
     font-weight: 800;
     box-shadow: 0 4px 12px rgba(234, 179, 8, 0.35);
   }
@@ -576,7 +577,7 @@
         <h3 class="brand-heading brand-heading-sm" style="color:#ffd83d;margin-bottom:6px;">¡Cuenta Creada con Éxito!</h3>
         <p class="auth-hint" style="font-size:0.95rem;color:#ffffff;line-height:1.5;margin:8px 0 14px;">
           ¡Bienvenido/a a La Granja B-13, <b id="regSuccessNombre" style="color:#ffd83d;">Estudiante</b>!<br>
-          Tu Cuaderno de Campo individual del curso <b id="regSuccessCurso" style="color:#a7f3d0;">1° Medio</b> ha sido activado en el sistema escolar.
+          Tu Cuaderno de Campo individual del curso <b id="regSuccessCurso" style="color:#fef08a;">1° Medio</b> ha sido activado en el sistema escolar.
         </p>
         <div style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,216,61,0.3);border-radius:8px;padding:10px 14px;margin-bottom:16px;text-align:left;font-size:0.82rem;color:#ffeed1;line-height:1.55;">
           🌾 <b>Cuaderno Individual:</b> Tu puntaje y décimas quedarán guardados en este equipo.<br>

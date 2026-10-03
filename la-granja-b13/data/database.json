@@ -1,14 +1,14 @@
 {
   "students": {
-    "estudiante prueba_1_ medio a": {
-      "id": "estudiante prueba_1_ medio a",
+    "estudiante_prueba_1_medio_a": {
+      "id": "estudiante_prueba_1_medio_a",
       "studentName": "Estudiante Prueba",
-      "studentGrade": "1� Medio A",
+      "studentGrade": "1° Medio A",
       "genero": "Prefiero no decirlo",
       "correo": "estudiante.prueba@b13.cl",
       "score": 0,
       "pureScore": 0,
-      "avatarIcon": "?????",
+      "avatarIcon": "🧑‍🌾",
       "discoveredCount": 0,
       "mapDiscoveredCount": 0,
       "potreroQuizCompleted": 0,
@@ -18,7 +18,7 @@
       "stateData": {
         "score": 0,
         "pureScore": 0,
-        "avatarIcon": "?????",
+        "avatarIcon": "🧑‍🌾",
         "badges": [],
         "discovered": [],
         "mapDiscovered": []
@@ -29,12 +29,12 @@
   "users": {
     "estudiante.prueba@b13.cl": {
       "nombre": "Estudiante Prueba",
-      "curso": "1� Medio A",
+      "curso": "1° Medio A",
       "genero": "Prefiero no decirlo",
       "correo": "estudiante.prueba@b13.cl",
       "clave": "clave123",
       "rol": "estudiante",
-      "avatar": "?????",
+      "avatar": "🧑‍🌾",
       "registradoEn": "2026-10-01T20:29:21.063Z"
     }
   },
@@ -45,7 +45,7 @@
       "user": "Profesor/a B-13",
       "course": "Docente",
       "role": "profesor",
-      "detail": "Respondió a la consulta de Estudiante Prueba: A los agapornis les encanta la manzana roja en rod...",
+      "detail": "Respondió a la consulta de Estudiante Prueba: A los agapornis les encanta la manzana roja en rodajas finas...",
       "icon": "↩️",
       "timestamp": "2026-10-01T20:33:27.375Z"
     },
@@ -53,9 +53,9 @@
       "id": "act_1790886790860_g4nz4",
       "type": "comment",
       "user": "Estudiante Prueba",
-      "course": "1� Medio A",
+      "course": "1° Medio A",
       "role": "estudiante",
-      "detail": "Publicó un comentario en la Granja: �Cu�l es la fruta favorita de los agapornis de la ...",
+      "detail": "Publicó una pregunta en la Granja: ¿Cuál es la fruta favorita de los agapornis de la granja?",
       "icon": "💬",
       "timestamp": "2026-10-01T20:33:10.860Z"
     },
@@ -63,7 +63,7 @@
       "id": "act_1790886567617_wm2gd",
       "type": "login",
       "user": "Estudiante Prueba",
-      "course": "1� Medio A",
+      "course": "1° Medio A",
       "role": "estudiante",
       "detail": "Inició sesión en la plataforma escolar.",
       "icon": "🔑",
@@ -73,9 +73,9 @@
       "id": "act_1790886561066_mnlkp",
       "type": "register",
       "user": "Estudiante Prueba",
-      "course": "1� Medio A",
+      "course": "1° Medio A",
       "role": "estudiante",
-      "detail": "Nuevo estudiante registrado en 1� Medio A.",
+      "detail": "Nuevo estudiante registrado en 1° Medio A.",
       "icon": "🎓",
       "timestamp": "2026-10-01T20:29:21.066Z"
     }
@@ -85,13 +85,13 @@
       "id": "com_1790886790860_t2st",
       "autor": "Estudiante Prueba",
       "author": "Estudiante Prueba",
-      "curso": "1� Medio A",
-      "course": "1� Medio A",
+      "curso": "1° Medio A",
+      "course": "1° Medio A",
       "rol": "estudiante",
       "role": "estudiante",
-      "avatar": "💬",
-      "mensaje": "�Cu�l es la fruta favorita de los agapornis de la granja?",
-      "text": "�Cu�l es la fruta favorita de los agapornis de la granja?",
+      "avatar": "🧑‍🌾",
+      "mensaje": "¿Cuál es la fruta favorita de los agapornis de la granja?",
+      "text": "¿Cuál es la fruta favorita de los agapornis de la granja?",
       "animalId": "agapornis",
       "categoria": "pregunta",
       "isQuestion": true,

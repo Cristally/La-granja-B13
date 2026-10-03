@@ -31,6 +31,10 @@ function openOverlayId(id) {
     window.location.href = 'perfil.html';
     return;
   }
+  if (id === 'commentsOverlay') {
+    window.location.href = 'muro.html';
+    return;
+  }
 
   const el = document.getElementById(id);
   if (el) {
@@ -3186,29 +3190,8 @@ function fallbackReplyLocally(cid, replyData) {
 }
 
 function openCommentsModal(animalId) {
-  ensureCommentsModal();
-  const sesion = (typeof Auth !== 'undefined' && typeof Auth.getSesion === 'function') ? Auth.getSesion() : null;
-  const authorDisplay = document.getElementById('commentAuthorDisplay');
-  if (authorDisplay) {
-    const curName = (sesion && sesion.nombre) || state.studentName || 'Estudiante';
-    const curRole = (sesion && sesion.rol === 'profesor') ? 'Docente B-13' : 'Estudiante';
-    authorDisplay.innerHTML = `Publicando como: <b>${sanitizeInput(curName)}</b> (${curRole})`;
-  }
-
-  if (animalId) {
-    currentCommentAnimalFilter = animalId;
-    const filterSel = document.getElementById('commentFilterAnimal');
-    if (filterSel) filterSel.value = animalId;
-    const postSel = document.getElementById('commentPostAnimal');
-    if (postSel) postSel.value = animalId;
-  } else {
-    currentCommentAnimalFilter = 'all';
-    const filterSel = document.getElementById('commentFilterAnimal');
-    if (filterSel) filterSel.value = 'all';
-  }
-
-  loadCommunityComments(currentCommentAnimalFilter);
-  openOverlayId('commentsOverlay');
+  const targetUrl = 'muro.html' + (animalId ? `?animal=${encodeURIComponent(animalId)}` : '');
+  window.location.href = targetUrl;
 }
 
 window.openCommentsModal = openCommentsModal;

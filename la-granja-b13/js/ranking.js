@@ -29,6 +29,22 @@
     return { memScore, wsScore, platScore, gamesScore };
   }
 
+  function sanitizeAvatarIcon(icon) {
+    if (!icon || typeof icon !== 'string') return '🧑‍🌾';
+    const trimmed = icon.trim();
+    if (trimmed === '' || trimmed.includes('?') || trimmed.includes('') || trimmed.length > 4) {
+      return '🧑‍🌾';
+    }
+    return trimmed;
+  }
+
+  function sanitizeStudentGrade(grade) {
+    if (!grade || typeof grade !== 'string') return '1° Medio';
+    let clean = grade.replace(/[?]+/g, '°').trim();
+    clean = clean.replace(/^(\d+)\s+Medio/i, '$1° Medio');
+    return clean || '1° Medio';
+  }
+
   /**
    * Obtiene la lista unificada de estudiantes reales y calcula su puntaje puro (sin repetición)
    */
@@ -73,8 +89,8 @@
       estudianteActivo = {
         id: (state.studentName.trim() + '_' + (state.studentGrade || '').trim()).toLowerCase(),
         studentName: state.studentName.trim(),
-        studentGrade: (state.studentGrade || '').trim() || 'Liceo B-13',
-        avatarIcon: state.avatarIcon || '🧑‍🌾',
+        studentGrade: sanitizeStudentGrade(state.studentGrade),
+        avatarIcon: sanitizeAvatarIcon(state.avatarIcon),
         pureScore: pure,
         score: pure,
         quizzesCount: (Object.keys(state.mapQuiz || {}).filter(k => state.mapQuiz[k] && state.mapQuiz[k].completed).length),
@@ -97,8 +113,8 @@
       mapaEstudiantes.set(id, {
         id,
         studentName: c.nombre.trim(),
-        studentGrade: (c.curso || '').trim() || 'Liceo B-13',
-        avatarIcon: c.genero === 'Femenino' ? '🌸' : (c.genero === 'Masculino' ? '🧢' : '🧑‍🌾'),
+        studentGrade: sanitizeStudentGrade(c.curso),
+        avatarIcon: sanitizeAvatarIcon(c.avatar || (c.genero === 'Femenino' ? '🌸' : (c.genero === 'Masculino' ? '🧢' : '🧑‍🌾'))),
         pureScore: 0,
         score: 0,
         badgesCount: 0,
@@ -123,8 +139,8 @@
       mapaEstudiantes.set(id, {
         id,
         studentName: p.studentName.trim(),
-        studentGrade: (p.studentGrade || '').trim() || 'Liceo B-13',
-        avatarIcon: p.avatarIcon || (existing ? existing.avatarIcon : '🧑‍🌾'),
+        studentGrade: sanitizeStudentGrade(p.studentGrade || (existing ? existing.studentGrade : '')),
+        avatarIcon: sanitizeAvatarIcon(p.avatarIcon || (existing ? existing.avatarIcon : '')),
         pureScore: pure,
         score: pure,
         badgesCount: p.badgesCount || 0,
@@ -147,8 +163,8 @@
         mapaEstudiantes.set(id, {
           id,
           studentName: s.studentName.trim(),
-          studentGrade: (s.studentGrade || '').trim() || 'Liceo B-13',
-          avatarIcon: s.avatarIcon || (existing ? existing.avatarIcon : '🧑‍🌾'),
+          studentGrade: sanitizeStudentGrade(s.studentGrade || (existing ? existing.studentGrade : '')),
+          avatarIcon: sanitizeAvatarIcon(s.avatarIcon || (existing ? existing.avatarIcon : '')),
           pureScore: pure,
           score: pure,
           badgesCount: s.badgesCount || (existing ? existing.badgesCount : 0),
@@ -504,11 +520,13 @@
         badgeHtml = `<span class="rank-pos-badge other-badge">#${rankNum}</span>`;
       }
 
+      const safeGrade = sanitizeStudentGrade(st.studentGrade);
+      const safeAvatar = sanitizeAvatarIcon(st.avatarIcon);
       const scoreValue = isGames ? (st.gamesScore || 0) : st.pureScore;
       const scoreLabel = isGames ? 'pts arcade' : 'pts puros';
       const breakdownOrGrade = isGames
         ? `<span>🎮</span> 🃏 ${st.memScore || 0} · 🔤 ${st.wsScore || 0} · 🏃 ${st.platScore || 0}`
-        : `<span>🏫</span> ${st.studentGrade || 'Enseñanza Media'}`;
+        : `<span>🏫</span> ${safeGrade}`;
 
       html += `
         <div class="${cardClass}" data-rank="${rankNum}">
@@ -517,7 +535,7 @@
             <div class="ranking-avatar-wrap">
               ${crownVfx}
               <div class="ranking-avatar-box">
-                <span class="ranking-avatar-icon">${st.avatarIcon || '🧑‍🌾'}</span>
+                <span class="ranking-avatar-icon">${safeAvatar}</span>
               </div>
             </div>
             <div class="ranking-user-info">
@@ -633,7 +651,7 @@
     container.innerHTML = `
       <div class="my-status-box active-student">
         <div class="my-status-avatar-box">
-          <span class="my-status-avatar">${estudianteActivo.avatarIcon || '🧑‍🌾'}</span>
+          <span class="my-status-avatar">${sanitizeAvatarIcon(estudianteActivo.avatarIcon)}</span>
         </div>
         <div class="my-status-info">
           <div class="my-status-top-row">
