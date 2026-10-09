@@ -95,6 +95,8 @@ if (stage) {
     el.className = 'animal bob';
     const yPos = DEFAULT_Y_POSITIONS[a.id] !== undefined ? DEFAULT_Y_POSITIONS[a.id] : (a.y || 20);
     el.style.bottom = yPos + 'px';
+    // Orden de profundidad z-index por altura vertical: plano frontal se superpone naturalmente
+    el.style.zIndex = (10 + Math.floor(200 - yPos)).toString();
     el.innerHTML = `
       <div class="sprite">
         ${a.emoji}
@@ -116,11 +118,12 @@ if (stage) {
     stage.appendChild(el);
     sprites[a.id] = el;
 
-    // Distribuir uniformemente a lo ancho de la pantalla para que TODOS sean visibles de inmediato
-    const initialFraction = (idx + 0.5) / POTRERO_ANIMALS.length;
-    a.x = 8 + initialFraction * availW;
-    a.targetX = 8 + Math.random() * availW;
-    a.speed = 0.22 + Math.random() * 0.22;
+    // Distribuir inicialmente según sector preferente para mantenerlos bien separados
+    const sector = ANIMAL_SECTORS[a.id] || { min: (idx / POTRERO_ANIMALS.length), max: ((idx + 1) / POTRERO_ANIMALS.length) };
+    const sectorMid = (sector.min + sector.max) / 2;
+    a.x = 8 + sectorMid * availW;
+    a.targetX = getAnimalTargetX(a.id, availW);
+    a.speed = 0.20 + Math.random() * 0.16;
     el.style.left = a.x + 'px';
   });
 }
@@ -142,6 +145,19 @@ function showSpeechBubble(animalId, customText) {
     <div class="bubble-body">${text}</div>
   `;
 
+  // Asegurar que la burbuja no se desborde fuera del escenario por la izquierda o derecha en celular
+  const a = POTRERO_ANIMALS.find(x => x.id === animalId);
+  if (a && stage) {
+    const stageW = stage.clientWidth;
+    if (a.x < 75) {
+      bubble.style.left = '20%';
+      bubble.style.transform = 'translateX(0) translateY(-6px)';
+    } else if (a.x > stageW - 85) {
+      bubble.style.left = '80%';
+      bubble.style.transform = 'translateX(-100%) translateY(-6px)';
+    }
+  }
+
   bubble.addEventListener('click', (e) => {
     e.stopPropagation();
     openCard(animalId);
@@ -153,7 +169,7 @@ function showSpeechBubble(animalId, customText) {
   el._bubbleTimer = setTimeout(() => {
     bubble.classList.add('fade-out');
     setTimeout(() => bubble.remove(), 400);
-  }, 4800);
+  }, 4200);
 }
 window.showSpeechBubble = showSpeechBubble;
 
@@ -270,22 +286,40 @@ function animate() {
     const w = stage.clientWidth;
     const minX = 8;
     const maxX = Math.max(minX + 60, w - 74);
+    const availW = Math.max(120, w - 80);
 
     POTRERO_ANIMALS.forEach(a => {
       // De noche los animales descansan y no caminan
       if (isNightMode || a.paused || a.hovered) return;
       const dx = a.targetX - a.x;
       if (Math.abs(dx) < 3) {
-        a.targetX = minX + Math.random() * (maxX - minX);
-        a.pauseTimer = 18 + Math.random() * 45;
+        a.targetX = getAnimalTargetX(a.id, availW);
+        a.pauseTimer = 20 + Math.random() * 45;
       }
       if (a.pauseTimer > 0) { a.pauseTimer--; return; }
       const dir = dx > 0 ? 1 : -1;
       a.x += dir * a.speed;
 
       // Mantener estrictamente dentro del marco visible
-      if (a.x < minX) { a.x = minX; a.targetX = minX + Math.random() * (maxX - minX); }
-      if (a.x > maxX) { a.x = maxX; a.targetX = minX + Math.random() * (maxX - minX); }
+      if (a.x < minX) { a.x = minX; a.targetX = getAnimalTargetX(a.id, availW); }
+      if (a.x > maxX) { a.x = maxX; a.targetX = getAnimalTargetX(a.id, availW); }
+
+      // Separación suave entre animales para evitar que se superpongan al tocar en móvil
+      POTRERO_ANIMALS.forEach(other => {
+        if (other.id !== a.id) {
+          const horizDist = Math.abs(a.x - other.x);
+          const yA = DEFAULT_Y_POSITIONS[a.id] || 0;
+          const yO = DEFAULT_Y_POSITIONS[other.id] || 0;
+          const vertDist = Math.abs(yA - yO);
+          if (horizDist < 52 && vertDist < 42) {
+            if (a.x < other.x) {
+              a.x = Math.max(minX, a.x - 0.25);
+            } else {
+              a.x = Math.min(maxX, a.x + 0.25);
+            }
+          }
+        }
+      });
 
       const el = sprites[a.id];
       if (el) {
@@ -304,10 +338,11 @@ window.addEventListener('resize', () => {
   const w = stage.clientWidth;
   const minX = 8;
   const maxX = Math.max(minX + 60, w - 74);
+  const availW = Math.max(120, w - 80);
   POTRERO_ANIMALS.forEach(a => {
     if (a.x > maxX) a.x = maxX;
     if (a.x < minX) a.x = minX;
-    if (a.targetX > maxX) a.targetX = maxX;
+    if (a.targetX > maxX) a.targetX = getAnimalTargetX(a.id, availW);
     const el = sprites[a.id];
     if (el) el.style.left = a.x + 'px';
   });
