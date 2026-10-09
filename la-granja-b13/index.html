@@ -13,7 +13,7 @@
 <div class="app">
 
   <nav class="view-nav">
-    <a href="index.html" class="active">🌾 Potrero</a>
+    <a href="index.html" class="active">🌾 Potrero<span class="nav-extra-text"> Virtual</span></a>
     <a href="mapa.html">🗺️ Mapa<span class="nav-extra-text"> de la Granja</span></a>
     <a href="quizzes.html">⭐ Desafíos<span class="nav-extra-text"> de Décimas</span></a>
     <a href="galeria-real.html">📸 Granja Real<span class="nav-extra-text"> B-13</span></a>
@@ -30,31 +30,7 @@
         <div class="sub">Exploración interactiva de la granja — Liceo Domingo Herrera Rivera B-13</div>
       </div>
     </div>
-    <div class="scorebox">
-      PUNTAJE: <b id="score">0</b><br>
-      FICHAS: <span id="discovered">0</span>/5
-    </div>
   </header>
-
-  <div class="toolbar">
-    <div class="student-pill" id="studentPill" title="Toca para ir a tu Cuaderno de Campo y Perfil" style="cursor:pointer;">
-      <span class="student-icon">🎒</span>
-      <div class="student-info">
-        <span class="student-label">ESTUDIANTE</span>
-        <b id="studentDisplayName">(Sin registrar)</b>
-      </div>
-      <button id="changeStudentBtn" class="student-change-btn" type="button" aria-label="Editar estudiante">✏️</button>
-    </div>
-    <div class="tool-buttons">
-      <button id="dayNightBtn" class="tool-btn" type="button" title="Alternar ciclo Día y Noche">🌙 Noche</button>
-      <button id="leaderboardBtn" class="tool-btn leaderboard-tool-btn" type="button" title="Ver Salón de Honor y Ranking">🏆 Ranking</button>
-      <button id="achievementsBtn" class="tool-btn" type="button">🎖️ Logros</button>
-      <button id="rulesBtn" class="tool-btn" type="button">📋 Normas</button>
-      <a href="perfil.html" class="tool-btn btn-mi-perfil" id="btnMiPerfil" title="Ver mi Cuaderno de Campo, perfil y credencial escolar">👤 Mi Perfil</a>
-      <button id="soundBtn" class="tool-btn" type="button">🔊 Sonido</button>
-      <button id="teacherBtn" class="tool-btn" type="button" style="display:none;">👩‍🏫 Panel docente</button>
-    </div>
-  </div>
 
   <!-- ==================== SECCIÓN INTRODUCTORIA (VIDEO & EXPERIENCIAS B-13) ==================== -->
   <section class="intro-hero" id="introSection" aria-label="Video de bienvenida y experiencias de la granja">
@@ -219,17 +195,41 @@
     </div>
   </section>
 
-  <!-- Encabezado de transición al Potrero interactivo -->
+  <!-- ==================== POTRERO VIRTUAL INTERACTIVO (SIMULADOR Y HERRAMIENTAS) ==================== -->
   <div class="potrero-section-header" id="potreroSection">
     <div class="potrero-title-wrap">
-      <h3><span>🌾</span> Potrero Escénico Interactivo</h3>
-      <p>Observa los animales libres en la pradera, tócalos para ver sus fichas y preparar tus desafíos</p>
+      <h3><span>🌾</span> Potrero Virtual Interactivo</h3>
+      <p>Observa los animales libres en nuestro potrero virtual, tócalos para ver sus fichas y preparar tus desafíos</p>
+    </div>
+    <div class="scorebox">
+      PUNTAJE: <b id="score">0</b><br>
+      FICHAS: <span id="discovered">0</span>/5
+    </div>
+  </div>
+
+  <div class="toolbar">
+    <div class="student-pill" id="studentPill" title="Toca para ir a tu Cuaderno de Campo y Perfil" style="cursor:pointer;">
+      <span class="student-icon">🎒</span>
+      <div class="student-info">
+        <span class="student-label">ESTUDIANTE</span>
+        <b id="studentDisplayName">(Sin registrar)</b>
+      </div>
+      <button id="changeStudentBtn" class="student-change-btn" type="button" aria-label="Editar estudiante">✏️</button>
+    </div>
+    <div class="tool-buttons">
+      <button id="dayNightBtn" class="tool-btn" type="button" title="Alternar ciclo Día y Noche">🌙 Noche</button>
+      <button id="leaderboardBtn" class="tool-btn leaderboard-tool-btn" type="button" title="Ver Salón de Honor y Ranking">🏆 Ranking</button>
+      <button id="achievementsBtn" class="tool-btn" type="button">🎖️ Logros</button>
+      <button id="rulesBtn" class="tool-btn" type="button">📋 Normas</button>
+      <a href="perfil.html" class="tool-btn btn-mi-perfil" id="btnMiPerfil" title="Ver mi Cuaderno de Campo, perfil y credencial escolar">👤 Mi Perfil</a>
+      <button id="soundBtn" class="tool-btn" type="button">🔊 Sonido</button>
+      <button id="teacherBtn" class="tool-btn" type="button" style="display:none;">👩‍🏫 Panel docente</button>
     </div>
   </div>
 
   <div class="stage-wrap">
     <div class="stage" id="stage">
-      <div class="hint">🌾 Toca un animal para ver su ficha y descubrir curiosidades de campo (desafíos con décimas en el Mapa 3D)</div>
+      <div class="hint">🌾 Toca un animal en el potrero virtual para ver su ficha y descubrir curiosidades de campo (desafíos con décimas en el Mapa 3D)</div>
       <div class="sun" id="stageSun"></div>
       <div class="stars-layer" id="starsLayer"></div>
       <div class="birds-flock" id="birdsFlock">^ ^  ^  ^^</div>
@@ -247,7 +247,7 @@
       </div>
     </div>
   </div>
-  <div class="legend">Cada animal camina libremente por el potrero del liceo B-13. Al observarlo y tocarlo te dirá pistas y curiosidades de campo para preparar tus desafíos.</div>
+  <div class="legend">Cada animal camina libremente por el potrero virtual del liceo B-13. Al observarlo y tocarlo te dirá pistas y curiosidades de campo para preparar tus desafíos.</div>
 
   <!-- Vitrina de Logros e Insignias B-13 (Diseño Gamificado y Ordenado) -->
   <section class="badges-showcase-card" id="badgesShowcaseCard">

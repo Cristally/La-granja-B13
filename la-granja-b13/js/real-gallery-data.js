@@ -4,6 +4,208 @@
 */
 
 const REAL_GALLERY_ITEMS = [
+  // ========================================================
+  // 📸 REGISTROS FOTOGRÁFICOS HD OFICIALES (ONEDRIVE B-13)
+  // Las imágenes en máxima resolución se presentan en primer lugar.
+  // ========================================================
+  {
+    id: 'pozo-huerto-hd',
+    category: 'espacios',
+    title: 'El Pozo Histórico & Jardín Botánico (HD)',
+    subtitle: 'Infraestructura hídrica sustentable y paisajismo escolar',
+    photo: 'assets/img/real/pozo_huerto_hd.jpg',
+    extraPhoto: 'assets/img/real/huerto_pozo_panoramica.jpg',
+    gameRef: {
+      type: 'map',
+      label: 'Pozo de Agua Histórico',
+      icon: '🪣',
+      link: 'mapa.html'
+    },
+    specs: [
+      { k: 'Resolución', v: 'Cámara Réflex HD Oficial Liceo B-13' },
+      { k: 'Estructura', v: 'Brocal artesanal de madera, techo a dos aguas y polea' },
+      { k: 'Entorno', v: 'Jardineras de piedra, plantas trepadoras y huerto medicinal' },
+      { k: 'ODS', v: 'ODS 6 (Agua limpia) y ODS 15 (Vida de ecosistemas)' }
+    ],
+    desc: 'Fotografía en alta definición del pozo de madera tradicional construido en la granja del Liceo B-13, rodeado de vegetación cuidada por profesores y estudiantes.',
+    pedagogy: '💡 Muestra el valor de conservar fuentes de agua limpia y crear microclimas verdes en el desierto costero de Antofagasta.'
+  },
+  {
+    id: 'conejos-tres-amigos-hd',
+    category: 'fauna',
+    title: 'Conejeras Escolares: Quesito, Ceniza y Canela (HD)',
+    subtitle: 'Comunidad de conejos junto a cartel de bioética energética',
+    photo: 'assets/img/real/conejos_tres_amigos_cartel.jpg',
+    extraPhoto: 'assets/img/real/conejos_nesquik_quesito_canela.jpg',
+    gameRef: {
+      type: 'map',
+      label: 'Conejeras Oficiales',
+      icon: '🐇',
+      link: 'ficha.html?id=quesito'
+    },
+    specs: [
+      { k: 'Ejemplares', v: 'Quesito (blanco ojos azules), Ceniza (gris) y Canela (ámbar)' },
+      { k: 'Cartel', v: '"La energía también necesita de nuestro cuidado"' },
+      { k: 'Instalación', v: 'Conejeras con pasto sintético higiénico y madrigueras térmicas' },
+      { k: 'Comportamiento', v: 'Animales sociables que se acercan curiosos a la malla' }
+    ],
+    desc: 'Primer plano en alta resolución de tres de los queridos conejos del liceo asomándose en su corral, con el cartel ambiental escolar al fondo.',
+    pedagogy: '💡 Vincula el respeto zootécnico a pequeños mamíferos con la conciencia de sustentabilidad energética escolar.'
+  },
+  {
+    id: 'matias-vicente-duo-hd',
+    category: 'fauna',
+    title: 'Matías y Vicente: Gallitos Japoneses Bantam (HD)',
+    subtitle: 'Retrato en primer plano de los reyes ornamentales del corral',
+    photo: 'assets/img/real/matias_vicente_duo_hd.jpg',
+    extraPhoto: 'assets/img/real/jaula_matias_vicente_cartel.jpg',
+    gameRef: {
+      type: 'map',
+      label: 'Nidos y Crianza del Corral',
+      icon: '🐓',
+      link: 'ficha.html?id=matias'
+    },
+    specs: [
+      { k: 'Ejemplares', v: 'Matías y Vicente (Gallitos Japoneses / Bantam)' },
+      { k: 'Plumaje', v: 'Blanco sedoso, crestas rojas vivas y tarsos emplumados' },
+      { k: 'Convivencia', v: 'Conviven en total armonía sin rivalidad de corral' },
+      { k: 'Cartel oficial', v: '"Somos dos Gallitos Japoneses muy amorosos..."' }
+    ],
+    desc: 'Retrato nítido en HD de Matías y Vicente. Se aprecian los detalles anatómicos de sus crestas termorreguladoras y su plumaje esponjoso.',
+    pedagogy: '💡 Enseña a los alumnos sobre genética de razas enanas (Bantam) y resolución pacífica de jerarquías sociales en aves.'
+  },
+  {
+    id: 'los-manguitos-rama-hd',
+    category: 'fauna',
+    title: 'Los Manguitos: Trío de Agapornis en el Aviario (HD)',
+    subtitle: 'Clan de agapornis inseparables descansando en percha natural',
+    photo: 'assets/img/real/los_manguitos_rama_hd.jpg',
+    extraPhoto: 'assets/img/real/pastelito_malla_hd.jpg',
+    gameRef: {
+      type: 'map',
+      label: 'Aviario de Aves Menores',
+      icon: '🦜',
+      link: 'ficha.html?id=los_manguitos'
+    },
+    specs: [
+      { k: 'Especie', v: 'Agapornis roseicollis (Inseparables)' },
+      { k: 'Coloración', v: 'Máscara facial coral melocotón, cuerpo amarillo mango y lima' },
+      { k: 'Pata', v: 'Zigodáctila (dos dedos adelante y dos atrás para trepar)' },
+      { k: 'Hábitat', v: 'Aviario con perchas de madera natural y enriquecimiento' }
+    ],
+    desc: 'Fotografía vertical en alta definición de Los Manguitos alineados en una rama natural dentro del aviario escolar.',
+    pedagogy: '💡 Ilustra la etología social de los psitácidos, el acicalamiento cooperativo y la importancia de jaulas voladeras espaciosas.'
+  },
+  {
+    id: 'quesito-ojos-azules-hd',
+    category: 'fauna',
+    title: 'Conejo Quesito: Ojos Azules y Descanso Térmico (HD)',
+    subtitle: 'El conejo decano más joven y esponjoso de la conejera',
+    photo: 'assets/img/real/quesito_ojos_azules_hd.jpg',
+    gameRef: {
+      type: 'map',
+      label: 'Conejeras Oficiales (Quesito)',
+      icon: '🐇',
+      link: 'ficha.html?id=quesito'
+    },
+    specs: [
+      { k: 'Edad', v: '1 Año' },
+      { k: 'Fenotipo', v: 'Manto blanco de pelo largo y ojos azul zafiro' },
+      { k: 'Comportamiento', v: 'Muy metiche, se refugia en sombra bajo bancos' },
+      { k: 'Bienestar', v: 'Suelo limpio con forraje y libre de corrientes frías' }
+    ],
+    desc: 'Fotografía en primer plano de Quesito descansando tranquilamente sobre el césped protegido de la conejera escolar.',
+    pedagogy: '💡 Analiza las adaptaciones fisiológicas del pelaje térmico y la variación de pigmentación en lagomorfos domésticos.'
+  },
+  {
+    id: 'almacen-herramientas-aviario-hd',
+    category: 'espacios',
+    title: 'Almacén de Granja, Herramientas & Aviario (HD)',
+    subtitle: 'Sector de aperos de cultivo, compostaje y letrero de respeto',
+    photo: 'assets/img/real/almacen_herramientas_aviario.jpg',
+    gameRef: {
+      type: 'map',
+      label: 'Almacén de Granja',
+      icon: '📦',
+      link: 'mapa.html'
+    },
+    specs: [
+      { k: 'Herramientas', v: 'Palas, rastrillos, mangueras y cajoneras de madera reciclada' },
+      { k: 'Letrero', v: '"Si entras a este lugar por naturaleza sentirás olor a desechos..."' },
+      { k: 'Organización', v: 'Sector de acopio de paja y sustratos de lombricultura' },
+      { k: 'Valores', v: 'Trabajo colaborativo, orden y bioética zootécnica' }
+    ],
+    desc: 'Vista amplia del taller exterior y frontis del aviario. Muestra las herramientas con las que los estudiantes cuidan a los animales y huertos.',
+    pedagogy: '💡 Enseña a naturalizar la biología animal y la responsabilidad del mantenimiento higiénico sin prejuicios.'
+  },
+  {
+    id: 'porton-lapices-mural-hd',
+    category: 'espacios',
+    title: 'Portón de Lápices de Colores & Mural B-13 (HD)',
+    subtitle: 'Entrada artística e identitaria a la granja escolar',
+    photo: 'assets/img/real/porton_lapices_mural.jpg',
+    gameRef: {
+      type: 'map',
+      label: 'Entrada Oficial de la Granja',
+      icon: '🚪',
+      link: 'mapa.html'
+    },
+    specs: [
+      { k: 'Arte', v: 'Portón de madera pintado como lápices de colores' },
+      { k: 'Mural', v: 'Mural comunitario: "Podemos Lograrlo" con insignia B-13' },
+      { k: 'Sombra', v: 'Parra y enredaderas que cobijan el umbral de entrada' },
+      { k: 'Identidad', v: 'Punto de encuentro de las delegaciones de estudiantes' }
+    ],
+    desc: 'El portón emblemático de la granja del Liceo B-13 con sus lápices de colores y mural motivacional, dando la bienvenida al espacio verde.',
+    pedagogy: '💡 Vincula el arte, la pertenencia escolar y la educación ambiental en un espacio pedagógico integrador.'
+  },
+  {
+    id: 'conejos-caricia-estudiantes-hd',
+    category: 'fauna',
+    title: 'Convivencia Pacífica: Caricias y Cuidado Animal (HD)',
+    subtitle: 'Estudiantes del liceo interactuando con los conejos',
+    photo: 'assets/img/real/conejos_caricia_estudiantes.jpg',
+    extraPhoto: 'assets/img/real/canela_pasto_hd.jpg',
+    gameRef: {
+      type: 'potrero',
+      label: 'Potrero y Convivencia',
+      icon: '🤝',
+      link: 'index.html'
+    },
+    specs: [
+      { k: 'Norma', v: 'Movimientos suaves, sin ruidos molestos ni manipulación forzada' },
+      { k: 'Reacción', v: 'Conejo negro dócil aceptando caricias con serenidad' },
+      { k: 'Enriquecimiento', v: 'Chalas de choclo y forraje fresco de colación' },
+      { k: 'Impacto', v: 'Reducción de ansiedad escolar y fomento de empatía' }
+    ],
+    desc: 'Muestra a un estudiante acariciando suavemente a uno de los conejos del liceo mientras otro come hojas de choclo fresco al lado.',
+    pedagogy: '💡 Evidencia concreta del cumplimiento del Decálogo de Normas y el impacto socioemocional positivo de la granja.'
+  },
+  {
+    id: 'gallinero-cleo-hd',
+    category: 'fauna',
+    title: 'Gallinero Escolar: Cleo y Aves de Corral (HD)',
+    subtitle: 'Vida cotidiana en el recinto protegido de gallinas',
+    photo: 'assets/img/real/gallinero_cleo_hd.jpg',
+    gameRef: {
+      type: 'map',
+      label: 'Gallinero Principal',
+      icon: '🐔',
+      link: 'ficha.html?id=cleo'
+    },
+    specs: [
+      { k: 'Ave principal', v: 'Cleo (plumaje barrado y cresta roja)' },
+      { k: 'Entorno', v: 'Suelo de tierra para baños de arena y perchas de madera' },
+      { k: 'Protección', v: 'Malla gallinera resistente y sombra contra el sol nortino' },
+      { k: 'Comportamiento', v: 'Curiosidad y vocalización calmada de corral' }
+    ],
+    desc: 'Primer plano de Cleo observando con curiosidad detrás de la malla del gallinero en una jornada de clases del liceo.',
+    pedagogy: '💡 Permite analizar la visión tetracromática aviar y las pautas de enriquecimiento en avicultura escolar.'
+  },
+
+  // ========================================================
+  // 📋 PÓSTERS Y CARTELES OFICIALES DE IDENTIDAD
+  // ========================================================
   {
     id: 'poster-conejos',
     category: 'fauna',

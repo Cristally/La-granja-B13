@@ -3766,76 +3766,90 @@ body.rol-admin .badges-bar {
 /* ============================================================
    Bocadillos de diálogo (Curiosidades y pistas en vivo - Potrero)
    ============================================================ */
-.animal-speech-bubble {
+.stage .animal-speech-bubble,
+.animal .animal-speech-bubble {
   position: absolute;
   bottom: 100%;
   left: 50%;
-  transform: translateX(-50%) translateY(-14px);
-  min-width: 170px;
-  max-width: 250px;
+  transform: translateX(-50%) translateY(-8px);
+  min-width: 140px;
+  max-width: 220px;
+  width: max-content;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 2px !important;
+  align-items: flex-start !important;
   background: #ffffff;
   color: var(--ink);
   border: 2px solid var(--ink);
-  border-radius: 12px;
-  padding: 8px 12px;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18), 0 2px 0 var(--ink);
+  border-radius: 10px;
+  padding: 6px 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.16), 0 2px 0 var(--ink);
   z-index: 100;
   pointer-events: auto;
   cursor: pointer;
   animation: bubblePop 0.28s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
   transition: opacity 0.3s ease, transform 0.3s ease;
   user-select: none;
+  box-sizing: border-box;
 }
 
-.animal-speech-bubble.fade-out {
+.stage .animal-speech-bubble.fade-out,
+.animal .animal-speech-bubble.fade-out {
   opacity: 0;
-  transform: translateX(-50%) translateY(-22px) scale(0.92);
+  transform: translateX(-50%) translateY(-16px) scale(0.92);
 }
 
-.animal-speech-bubble::before {
+.stage .animal-speech-bubble::before,
+.animal .animal-speech-bubble::before {
   content: '';
   position: absolute;
-  bottom: -9px;
+  bottom: -8px;
   left: 50%;
   transform: translateX(-50%);
   width: 0;
   height: 0;
-  border-left: 9px solid transparent;
-  border-right: 9px solid transparent;
-  border-top: 9px solid var(--ink);
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-top: 8px solid var(--ink);
 }
 
-.animal-speech-bubble::after {
+.stage .animal-speech-bubble::after,
+.animal .animal-speech-bubble::after {
   content: '';
   position: absolute;
-  bottom: -6px;
+  bottom: -5px;
   left: 50%;
   transform: translateX(-50%);
   width: 0;
   height: 0;
-  border-left: 7px solid transparent;
-  border-right: 7px solid transparent;
-  border-top: 7px solid #ffffff;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 6px solid #ffffff;
 }
 
-.animal-speech-bubble .bubble-header {
-  font-size: 0.72rem;
+.stage .animal-speech-bubble .bubble-header,
+.animal .animal-speech-bubble .bubble-header {
+  font-size: 0.68rem;
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.5px;
   color: var(--grass-dark, #2b5329);
-  margin-bottom: 3px;
+  margin-bottom: 2px;
   display: flex;
   align-items: center;
   gap: 4px;
+  white-space: nowrap;
 }
 
-.animal-speech-bubble .bubble-body {
-  font-size: 0.8rem;
-  line-height: 1.35;
+.stage .animal-speech-bubble .bubble-body,
+.animal .animal-speech-bubble .bubble-body {
+  font-size: 0.78rem;
+  line-height: 1.3;
   color: #2e3421;
   font-family: 'Karla', sans-serif;
   font-weight: 600;
+  text-align: left;
 }
 
 @keyframes bubblePop {
@@ -6538,16 +6552,24 @@ body.rol-admin .badges-bar {
 
 /* Encabezado de sección para el Potrero */
 .potrero-section-header {
-  margin: 18px 0 10px 0;
+  margin: 26px 0 10px 0;
   display: flex;
-  flex-direction: column;
-  gap: 2px;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
   scroll-margin-top: 14px;
+}
+
+.potrero-title-wrap {
+  flex: 1;
+  min-width: 240px;
 }
 
 .potrero-title-wrap h3 {
   font-family: 'Fraunces', serif;
-  font-size: 1.3rem;
+  font-size: 1.35rem;
   font-weight: 700;
   color: var(--grass-dark, #3B5832);
   margin: 0;
@@ -6557,10 +6579,21 @@ body.rol-admin .badges-bar {
 }
 
 .potrero-title-wrap p {
-  margin: 2px 0 0 0;
-  font-size: 0.82rem;
+  margin: 3px 0 0 0;
+  font-size: 0.85rem;
   color: var(--text-sub-on-bg, #2d4624);
   font-weight: 500;
+}
+
+.potrero-section-header .scorebox {
+  flex-shrink: 0;
+}
+
+body.theme-dark .potrero-title-wrap h3 {
+  color: #ffd54f !important;
+}
+body.theme-dark .potrero-title-wrap p {
+  color: #c5e1a5 !important;
 }
 
 /* Modo Oscuro para la Sección Introductoria */

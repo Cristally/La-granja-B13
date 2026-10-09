@@ -21,6 +21,8 @@ function updateGalleryHeader() {
     return;
   }
   const purePts = (typeof computePureScore === 'function') ? computePureScore(state) : ((typeof state !== 'undefined' && state.pureScore) ? state.pureScore : 0);
+  const countEl = document.getElementById('galleryCount');
+  const scoreEl = document.getElementById('score');
   if (scoreEl) scoreEl.textContent = purePts;
   if (countEl) countEl.textContent = REAL_GALLERY_ITEMS.length;
 }
