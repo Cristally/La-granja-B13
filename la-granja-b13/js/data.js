@@ -884,6 +884,11 @@ ANIMAL_FUN_PROFILES.m_agapornis = ANIMAL_FUN_PROFILES.pastelito || ANIMAL_FUN_PR
 const ANIMALS = [
   {
     id: 'gallo', defaultName: 'Gallo', name: 'Gallo', emoji: '🐓', lat: 'Gallus gallus domesticus',
+    photo: 'assets/img/animals/real/vicente_real.jpg',
+    photo_real: 'assets/img/animals/real/vicente_real.jpg',
+    photo_pixel: 'assets/img/animals/gallo.png',
+    img_real: 'assets/img/animals/real/vicente_real.jpg',
+    img_pixel: 'assets/img/animals/gallo.png',
     color: COLORS[0], accessory: 'none', y: 14,
     sound: 'assets/audio/gallo.mp3',
     anatomyImage: 'assets/img/anatomy/gallina.jpg',
@@ -920,6 +925,11 @@ const ANIMALS = [
   },
   {
     id: 'gallina', defaultName: 'Gallina', name: 'Gallina', emoji: '🐔', lat: 'Gallus gallus domesticus',
+    photo: 'assets/img/animals/real/cleo_real.jpg',
+    photo_real: 'assets/img/animals/real/cleo_real.jpg',
+    photo_pixel: 'assets/img/animals/gallina.png',
+    img_real: 'assets/img/animals/real/cleo_real.jpg',
+    img_pixel: 'assets/img/animals/gallina.png',
     color: COLORS[5], accessory: 'none', y: 45,
     sound: 'assets/audio/gallina.mp3',
     anatomyImage: 'assets/img/anatomy/gallina.jpg',
@@ -956,6 +966,11 @@ const ANIMALS = [
   },
   {
     id: 'conejo', defaultName: 'Conejo', name: 'Conejo', emoji: '🐇', lat: 'Oryctolagus cuniculus',
+    photo: 'assets/img/animals/real/nesquik_real.jpg',
+    photo_real: 'assets/img/animals/real/nesquik_real.jpg',
+    photo_pixel: 'assets/img/animals/conejo.png',
+    img_real: 'assets/img/animals/real/nesquik_real.jpg',
+    img_pixel: 'assets/img/animals/conejo.png',
     color: COLORS[1], accessory: 'none', y: 60,
     sound: 'assets/audio/conejo.mp3',
     anatomyImage: 'assets/img/anatomy/conejo.jpg',
