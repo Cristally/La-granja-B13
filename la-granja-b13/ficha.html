@@ -80,9 +80,20 @@
   <!-- Banner Hero del Animal Seleccionado -->
   <div class="ficha-hero-banner" id="fichaHeroBanner">
     <div class="ficha-hero-photo-wrap" id="fichaPhotoWrap">
-      <div class="ficha-hero-emoji" id="fichaHeroEmoji">🐇</div>
-      <img src="" alt="" class="ficha-hero-photo" id="fichaHeroImg" style="display:none;">
-      <div class="ficha-hero-acc-badge" id="fichaHeroAccBadge" style="display:none;">👒</div>
+      <div class="ficha-photo-mode-switcher" id="fichaPhotoModeSwitcher">
+        <button type="button" class="ficha-photo-mode-btn active" id="btnModeReal" data-mode="real" title="Ver fotografía realista (Principal)">
+          🌿 Realista <span class="badge-sub-primary">(Principal)</span>
+        </button>
+        <button type="button" class="ficha-photo-mode-btn" id="btnModePixel" data-mode="pixel" title="Ver versión en Pixel Art">
+          👾 Pixel Art
+        </button>
+      </div>
+      <div class="ficha-img-stage" id="fichaImgStage">
+        <div class="ficha-hero-emoji" id="fichaHeroEmoji">🐇</div>
+        <img src="" alt="" class="ficha-hero-photo mode-real" id="fichaHeroImg" style="display:none;">
+        <div class="ficha-hero-acc-badge" id="fichaHeroAccBadge" style="display:none;">👒</div>
+      </div>
+      <div class="ficha-photo-mode-label" id="fichaPhotoModeLabel">🌿 Fotografía Realista Oficial (Principal)</div>
     </div>
     <div class="ficha-hero-details">
       <div class="ficha-hero-badges">

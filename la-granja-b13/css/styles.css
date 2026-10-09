@@ -6224,6 +6224,17 @@ body.rol-admin .badges-bar {
   outline: none;
 }
 
+/* Ocultar botones internos de descarga en Chrome, Edge y navegadores WebKit */
+.intro-video-wrapper video::-internal-media-controls-download-button,
+.intro-video-wrapper video::-webkit-media-controls-download-button {
+  display: none !important;
+}
+
+.intro-video-wrapper video::-webkit-media-controls-enclosure {
+  overflow: hidden;
+}
+
+
 /* Botón de reproducción grande circular (estilo de la imagen de referencia) */
 .intro-video-play-overlay {
   position: absolute;

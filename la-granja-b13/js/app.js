@@ -429,6 +429,13 @@ function initIntroVideo() {
     });
   }
 
+  // Bloquear menú contextual de clic derecho para impedir descarga directa
+  video.addEventListener('contextmenu', (e) => e.preventDefault());
+  const videoWrapper = video.closest('.intro-video-wrapper') || video.parentElement;
+  if (videoWrapper) {
+    videoWrapper.addEventListener('contextmenu', (e) => e.preventDefault());
+  }
+
   if (scrollPotreroBtn) {
     scrollPotreroBtn.addEventListener('click', (e) => {
       e.preventDefault();
