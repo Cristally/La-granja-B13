@@ -1,12 +1,17 @@
 /*
   quizzes-app.js — Controlador dedicado de la Vista de Desafíos & Quizzes Formativos
   Permite a los estudiantes responder preguntas sobre cada animal y tema agroecológico,
-  acumulando décimas oficiales para su calificación sin saturar el mapa ni la experiencia.
+  acumulando un máximo de 0,5 décimas oficiales para su nota si completan los 29 desafíos
+  bien a la primera.
   Liceo Domingo Herrera Rivera B-13 Antofagasta.
 */
 
 (function() {
   'use strict';
+
+  const TOTAL_QUIZZES = 29;
+  const MAX_DECIMAS = 0.50;
+  const DECIMA_POR_QUIZ = MAX_DECIMAS / TOTAL_QUIZZES; // ~0.01724...
 
   let currentCategory = 'all';
   let activeQuizItem = null;
@@ -14,27 +19,27 @@
   let currentQuestionIdx = 0;
   let currentAnswers = [];
   let questionAnswered = false;
+  let isQuizActive = false;
 
-  // Colección unificada de Quizzes Formativos
+  // Colección unificada y estricta de los 29 Quizzes Formativos
   function getAllQuizzes() {
     const list = [];
     const seen = new Set();
 
-    // 1. Quizzes de los 23 animales oficiales (usando su especie facts/quiz)
+    // 1. Quizzes de los 23 animales oficiales (usando MAP_ANIMALS)
     if (typeof MAP_ANIMALS !== 'undefined' && Array.isArray(MAP_ANIMALS)) {
       MAP_ANIMALS.forEach(a => {
         const key = 'animal_' + a.id;
         if (!seen.has(key)) {
           seen.add(key);
 
-          // Obtener preguntas asociadas (específicas o de su especie base)
+          // Obtener preguntas zootécnicas asociadas
           let qList = (a.quiz && a.quiz.length) ? a.quiz : [];
           if (!qList.length && typeof ANIMALS !== 'undefined') {
             const sp = ANIMALS.find(x => x.id === a.species || x.id === a.id);
             if (sp && sp.quiz) qList = sp.quiz;
           }
 
-          // Si aún no tiene preguntas directas, generar preguntas zootécnicas pedagógicas
           if (!qList.length) {
             qList = generatePedagogicalQuestions(a);
           }
@@ -56,7 +61,7 @@
       });
     }
 
-    // 2. Desafío General de Bioética y Normas ODS 15
+    // 2. Desafío General de Bioética y Normas ODS 15 (1 quiz)
     list.push({
       id: 'bioetica_ods15',
       uniqueId: 'bioetica_ods15',
@@ -111,40 +116,61 @@
       isMap: false
     });
 
-    // 3. Quizzes personalizados creados por el profesorado
-    if (typeof TeacherQuizzes !== 'undefined' && typeof TeacherQuizzes.getAll === 'function') {
-      const teacherObj = TeacherQuizzes.getAll();
-      Object.keys(teacherObj).forEach(zoneId => {
-        const tQuestions = teacherObj[zoneId];
-        if (Array.isArray(tQuestions) && tQuestions.length > 0) {
-          list.push({
-            id: 'docente_' + zoneId,
-            uniqueId: 'docente_' + zoneId,
-            type: 'docente',
-            group: 'docente',
-            title: `Quiz Docente: Zona ${zoneId.toUpperCase()}`,
-            subtitle: 'Evaluación oficial asignada por tu profesor/a',
-            thumb: 'assets/img/real/pozo_real.jpg',
-            desc: `Preguntas formativas diseñadas por el equipo pedagógico (${tQuestions.length} preguntas).`,
-            questions: tQuestions.map(tq => ({
-              q: tq.pregunta,
-              options: tq.opciones,
-              a: tq.correcta,
-              difficulty: 'medio',
-              points: (tq.decimas || 1) * 10,
-              explain: `Pregunta oficial formulada por: ${tq.autor || 'Profesor/a B-13'}.`
-            })),
-            storageKey: zoneId,
-            isTeacher: true
-          });
+    // 3. Quizzes Oficiales de Zonas Pedagógicas del Liceo (5 quizzes docentes)
+    const officialTeacherZones = [
+      { id: 'conejos', title: 'Quiz Docente: Conejeras Oficiales', thumb: 'assets/img/real/conejos_tres_amigos_cartel.jpg', desc: 'Evaluación formativa sobre el manejo y cuidados en la conejera escolar.' },
+      { id: 'gallinas', title: 'Quiz Docente: Gallinero & Gallos', thumb: 'assets/img/real/gallinas_comiendo_maiz.jpg', desc: 'Evaluación docente sobre nutrición avícola, postura e instalaciones.' },
+      { id: 'arboleda', title: 'Quiz Docente: Aviario & Arboleda', thumb: 'assets/img/real/almacen_herramientas_aviario.jpg', desc: 'Preguntas pedagógicas sobre la arboleda, sombra y aves menores del aviario.' },
+      { id: 'pozo', title: 'Quiz Docente: Pozo de Agua & Riego', thumb: 'assets/img/real/pozo_real.jpg', desc: 'Preguntas sobre la gestión del agua potable y bebederos limpios en el liceo.' },
+      { id: 'plantas', title: 'Quiz Docente: Huerto Escolar & Bancales', thumb: 'assets/img/real/huerto_bancales.jpg', desc: 'Preguntas sobre compostaje, forraje fresco y cultivos sustentables.' }
+    ];
+
+    officialTeacherZones.forEach(tz => {
+      let tQuestions = [];
+      if (typeof TeacherQuizzes !== 'undefined' && typeof TeacherQuizzes.getForZone === 'function') {
+        tQuestions = TeacherQuizzes.getForZone(tz.id);
+      }
+      if (!tQuestions || !tQuestions.length) {
+        if (typeof QUIZZES_INICIALES !== 'undefined' && QUIZZES_INICIALES[tz.id]) {
+          tQuestions = QUIZZES_INICIALES[tz.id];
         }
+      }
+
+      list.push({
+        id: 'docente_' + tz.id,
+        uniqueId: 'docente_' + tz.id,
+        type: 'docente',
+        group: 'docente',
+        title: tz.title,
+        subtitle: 'Evaluación oficial asignada por el equipo docente',
+        thumb: tz.thumb,
+        desc: tz.desc,
+        questions: (tQuestions && tQuestions.length) ? tQuestions.map(tq => ({
+          q: tq.pregunta,
+          options: tq.opciones,
+          a: tq.correcta,
+          difficulty: 'medio',
+          points: 10,
+          explain: `Pregunta formulada por: ${tq.profesor || tq.autor || 'Equipo Docente B-13'}.`
+        })) : [
+          {
+            q: `¿Cuál es la prioridad fundamental en la zona de ${tz.title} según el protocolo zootécnico?`,
+            options: ['Garantizar agua limpia, higiene y tranquilidad para la fauna', 'Permitir ruido excesivo', 'Dejar la comida en el suelo sin control', 'Cerrar sin ventilación'],
+            a: 0,
+            difficulty: 'facil',
+            points: 10,
+            explain: 'El bienestar animal exige agua fresca constante, limpieza rigurosa y ausencia de estrés.'
+          }
+        ],
+        storageKey: tz.id,
+        isTeacher: true
       });
-    }
+    });
 
     return list;
   }
 
-  // Generador de preguntas zootécnicas de respaldo con base científica
+  // Generador de respaldo de preguntas zootécnicas con base científica
   function generatePedagogicalQuestions(a) {
     if (a.group === 'conejos' || a.id.includes('conejo')) {
       return [
@@ -214,6 +240,16 @@
     }
   }
 
+  // Cálculo de décimas oficiales acumuladas (solo a la primera, máx 0.50 en total)
+  function computeTotalDecimas() {
+    if (!state) return 0;
+    if (!state.firstTryQuizzes) state.firstTryQuizzes = {};
+    const perfectFirstTryCount = Object.values(state.firstTryQuizzes).filter(Boolean).length;
+    if (perfectFirstTryCount >= TOTAL_QUIZZES) return MAX_DECIMAS;
+    const raw = (perfectFirstTryCount / TOTAL_QUIZZES) * MAX_DECIMAS;
+    return Number(raw.toFixed(2));
+  }
+
   function init() {
     setupCategories();
     renderQuizzesList();
@@ -269,6 +305,18 @@
       const totalQuestions = item.questions.length;
       const totalPoints = item.questions.reduce((acc, q) => acc + (q.points || 10), 0);
 
+      // Estado de primer intento y décimas ganadas
+      let decimaPill = '';
+      if (state && state.firstTryQuizzes) {
+        if (state.firstTryQuizzes[item.storageKey] === true) {
+          decimaPill = `<span class="quiz-card-pill" style="background:#ecfdf5;color:#047857;border-color:#a7f3d0;">🏅 +0.017 décimas (a la 1ª)</span>`;
+        } else if (state.firstTryQuizzes[item.storageKey] === false) {
+          decimaPill = `<span class="quiz-card-pill" style="background:#fef2f2;color:#991b1b;border-color:#fecaca;">❌ Sin décima (falló en 1ª)</span>`;
+        } else if (!isDone) {
+          decimaPill = `<span class="quiz-card-pill" style="background:#eff6ff;color:#1e40af;border-color:#bfdbfe;">🎯 +0.017 si respondes 100% a la 1ª</span>`;
+        }
+      }
+
       const statusPill = isDone
         ? `<span class="quiz-card-pill pill-status-done">✅ Completado (+${scoreEarned} pts)</span>`
         : `<span class="quiz-card-pill pill-status-pending">⏳ Disponible (+${totalPoints} pts)</span>`;
@@ -294,6 +342,7 @@
           <div class="quiz-card-body">
             <div class="quiz-card-info-pills">
               ${statusPill}
+              ${decimaPill}
               <span class="quiz-card-pill">${totalQuestions} preguntas</span>
             </div>
             <p class="quiz-card-desc">${item.desc}</p>
@@ -352,7 +401,7 @@
     const all = getAllQuizzes();
     const completedCount = all.filter(x => checkQuizDone(x)).length;
     const purePts = (typeof computePureScore === 'function') ? computePureScore(state) : (state.pureScore || 0);
-    const decimas = (purePts / 10).toFixed(1);
+    const decimasTotal = computeTotalDecimas().toFixed(2);
 
     const totalEl = document.getElementById('statTotalScore');
     const doneEl = document.getElementById('statQuizzesDone');
@@ -362,16 +411,17 @@
 
     if (totalEl) totalEl.textContent = purePts;
     if (doneEl) doneEl.textContent = `${completedCount} / ${all.length}`;
-    if (decEl) decEl.textContent = `${decimas} pts`;
+    if (decEl) decEl.textContent = `${decimasTotal} / 0.50`;
     if (topScoreEl) topScoreEl.textContent = purePts;
-    if (topDecEl) topDecEl.textContent = decimas;
+    if (topDecEl) topDecEl.textContent = decimasTotal;
   }
 
   /* ============================================================
-     JUGADOR DE QUIZ INTERACTIVO
+     JUGADOR DE QUIZ INTERACTIVO (CON BLOQUEO HASTA TERMINAR)
      ============================================================ */
 
   function startQuizPlayer(quizItem) {
+    isQuizActive = true;
     activeQuizItem = quizItem;
     activeQuestions = quizItem.questions;
     currentQuestionIdx = 0;
@@ -382,6 +432,18 @@
     const thumb = document.getElementById('playerThumb');
     const title = document.getElementById('playerTitle');
     const subtitle = document.getElementById('playerSubtitle');
+    const closeBtn = document.getElementById('quizPlayerCloseBtn');
+    const qBody = document.getElementById('playerQuestionsBody');
+    const rBox = document.getElementById('playerResultsBox');
+    const progBar = document.getElementById('quizPlayerProgBar');
+    const qIdx = document.getElementById('playerQuestionIndex');
+
+    // Bloqueo total: Ocultar botón de cierre durante el quiz activo
+    if (closeBtn) closeBtn.style.display = 'none';
+    if (qBody) qBody.style.display = 'block';
+    if (rBox) rBox.style.display = 'none';
+    if (progBar) progBar.style.display = 'block';
+    if (qIdx) qIdx.style.display = 'inline-block';
 
     if (thumb) thumb.src = quizItem.thumb;
     if (title) title.textContent = quizItem.title;
@@ -399,7 +461,7 @@
     questionAnswered = false;
     const q = activeQuestions[currentQuestionIdx];
     if (!q) {
-      finishQuiz();
+      finishQuizAndShowResults();
       return;
     }
 
@@ -423,7 +485,7 @@
     }
     if (nextBtn) {
       nextBtn.style.display = 'none';
-      nextBtn.textContent = (currentQuestionIdx + 1 === total) ? '🏆 Finalizar Desafío' : 'Siguiente Pregunta ➔';
+      nextBtn.textContent = (currentQuestionIdx + 1 === total) ? '🏆 Finalizar y Ver Resultados ➔' : 'Siguiente Pregunta ➔';
     }
 
     if (optsList) {
@@ -501,37 +563,76 @@
         if (currentQuestionIdx < activeQuestions.length) {
           renderQuestion();
         } else {
-          finishQuiz();
+          finishQuizAndShowResults();
         }
       });
     }
 
+    // Botón de finalización oficial en la pantalla de resultados
+    const finishBtn = document.getElementById('playerFinishBtn');
+    if (finishBtn) {
+      finishBtn.addEventListener('click', () => {
+        closeQuizPlayerAndUnlock();
+      });
+    }
+
+    // Bloqueo de salida anticipada: Backdrop no cierra si el quiz está en curso
     const overlay = document.getElementById('quizPlayerOverlay');
     if (overlay) {
       overlay.addEventListener('click', e => {
+        if (isQuizActive) {
+          // No permitir salir si el quiz está en curso
+          return;
+        }
         if (e.target === overlay || e.target.classList.contains('close-btn')) {
-          overlay.classList.remove('open');
-          overlay.style.display = 'none';
+          closeQuizPlayerAndUnlock();
         }
       });
     }
+
+    // Bloqueo de tecla Escape mientras el quiz está activo
+    window.addEventListener('keydown', e => {
+      if (isQuizActive && (e.key === 'Escape' || e.key === 'Esc')) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+    });
+
+    // Advertencia de salida del navegador durante el quiz activo
+    window.addEventListener('beforeunload', e => {
+      if (isQuizActive) {
+        e.preventDefault();
+        e.returnValue = 'Tienes un desafío formativo en curso. Debes finalizarlo para guardar tus respuestas.';
+        return e.returnValue;
+      }
+    });
   }
 
-  function finishQuiz() {
-    const overlay = document.getElementById('quizPlayerOverlay');
-    if (overlay) {
-      overlay.classList.remove('open');
-      overlay.style.display = 'none';
-    }
-
+  // Finalizar quiz y mostrar pantalla de resultados (permanece dentro del modal hasta que el alumno toque Finalizar)
+  function finishQuizAndShowResults() {
     const correctCount = currentAnswers.filter(Boolean).length;
     const totalCount = activeQuestions.length;
+    const isAllCorrect = (correctCount === totalCount && totalCount > 0);
     const pointsPerQ = 10;
     const scoreEarned = correctCount * pointsPerQ;
 
+    // Gestión estricta de Décimas Formativas a la primera
+    if (!state.firstTryQuizzes) state.firstTryQuizzes = {};
+    const key = activeQuizItem.storageKey;
+    const isFirstAttempt = (state.firstTryQuizzes[key] === undefined);
+    let earnedDecimaOnThisTry = false;
+
+    if (isFirstAttempt) {
+      if (isAllCorrect) {
+        state.firstTryQuizzes[key] = true;
+        earnedDecimaOnThisTry = true;
+      } else {
+        state.firstTryQuizzes[key] = false;
+      }
+    }
+
     // Actualizar estado del estudiante
     if (state && activeQuizItem) {
-      const key = activeQuizItem.storageKey;
       const quizRecord = {
         index: totalCount,
         answers: currentAnswers.map(x => x ? 1 : 0),
@@ -552,26 +653,77 @@
         state.quiz[key] = quizRecord;
       }
 
+      if (typeof computePureScore === 'function') {
+        state.pureScore = computePureScore(state);
+        state.score = state.pureScore;
+      }
+
       saveState();
 
-      // Guardar puntaje en el servidor para ranking y panel docente
       if (typeof Auth !== 'undefined' && typeof Auth.guardarPuntaje === 'function') {
         Auth.guardarPuntaje(state.pureScore, 'quiz_' + key);
       }
       if (typeof checkBadges === 'function') checkBadges();
     }
 
-    updateStatsBanner();
-    renderQuizzesList();
+    // Ocultar sección de preguntas y mostrar pantalla de resultados
+    const qBody = document.getElementById('playerQuestionsBody');
+    const progBar = document.getElementById('quizPlayerProgBar');
+    const qIdx = document.getElementById('playerQuestionIndex');
+    const rBox = document.getElementById('playerResultsBox');
 
-    // Mensaje toast de felicitación
-    const decimaEquiv = (scoreEarned / 10).toFixed(1);
-    if (typeof showToast === 'function') {
-      showToast(`🎉 ¡Desafío completado! Ganaste +${scoreEarned} puntos (+${decimaEquiv} décimas)`);
+    if (qBody) qBody.style.display = 'none';
+    if (progBar) progBar.style.display = 'none';
+    if (qIdx) qIdx.style.display = 'none';
+    if (rBox) rBox.style.display = 'flex';
+
+    // Rellenar datos de la pantalla de resultados
+    const trophy = document.getElementById('resultsTrophyIcon');
+    const title = document.getElementById('resultsTitle');
+    const desc = document.getElementById('resultsDesc');
+    const statScore = document.getElementById('resultsStatScore');
+    const statAcc = document.getElementById('resultsStatAccuracy');
+    const statDec = document.getElementById('resultsStatDecimas');
+    const advice = document.getElementById('resultsAdvice');
+
+    if (trophy) trophy.textContent = isAllCorrect ? '🏆' : (correctCount > 0 ? '⭐' : '🌱');
+    if (title) title.textContent = isAllCorrect ? '¡Puntaje Perfecto!' : '¡Desafío Completado!';
+    if (desc) desc.textContent = `Acertaste ${correctCount} de ${totalCount} preguntas en este desafío.`;
+    if (statScore) statScore.textContent = `+${scoreEarned}`;
+    if (statAcc) statAcc.textContent = `${correctCount}/${totalCount}`;
+    if (statDec) statDec.textContent = `+${earnedDecimaOnThisTry ? DECIMA_POR_QUIZ.toFixed(3) : '0.000'}`;
+
+    if (advice) {
+      const decimasAcum = computeTotalDecimas().toFixed(2);
+      if (earnedDecimaOnThisTry) {
+        advice.innerHTML = `🎉 <b>¡Excelente! Respondiste al 100% en tu primer intento.</b> Ganaste <b>+0.017 décimas</b> para tu nota (Acumulado oficial: <b>${decimasAcum} / 0.50</b>).`;
+      } else if (isFirstAttempt && !isAllCorrect) {
+        advice.innerHTML = `⚠️ <b>Tuviste ${totalCount - correctCount} error(es) en este primer intento.</b> Las décimas se entregan solo al completar al 100% a la primera. ¡Sigue repasando para reforzar tu conocimiento zootécnico!`;
+      } else {
+        advice.innerHTML = `🔄 <b>Modo Repaso:</b> Ya habías realizado este desafío antes. Este intento refuerza tu aprendizaje sin alterar tus décimas oficiales registradas.`;
+      }
     }
 
     if (typeof AudioFX !== 'undefined' && typeof AudioFX.victory === 'function') {
       AudioFX.victory();
+    }
+  }
+
+  // Cerrar el modal y desbloquear al estudiante tras presionar Finalizar
+  function closeQuizPlayerAndUnlock() {
+    isQuizActive = false;
+    const overlay = document.getElementById('quizPlayerOverlay');
+    if (overlay) {
+      overlay.classList.remove('open');
+      overlay.style.display = 'none';
+    }
+
+    updateStatsBanner();
+    renderQuizzesList();
+
+    const decimasTotal = computeTotalDecimas().toFixed(2);
+    if (typeof showToast === 'function') {
+      showToast(`✨ Progreso actualizado. Décimas acumuladas: ${decimasTotal} / 0.50`);
     }
   }
 

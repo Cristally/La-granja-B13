@@ -288,12 +288,27 @@
   border-bottom: 2px solid #e2e8f0;
   padding-bottom: 12px;
   margin-bottom: 16px;
+  gap: 12px;
+}
+
+.player-question-badge {
+  font-size: 0.80rem;
+  font-weight: 700;
+  color: #1e293b;
+  background: #f1f5f9;
+  border: 1.5px solid #cbd5e1;
+  padding: 5px 12px;
+  border-radius: 20px;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .quiz-player-title-wrap {
   display: flex;
   align-items: center;
   gap: 12px;
+  min-width: 0;
+  flex: 1;
 }
 
 .quiz-player-thumb {
@@ -302,6 +317,7 @@
   border-radius: 10px;
   object-fit: cover;
   border: 2px solid var(--wheat);
+  flex-shrink: 0;
 }
 
 .quiz-player-prog-bar {
@@ -417,6 +433,103 @@
   filter: brightness(1.1);
   transform: translateY(-2px);
 }
+
+/* Pantalla de Resultados del Desafío */
+.quiz-results-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 16px 8px;
+  gap: 14px;
+}
+
+.results-trophy-icon {
+  font-size: 3.2rem;
+  line-height: 1;
+}
+
+.results-title {
+  font-family: 'Fraunces', serif;
+  font-size: 1.45rem;
+  font-weight: 700;
+  color: var(--grass-dark, #2d4624);
+  margin: 0;
+}
+
+.results-desc {
+  font-size: 0.92rem;
+  color: #475569;
+  margin: 0;
+  max-width: 480px;
+  line-height: 1.4;
+}
+
+.results-stats-row {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+  max-width: 420px;
+}
+
+@media (max-width: 600px) {
+  .results-stats-row {
+    flex-direction: column;
+    gap: 8px;
+  }
+}
+
+.results-stat-card {
+  flex: 1;
+  background: #f8fafc;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 12px;
+  padding: 12px 10px;
+}
+
+.results-stat-val {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.results-stat-lbl {
+  font-size: 0.75rem;
+  color: #64748b;
+  font-weight: 600;
+  margin-top: 3px;
+}
+
+.results-advice {
+  font-size: 0.85rem;
+  color: #1e3a8a;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  padding: 10px 14px;
+  border-radius: 10px;
+  max-width: 460px;
+  line-height: 1.4;
+}
+
+.quiz-finish-btn {
+  width: 100%;
+  max-width: 360px;
+  padding: 12px 20px;
+  font-size: 1rem;
+  font-weight: 800;
+  border-radius: 12px;
+  border: 2px solid var(--ink);
+  background: #10b981;
+  color: #ffffff;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3);
+  transition: transform 0.15s ease, filter 0.15s ease;
+}
+
+.quiz-finish-btn:hover {
+  filter: brightness(1.1);
+  transform: translateY(-2px);
+}
 </style>
 </head>
 <body>
@@ -428,9 +541,9 @@
       <span class="btn-volver-icon">←</span> <span class="btn-volver-text">Volver</span>
     </a>
     <nav class="view-nav" style="margin:0;">
-      <a href="index.html">🌾 Potrero<span class="nav-extra-text"> Virtual</span></a>
+      <a href="index.html">🌾 Inicio<span class="nav-extra-text"> / Potrero</span></a>
       <a href="mapa.html">🗺️ Mapa<span class="nav-extra-text"> de la Granja</span></a>
-      <a href="quizzes.html" class="active">⭐ Desafíos<span class="nav-extra-text"> de Décimas</span></a>
+      <a href="quizzes.html" class="active">⭐ Desafíos</a>
       <a href="galeria-real.html">📸 Granja Real<span class="nav-extra-text"> B-13</span></a>
       <a href="juegos.html">🎮 Juegos<span class="nav-extra-text"> en la Granja</span></a>
       <a href="muro.html">💬 Muro</a>
@@ -443,13 +556,13 @@
     <div class="brand-wrap">
       <img src="assets/img/logo.png" alt="Logo Granja B-13" class="app-logo">
       <div>
-        <h1 class="pixel-title">Desafíos Formativos & Quizzes por Décimas</h1>
-        <div class="sub">Demuestra tu aprendizaje zootécnico y acumula décimas reales para tu libreta de notas</div>
+        <h1 class="pixel-title">Desafíos Formativos</h1>
+        <div class="sub">Demuestra tu aprendizaje zootécnico y acumula hasta 0,5 décimas oficiales para tu nota</div>
       </div>
     </div>
     <div class="scorebox">
       PUNTAJE: <b id="score">0</b><br>
-      DÉCIMAS: <span id="quizzesScoreEarned">0.0</span> pts
+      DÉCIMAS: <span id="quizzesScoreEarned">0.00</span> / 0.50
     </div>
   </header>
 
@@ -485,7 +598,7 @@
     <div class="quizzes-stat-box">
       <div class="quizzes-stat-icon">📝</div>
       <div class="quizzes-stat-data">
-        <b id="statQuizzesDone">0 / 23</b>
+        <b id="statQuizzesDone">0 / 29</b>
         <span>Desafíos Completados</span>
       </div>
     </div>
@@ -499,21 +612,21 @@
     <div class="quizzes-stat-box">
       <div class="quizzes-stat-icon">🏅</div>
       <div class="quizzes-stat-data">
-        <b id="statDecimasTotal">0.0</b>
-        <span>Décimas Oficiales</span>
+        <b id="statDecimasTotal">0.00</b>
+        <span>Décimas Oficiales (máx 0.5)</span>
       </div>
     </div>
   </div>
 
   <!-- Filtro por Categorías -->
   <div class="quizzes-cat-nav" id="quizzesCatNav">
-    <button type="button" class="quizzes-cat-btn active" data-cat="all">🌟 Todos los Desafíos</button>
+    <button type="button" class="quizzes-cat-btn active" data-cat="all">🌟 Todos los Desafíos (29)</button>
     <button type="button" class="quizzes-cat-btn" data-cat="conejos">🐇 Conejeras Oficiales (9)</button>
     <button type="button" class="quizzes-cat-btn" data-cat="gallinas">🐔 Gallinero y Gallos (9)</button>
     <button type="button" class="quizzes-cat-btn" data-cat="loros">🦜 Aviario de Aves Menores (3)</button>
     <button type="button" class="quizzes-cat-btn" data-cat="patos">🦆 Recinto de Patos (2)</button>
-    <button type="button" class="quizzes-cat-btn" data-cat="bioetica">🌾 Potrero & Bioética ODS 15</button>
-    <button type="button" class="quizzes-cat-btn" data-cat="docente">👩‍🏫 Desafíos del Profesor</button>
+    <button type="button" class="quizzes-cat-btn" data-cat="bioetica">🌾 Potrero & Bioética ODS 15 (1)</button>
+    <button type="button" class="quizzes-cat-btn" data-cat="docente">👩‍🏫 Desafíos del Profesor (5)</button>
   </div>
 
   <!-- Rejilla de Tarjetas de Quiz -->
@@ -533,9 +646,9 @@
 <!-- Modal Interactivo del Quiz -->
 <div class="overlay" id="quizPlayerOverlay">
   <div class="card quiz-player-modal">
-    <button class="close-btn" data-close="quizPlayerOverlay" aria-label="Cerrar desafío">✕</button>
+    <button class="close-btn" data-close="quizPlayerOverlay" id="quizPlayerCloseBtn" aria-label="Cerrar desafío" style="display:none;">✕</button>
     
-    <div class="quiz-player-header">
+    <div class="quiz-player-header" id="quizPlayerHeader">
       <div class="quiz-player-title-wrap">
         <img src="" alt="" class="quiz-player-thumb" id="playerThumb">
         <div>
@@ -543,16 +656,16 @@
           <div style="font-size:0.8rem;color:var(--grass-dark);font-weight:600;" id="playerSubtitle">Liceo B-13</div>
         </div>
       </div>
-      <div style="font-size:0.82rem;font-weight:700;color:var(--ink-light);" id="playerQuestionIndex">
+      <div class="player-question-badge" id="playerQuestionIndex">
         Pregunta 1 de 3
       </div>
     </div>
 
-    <div class="quiz-player-prog-bar">
+    <div class="quiz-player-prog-bar" id="quizPlayerProgBar">
       <div class="quiz-player-prog-fill" id="playerProgFill"></div>
     </div>
 
-    <div class="card-body" style="padding:0;">
+    <div class="card-body" id="playerQuestionsBody" style="padding:0;">
       <div class="quiz-question-box" id="playerQuestionText">
         Cargando pregunta...
       </div>
@@ -568,6 +681,34 @@
 
       <button type="button" class="quiz-next-btn" id="playerNextBtn">
         Siguiente Pregunta ➔
+      </button>
+    </div>
+
+    <!-- Pantalla de Resultados al Terminar (con botón para finalizar y desbloquear) -->
+    <div class="quiz-results-box" id="playerResultsBox" style="display:none;">
+      <div class="results-trophy-icon" id="resultsTrophyIcon">🏆</div>
+      <h2 class="results-title" id="resultsTitle">¡Desafío Completado!</h2>
+      <p class="results-desc" id="resultsDesc">Acertaste 3 de 3 preguntas</p>
+      
+      <div class="results-stats-row">
+        <div class="results-stat-card">
+          <div class="results-stat-val" id="resultsStatScore">+0</div>
+          <div class="results-stat-lbl">PUNTOS FORMATIVOS</div>
+        </div>
+        <div class="results-stat-card">
+          <div class="results-stat-val" id="resultsStatAccuracy">0/0</div>
+          <div class="results-stat-lbl">CORRECTAS</div>
+        </div>
+        <div class="results-stat-card">
+          <div class="results-stat-val" id="resultsStatDecimas">+0.00</div>
+          <div class="results-stat-lbl">DÉCIMAS (A LA 1ª)</div>
+        </div>
+      </div>
+
+      <div class="results-advice" id="resultsAdvice"></div>
+
+      <button type="button" class="quiz-finish-btn" id="playerFinishBtn">
+        ✅ Finalizar y Volver a Desafíos
       </button>
     </div>
   </div>

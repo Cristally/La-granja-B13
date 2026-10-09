@@ -399,7 +399,7 @@ const MAP_ANIMALS = [
     color: '#0284c7', accessory: 'none', group: 'patos',
     blurb: 'Pato Pekín blanco níveo de pico y patas anaranjadas. Amante del nado sincronizado, el agua fresca y el buceo.',
     ...speciesFacts('pato'),
-    sound: 'assets/audio/aves.mp3'
+    sound: 'assets/audio/pato.mp3'
   },
   {
     id: 'pimienta', name: 'Pimienta', store: 'mapQuiz', zoneId: 'patos',
@@ -412,7 +412,7 @@ const MAP_ANIMALS = [
     color: '#065f46', accessory: 'none', group: 'patos',
     blurb: 'Pato Cayuga de plumaje negro azabache con intensos reflejos tornasolados verde esmeralda bajo el sol del norte.',
     ...speciesFacts('pato'),
-    sound: 'assets/audio/aves.mp3'
+    sound: 'assets/audio/pato.mp3'
   }
 ];
 

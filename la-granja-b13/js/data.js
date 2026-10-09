@@ -1133,7 +1133,7 @@ const ANIMALS = [
     img_real: 'assets/img/animals/real/sal_real.png',
     img_pixel: 'assets/img/animals/sal.png',
     color: COLORS[4], accessory: 'none', y: 70,
-    sound: 'assets/audio/aves.mp3',
+    sound: 'assets/audio/pato.mp3',
     anatomyImage: 'assets/img/anatomy/ave-general.jpg',
     facts: {
       clasificacion: 'Ave acuática anseriforme, familia Anatidae. Domesticado a partir del ánade real.',

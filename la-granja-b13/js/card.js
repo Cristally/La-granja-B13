@@ -2290,11 +2290,15 @@ function renderRules() {
 /* ============ Panel docente ============ */
 
 function calculateDecimas(potreroDone, mapDone) {
-  // Según sección 5 del formulario Go Innova: entrega de décimas formativas
+  // Según sección 5 del formulario Go Innova: máximo 0.5 décimas por los 29 desafíos a la primera
+  if (typeof state !== 'undefined' && state && state.firstTryQuizzes) {
+    const perfectCount = Object.values(state.firstTryQuizzes).filter(Boolean).length;
+    const dec = Math.min(0.5, (perfectCount / 29) * 0.5).toFixed(2);
+    return `+${dec}`;
+  }
   const totalCompleted = potreroDone + mapDone;
   if (totalCompleted === 0) return '0.0';
-  // 1 décima cada 2 animales completados, hasta +0.5 décimas máximo
-  const dec = Math.min(0.5, totalCompleted * 0.05).toFixed(1);
+  const dec = Math.min(0.5, (totalCompleted / 29) * 0.5).toFixed(2);
   return `+${dec}`;
 }
 

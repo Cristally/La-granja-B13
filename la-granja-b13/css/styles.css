@@ -1608,24 +1608,14 @@ footer.ods{
   .potrero-section-header {
     margin: 16px 0 10px 0;
     display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    gap: 8px;
+    flex-direction: column;
+    gap: 3px;
   }
   .potrero-title-wrap h3 {
-    font-size: 1.12rem;
+    font-size: 1.15rem;
   }
   .potrero-title-wrap p {
-    font-size: 0.72rem;
-  }
-  .potrero-section-header .scorebox {
-    padding: 5px 8px;
-    font-size: 0.70rem;
-    flex-shrink: 0;
-  }
-  .potrero-section-header .scorebox b {
-    font-size: 1rem;
+    font-size: 0.74rem;
   }
   
   .overlay{padding:10px;}
@@ -6615,19 +6605,15 @@ body.rol-admin .badges-bar {
 
 /* Encabezado de sección para el Potrero */
 .potrero-section-header {
-  margin: 26px 0 10px 0;
+  margin: 24px 0 10px 0;
   display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 12px;
+  flex-direction: column;
+  gap: 3px;
   scroll-margin-top: 14px;
 }
 
 .potrero-title-wrap {
-  flex: 1;
-  min-width: 240px;
+  width: 100%;
 }
 
 .potrero-title-wrap h3 {
@@ -6646,10 +6632,6 @@ body.rol-admin .badges-bar {
   font-size: 0.85rem;
   color: var(--text-sub-on-bg, #2d4624);
   font-weight: 500;
-}
-
-.potrero-section-header .scorebox {
-  flex-shrink: 0;
 }
 
 body.theme-dark .potrero-title-wrap h3 {
