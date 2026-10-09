@@ -22,24 +22,24 @@ const PIN_ADMIN = '1234';
 // Quizzes iniciales pedagógicos del liceo por zona (aportados por el ejemplo GranjitaBase)
 const QUIZZES_INICIALES = {
   conejos: [
-    { pregunta: '¿Por qué los conejos necesitan roer heno constantemente?', opciones: ['Para entretenerse', 'Porque sus dientes crecen durante toda la vida (y necesitan desgastarlos)', 'Para dormir mejor', 'Porque les gusta el sabor'], correcta: 1, decimas: 0.5, profesor: 'Prof. Ana Reyes' },
-    { pregunta: '¿Cuántas crías puede tener una coneja por camada, aproximadamente?', opciones: ['1 cría', '4 a 8 crías (gazapos)', '20 crías', '50 crías'], correcta: 1, decimas: 0.3, profesor: 'Prof. Ana Reyes' },
-    { pregunta: '¿Qué tipo de alimentación tiene el conejo?', opciones: ['Carnívoro estricto', 'Herbívoro estricto (come pasto, heno y fibra vegetal)', 'Omnívoro carroñero', 'Frugívoro exclusivo'], correcta: 1, decimas: 0.4, profesor: 'Prof. Ana Reyes' },
-    { pregunta: '¿Cuánto dura aproximadamente la gestación de una coneja?', opciones: ['5 días', '28 a 31 días (aproximadamente un mes)', '6 meses', '1 año'], correcta: 1, decimas: 0.4, profesor: 'Prof. Ana Reyes' },
-    { pregunta: '¿Qué es la cecotrofia en los conejos?', opciones: ['Un tipo de hibernación', 'Cecotrofia (reingerir nutrientes suaves para una segunda digestión)', 'Una enfermedad digestiva', 'El cambio de pelaje estacional'], correcta: 1, decimas: 0.5, profesor: 'Prof. Ana Reyes' }
+    { pregunta: '¿Por qué los conejos necesitan roer heno constantemente?', opciones: ['Para entretenerse', 'Para desgastar sus dientes en continuo crecimiento', 'Para dormir mejor', 'Porque les gusta el sabor'], correcta: 1, decimas: 0.5, profesor: 'Prof. Ana Reyes' },
+    { pregunta: '¿Cuántas crías puede tener una coneja por camada, aproximadamente?', opciones: ['1 cría', 'Entre 4 y 8 crías', '20 crías', '50 crías'], correcta: 1, decimas: 0.3, profesor: 'Prof. Ana Reyes' },
+    { pregunta: '¿Qué tipo de alimentación tiene el conejo?', opciones: ['Carnívoro estricto', 'Herbívoro estricto', 'Omnívoro carroñero', 'Frugívoro exclusivo'], correcta: 1, decimas: 0.4, profesor: 'Prof. Ana Reyes' },
+    { pregunta: '¿Cuánto dura aproximadamente la gestación de una coneja?', opciones: ['5 días', 'Entre 28 y 31 días', '6 meses', '1 año'], correcta: 1, decimas: 0.4, profesor: 'Prof. Ana Reyes' },
+    { pregunta: '¿Qué es la cecotrofia en los conejos?', opciones: ['Un tipo de hibernación', 'Una segunda digestión de nutrientes suaves producidos en el ciego', 'Una enfermedad digestiva', 'El cambio de pelaje estacional'], correcta: 1, decimas: 0.5, profesor: 'Prof. Ana Reyes' }
   ],
   gallinas: [
-    { pregunta: '¿Cuánto dura la incubación de un huevo de gallina?', opciones: ['7 días', '21 días (tres semanas)', '45 días', '3 meses'], correcta: 1, decimas: 0.4, profesor: 'Prof. Carlos Soto' },
+    { pregunta: '¿Cuánto dura la incubación de un huevo de gallina?', opciones: ['7 días', '21 días', '45 días', '3 meses'], correcta: 1, decimas: 0.4, profesor: 'Prof. Carlos Soto' },
     { pregunta: '¿Qué come principalmente una gallina en su dieta equilibrada?', opciones: ['Solo restos de carne', 'Granos, semillas, vegetales frescos e insectos', 'Solo pasto seco', 'Alimentos azucarados'], correcta: 1, decimas: 0.3, profesor: 'Prof. Carlos Soto' },
-    { pregunta: '¿Por qué las gallinas toman baños de tierra o arena?', opciones: ['Para limpiar su plumaje y controlar parásitos externos (ácaros)', 'Porque temen al frío nocturno', 'Para cambiar el color de sus plumas', 'Para descansar sus patas'], correcta: 0, decimas: 0.4, profesor: 'Prof. Carlos Soto' },
-    { pregunta: '¿Qué parte de la cabeza ayuda a regular la temperatura del gallo?', opciones: ['Las patas escamosas', 'La cresta y barbillas rojas (actúan como radiador térmico)', 'Las alas primarias', 'El pico córneo'], correcta: 1, decimas: 0.3, profesor: 'Prof. Carlos Soto' },
-    { pregunta: '¿A qué clase de animales pertenecen el gallo y la gallina?', opciones: ['Mamíferos', 'Reptiles escamosos', 'Aves (aves galliformes de corral)', 'Anfibios terrestres'], correcta: 2, decimas: 0.3, profesor: 'Prof. Carlos Soto' }
+    { pregunta: '¿Por qué las gallinas toman baños de tierra o arena?', opciones: ['Para limpiar su plumaje y controlar parásitos externos', 'Porque temen al frío nocturno', 'Para cambiar el color de sus plumas', 'Para descansar sus patas'], correcta: 0, decimas: 0.4, profesor: 'Prof. Carlos Soto' },
+    { pregunta: '¿Qué parte de la cabeza ayuda a regular la temperatura del gallo?', opciones: ['Las patas escamosas', 'La cresta y las barbillas', 'Las alas primarias', 'El pico córneo'], correcta: 1, decimas: 0.3, profesor: 'Prof. Carlos Soto' },
+    { pregunta: '¿A qué clase de animales pertenecen el gallo y la gallina?', opciones: ['Mamíferos', 'Reptiles escamosos', 'Aves', 'Anfibios terrestres'], correcta: 2, decimas: 0.3, profesor: 'Prof. Carlos Soto' }
   ],
   arboleda: [
     { pregunta: '¿De qué continente son originarios los agapornis?', opciones: ['América del Sur', 'África y Madagascar', 'Europa Central', 'Oceanía'], correcta: 1, decimas: 0.4, profesor: 'Prof. Valentina Rojas' },
     { pregunta: '¿Por qué se les conoce popularmente como "inseparables" a los agapornis?', opciones: ['Porque no pueden volar solos', 'Porque forman lazos de pareja muy estables y duraderos de por vida', 'Porque son idénticos en color', 'Porque duermen pegados al suelo'], correcta: 1, decimas: 0.4, profesor: 'Prof. Valentina Rojas' },
     { pregunta: '¿Cuál es la base de alimentación de las catitas australianas?', opciones: ['Carne picada', 'Semillas de pastos, mijo y brotes frescos de verdura', 'Peces pequeños', 'Ramas leñosas secas'], correcta: 1, decimas: 0.3, profesor: 'Prof. Valentina Rojas' },
-    { pregunta: '¿Cuánto dura aproximadamente la incubación de los huevos de catita?', opciones: ['2 días', '8 días', '18 a 21 días (casi tres semanas)', '45 días'], correcta: 2, decimas: 0.5, profesor: 'Prof. Valentina Rojas' }
+    { pregunta: '¿Cuánto dura aproximadamente la incubación de los huevos de catita?', opciones: ['2 días', '8 días', 'Entre 18 y 21 días', '45 días'], correcta: 2, decimas: 0.5, profesor: 'Prof. Valentina Rojas' }
   ],
   pozo: [
     { pregunta: '¿Por qué el agua para los animales debe cambiarse a diario y mantenerse limpia?', opciones: ['Para que no se evapore rápido', 'Para prevenir la proliferación de bacterias, algas y enfermedades', 'Solo por estética del corral', 'Porque los animales solo beben agua helada'], correcta: 1, decimas: 0.4, profesor: 'Equipo Granja B13' }

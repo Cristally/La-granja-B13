@@ -24,19 +24,25 @@ function updateGalleryHeader() {
   const countEl = document.getElementById('galleryCount');
   const scoreEl = document.getElementById('score');
   if (scoreEl) scoreEl.textContent = purePts;
-  if (countEl) countEl.textContent = REAL_GALLERY_ITEMS.length;
+  if (countEl) {
+    countEl.textContent = REAL_GALLERY_ITEMS.length;
+    const totalEl = document.getElementById('galleryTotal');
+    if (totalEl) totalEl.textContent = REAL_GALLERY_ITEMS.length;
+  }
 }
 
 function renderFilterButtons() {
   const container = document.getElementById('galleryFilterBar');
   if (!container) return;
 
+  const countCat = (cat) => cat === 'todos' ? REAL_GALLERY_ITEMS.length : REAL_GALLERY_ITEMS.filter(item => item.category === cat).length;
+
   const categories = [
-    { id: 'todos', label: `🌿 Todos (${REAL_GALLERY_ITEMS.length})` },
-    { id: 'fauna', label: '🐰🐔 Fauna y Carteles' },
-    { id: 'huerto', label: '🌱 Huerto e Invernadero' },
-    { id: 'espacios', label: '🏗️ Espacios y Hábitats' },
-    { id: 'nidos', label: '🥚 Nidos y Postura' }
+    { id: 'todos', label: `🌿 Todos (${countCat('todos')})` },
+    { id: 'fauna', label: `🐾 Fauna Real (${countCat('fauna')})` },
+    { id: 'espacios', label: `🏡 Espacios e Instalaciones (${countCat('espacios')})` },
+    { id: 'huerto', label: `🌱 Huerto y Botánica (${countCat('huerto')})` },
+    { id: 'nidos', label: `🐣 Nidos y Maternidad (${countCat('nidos')})` }
   ];
 
   container.innerHTML = categories.map(c => `
@@ -74,7 +80,7 @@ function renderGalleryGrid() {
       <article class="gallery-card" id="card-${item.id}">
         <div class="gallery-card-img-wrap" data-lightbox-src="${item.photo}" data-title="${item.title}" data-desc="${item.desc}">
           <img src="${item.photo}" alt="${item.title}" id="main-img-${item.id}">
-          <span class="gallery-real-badge">📸 FOTO REAL B-13</span>
+          <span class="gallery-real-badge${item.isHD ? ' is-hd' : ''}">${item.isHD ? '🌟 FOTO REAL HD' : '📸 FOTO REAL B-13'}</span>
           <span class="gallery-zoom-hint">🔍 Ampliar</span>
         </div>
         ${hasExtra ? `

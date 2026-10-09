@@ -802,6 +802,49 @@
      MODALES GLOBALES Y JUGADOR DE QUIZ
      ============================================================ -->
 
+<!-- Modal de Consejo de Campo antes de Iniciar el Desafío -->
+<div class="overlay" id="preQuizAdviceOverlay" style="display:none;">
+  <div class="card quiz-advice-modal" style="max-width:540px;width:92%;padding:26px 24px;border-radius:20px;text-align:center;box-shadow:0 18px 45px rgba(0,0,0,0.28);border:3px solid #f59e0b;position:relative;">
+    <button class="close-btn" id="adviceCloseBtn" type="button" aria-label="Cerrar consejo" style="position:absolute;top:14px;right:16px;">✕</button>
+    <div style="font-size:3rem;margin-bottom:8px;line-height:1;">💡</div>
+    <h2 id="adviceModalTitle" style="font-family:'Fraunces',serif;font-size:1.45rem;color:var(--ink);margin:0 0 6px;">
+      ¡Consejo de Campo para ganar tus décimas!
+    </h2>
+    <div id="adviceModalSubtitle" style="font-size:0.92rem;font-weight:700;color:#b45309;margin-bottom:16px;">
+      Recuerda: ¡Para ganar tus décimas completas debes responder bien a la primera!
+    </div>
+    
+    <div style="background:#fffbeb;border:2px solid #fde68a;border-radius:14px;padding:16px 18px;text-align:left;margin-bottom:20px;font-size:0.92rem;line-height:1.55;color:#78350f;">
+      <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:12px;">
+        <span style="font-size:1.35rem;flex-shrink:0;">📖</span>
+        <div>
+          <b>1. Revisa la Ficha del Animalito:</b> En su ficha aprenderás sobre su anatomía, cuidados, cómo cargarlo y su nuevo <b>Diccionario Biológico</b>.
+        </div>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:10px;">
+        <span style="font-size:1.35rem;flex-shrink:0;">🌾</span>
+        <div>
+          <b>2. Interactúa en el Potrero:</b> Al acariciar y alimentar a los animales en el inicio, descubrirás pistas y curiosidades clave.
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:10px;">
+      <button type="button" id="adviceBtnStartQuiz" class="quiz-finish-btn" style="margin:0;background:#10b981;font-size:1.05rem;">
+        ✅ ¡Ya me preparé! Comenzar Desafío
+      </button>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;">
+        <a id="adviceBtnGoFicha" href="ficha.html" class="tool-btn" style="flex:1;min-width:160px;justify-content:center;background:#0284c7;color:#fff;border:2px solid #0369a1;border-radius:12px;padding:10px 14px;font-weight:700;text-decoration:none;display:inline-flex;align-items:center;gap:6px;">
+          <span>🔍</span> Ver Ficha Primero
+        </a>
+        <a href="index.html" class="tool-btn" style="flex:1;min-width:160px;justify-content:center;background:#e2e8f0;color:#334155;border:2px solid #cbd5e1;border-radius:12px;padding:10px 14px;font-weight:700;text-decoration:none;display:inline-flex;align-items:center;gap:6px;">
+          <span>🌾</span> Ir al Potrero
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- Modal Interactivo del Quiz -->
 <div class="overlay" id="quizPlayerOverlay">
   <div class="card quiz-player-modal">

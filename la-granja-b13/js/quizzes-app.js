@@ -170,106 +170,106 @@
     return list;
   }
 
-  // Generador de respaldo de preguntas pedagógicas con lenguaje claro y amigable
+  // Generador de respaldo de preguntas pedagógicas
   function generatePedagogicalQuestions(a) {
     if (a.group === 'conejos' || a.id.includes('conejo')) {
       return [
         {
-          q: `¿Qué proceso natural realiza ${a.name} para absorber vitaminas y aprovechar al máximo su comida?`,
+          q: `¿Qué proceso fisiológico vital realiza ${a.name} para reabsorber nutrientes y vitaminas del complejo B?`,
           options: [
-            'Cecotrofia (vuelven a comer nutrientes suaves de su digestión)',
-            'Rumia con cuatro estómagos como las vacas',
-            'Fotosíntesis con la luz del sol',
-            'Hibernación durante todo el invierno'
+            'Cecotrofia en el ciego digestivo',
+            'Rumia con cuatro estómagos',
+            'Fotosíntesis epidérmica',
+            'Hibernación invernal'
           ],
           a: 0,
           difficulty: 'medio',
           points: 15,
-          explain: 'La cecotrofia es una digestión especial: los conejos comen pequeñas porciones suaves ricas en vitaminas B y proteínas que produce su cuerpo para no perder nutrientes.'
+          explain: 'Los conejos ingieren cecotrofos blandos fermentados para aprovechar proteína bacteriana y vitaminas producidas en su ciego.'
         },
         {
-          q: `¿Cuál es el alimento base e indispensable que debe componer al menos el 80% de la comida diaria de ${a.name}?`,
+          q: `¿Cuál es el alimento base e indispensable que debe constituir al menos el 80% de la dieta de ${a.name}?`,
           options: [
-            'Heno fresco (pasto seco con mucha fibra que desgasta sus dientes)',
-            'Zanahorias dulces en trozos todo el día',
-            'Pan blanco remojado con leche',
+            'Heno fresco de alta fibra',
+            'Zanahorias dulces en trozos',
+            'Pan remojado con leche',
             'Semillas de maravilla con sal'
           ],
           a: 0,
           difficulty: 'facil',
           points: 10,
-          explain: 'El heno (pasto seco fibroso) es vital: desgasta sus dientes (que nunca paran de crecer) y mantiene su estómago funcionando perfecto.'
+          explain: 'El heno de gramíneas desgasta los incisivos de crecimiento continuo y previene problemas gastrointestinales.'
         },
         {
-          q: `¿Qué salto o pirueta de alegría hace ${a.name} cuando se siente súper feliz y cómodo en la granja?`,
+          q: `¿Cómo expresa ${a.name} un momento de profunda alegría y bienestar en la conejera?`,
           options: [
-            'Un "binky" (un brinco acrobático con giro en el aire)',
-            'Morder los barrotes con enojo',
-            'Esconderse sin respirar',
-            'Cantar como un gallito al amanecer'
+            'Realiza un binky',
+            'Muerde fuertemente los barrotes',
+            'Se esconde sin respirar',
+            'Canta como un gallo al amanecer'
           ],
           a: 0,
           difficulty: 'facil',
           points: 10,
-          explain: 'El binky es el famoso salto con pirueta en el aire que dan los conejos cuando están llenos de energía y contentos.'
+          explain: 'El binky es un salto con contorsión en el aire que expresa felicidad y relajación en lagomorfos.'
         }
       ];
     } else if (a.group === 'patos' || a.id.includes('pato') || a.id === 'sal' || a.id === 'pimienta') {
       return [
         {
-          q: `¿Qué parte especial sobre la cola produce el aceite natural con el que ${a.name} se impermeabiliza las plumas?`,
+          q: `¿Qué estructura glandular secreta la sustancia oleosa que ${a.name} esparce en sus plumas para mantenerse seco?`,
           options: [
-            'Glándula uropígea (bolsita de aceite natural para no mojarse)',
-            'Glándulas de sudor en las patas',
-            'Glándula de saliva en el pico',
-            'El hígado'
+            'Glándula uropígea',
+            'Glándulas sudoríparas en las patas',
+            'Glándula salival anterior',
+            'Hígado dorsal'
           ],
           a: 0,
           difficulty: 'medio',
           points: 15,
-          explain: 'Con su pico, el pato toma aceite de la glándula uropígea y lo esparce por sus plumas para mantenerse seco y flotar en el agua.'
+          explain: 'La glándula uropígea impermeabiliza el plumaje, permitiendo al pato flotar sin que el agua moje su piel.'
         },
         {
           q: `¿Por qué está estrictamente prohibido alimentar a ${a.name} con pan blanco en la granja del liceo?`,
           options: [
-            'Porque causa desnutrición y deforma sus alitas con la enfermedad "ala de ángel"',
-            'Porque hace que floten demasiado rápido',
-            'Porque les cambia el color de los ojos',
-            'Porque no les gusta el trigo'
+            'Provoca malnutrición y la malformación conocida como ala de ángel',
+            'Hace que floten demasiado rápido',
+            'Les cambia el color de los ojos',
+            'No les gusta el trigo'
           ],
           a: 0,
           difficulty: 'medio',
           points: 15,
-          explain: 'El pan tiene calorías vacías y ningún nutriente útil; ese exceso hace que los huesos de sus alas crezcan chuecos y no puedan nadar ni volar bien.'
+          explain: 'El exceso de carbohidratos simples y falta de micronutrientes causa crecimiento óseo deforme en las alas.'
         }
       ];
     } else {
       return [
         {
-          q: `¿Para qué le sirve a ${a.name} tener su cresta roja en los días calurosos de Antofagasta?`,
+          q: `¿Qué función cumple la cresta muy vascularizada de ${a.name} en días soleados de Antofagasta?`,
           options: [
-            'Termorregulación (funciona como radiador para disipar el calor corporal)',
-            'Como antena receptora para escuchar de lejos',
-            'Para guardar calcio de los huevos',
-            'Para ahuyentar a los insectos'
+            'Termorregulación para disipar calor corporal',
+            'Antena receptora de sonidos lejanos',
+            'Almacén de calcio para los huesos',
+            'Defensa contra parásitos'
           ],
           a: 0,
           difficulty: 'facil',
           points: 10,
-          explain: 'Como las aves no pueden sudar, su cresta y barbillas rojas tienen mucha sangre que bota el exceso de calor al aire para enfriarlas.'
+          explain: 'Al no poder sudar, las aves usan su cresta y barbillas como radiadores biológicos para disipar calor corporal.'
         },
         {
-          q: `Como las aves no tienen dientes, ¿en qué órgano ${a.name} tritura los granos duros con piedrecillas?`,
+          q: `Dado que las aves carecen de dientes, ¿en qué órgano ${a.name} tritura los granos con piedrecillas?`,
           options: [
-            'En la molleja (estómago muscular que muele las semillas)',
-            'En el buche (saquito donde solo guarda y ablanda el grano)',
-            'En el intestino delgado',
+            'En la molleja',
+            'En el buche esofágico',
+            'En el colon anterior',
             'En el paladar'
           ],
           a: 0,
           difficulty: 'medio',
           points: 15,
-          explain: 'La molleja tiene paredes musculares fuertes y piedrecillas que tragan a propósito (grit) para moler los granos como un molino.'
+          explain: 'La molleja posee paredes musculares hipertrofiadas que muelen mecánicamente el grano duro.'
         }
       ];
     }
@@ -398,7 +398,7 @@
         const qid = btn.dataset.qid;
         const target = all.find(x => x.uniqueId === qid);
         if (target) {
-          startQuizPlayer(target);
+          promptPreQuizAdvice(target);
         }
       });
     });
@@ -449,6 +449,52 @@
     if (decEl) decEl.textContent = `${decimasTotal} / 0.50`;
     if (topScoreEl) topScoreEl.textContent = purePts;
     if (topDecEl) topDecEl.textContent = decimasTotal;
+  }
+
+  /* ============================================================
+     CONSEJO DE CAMPO PREVIO AL DESAFÍO (Para ganar décimas a la 1ª)
+     ============================================================ */
+  let pendingQuizItem = null;
+
+  function promptPreQuizAdvice(quizItem) {
+    pendingQuizItem = quizItem;
+    const adviceOverlay = document.getElementById('preQuizAdviceOverlay');
+    if (!adviceOverlay) {
+      startQuizPlayer(quizItem);
+      return;
+    }
+
+    const titleEl = document.getElementById('adviceModalTitle');
+    const goFichaBtn = document.getElementById('adviceBtnGoFicha');
+    const cleanTitle = quizItem.title.replace(/^Desafío:\s*/, '');
+
+    if (titleEl) {
+      titleEl.textContent = `💡 ¿Te preparaste para el desafío de ${cleanTitle}?`;
+    }
+
+    if (goFichaBtn) {
+      if (quizItem.type === 'animal') {
+        goFichaBtn.style.display = 'inline-flex';
+        goFichaBtn.href = `ficha.html?id=${encodeURIComponent(quizItem.id)}&from=quizzes.html`;
+        goFichaBtn.innerHTML = `<span>🔍</span> Ver Ficha de ${cleanTitle}`;
+      } else {
+        goFichaBtn.style.display = 'inline-flex';
+        goFichaBtn.href = 'mapa.html';
+        goFichaBtn.innerHTML = `<span>🗺️</span> Ver Mapa y Normas`;
+      }
+    }
+
+    adviceOverlay.classList.add('open');
+    adviceOverlay.style.display = 'flex';
+  }
+
+  function closeAdviceModal() {
+    const adviceOverlay = document.getElementById('preQuizAdviceOverlay');
+    if (adviceOverlay) {
+      adviceOverlay.classList.remove('open');
+      adviceOverlay.style.display = 'none';
+    }
+    pendingQuizItem = null;
   }
 
   /* ============================================================
@@ -626,6 +672,31 @@
     if (finishBtn) {
       finishBtn.addEventListener('click', () => {
         closeQuizPlayerAndUnlock();
+      });
+    }
+
+    // Eventos del Modal de Consejo Previo (Campo y Ficha)
+    const adviceOverlay = document.getElementById('preQuizAdviceOverlay');
+    const adviceCloseBtn = document.getElementById('adviceCloseBtn');
+    const adviceStartBtn = document.getElementById('adviceBtnStartQuiz');
+
+    if (adviceCloseBtn) {
+      adviceCloseBtn.addEventListener('click', closeAdviceModal);
+    }
+    if (adviceStartBtn) {
+      adviceStartBtn.addEventListener('click', () => {
+        const target = pendingQuizItem;
+        closeAdviceModal();
+        if (target) {
+          startQuizPlayer(target);
+        }
+      });
+    }
+    if (adviceOverlay) {
+      adviceOverlay.addEventListener('click', e => {
+        if (e.target === adviceOverlay) {
+          closeAdviceModal();
+        }
       });
     }
 

@@ -1772,6 +1772,11 @@ footer.ods{
   font-family:'Space Mono',monospace;font-size:0.65rem;font-weight:700;
   padding:3px 8px;border-radius:4px;border:1px solid var(--hay);backdrop-filter:blur(3px);
 }
+.gallery-real-badge.is-hd{
+  background:linear-gradient(135deg, rgba(40,55,20,0.94), rgba(120,85,15,0.94));
+  border:1.5px solid #E5A93C;color:#FFF9D2;
+  box-shadow:0 2px 6px rgba(0,0,0,0.3);
+}
 .gallery-zoom-hint{
   position:absolute;bottom:10px;right:10px;background:rgba(255,255,255,0.9);
   color:var(--ink);font-size:0.7rem;font-weight:700;padding:3px 8px;border-radius:12px;
@@ -5874,6 +5879,255 @@ body.rol-admin .badges-bar {
   font-size: 0.95rem;
   line-height: 1.45;
   color: var(--ink);
+}
+
+/* ============================================================
+   GUÍA DE TRATO RESPETUOSO (Cargar, Levantar y Acariciar)
+   ============================================================ */
+.handling-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.handling-hero-card {
+  background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+  border: 2px solid #86efac;
+  border-radius: 16px;
+  padding: 20px 22px;
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.12);
+}
+
+.handling-hero-title {
+  font-family: 'Fraunces', serif;
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #14532d;
+  margin: 0 0 6px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.handling-hero-subtitle {
+  font-size: 0.92rem;
+  color: #166534;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.handling-grid-2col {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+@media (max-width: 720px) {
+  .handling-grid-2col {
+    grid-template-columns: 1fr;
+  }
+}
+
+.handling-card {
+  background: #ffffff;
+  border: 2px solid var(--ink);
+  border-radius: 14px;
+  padding: 18px 20px;
+  box-shadow: 3px 3px 0 rgba(40,49,27,0.1);
+  display: flex;
+  flex-direction: column;
+}
+
+.handling-card-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1.5px solid #f1f5f9;
+}
+
+.handling-card-icon {
+  font-size: 1.6rem;
+  line-height: 1;
+}
+
+.handling-card-title {
+  font-family: 'Fraunces', serif;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--ink);
+  margin: 0;
+}
+
+.handling-card.happy-zone {
+  border-color: #10b981;
+  background: #f0fdf4;
+}
+
+.handling-card.happy-zone .handling-card-header {
+  border-bottom-color: #bbf7d0;
+}
+
+.handling-card.happy-zone .handling-card-title {
+  color: #065f46;
+}
+
+.handling-card.danger-zone {
+  border-color: #ef4444;
+  background: #fef2f2;
+}
+
+.handling-card.danger-zone .handling-card-header {
+  border-bottom-color: #fecaca;
+}
+
+.handling-card.danger-zone .handling-card-title {
+  color: #991b1b;
+}
+
+.handling-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-size: 0.93rem;
+  line-height: 1.5;
+}
+
+.handling-list li {
+  position: relative;
+  padding-left: 24px;
+}
+
+.handling-list li::before {
+  position: absolute;
+  left: 0;
+  top: 1px;
+}
+
+.handling-list.happy li::before {
+  content: '💚';
+  font-size: 0.85rem;
+}
+
+.handling-list.danger li::before {
+  content: '⛔';
+  font-size: 0.85rem;
+}
+
+.handling-steps-list {
+  padding-left: 20px;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-size: 0.93rem;
+  line-height: 1.5;
+}
+
+.handling-steps-list li {
+  color: var(--ink);
+}
+
+.handling-steps-list li b {
+  color: var(--grass-dark);
+}
+
+/* ============================================================
+   DICCIONARIO BIOLÓGICO DE CAMPO
+   ============================================================ */
+.dictionary-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.dictionary-hero-card {
+  background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+  border: 2px solid #93c5fd;
+  border-radius: 16px;
+  padding: 20px 22px;
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.12);
+}
+
+.dictionary-hero-title {
+  font-family: 'Fraunces', serif;
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #1e3a8a;
+  margin: 0 0 6px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.dictionary-hero-subtitle {
+  font-size: 0.92rem;
+  color: #1d4ed8;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.dictionary-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+}
+
+@media (max-width: 680px) {
+  .dictionary-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.dict-card {
+  background: #ffffff;
+  border: 2px solid #cbd5e1;
+  border-radius: 14px;
+  padding: 16px 18px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  transition: transform 0.15s ease, border-color 0.15s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.dict-card:hover {
+  transform: translateY(-2px);
+  border-color: #3b82f6;
+  box-shadow: 0 6px 16px rgba(59, 130, 246, 0.12);
+}
+
+.dict-card-term {
+  font-family: 'Fraunces', serif;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #0f172a;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.dict-card-badge {
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: 12px;
+  background: #eff6ff;
+  color: #2563eb;
+  border: 1px solid #bfdbfe;
+  text-transform: uppercase;
+  margin-left: auto;
+}
+
+.dict-card-def {
+  font-size: 0.92rem;
+  line-height: 1.5;
+  color: #334155;
+  margin: 0;
 }
 
 /* ============================================================

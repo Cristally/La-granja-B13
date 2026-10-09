@@ -106,16 +106,22 @@
   <!-- Pestañas Principales en Pantalla Completa -->
   <div class="ficha-main-tabs" id="fichaMainTabs">
     <button type="button" class="ficha-tab-btn active" data-tab="facts">
-      <span>📋</span> Conoce al Animal (Cuidados y Datos)
+      <span>📋</span> Conoce al Animal
+    </button>
+    <button type="button" class="ficha-tab-btn" data-tab="handling">
+      <span>🤝</span> Cómo Cargar & Acariciar
+    </button>
+    <button type="button" class="ficha-tab-btn" data-tab="dictionary">
+      <span>📚</span> Diccionario Biológico
     </button>
     <button type="button" class="ficha-tab-btn" data-tab="jokes">
-      <span>🌾</span> Chiste de Granja & Superpoder
+      <span>🌾</span> Chiste & Superpoder
     </button>
     <button type="button" class="ficha-tab-btn" data-tab="anatomy">
-      <span>🔬</span> Anatomía Interactiva
+      <span>🔬</span> Anatomía
     </button>
     <button type="button" class="ficha-tab-btn" data-tab="accessories">
-      <span>🎨</span> Personalizar Accesorio
+      <span>🎨</span> Accesorio
     </button>
   </div>
 
@@ -139,7 +145,21 @@
       </div>
     </div>
 
-    <!-- Pestaña 2: Chiste de Granja, Superpoder Biológico y Curiosidad -->
+    <!-- Pestaña 2: Guía de Trato Respetuoso (Cargar, Levantar y Acariciar) -->
+    <div class="ficha-panel" id="panelFichaHandling" style="display:none;">
+      <div id="fichaHandlingContainer">
+        <!-- Inyectado dinámicamente -->
+      </div>
+    </div>
+
+    <!-- Pestaña 3: Diccionario Biológico de Campo -->
+    <div class="ficha-panel" id="panelFichaDictionary" style="display:none;">
+      <div id="fichaDictionaryContainer">
+        <!-- Inyectado dinámicamente -->
+      </div>
+    </div>
+
+    <!-- Pestaña 4: Chiste de Granja, Superpoder Biológico y Curiosidad -->
     <div class="ficha-panel" id="panelFichaJokes" style="display:none;">
       <div id="fichaJokesContainer">
         <!-- Inyectado dinámicamente -->
