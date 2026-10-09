@@ -16,8 +16,8 @@ const REAL_GALLERY_ITEMS = [
     category: 'fauna',
     title: 'Trío de Conejos en la Conejera Escolar',
     subtitle: 'Quesito, Vainilla y Nesquik en convivencia comunitaria',
-    photo: 'assets/Imagenes Granja Real B13/OneDrive_1_8-10-2026/1 (2).jpg',
-    extraPhoto: 'assets/Imagenes Granja Real B13/OneDrive_1_8-10-2026/1 (3).jpg',
+    photo: 'assets/Imagenes Granja Real B13/OneDrive_1_8-10-2026/1 (3).jpg',
+    extraPhoto: 'assets/Imagenes Granja Real B13/OneDrive_1_8-10-2026/1 (2).jpg',
     gameRef: {
       type: 'map',
       label: 'Conejeras Oficiales',
