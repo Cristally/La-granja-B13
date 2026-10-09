@@ -1715,7 +1715,7 @@ function attachOrganHandlers(a) {
       el.classList.add('sel');
       const organ = a.organs.find(o => o.id === el.dataset.id);
       if (organ) {
-        info.innerHTML = `<b>${organ.label}</b>${organ.desc}`;
+        info.innerHTML = `<b>${organ.label}:</b> ${organ.desc}`;
         if (!state.organsInspected) state.organsInspected = [];
         const organKey = `${a.id}_${organ.id}`;
         if (!state.organsInspected.includes(organKey)) {

@@ -286,6 +286,36 @@ const AVE_ORGANS = [
   { id: 'intestino', label: 'Intestino', desc: 'Zona principal de absorción de nutrientes hacia la sangre.', left: 49.8, top: 93.2 }
 ];
 
+// Puntos de anatomía interactiva para Loros (Catitas y Agapornis: Pastelito, Los manguitos, Las Catitas)
+// Alineados con exactitud sobre las marcas rojas del diagrama oficial: assets/img/anatomy/loro.jpg
+const LORO_ORGANS = [
+  { id: 'pico', label: 'Pico (Boca)', desc: 'Toma el alimento. En los loros es curvo, fuerte y prensil, ideal para partir semillas duras, pelar frutas y ayudarse a trepar.', left: 73.6, top: 29.7 },
+  { id: 'esofago', label: 'Esófago', desc: 'Tubo flexible y musculoso que traslada las semillas y el agua desde la boca hacia el buche.', left: 65.7, top: 40.3 },
+  { id: 'buche', label: 'Buche', desc: 'Bolsita donde el loro almacena y ablanda la comida antes de digerirla. También les sirve a los padres para alimentar a sus polluelos.', left: 73.2, top: 54.8 },
+  { id: 'proventriculo', label: 'Proventrículo (Estómago glandular)', desc: 'Primer estómago del ave. Libera jugos gástricos que comienzan a disolver químicamente los nutrientes del alimento.', left: 61.9, top: 54.4 },
+  { id: 'molleja', label: 'Molleja (Estómago muscular)', desc: 'Estómago musculoso que tritura los granos duros. Como las aves no tienen dientes, aquí muelen la comida con ayuda de su fuerza.', left: 52.7, top: 56.7 },
+  { id: 'higado', label: 'Hígado', desc: 'Filtra y purifica la sangre, almacena energía y produce bilis para digerir las grasas del alimento.', left: 63.6, top: 67.2 },
+  { id: 'pancreas', label: 'Páncreas', desc: 'Glándula que produce enzimas para digerir la comida y hormonas (como la insulina) para regular la energía.', left: 57.9, top: 70.3 },
+  { id: 'intestino_delgado', label: 'Intestino delgado', desc: 'Conducto largo donde el cuerpo absorbe las vitaminas, proteínas y minerales hacia la sangre.', left: 44.8, top: 65.2 },
+  { id: 'intestino_grueso', label: 'Intestino grueso', desc: 'Recupera el agua para mantener hidratada al ave y compacta los restos que no se pudieron digerir.', left: 31.4, top: 69.7 },
+  { id: 'cloaca', label: 'Cloaca', desc: 'Abertura final compartida por donde salen los desechos digestivos y por donde las hembras ponen sus huevos.', left: 25.2, top: 75.3 }
+];
+
+// Puntos de anatomía interactiva para Patos (Sal y Pimienta)
+// Alineados con exactitud sobre las marcas rojas del diagrama oficial: assets/img/anatomy/pato.jpg
+const PATO_ORGANS = [
+  { id: 'pico', label: 'Pico (Boca)', desc: 'Pico plano y ancho adaptado al agua. Posee pequeñas laminillas en los bordes para colar algas, agua y pequeños bocados.', left: 73.4, top: 29.8 },
+  { id: 'esofago', label: 'Esófago', desc: 'Conducto elástico que conduce los alimentos acuáticos, vegetales y agua directamente hacia el buche.', left: 65.8, top: 40.3 },
+  { id: 'buche', label: 'Buche', desc: 'Bolsa de almacenamiento temporal donde el pato humedece y remoja las hierbas y granos antes de su digestión.', left: 73.2, top: 54.8 },
+  { id: 'proventriculo', label: 'Proventrículo (Estómago glandular)', desc: 'Primer compartimento estomacal que agrega ácidos y enzimas gástricas para procesar químicamente el alimento.', left: 61.9, top: 54.3 },
+  { id: 'molleja', label: 'Molleja (Estómago muscular)', desc: 'Poderoso estómago triturador. El pato traga piedrecillas del suelo para moler granos y fibras resistentes como un mortero natural.', left: 52.8, top: 56.7 },
+  { id: 'higado', label: 'Hígado', desc: 'Órgano vital que produce bilis para descomponer grasas, neutraliza toxinas y almacena reservas de vitaminas.', left: 63.5, top: 67.2 },
+  { id: 'pancreas', label: 'Páncreas', desc: 'Produce jugos digestivos esenciales para la asimilación de nutrientes y hormonas reguladoras del metabolismo.', left: 57.9, top: 70.3 },
+  { id: 'intestino_delgado', label: 'Intestino delgado', desc: 'Zona principal de digestión y absorción donde los nutrientes pasan a la sangre para darle energía al pato.', left: 44.8, top: 65.2 },
+  { id: 'intestino_grueso', label: 'Intestino grueso', desc: 'Reabsorbe agua y minerales para evitar la pérdida de líquidos y transporta la materia restante hacia la cloaca.', left: 31.4, top: 69.7 },
+  { id: 'cloaca', label: 'Cloaca', desc: 'Conducto de salida común para la eliminación de desechos y la puesta de huevos en las patas.', left: 25.2, top: 75.3 }
+];
+
 // Perfiles divertidos, chistes de corral, superpoderes biológicos y frases carismáticas
 // Diseñado para enriquecer la experiencia de los estudiantes y hacer que cada ficha sea divertida y amigable.
 const ANIMAL_FUN_PROFILES = {
@@ -1074,7 +1104,7 @@ const ANIMALS = [
     img_pixel: 'assets/img/animals/catita.png',
     color: COLORS[4], accessory: 'none', y: 90,
     sound: 'assets/audio/aves.mp3',
-    anatomyImage: 'assets/img/anatomy/ave-general.jpg',
+    anatomyImage: 'assets/img/anatomy/loro.jpg',
     facts: {
       clasificacion: 'Ave, orden Psittaciformes (loros), familia Psittaculidae. Periquito pequeño originario de Australia.',
       habitat: 'En estado silvestre habita el interior árido de Australia (matorrales y praderas abiertas) y anida en huecos de árboles.',
@@ -1085,7 +1115,7 @@ const ANIMALS = [
       cuidados: 'Necesita una jaula amplia para volar, compañía (es muy social) y una dieta variada —no solo semillas— además de juguetes u objetos para explorar.',
       dato: 'Su nombre científico, Melopsittacus undulatus, combina el griego y el latín para decir algo así como "periquito melodioso de alas onduladas"; en libertad puede formar bandadas nómadas de miles de aves que siguen la lluvia en busca de semillas.'
     },
-    organs: AVE_ORGANS,
+    organs: LORO_ORGANS,
     quiz: [
       { q: '¿De qué ecosistema y continente es originaria en libertad la catita (periquito australiano)?', options: ['Selvas amazónicas de Brasil', 'Sabana africana', 'Interior árido y praderas de Australia', 'Bosques templados de Europa'], a: 2, difficulty: 'facil', points: 10, explain: 'Melopsittacus undulatus es endémico de las zonas áridas e interiores del continente australiano.' },
       { q: '¿Cuánto dura en promedio el período de incubación de los huevos de una catita?', options: ['5 días', 'Aproximadamente 18 días', '45 días', '60 días'], a: 1, difficulty: 'facil', points: 10, explain: 'La hembra incuba la postura durante unos 18 días dentro de oquedades de árboles o nidos protegidos.' },
@@ -1104,7 +1134,7 @@ const ANIMALS = [
     img_pixel: 'assets/img/animals/agapornis.png',
     color: COLORS[5], accessory: 'none', y: 90,
     sound: 'assets/audio/aves.mp3',
-    anatomyImage: 'assets/img/anatomy/ave-general.jpg',
+    anatomyImage: 'assets/img/anatomy/loro.jpg',
     facts: {
       clasificacion: 'Ave, orden Psittaciformes (loros), familia Psittaculidae, género Agapornis. La especie más común como mascota es el agapornis cachetes rosados (Agapornis roseicollis), originario del sur de África.',
       habitat: 'En estado silvestre habita bosques abiertos, matorrales y zonas rocosas áridas del sur de África, cerca de fuentes de agua.',
@@ -1115,7 +1145,7 @@ const ANIMALS = [
       cuidados: 'Al ser tan sociales, su bienestar mejora si viven en pareja o grupo, con una jaula amplia, juguetes para explorar y una dieta variada más allá de solo semillas.',
       dato: 'Su nombre en español, "inseparables", y el nombre del género, Agapornis (del griego agape, amor, y ornis, ave), describen su comportamiento más característico: las parejas se mantienen unidas de por vida y hasta duermen posadas una junto a la otra.'
     },
-    organs: AVE_ORGANS,
+    organs: LORO_ORGANS,
     quiz: [
       { q: '¿Por qué al género Agapornis se le conoce en español como "inseparables"?', options: ['Porque están unidos físicamente al nacer', 'Porque establecen parejas monógamas estrechas de por vida que se acicalan juntas', 'Porque nunca se separan del suelo', 'Porque no pueden volar de forma individual'], a: 1, difficulty: 'facil', points: 10, explain: 'Del griego agape (amor) y ornis (ave), forman vínculos monógamos muy sólidos y pasan gran parte del tiempo juntos.' },
       { q: '¿De qué continente es originaria la gran mayoría de las especies de agapornis?', options: ['África', 'Oceanía', 'América del Sur', 'Asia septentrional'], a: 0, difficulty: 'facil', points: 10, explain: 'Ocho de las nueve especies de Agapornis son nativas del continente africano y una de Madagascar.' },
@@ -1134,7 +1164,7 @@ const ANIMALS = [
     img_pixel: 'assets/img/animals/sal.png',
     color: COLORS[4], accessory: 'none', y: 70,
     sound: 'assets/audio/pato.mp3',
-    anatomyImage: 'assets/img/anatomy/ave-general.jpg',
+    anatomyImage: 'assets/img/anatomy/pato.jpg',
     facts: {
       clasificacion: 'Ave acuática anseriforme, familia Anatidae. Domesticado a partir del ánade real.',
       habitat: 'Estanques, orillas de agua y praderas húmedas con zonas de sombra y refugio limpio.',
@@ -1145,7 +1175,7 @@ const ANIMALS = [
       cuidados: 'Prohibido alimentar con pan blanco o masas refinadas (causa deformidad de ala de ángel). Necesita suelo no abrasivo y agua limpia.',
       dato: 'Posee una glándula sobre la base de su cola que produce aceites naturales que esparce con su pico para flotar y no mojarse.'
     },
-    organs: AVE_ORGANS,
+    organs: PATO_ORGANS,
     quiz: []
   },
   {

@@ -1131,7 +1131,7 @@
     container.innerHTML = `
       <div class="anatomy-box" style="display:block;">
         <div class="k" style="font-size:1.1rem;margin-bottom:12px;">🔬 Radiografía y Diagrama de Anatomía</div>
-        <div class="anatomy-diagram" id="anatomyWideDiagram" style="display:block;margin-top:10px;">
+        <div class="anatomy-diagram" id="anatomyWideDiagram" style="display:block;margin-top:10px;max-width:540px;margin-left:auto;margin-right:auto;">
           ${a.anatomyImage ? buildAnatomyImage(a) : buildAnatomySVG(a)}
         </div>
       </div>
