@@ -349,6 +349,7 @@ function initIntroVideo() {
   const video = document.getElementById('introFarmVideo');
   const playOverlay = document.getElementById('introVideoPlayOverlay');
   const ctaBtn = document.getElementById('introCtaPlayBtn');
+  const ctaIcon = document.getElementById('introCtaIcon');
   const ctaText = document.getElementById('introCtaPlayBtnText');
   const fullscreenBtn = document.getElementById('introVideoFullscreenBtn');
   const scrollPotreroBtn = document.getElementById('btnScrollPotrero');
@@ -364,13 +365,16 @@ function initIntroVideo() {
         playOverlay.classList.remove('overlay-hidden');
       }
     }
-    if (ctaText) {
+    if (ctaIcon && ctaText) {
       if (isPlaying) {
-        ctaText.textContent = '⏸ Pausar Video';
+        ctaIcon.textContent = '⏸';
+        ctaText.textContent = 'Pausar Video';
       } else if (video.currentTime > 0 && !video.ended) {
-        ctaText.textContent = '▶ Continuar Video';
+        ctaIcon.textContent = '▶';
+        ctaText.textContent = 'Continuar Video';
       } else {
-        ctaText.textContent = '▶ Ver Video de Experiencias';
+        ctaIcon.textContent = '▶';
+        ctaText.textContent = 'Ver Video de Experiencias';
       }
     }
   }
@@ -408,7 +412,8 @@ function initIntroVideo() {
   video.addEventListener('pause', () => updatePlayState(false));
   video.addEventListener('ended', () => {
     updatePlayState(false);
-    if (ctaText) ctaText.textContent = '▶ Repetir Video de Experiencias';
+    if (ctaIcon) ctaIcon.textContent = '🔄';
+    if (ctaText) ctaText.textContent = 'Ver Video de Nuevo';
   });
 
   if (fullscreenBtn) {
