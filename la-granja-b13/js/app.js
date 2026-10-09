@@ -9,14 +9,30 @@ const POTRERO_ANIMALS = ANIMALS.filter(a => POTRERO_IDS.includes(a.id));
 const sprites = {};
 let isNightMode = false;
 
-// Ajuste vertical frontal y visible de cada especie para que se vean de inmediato en cualquier pantalla
+// Ajuste vertical y profundidad de cada especie para que tengan su propio carril visual despejado
 const DEFAULT_Y_POSITIONS = {
-  gallo: 12,
-  gallina: 34,
-  conejo: 58,
-  catita: 82,
-  agapornis: 106
+  gallo: 12,       // Primer plano inferior
+  gallina: 48,     // Plano bajo
+  conejo: 84,      // Plano medio
+  catita: 120,     // Plano medio-alto
+  agapornis: 156   // Plano alto (cielo bajo / pradera alta)
 };
+
+// Sectores preferentes de patrullaje horizontal para mantener a los animales separados y facilitar su toque en móvil
+const ANIMAL_SECTORS = {
+  gallo:     { min: 0.04, max: 0.36 },
+  gallina:   { min: 0.20, max: 0.54 },
+  conejo:    { min: 0.38, max: 0.72 },
+  catita:    { min: 0.56, max: 0.90 },
+  agapornis: { min: 0.32, max: 0.86 }
+};
+
+function getAnimalTargetX(animalId, availW) {
+  const s = ANIMAL_SECTORS[animalId] || { min: 0.05, max: 0.95 };
+  const minX = 8 + s.min * availW;
+  const maxX = 8 + s.max * availW;
+  return minX + Math.random() * (maxX - minX);
+}
 
 /* ============ Escenario ============ */
 
