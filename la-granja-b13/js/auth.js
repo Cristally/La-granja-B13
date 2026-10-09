@@ -414,6 +414,7 @@ const Auth = {
     const teacherBtn = document.getElementById('teacherBtn');
     const achievementsBtn = document.getElementById('achievementsBtn');
     const badgesBar = document.getElementById('badgesBar');
+    const badgesCard = document.getElementById('badgesShowcaseCard');
     const scorebox = document.querySelector('.scorebox');
 
     if (rol === 'visita') {
@@ -432,6 +433,7 @@ const Auth = {
       if (teacherBtn) teacherBtn.style.display = 'none';
       if (achievementsBtn) achievementsBtn.style.display = 'none';
       if (badgesBar) badgesBar.style.display = 'none';
+      if (badgesCard) badgesCard.style.display = 'none';
 
       // Ajustar scorebox para visita (sin puntaje escolar acumulable)
       if (scorebox) {
@@ -476,7 +478,8 @@ const Auth = {
     } else if (rol === 'estudiante') {
       const studentAvatar = (typeof state !== 'undefined' && state.avatarIcon) ? state.avatarIcon : '🧑‍🌾';
       const studentBorder = (typeof state !== 'undefined' && state.avatarColor) ? state.avatarColor : '#ffd83d';
-      const studentTitle = (typeof state !== 'undefined' && state.studentTitle) ? state.studentTitle : 'Estudiante B-13';
+      let studentTitle = (typeof state !== 'undefined' && state.studentTitle) ? state.studentTitle : 'Explorador/a de Granja';
+      if (studentTitle === 'Explorador/a de Campo') studentTitle = 'Explorador/a de Granja';
 
       if (iconEl) {
         iconEl.textContent = studentAvatar;
@@ -500,6 +503,7 @@ const Auth = {
       if (teacherBtn) teacherBtn.style.display = 'none';
       if (achievementsBtn) achievementsBtn.style.display = '';
       if (badgesBar) badgesBar.style.display = '';
+      if (badgesCard) badgesCard.style.display = '';
 
       // Restaurar scorebox de estudiante de forma instantánea
       if (scorebox) {

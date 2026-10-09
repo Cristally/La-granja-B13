@@ -447,7 +447,7 @@
             </h4>
             <p style="margin:0;max-width:380px;font-size:0.85rem;line-height:1.45;">
               ${countAll === 0
-                ? 'Juega a las <b>Parejas de Curiosidades</b>, la <b>Sopa de Letras</b> o la <b>Carrera 2D</b> para descubrir pistas zootécnicas clave que te ayudarán a asegurar tus décimas en los Quizzes oficiales.'
+                ? 'Juega a las <b>Parejas de Curiosidades</b>, la <b>Sopa de Letras</b> o la <b>Carrera 2D</b> para descubrir pistas de campo clave que te ayudarán a asegurar tus décimas en los Quizzes oficiales.'
                 : 'Explora los otros minijuegos para desbloquear los conceptos que faltan.'}
             </p>
           </div>
@@ -535,15 +535,15 @@
     isStarted: false,
     difficulty: 'facil',
     diffConfig: {
-      facil: { pairs: 6, cols: 4, name: '🟢 Fácil', multiplier: 1.0, desc: '6 parejas zootécnicas (12 cartas). Empareja cada animal con su curiosidad biológica.' },
-      media: { pairs: 8, cols: 4, name: '🟡 Media', multiplier: 1.5, desc: '8 parejas zootécnicas (16 cartas). Mayor reto de memoria y conceptos.' },
-      dificil: { pairs: 10, cols: 5, name: '🔴 Difícil', multiplier: 2.0, desc: '10 parejas zootécnicas (20 cartas). Cuadrícula expandida para expertos.' }
+      facil: { pairs: 6, cols: 4, name: '🟢 Fácil', multiplier: 1.0, desc: '6 parejas de la granja (12 cartas). Empareja cada animal con su curiosidad biológica.' },
+      media: { pairs: 8, cols: 4, name: '🟡 Media', multiplier: 1.5, desc: '8 parejas de la granja (16 cartas). Mayor reto de memoria y conceptos.' },
+      dificil: { pairs: 10, cols: 5, name: '🔴 Difícil', multiplier: 2.0, desc: '10 parejas de la granja (20 cartas). Cuadrícula expandida para expertos.' }
     },
     masterPairs: [
       { id: 'conejo', name: 'Conejo', emoji: '🐰', fact: 'Sus incisivos crecen toda la vida y practica cecotrofia (reingerir heces blandas con vitamina B).' },
       { id: 'gallo', name: 'Gallo', emoji: '🐓', fact: 'Cresta vascularizada que actúa como radiador térmico y espolones para proteger el orden de picoteo.' },
       { id: 'gallina', name: 'Gallina', emoji: '🐔', fact: 'Toma baños de tierra para eliminar ácaros y usa la molleja con grit (piedrecillas) para moler granos.' },
-      { id: 'pato', name: 'Pato', emoji: '🦆', fact: 'Glándula uropígea que impermeabiliza su plumaje; el pan blanco les provoca la deformación ala de ángel.' },
+      { id: 'pato', name: 'Pato', emoji: '🦆', fact: 'Produce aceites naturales que impermeabilizan sus plumas; el pan blanco les provoca la deformación ala de ángel.' },
       { id: 'agapornis', name: 'Agapornis', emoji: '🦜', fact: 'Aves monógamas de por vida con patas zigodáctilas (2 dedos adelante y 2 atrás) para trepar.' },
       { id: 'catita', name: 'Catita Australiana', emoji: '🐦', fact: 'El céreo azul indica macho adulto y marrón hembra; la palta y el chocolate son toxinas letales.' },
       { id: 'gallito_japones', name: 'Gallito Chabo', emoji: '🐓', fact: 'Raza japonesa pequeña con tarsos emplumados que exigen suelos secos para no acumular barro ni hongos.' },
@@ -554,7 +554,7 @@
       { id: 'buche', name: 'El Buche', emoji: '🥣', fact: 'Dilatación esofágica en aves que almacena y reblandece el grano antes de pasar al proventrículo.' },
       { id: 'espolon', name: 'Espolones', emoji: '⚔️', fact: 'Defensa ósea córnea en las patas del gallo usada en la jerarquía del gallinero.' },
       { id: 'grit', name: 'Grit y Calcio', emoji: '🪨', fact: 'Piedritas y conchuelas molidas indispensables para moler granos y formar la cáscara del huevo.' },
-      { id: 'uropigea', name: 'Glándula Uropígea', emoji: '💧', fact: 'Ubicada sobre la rabadilla de las aves acuáticas para untar cera repelente al agua con el pico.' },
+      { id: 'uropigea', name: 'Aceite Protector de Plumas', emoji: '💧', fact: 'Glándula sobre la cola de aves acuáticas que produce aceite repelente al agua para nadar sin mojarse.' },
       { id: 'banos_tierra', name: 'Baño de Ceniza', emoji: '🏜️', fact: 'Comportamiento natural donde las aves se revuelcan en polvo para asfixiar ectoparásitos.' },
       { id: 'monogamia', name: 'Lazos de Pareja', emoji: '💞', fact: 'Los agapornis fortalecen su bienestar mediante el acicalamiento mutuo (allopreening) permanente.' },
       { id: 'altricial', name: 'Gazapos Altriciales', emoji: '🍼', fact: 'Las crías de conejo nacen ciegas, sin pelaje y termorregulación, a diferencia de los precociales.' }
@@ -797,7 +797,7 @@
               setTimeout(() => {
                 showGameVictory({
                   icon: '🧠',
-                  title: '¡Memoria Zootécnica Completada!',
+                  title: '¡Memoria de la Granja Completada!',
                   subtitle: `Dificultad: ${cfg.name} — Pistas Guardadas en tu Cuaderno`,
                   stamp: 'EXCELENCIA BIOLÓGICA',
                   msg: `¡Gran trabajo! Has emparejado con éxito todos los conceptos biológicos en nivel <b>${cfg.name}</b>. Los puntos se sumaron al Salón de Honor Arcade y las pistas fueron añadidas a tu cuaderno de <b>Mis Pistas</b>.`,
@@ -857,7 +857,7 @@
       { word: 'HENO', desc: 'Fibra indispensable que forma el 80% de la dieta del conejo para desgaste dental.' },
       { word: 'INCUBACION', desc: 'Período de calor de 21 días para el desarrollo del pollito en el huevo.' },
       { word: 'AGAPORNIS', desc: 'Aves psitácidas africanas monógamas con patas zigodáctilas para trepar.' },
-      { word: 'PATOS', desc: 'Aves de plumaje impermeable con glándula uropígea y patas palmeadas.' },
+      { word: 'PATOS', desc: 'Aves acuáticas de plumaje impermeable y patas palmeadas para nadar.' },
       { word: 'FORRAJE', desc: 'Pasto fresco y verde rico en carotenoides que pigmenta yemas de huevos.' },
       { word: 'BIENESTAR', desc: 'Manejo respetuoso, agua fresca, alimento balanceado y enriquecimiento.' },
       { word: 'GALLINERO', desc: 'Instalación seca y ventilada con perchas elevadas y nidales protegidos.' },
@@ -1206,7 +1206,7 @@
     '🐔 Baño de Ceniza: Las gallinas se revuelcan en tierra seca para asfixiar ácaros y piojillos.',
     '🐓 Cresta del Gallo: Órgano vascularizado que disipa calor corporal en días de calor.',
     '🐓 Espolón: Estructura córnea defensiva en los tarsos de los gallos para la jerarquía del gallinero.',
-    '🦆 Patos y Agua: La glándula uropígea secreta aceite con que impermeabilizan su plumaje al nadar.',
+    '🦆 Patos y Agua: Sus plumas tienen aceites naturales con que impermeabilizan su plumaje al nadar.',
     '🦆 Peligro de Pan Blanco: Alimenta patos solo con granos y vegetales; el pan les provoca «ala de ángel».',
     '🦜 Psitácidos Trepadores: Catitas y agapornis tienen patas zigodáctilas (2 dedos adelante y 2 atrás).',
     '🦜 Céreo de Catita: Céreo azul indica macho adulto y marrón o beige indica hembra.',

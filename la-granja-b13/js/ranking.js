@@ -334,7 +334,7 @@
             Ranking de Minijuegos Arcade
           </h3>
           <p style="font-size:0.88rem;line-height:1.5;color:var(--ink);text-align:left;margin-bottom:14px;">
-            El Salón Arcade premia tu destreza, agilidad y dominio zootécnico en los tres juegos educativos de La Granja B-13:
+            El Salón Arcade premia tu destreza, agilidad y conocimientos en los juegos educativos de La Granja B-13:
           </p>
           <div style="background:var(--paper-dark);border:2px solid var(--ink);border-radius:8px;padding:12px 14px;text-align:left;font-size:0.83rem;line-height:1.45;margin-bottom:16px;">
             🃏 <b>Parejas de Curiosidades:</b> Empareja animales y curiosidades. Las dificultades Media y Difícil otorgan multiplicadores de x1.5 y x2.0.<br><br>

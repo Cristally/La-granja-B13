@@ -43,7 +43,7 @@ function defaultStudentSession(name, grade) {
     studentGrade: grade || '',
     avatarIcon: '🧑‍🌾',
     avatarColor: '#ffd83d',
-    studentTitle: 'Explorador/a de Campo',
+    studentTitle: 'Explorador/a de Granja',
     score: 0,
     discovered: [],
     quiz: quiz,
@@ -122,7 +122,10 @@ function loadState() {
         base.studentGrade = (saved.studentGrade || '').trim();
         base.avatarIcon = saved.avatarIcon || '🧑‍🌾';
         base.avatarColor = saved.avatarColor || '#ffd83d';
-        base.studentTitle = saved.studentTitle || 'Explorador/a de Campo';
+        base.studentTitle = saved.studentTitle || 'Explorador/a de Granja';
+        if (base.studentTitle === 'Explorador/a de Campo') {
+          base.studentTitle = 'Explorador/a de Granja';
+        }
         base.score = typeof saved.score === 'number' ? saved.score : 0;
         base.discovered = Array.isArray(saved.discovered) ? saved.discovered : [];
         base.mapDiscovered = Array.isArray(saved.mapDiscovered) ? saved.mapDiscovered : [];
@@ -229,7 +232,7 @@ function saveState() {
         studentGrade: (state.studentGrade || '').trim(),
         avatarIcon: state.avatarIcon || '🧑‍🌾',
         avatarColor: state.avatarColor || '#ffd83d',
-        studentTitle: state.studentTitle || 'Explorador/a de Campo',
+        studentTitle: state.studentTitle || 'Explorador/a de Granja',
         score: state.pureScore,
         pureScore: state.pureScore,
         discoveredCount: state.discovered.length,

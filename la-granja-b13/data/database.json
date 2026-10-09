@@ -23,6 +23,32 @@
         "discovered": [],
         "mapDiscovered": []
       }
+    },
+    "estudiante demo_2_b": {
+      "id": "estudiante demo_2_b",
+      "studentName": "Estudiante Demo",
+      "studentGrade": "2°B",
+      "score": 0,
+      "pureScore": 0,
+      "avatarIcon": "🧑‍🌾",
+      "discoveredCount": 1,
+      "mapDiscoveredCount": 0,
+      "potreroQuizCompleted": 0,
+      "mapQuizCompleted": 0,
+      "badgesCount": 1,
+      "updatedAt": "2026-10-09T00:18:36.898Z",
+      "stateData": {
+        "score": 0,
+        "pureScore": 0,
+        "avatarIcon": "🧑‍🌾",
+        "badges": [
+          "podio_honor"
+        ],
+        "discovered": [
+          "catita"
+        ],
+        "mapDiscovered": []
+      }
     }
   },
   "createdAt": "2026-09-29T16:16:46.214Z",

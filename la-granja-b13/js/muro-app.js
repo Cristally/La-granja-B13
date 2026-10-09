@@ -62,7 +62,7 @@
       avatarColor: '#ffd83d',
       category: 'conejos',
       catLabel: '🐇 Conejos & Conejeras',
-      text: 'Hoy durante el recreo vi a Nesquik comiendo heno en la conejera. Tenía el pelaje súper esponjoso y limpio. Recuerden no darle pan ni galletas porque les daña el estómago y su digestión cecotrófica.',
+      text: 'Hoy en el recreo vi a Nesquik comiendo heno en la conejera. Tenía el pelaje súper esponjoso y limpio. Recuerden no darle pan ni galletas porque les hace mal a la guatita. El heno los cuida y los mantiene sanos.',
       photo: 'assets/img/animals/nesquik.png',
       timestamp: 'Hoy, hace 1 hora',
       likes: 8,
@@ -71,7 +71,7 @@
           author: 'Prof. Ana Reyes',
           role: 'docente',
           avatar: '👩‍🏫',
-          text: '¡Excelente observación Yefrin! El heno de alfalfa y gramíneas es vital para el desgaste constante de sus dientes incisivos.',
+          text: '¡Excelente observación Yefrin! El heno es fundamental para que desgasten sus dientes de forma natural y tengan una digestión sana.',
           timestamp: 'Hace 45 minutos'
         }
       ]
@@ -93,7 +93,7 @@
           author: 'Prof. Carlos Soto',
           role: 'docente',
           avatar: '👨‍🏫',
-          text: 'El equipo de turno renueva su agua dos veces al día para que sus glándulas uropígeas sigan impermeabilizando sus plumas.',
+          text: 'El equipo de turno renueva su agua dos veces al día para que puedan bañarse y mantener sus plumas limpias y sanas.',
           timestamp: 'Ayer a las 16:10'
         }
       ]
@@ -136,12 +136,32 @@
     }
   ];
 
+  function sanitizePostTexts(posts) {
+    if (!Array.isArray(posts)) return DEFAULT_POSTS;
+    return posts.map(p => {
+      if (p.id === 'post_1' || (p.text && p.text.includes('cecotrófica'))) {
+        p.text = 'Hoy en el recreo vi a Nesquik comiendo heno en la conejera. Tenía el pelaje súper esponjoso y limpio. Recuerden no darle pan ni galletas porque les hace mal a la guatita. El heno los cuida y los mantiene sanos.';
+        if (Array.isArray(p.replies) && p.replies[0]) {
+          p.replies[0].text = '¡Excelente observación Yefrin! El heno es fundamental para que desgasten sus dientes de forma natural y tengan una digestión sana.';
+        }
+      }
+      if (p.id === 'post_2' || (p.replies && p.replies.some(r => r.text && r.text.includes('uropígeas')))) {
+        if (Array.isArray(p.replies) && p.replies[0]) {
+          p.replies[0].text = 'El equipo de turno renueva su agua dos veces al día para que puedan bañarse y mantener sus plumas limpias y sanas.';
+        }
+      }
+      if (p.catLabel === '❓ Pregunta Zootécnica') p.catLabel = '❓ Preguntas y Dudas';
+      if (p.catLabel === '💡 Curiosidad de Campo') p.catLabel = '💡 Curiosidades';
+      return p;
+    });
+  }
+
   function getStoredPosts() {
     try {
       const raw = localStorage.getItem(STORAGE_KEY_MURO);
       if (raw) {
         const parsed = JSON.parse(raw);
-        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        if (Array.isArray(parsed) && parsed.length > 0) return sanitizePostTexts(parsed);
       }
     } catch (e) {}
     return DEFAULT_POSTS;
@@ -169,8 +189,8 @@
             patos: '🦆 Patos & Estanque',
             aves: '🦜 Aviario & Loros',
             huerto: '🌱 Huerto & Botánica',
-            pregunta: '❓ Pregunta Zootécnica',
-            curiosidad: '💡 Curiosidad de Campo'
+            pregunta: '❓ Preguntas y Dudas',
+            curiosidad: '💡 Curiosidades'
           };
 
           const serverPosts = json.comments.map(c => {
@@ -423,8 +443,8 @@
         patos: '🦆 Patos & Estanque',
         aves: '🦜 Aviario & Loros',
         huerto: '🌱 Huerto & Botánica',
-        pregunta: '❓ Pregunta Zootécnica',
-        curiosidad: '💡 Curiosidad de Campo'
+        pregunta: '❓ Preguntas y Dudas',
+        curiosidad: '💡 Curiosidades'
       };
 
       const authorName = (typeof state !== 'undefined' && state && state.studentName) ? state.studentName : (sesion.nombre || 'Estudiante B-13');

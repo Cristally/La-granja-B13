@@ -10,5 +10,6 @@ Thumbs.db
 # Entornos locales
 .env
 
-# Archivos multimedia pesados
+# Archivos multimedia pesados (permitiendo el video oficial de experiencias B-13)
 *.mp4
+!assets/Experiencias Granja B13 - Estudiantes/Video Estudiantes B-13.mp4

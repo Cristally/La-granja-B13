@@ -55,12 +55,12 @@ const BADGES = [
   { id: 'precision', icon: '⭐', label: 'Precisión Perfecta', desc: 'Respondiste todas las preguntas de un quiz correctamente a la primera.' },
   { id: 'zoologo', icon: '🔎', label: 'Zoólogo/a de Campo', desc: 'Descubriste a los 10 animales del Mapa de la Granja.' },
   { id: 'veterinario', icon: '🩺', label: 'Veterinario/a de la Granja', desc: 'Completaste el quiz de los 10 animales del Mapa de la Granja.' },
-  { id: 'maestro_arcade', icon: '🕹️', label: 'Maestro/a del Arcade Zootécnico', desc: 'Jugaste y obtuviste puntaje en los minijuegos de la granja.' },
+  { id: 'maestro_arcade', icon: '🕹️', label: 'Maestro/a del Arcade', desc: 'Jugaste y obtuviste puntaje en los minijuegos de la granja.' },
   { id: 'podio_honor', icon: '🏆', label: 'Podio de Honor B-13', desc: 'Alcanzaste uno de los 3 primeros puestos (Oro, Plata o Bronce) en el Ranking.' },
-  { id: 'cuaderno_dorado', icon: '📖', label: 'Cuaderno Dorado de Pistas', desc: 'Recolectaste más de 5 pistas zootécnicas en tu cuaderno de aprendizaje.' },
-  { id: 'velocista_granero', icon: '⚡', label: 'Velocista del Granero', desc: 'Completaste un desafío de plataformas zootécnicas con gran agilidad.' },
-  { id: 'ojo_halcon', icon: '🦅', label: 'Ojo de Halcón Zootécnico', desc: 'Encontraste 5 o más palabras técnicas en la Sopa de Letras Comunitaria.' },
-  { id: 'memoria_fotografica', icon: '🧠', label: 'Memoria Zootécnica', desc: 'Emparejaste todas las cartas de especies en el Memorice de Campo.' },
+  { id: 'cuaderno_dorado', icon: '📖', label: 'Cuaderno Dorado de Pistas', desc: 'Recolectaste más de 5 pistas de campo en tu cuaderno de aprendizaje.' },
+  { id: 'velocista_granero', icon: '⚡', label: 'Velocista del Granero', desc: 'Completaste un desafío de plataformas con gran agilidad.' },
+  { id: 'ojo_halcon', icon: '🦅', label: 'Ojo de Halcón', desc: 'Encontraste 5 o más palabras clave en la Sopa de Letras.' },
+  { id: 'memoria_fotografica', icon: '🧠', label: 'Memoria de la Granja', desc: 'Emparejaste todas las cartas de especies en el Memorice de Campo.' },
   { id: 'estilista_campo', icon: '🎨', label: 'Estilista del Corral', desc: 'Personalizaste tu avatar o los accesorios de un animal de la granja.' },
   { id: 'cosecha_decimas', icon: '🌾', label: 'Cosecha de Décimas', desc: 'Acumulaste al menos 50 puntos puros en quizzes formativos.' }
 ];
@@ -94,9 +94,9 @@ const SECRET_BADGES = [
   {
     id: 'devoralibros',
     icon: '📜',
-    label: 'Guardián/a de la Bioética',
+    label: 'Guardián/a del Cuidado Animal',
     secretHint: 'El respeto y los protocolos son la base del cuidado animal escolar...',
-    desc: 'Leíste las Normas de la Granja y los compromisos de sustentabilidad (ODS 15).',
+    desc: 'Leíste las Normas de la Granja y los compromisos de bienestar y sustentabilidad (ODS 15).',
     category: 'secret'
   },
   {
@@ -175,7 +175,7 @@ const SECRET_BADGES = [
     id: 'zen_granja',
     icon: '🧘',
     label: 'Tranquilidad Campestre',
-    secretHint: 'La paciencia y el silencio son la clave de la observación zootécnica...',
+    secretHint: 'La paciencia y el silencio son la clave de la observación en terreno...',
     desc: '¡Permaneciste explorando la granja con calma y serenidad durante más de 3 minutos!',
     category: 'secret'
   },
@@ -190,9 +190,9 @@ const SECRET_BADGES = [
   {
     id: 'diploma_dorado',
     icon: '✨',
-    label: 'Embajador/a Zootécnico/a',
+    label: 'Embajador/a de la Granja',
     secretHint: 'Quien domina todos los sentidos se convierte en el mayor embajador de la granja...',
-    desc: '¡Inspeccionaste radiografías, escuchaste vocalizaciones y respetaste las normas oficiales!',
+    desc: '¡Inspeccionaste radiografías, escuchaste sonidos y respetaste las normas oficiales!',
     category: 'secret'
   }
 ];
@@ -245,7 +245,7 @@ const AVATAR_FRAMES = [
 ];
 
 const STUDENT_TITLES = [
-  'Explorador/a de Campo',
+  'Explorador/a de Granja',
   'Observador/a de Aves',
   'Amigo/a de los Conejos',
   'Protector/a de la Biodiversidad',
@@ -341,11 +341,11 @@ const ANIMAL_FUN_PROFILES = {
     quote: "¡Los inseparables del B-13! Siempre en pareja, compartiendo semillas y secretos. ¡El amor y la lealtad más linda del aviario!",
     joke: {
       question: "¿Por qué los agapornis nunca pelean por el control remoto en el aviario?",
-      punchline: "¡Porque pasan todo el día abrazaditos mirándose a los ojos y diciendo: '¡Tú eliges, mi pajarito! ¡No, tú!'... ¡empalagosos a nivel zootécnico! 🦜💕"
+      punchline: "¡Porque pasan todo el día abrazaditos mirándose con cariño y diciendo: '¡Tú eliges, mi pajarito! ¡No, tú!'... ¡más regalones que un cachorro! 🦜💕"
     },
     superpower: {
-      name: "⚡ Vínculo Monógamo Inquebrantable",
-      desc: "Desarrollan lazos de pareja para toda la vida, coordinan sus vocalizaciones y se acicalan mutuamente reduciendo sus niveles de estrés biológico."
+      name: "⚡ Vínculo de Compañerismo Inquebrantable",
+      desc: "Desarrollan lazos de pareja para toda la vida, coordinan sus cantos y se limpian las plumas mutuamente cuidándose con cariño."
     },
     curiosity: "Las hembras cortan tiras perfectas de corteza o papel con el pico y se las meten entre las plumas de la rabadilla como si tuvieran una mochila para llevarlas al nido."
   },
@@ -365,7 +365,7 @@ const ANIMAL_FUN_PROFILES = {
     quote: "¡Hola, soy Nesquik! Tengo pelito café chocolate súper esponjoso, soy algo tímido al inicio pero un amor cuando me traes heno fresco.",
     joke: {
       question: "¿Cuál es el colmo de Nesquik el conejo café chocolate?",
-      punchline: "¡Tener miedo de salir al sol en Antofagasta para no derretirse como bombón! 🍫🐰 '¡Ojo chiquillos: soy conejo zootécnico, no colación escolar!'"
+      punchline: "¡Tener miedo de salir al sol en Antofagasta para no derretirse como bombón! 🍫🐰 '¡Ojo chiquillos: soy conejo de verdad, no colación de recreo!'"
     },
     superpower: {
       name: "⚡ Pelaje Térmico Extra Esponjoso",
@@ -440,8 +440,8 @@ const ANIMAL_FUN_PROFILES = {
       punchline: "—'¡Póngalo a mi pico, que hoy invito yo con décimas de sobra!' 🦆💳"
     },
     superpower: {
-      name: "⚡ Manto Hidrofóbico Uropígeo",
-      desc: "Esparce aceite de su glándula uropígea sobre sus plumas, creando un colchón de aire microscópico que le permite flotar sin esfuerzo alguno."
+      name: "⚡ Plumas Impermeables y Patitas Nadadoras",
+      desc: "Produce aceites naturales que impermeabilizan sus plumas, permitiéndole flotar livianito y mantenerse seco bajo el agua."
     },
     curiosity: "Sus patitas no se congelan en agua fría gracias a un intercambiador de calor biológico en sus venas y arterias llamado flujo contracorriente."
   },
@@ -503,7 +503,7 @@ const ANIMAL_FUN_PROFILES = {
       name: "⚡ Mandíbula de Roedor Incansable",
       desc: "Sus incisivos crecen a un ritmo vertiginoso de hasta 12 cm por año; por eso roe maderas no tóxicas continuamente para mantenerlos afilados y funcionales."
     },
-    curiosity: "Aunque lo llamen 'destructor', su actividad de roer es una necesidad zootécnica instintiva vital para prevenir maloclusiones dentales."
+    curiosity: "Aunque lo llamen 'destructor', roer es una necesidad natural e instintiva para desgastar sus dientes y mantenerlos sanos."
   },
   quesito: {
     name: "Quesito",
@@ -733,7 +733,7 @@ const ANIMAL_FUN_PROFILES = {
     quote: "Castaña, dorada y con una cresta roja radiante. Mis huevos tienen una cáscara tan firme y nutritiva que es el orgullo de la granja.",
     joke: {
       question: "¿Por qué Violeta pone los huevos más redonditos de toda la granja?",
-      punchline: "¡Porque antes de ponerlos hace yoga zootécnico y respira hondo: 'Inhala maíz, exhala estrés... y ¡plop!, sale un huevo con nota 7!' 🧘‍♀️🥚😂"
+      punchline: "¡Porque antes de ponerlos hace yoga relajante y respira hondo: 'Inhala maíz, exhala estrés... y ¡plop!, sale un huevo con nota 7!' 🧘‍♀️🥚😂"
     },
     superpower: {
       name: "⚡ Calcificación Ovárica Expres",
@@ -775,7 +775,7 @@ const ANIMAL_FUN_PROFILES = {
       name: "⚡ Iridiscencia Estructural Caudal",
       desc: "Las microláminas de queratina en las plumas de su cola refractan la luz del sol, cambiando de negro a verde brillante según el ángulo de visión."
     },
-    curiosity: "Sus espolones córneos en las patas indican madurez zootécnica y le sirven para afirmarse firmemente sobre ramas rugosas."
+    curiosity: "Sus espolones en las patas indican que ya es un gallo adulto y fuerte, y le sirven para afirmarse bien sobre ramas rugosas."
   },
 
   // --- LOROS Y AVES OFICIALES (3) ---
@@ -848,8 +848,8 @@ const ANIMAL_FUN_PROFILES = {
       punchline: "—'¡Para demostrarle a los profes de física que los patos sí sabemos usar el paso de cebra sin perder la elegancia del cuac!' 🚸🦆😂"
     },
     superpower: {
-      name: "⚡ Manto Hidrofóbico y Timón Palmeado",
-      desc: "Impermeabiliza cada milímetro de su plumaje con cera de la glándula uropígea, mientras sus patas palmeadas actúan como turbinas gemelas de propulsión acuática."
+      name: "⚡ Plumaje Impermeable y Timón Palmeado",
+      desc: "Impermeabiliza sus plumas con aceites naturales mientras sus patas palmeadas actúan como ágiles turbinas para nadar velozmente."
     },
     curiosity: "Sal es un pato Pekín doméstico (Anas platyrhynchos domesticus), famoso por su docilidad, plumaje níveo y apetito por plantas acuáticas e insectos."
   },
@@ -1110,10 +1110,10 @@ const ANIMALS = [
       habitat: 'Estanques, orillas de agua y praderas húmedas con zonas de sombra y refugio limpio.',
       alimentacion: 'Omnívoro acuático: forrajea hierbas tiernas, semillas, algas, gusanos e insectos.',
       agua: 'Indispensable: requiere agua limpia lo suficientemente profunda para sumergir la cabeza completa y lavar sus ojos y narinas.',
-      comportamiento: 'Muy gregario y sociable; le encanta chapotear y acicalar su plumaje con la grasa de su glándula uropígea.',
+      comportamiento: 'Muy sociable y tranquilo; le encanta chapotear y acicalar su plumaje con aceites naturales para mantenerse limpio.',
       reproduccion: 'La pata pone huevos con cáscara gruesa y cutícula cérea protectora. La incubación dura unos 28 días.',
       cuidados: 'Prohibido alimentar con pan blanco o masas refinadas (causa deformidad de ala de ángel). Necesita suelo no abrasivo y agua limpia.',
-      dato: 'Posee una glándula uropígea sobre la base de la cola que secreta un aceite que esparce con su pico por todas las plumas para flotar e impermeabilizarse.'
+      dato: 'Posee una glándula sobre la base de su cola que produce aceites naturales que esparce con su pico para flotar y no mojarse.'
     },
     organs: AVE_ORGANS,
     quiz: []
@@ -1203,7 +1203,7 @@ const CURIOSITIES = {
     '🦜 A simple vista machos y hembras somos idénticos; los veterinarios confirman nuestro sexo mediante una prueba de ADN.'
   ],
   pato: [
-    '🦆 Poseo una glándula uropígea sobre mi cola que secreta un aceite especial con el que impermeabilizo todas mis plumas.',
+    '🦆 Poseo una glándula sobre mi cola que produce aceites especiales con los que mantengo todas mis plumas secas e impermeables.',
     '🦆 En mi pico tengo laminillas filtradoras laterales que me permiten colar pequeños insectos y algas del agua.',
     '🦆 ¡Nunca me alimentes con pan blanco ni masas refinadas! Me provoca una deformación incurable llamada «ala de ángel».',
     '🦆 Necesito un estanque o recipiente con agua limpia donde pueda sumergir completamente mis ojos y orificios nasales.',

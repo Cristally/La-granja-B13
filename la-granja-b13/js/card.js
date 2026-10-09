@@ -155,7 +155,8 @@ function renderStudentProfileModal() {
 
   const currentAvatar = state.avatarIcon || '🧑‍🌾';
   const currentFrameColor = state.avatarColor || '#ffd83d';
-  const currentTitle = state.studentTitle || 'Explorador/a de Campo';
+  let currentTitle = state.studentTitle || 'Explorador/a de Granja';
+  if (currentTitle === 'Explorador/a de Campo') currentTitle = 'Explorador/a de Granja';
   const currentName = state.studentName || '';
   const currentGrade = state.studentGrade || '';
   const currentThemeBg = state.themeBg || localStorage.getItem('granja_theme_bg') || '#FAF7EE';
@@ -180,7 +181,7 @@ function renderStudentProfileModal() {
   const isGuardianUnlocked = !!state.certificateUnlocked || (state.badges && state.badges.includes('guardian')) || potreroCount >= 5;
 
   const TITLE_RULES = {
-    'Explorador/a de Campo': { unlocked: true, hint: 'Inicial' },
+    'Explorador/a de Granja': { unlocked: true, hint: 'Inicial' },
     'Observador/a de Aves': { unlocked: isBirdUnlocked, hint: 'Explora aves o aviario' },
     'Amigo/a de los Conejos': { unlocked: isRabbitUnlocked, hint: 'Explora la conejera' },
     'Protector/a de la Biodiversidad': { unlocked: isBioUnlocked, hint: '30+ pts en quizzes' },
@@ -632,7 +633,7 @@ function renderStudentProfileModal() {
 function handleSaveStudent() {
   const currentAvatar = state.avatarIcon || '🧑‍🌾';
   const currentFrameColor = state.avatarColor || '#ffd83d';
-  const currentTitle = state.studentTitle || 'Explorador/a de Campo';
+  const currentTitle = state.studentTitle || 'Explorador/a de Granja';
   const currentThemeMode = state.themeMode || 'light';
   const currentThemeBg = state.themeBg || '#FAF7EE';
   saveStudentProfile(currentAvatar, currentFrameColor, currentTitle, currentThemeMode, currentThemeBg);
@@ -722,7 +723,7 @@ function saveStudentProfile(avatar, frame, title, themeMode, themeBg) {
   const isGuardianUnlocked = !!state.certificateUnlocked || (state.badges && state.badges.includes('guardian')) || potreroCount >= 5;
 
   const TITLE_RULES = {
-    'Explorador/a de Campo': true,
+    'Explorador/a de Granja': true,
     'Observador/a de Aves': isBirdUnlocked,
     'Amigo/a de los Conejos': isRabbitUnlocked,
     'Protector/a de la Biodiversidad': isBioUnlocked,
@@ -731,9 +732,9 @@ function saveStudentProfile(avatar, frame, title, themeMode, themeBg) {
     'Guardián/a de la Granja': isGuardianUnlocked
   };
 
-  const requestedTitle = title || state.studentTitle || 'Explorador/a de Campo';
+  const requestedTitle = title || state.studentTitle || 'Explorador/a de Granja';
   const isTitleAllowed = TITLE_RULES[requestedTitle] !== false;
-  state.studentTitle = isTitleAllowed ? requestedTitle : (state.studentTitle || 'Explorador/a de Campo');
+  state.studentTitle = isTitleAllowed ? requestedTitle : (state.studentTitle || 'Explorador/a de Granja');
 
   state.avatarIcon = avatar || state.avatarIcon || '🧑‍🌾';
   state.avatarColor = frame || state.avatarColor || '#ffd83d';
@@ -1085,14 +1086,26 @@ function renderAchievementsList() {
 function renderBadgesBar() {
   const box = document.getElementById('badgesBar');
   if (!box) return;
-  
+
+  const earnedBadgesCount = (state.badges || []).length;
+  const earnedSecretsCount = (state.secretBadges || []).length;
+  const totalOfficial = BADGES.length;
+
+  const countEl = document.getElementById('badgesEarnedCount');
+  if (countEl) countEl.textContent = String(earnedBadgesCount + earnedSecretsCount);
+  const totalEl = document.getElementById('badgesTotalCount');
+  if (totalEl) totalEl.textContent = String(totalOfficial);
+
   const officialHtml = BADGES.map(b => {
     const earned = state.badges.includes(b.id);
     return `
       <button type="button" class="badge${earned ? ' earned' : ''}" data-badge="${b.id}" title="${b.label}: ${b.desc}">
-        <span class="ic">${b.icon}</span>
-        <span class="badge-label">${b.label}</span>
-        ${earned ? '<span class="badge-check">✓</span>' : '<span class="badge-lock">🔒</span>'}
+        <span class="badge-icon-box">${b.icon}</span>
+        <span class="badge-info-wrap">
+          <span class="badge-label">${b.label}</span>
+          <span class="badge-status-sub">${earned ? 'Desbloqueado' : 'Por desbloquear'}</span>
+        </span>
+        <span class="badge-state-icon">${earned ? '<span class="badge-check">✓</span>' : '<span class="badge-lock">🔒</span>'}</span>
       </button>
     `;
   }).join('');
@@ -1102,10 +1115,13 @@ function renderBadgesBar() {
     const s = secretsList.find(x => x.id === sid);
     if (!s) return '';
     return `
-      <button type="button" class="badge earned secret-badge" data-badge="${s.id}" title="🌟 ${s.label}: ${s.desc}" style="background:#fffcf0;border-color:#ffd83d;">
-        <span class="ic">${s.icon}</span>
-        <span class="badge-label">${s.label}</span>
-        <span class="badge-check" style="color:#ffd83d;">★</span>
+      <button type="button" class="badge earned secret-badge" data-badge="${s.id}" title="🌟 ${s.label}: ${s.desc}">
+        <span class="badge-icon-box" style="background:#fef08a;">${s.icon}</span>
+        <span class="badge-info-wrap">
+          <span class="badge-label">${s.label}</span>
+          <span class="badge-status-sub" style="color:#b45309;">★ Secreto</span>
+        </span>
+        <span class="badge-state-icon"><span class="badge-check" style="color:#ffffff;">★</span></span>
       </button>
     `;
   }).join('');

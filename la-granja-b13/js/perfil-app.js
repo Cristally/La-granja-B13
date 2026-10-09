@@ -34,7 +34,8 @@
   const MAX_NAME_CHANGES = 2;
   let tempAvatar = state.avatarIcon || '🧑‍🌾';
   let tempFrame = state.avatarColor || '#ffd83d';
-  let tempTitle = state.studentTitle || 'Explorador/a de Campo';
+  let tempTitle = state.studentTitle || 'Explorador/a de Granja';
+  if (tempTitle === 'Explorador/a de Campo') tempTitle = 'Explorador/a de Granja';
   let tempThemeBg = state.themeBg || localStorage.getItem('granja_theme_bg') || '#FAF7EE';
   let tempThemeMode = state.themeMode || 'light';
 
@@ -164,7 +165,7 @@
     const isGuardianUnlocked = !!state.certificateUnlocked || (state.badges && state.badges.includes('guardian')) || potreroCount >= 5;
 
     const TITLE_RULES = {
-      'Explorador/a de Campo': { unlocked: true, hint: 'Inicial' },
+      'Explorador/a de Granja': { unlocked: true, hint: 'Inicial' },
       'Observador/a de Aves': { unlocked: isBirdUnlocked, hint: 'Explora aves o aviario' },
       'Amigo/a de los Conejos': { unlocked: isRabbitUnlocked, hint: 'Explora la conejera' },
       'Protector/a de la Biodiversidad': { unlocked: isBioUnlocked, hint: '30+ pts en quizzes' },
@@ -176,7 +177,7 @@
     const titleSel = document.getElementById('pageStudentTitleSelect');
     if (titleSel) {
       titleSel.innerHTML = (typeof STUDENT_TITLES !== 'undefined' ? STUDENT_TITLES : [
-        'Explorador/a de Campo', 'Observador/a de Aves', 'Amigo/a de los Conejos',
+        'Explorador/a de Granja', 'Observador/a de Aves', 'Amigo/a de los Conejos',
         'Protector/a de la Biodiversidad', 'Científico/a Juvenil B-13',
         'Veterinario/a Honorífico/a', 'Guardián/a de la Granja'
       ]).map(t => {
@@ -551,8 +552,8 @@
             ${state.studentName || 'Estudiante B-13'}
           </div>
           <p style="font-size:0.9rem;color:#451a03;line-height:1.5;max-width:700px;margin:10px auto;">
-            Por haber completado con excelencia el recorrido de observación zootécnica, radiografías anatómicas,
-            quizzes de campo y el compromiso ético de bienestar animal con apego al ODS 15.
+            Por haber completado con excelencia el recorrido de observación de campo, aprendizaje interactivo,
+            quizzes formativos y el compromiso de cuidado y bienestar animal con apego al ODS 15.
           </p>
           <div style="display:flex;justify-content:space-around;margin-top:24px;border-top:1.5px dashed #d97706;padding-top:16px;flex-wrap:wrap;gap:16px;">
             <div>

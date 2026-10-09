@@ -342,3 +342,106 @@ function openCard(id) {
 /* ============ Inicio ============ */
 
 updateHeader();
+
+/* ============ Video Introductorio de Estudiantes ============ */
+
+function initIntroVideo() {
+  const video = document.getElementById('introFarmVideo');
+  const playOverlay = document.getElementById('introVideoPlayOverlay');
+  const ctaBtn = document.getElementById('introCtaPlayBtn');
+  const ctaText = document.getElementById('introCtaPlayBtnText');
+  const fullscreenBtn = document.getElementById('introVideoFullscreenBtn');
+  const scrollPotreroBtn = document.getElementById('btnScrollPotrero');
+  const introCard = document.getElementById('introVideoCard');
+
+  if (!video) return;
+
+  function updatePlayState(isPlaying) {
+    if (playOverlay) {
+      if (isPlaying) {
+        playOverlay.classList.add('overlay-hidden');
+      } else {
+        playOverlay.classList.remove('overlay-hidden');
+      }
+    }
+    if (ctaText) {
+      if (isPlaying) {
+        ctaText.textContent = '⏸ Pausar Video';
+      } else if (video.currentTime > 0 && !video.ended) {
+        ctaText.textContent = '▶ Continuar Video';
+      } else {
+        ctaText.textContent = '▶ Ver Video de Experiencias';
+      }
+    }
+  }
+
+  function togglePlayVideo() {
+    if (video.paused || video.ended) {
+      video.play().then(() => {
+        updatePlayState(true);
+      }).catch(err => {
+        console.warn('Reproducción de video diferida:', err);
+      });
+    } else {
+      video.pause();
+      updatePlayState(false);
+    }
+  }
+
+  if (playOverlay) {
+    playOverlay.addEventListener('click', () => {
+      togglePlayVideo();
+    });
+  }
+
+  if (ctaBtn) {
+    ctaBtn.addEventListener('click', () => {
+      const rect = video.getBoundingClientRect();
+      if (rect.top < 0 || rect.bottom > window.innerHeight) {
+        video.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+      togglePlayVideo();
+    });
+  }
+
+  video.addEventListener('play', () => updatePlayState(true));
+  video.addEventListener('pause', () => updatePlayState(false));
+  video.addEventListener('ended', () => {
+    updatePlayState(false);
+    if (ctaText) ctaText.textContent = '▶ Repetir Video de Experiencias';
+  });
+
+  if (fullscreenBtn) {
+    fullscreenBtn.addEventListener('click', () => {
+      if (!document.fullscreenElement) {
+        if (video.requestFullscreen) {
+          video.requestFullscreen();
+        } else if (video.webkitRequestFullscreen) {
+          video.webkitRequestFullscreen();
+        } else if (introCard && introCard.requestFullscreen) {
+          introCard.requestFullscreen();
+        }
+      } else {
+        if (document.exitFullscreen) {
+          document.exitFullscreen();
+        }
+      }
+    });
+  }
+
+  if (scrollPotreroBtn) {
+    scrollPotreroBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      const potrero = document.getElementById('potreroSection') || document.getElementById('stage');
+      if (potrero) {
+        potrero.scrollIntoView({ behavior: 'smooth' });
+      }
+    });
+  }
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initIntroVideo);
+} else {
+  initIntroVideo();
+}

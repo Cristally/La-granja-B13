@@ -13,7 +13,7 @@
 <div class="app">
 
   <nav class="view-nav">
-    <a href="index.html" class="active">🌾 Potrero</a>
+    <a href="index.html" class="active">🌾 Inicio/Potrero</a>
     <a href="mapa.html">🗺️ Mapa de la Granja</a>
     <a href="galeria-real.html">📸 Granja Real B-13</a>
     <a href="juegos.html">🎮 Juega en la Granja</a>
@@ -49,9 +49,177 @@
       <button id="leaderboardBtn" class="tool-btn leaderboard-tool-btn" type="button" title="Ver Salón de Honor y Ranking">🏆 Ranking</button>
       <button id="achievementsBtn" class="tool-btn" type="button">🎖️ Logros</button>
       <button id="rulesBtn" class="tool-btn" type="button">📋 Normas</button>
-      <button id="commentsBtn" class="tool-btn" type="button" title="Muro comunitario de preguntas y observaciones de la granja">💬 Muro Granja</button>
+      <a href="perfil.html" class="tool-btn btn-mi-perfil" id="btnMiPerfil" title="Ver mi Cuaderno de Campo, perfil y credencial escolar">👤 Mi Perfil</a>
       <button id="soundBtn" class="tool-btn" type="button">🔊 Sonido</button>
       <button id="teacherBtn" class="tool-btn" type="button" style="display:none;">👩‍🏫 Panel docente</button>
+    </div>
+  </div>
+
+  <!-- ==================== SECCIÓN INTRODUCTORIA (VIDEO & EXPERIENCIAS B-13) ==================== -->
+  <section class="intro-hero" id="introSection" aria-label="Video de bienvenida y experiencias de la granja">
+    <div class="intro-card">
+      
+      <!-- Columna Izquierda: Información, Puntos Clave, Sellos Institucionales e Invitación -->
+      <div class="intro-info-col">
+        <div class="intro-pill">
+          <span>🌱</span> EXPERIENCIA EDUCATIVA · LICEO B-13
+        </div>
+
+        <h2 class="intro-title">Experiencias en La Granja B-13</h2>
+
+        <p class="intro-desc">
+          ¡Te damos la bienvenida a nuestra granja escolar! Conoce de primera mano cómo se vive la experiencia en terreno a través de este video protagonizado por estudiantes del <b>Liceo Domingo Herrera Rivera B-13</b>.
+        </p>
+
+        <!-- Puntos destacados con métricas y aprendizajes (estilo referencia) -->
+        <ul class="intro-points-list">
+          <li>
+            <span class="point-bullet">🌾</span>
+            <div class="point-content">
+              <b>100% Testimonios en Terreno:</b> Vivencias reales de las y los estudiantes cuidando a los animales.
+            </div>
+          </li>
+          <li>
+            <span class="point-bullet">🐰</span>
+            <div class="point-content">
+              <b>Bienestar y Bioseguridad:</b> Convivencia respetuosa, cuidados diarios y protección activa.
+            </div>
+          </li>
+          <li>
+            <span class="point-bullet">🔬</span>
+            <div class="point-content">
+              <b>Ciencia y Aprendizaje Vivo:</b> Observación práctica de hábitos, alimentación y ecosistemas.
+            </div>
+          </li>
+          <li>
+            <span class="point-bullet">🌿</span>
+            <div class="point-content">
+              <b>Compromiso con el Entorno:</b> Integrado con ODS 4 (Educación de Calidad) y ODS 15 (Ecosistemas).
+            </div>
+          </li>
+          <li>
+            <span class="point-bullet">⏱️</span>
+            <div class="point-content">
+              <b>Duración del Registro:</b> 4:00 min de recorrido guiado e inspirador.
+            </div>
+          </li>
+        </ul>
+
+        <!-- Sellos circulares oficiales (como en el pie de la imagen de referencia) -->
+        <div class="intro-badges-row" aria-label="Sellos de compromiso institucional">
+          <div class="intro-badge-item" title="ODS 4: Educación de Calidad">
+            <div class="intro-badge-circle">🎓</div>
+            <span class="intro-badge-name">ODS 4</span>
+          </div>
+          <div class="intro-badge-item" title="ODS 15: Vida de Ecosistemas Terrestres">
+            <div class="intro-badge-circle">🌿</div>
+            <span class="intro-badge-name">ODS 15</span>
+          </div>
+          <div class="intro-badge-item" title="Liceo Domingo Herrera Rivera B-13">
+            <div class="intro-badge-circle">🏫</div>
+            <span class="intro-badge-name">Liceo B-13</span>
+          </div>
+          <div class="intro-badge-item" title="Proyecto Go Innova">
+            <div class="intro-badge-circle">💡</div>
+            <span class="intro-badge-name">Go Innova</span>
+          </div>
+          <div class="intro-badge-item" title="Bienestar Animal Ético">
+            <div class="intro-badge-circle">🐾</div>
+            <span class="intro-badge-name">Bienestar</span>
+          </div>
+        </div>
+
+        <!-- Botón de llamado a la acción (invitación a ver el video) -->
+        <div class="intro-cta-box">
+          <button type="button" class="intro-cta-play-btn" id="introCtaPlayBtn">
+            <span class="intro-cta-icon">▶</span>
+            <span id="introCtaPlayBtnText">Ver Video de Experiencias</span>
+          </button>
+          <span class="intro-cta-note">✨ Te invitamos a ver el video antes de comenzar tu recorrido por los espacios de la granja.</span>
+        </div>
+
+        <!-- Derivación directa a los otros espacios de la plataforma -->
+        <div class="intro-spaces-derivation">
+          <div class="derivation-label">🌾 Espacios disponibles en la plataforma:</div>
+          <div class="derivation-buttons">
+            <a href="#potreroSection" class="derivation-btn derivation-btn-potrero" id="btnScrollPotrero" title="Bajar al Potrero interactivo">
+              <span>🌾</span> Potrero Virtual
+            </a>
+            <a href="mapa.html" class="derivation-btn" title="Ir al Mapa 3D de la Granja">
+              <span>🗺️</span> Mapa de la Granja
+            </a>
+            <a href="galeria-real.html" class="derivation-btn" title="Ir a la Galería Fotográfica Real">
+              <span>📸</span> Granja Real B-13
+            </a>
+            <a href="juegos.html" class="derivation-btn" title="Ir a los Juegos y Desafíos">
+              <span>🎮</span> Juega en la Granja
+            </a>
+            <a href="muro.html" class="derivation-btn" title="Ver Muro Comunitario">
+              <span>💬</span> Muro Granja
+            </a>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Columna Derecha: Reproductor de Video -->
+      <div class="intro-video-col">
+        <div class="intro-video-card" id="introVideoCard">
+          
+          <div class="intro-video-header-tag">
+            <span class="intro-video-pulse-dot"></span>
+            <span>VOCES DE LA GRANJA · 4:00 MIN</span>
+          </div>
+
+          <div class="intro-video-wrapper">
+            <video 
+              id="introFarmVideo" 
+              playsinline 
+              controls 
+              preload="metadata"
+              aria-label="Video introductorio de estudiantes de la Granja B-13">
+              <source src="assets/Experiencias Granja B13 - Estudiantes/Video Estudiantes B-13.mp4#t=0.001" type="video/mp4">
+              <source src="assets/Experiencias%20Granja%20B13%20-%20Estudiantes/Video%20Estudiantes%20B-13.mp4#t=0.001" type="video/mp4">
+              Tu navegador no soporta reproducción de video en formato MP4.
+            </video>
+
+            <!-- Botón de reproducción circular estilo imagen de referencia -->
+            <button 
+              type="button" 
+              class="intro-video-play-overlay" 
+              id="introVideoPlayOverlay" 
+              aria-label="Reproducir video de estudiantes">
+              <div class="overlay-circle-glow">
+                <svg viewBox="0 0 24 24" class="play-svg" fill="currentColor">
+                  <path d="M8 5v14l11-7z"/>
+                </svg>
+              </div>
+            </button>
+          </div>
+
+          <div class="intro-video-meta-bar">
+            <div class="video-meta-left">
+              <span>📹</span>
+              <span>Registro oficial en terreno · Liceo B-13 Antofagasta</span>
+            </div>
+            <div class="video-meta-right">
+              <button type="button" class="video-meta-btn" id="introVideoFullscreenBtn" title="Pantalla completa">
+                ⛶ Pantalla completa
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Encabezado de transición al Potrero interactivo -->
+  <div class="potrero-section-header" id="potreroSection">
+    <div class="potrero-title-wrap">
+      <h3><span>🌾</span> Potrero Escénico Interactivo</h3>
+      <p>Observa los animales libres en la pradera, tócalos para ver sus fichas y preparar tus desafíos</p>
     </div>
   </div>
 
@@ -77,7 +245,26 @@
   </div>
   <div class="legend">Cada animal camina libremente por el potrero del liceo B-13. Al observarlo y tocarlo te dirá pistas y curiosidades de campo para preparar tus desafíos.</div>
 
-  <div class="badges-bar" id="badgesBar"></div>
+  <!-- Vitrina de Logros e Insignias B-13 (Diseño Gamificado y Ordenado) -->
+  <section class="badges-showcase-card" id="badgesShowcaseCard">
+    <div class="badges-showcase-header">
+      <div class="badges-showcase-title-wrap">
+        <span class="badges-showcase-icon">🎖️</span>
+        <div>
+          <h3 class="badges-showcase-title">Vitrina de Logros e Insignias</h3>
+          <p class="badges-showcase-subtitle">Explora la granja, supera desafíos y desbloquea tus medallas escolares</p>
+        </div>
+      </div>
+      <div class="badges-showcase-actions">
+        <div class="badges-progress-pill" id="badgesProgressPill">
+          <span class="badges-progress-icon">🏆</span>
+          <span class="badges-count-text"><b id="badgesEarnedCount">0</b> / <span id="badgesTotalCount">14</span> Desbloqueadas</span>
+        </div>
+        <a href="perfil.html" class="badges-view-profile-btn" title="Ver mi Cuaderno de Campo y vitrina completa">Ver Perfil ➔</a>
+      </div>
+    </div>
+    <div class="badges-bar" id="badgesBar"></div>
+  </section>
 
   <footer class="ods">
     Vinculado a ODS 4 (Educación de calidad) y ODS 15 (Vida de ecosistemas terrestres). Proyecto <b>La Granja B13</b> — Go Innova, Hecho Proyecto B-13.

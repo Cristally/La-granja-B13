@@ -39,34 +39,6 @@ function renderMapPins() {
     }
     pin.addEventListener('click', () => onZoneClick(zone));
     farmmap.appendChild(pin);
-
-    // Pin de Quizzes creados por el profesor para esta zona
-    const teacherQuizzes = (typeof TeacherQuizzes !== 'undefined') ? TeacherQuizzes.getForZone(zone.id) : [];
-    if (teacherQuizzes && teacherQuizzes.length > 0) {
-      const qPin = document.createElement('button');
-      qPin.type = 'button';
-      qPin.className = 'map-pin map-pin-teacher-quiz';
-      qPin.style.left = Math.min(94, zone.left + 5.5) + '%';
-      qPin.style.top = Math.max(3, zone.top - 5.5) + '%';
-      qPin.title = `📝 Quiz del Profesor: ${zone.label} (${teacherQuizzes.length} preg.)`;
-      qPin.innerHTML = `<span class="map-pin-ic" style="font-size:1.05rem;">📝</span><span class="map-pin-count" style="background:#e9c46a;color:#2e3821;">${teacherQuizzes.length}</span>`;
-      qPin.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const sesion = (typeof Auth !== 'undefined') ? Auth.getSesion() : { rol: 'visita' };
-        if (sesion.rol === 'visita') {
-          if (typeof showToast === 'function') {
-            showToast('📝 Desafíos formativos con décimas: Exclusivos del Modo Estudiante.');
-          } else if (typeof Auth !== 'undefined') {
-            Auth.mostrarNotificacion('📝 Desafíos formativos con décimas: Exclusivos del Modo Estudiante.');
-          }
-          return;
-        }
-        if (typeof abrirQuizProfesorZona === 'function') {
-          abrirQuizProfesorZona(zone.id, zone.label);
-        }
-      });
-      farmmap.appendChild(qPin);
-    }
   });
 
   refreshZonePinBadges();
@@ -99,7 +71,7 @@ function renderZoneInfo(zone) {
 
   if (iconEl) iconEl.textContent = zone.icon || '📍';
   if (titleEl) titleEl.textContent = zone.label || 'Punto de Interés';
-  if (catEl) catEl.textContent = 'Espacio de la Granja B13';
+  if (catEl) catEl.textContent = 'Espacio Real — Granja B13';
   if (textEl) textEl.textContent = zone.flavor || '';
 
   // Foto real de la zona
@@ -145,14 +117,13 @@ function renderMiniVista(zone) {
   zone.animalIds.forEach(id => {
     const a = (typeof MAP_ANIMALS_BY_ID !== 'undefined') ? MAP_ANIMALS_BY_ID[id] : null;
     if (!a) return;
-    const done = !!(state && state.mapQuiz && state.mapQuiz[a.id] && state.mapQuiz[a.id].completed);
     const card = document.createElement('button');
     card.type = 'button';
     card.className = 'portrait-card';
     card.innerHTML = `
-      <div class="portrait-photo"><img src="${a.photo}" alt="${a.name}"></div>
+      <div class="portrait-photo"><img src="${a.photo_real || a.photo}" alt="${a.name}"></div>
       <div class="portrait-name" style="color:${a.color}">${a.name}</div>
-      ${done ? '<div class="portrait-done">✓ Quiz completo</div>' : ''}
+      <div class="portrait-tag-badge">🐾 Ver Perfil Oficial</div>
     `;
     card.addEventListener('click', () => {
       // Registrar visita de animal
@@ -174,9 +145,8 @@ function refreshZonePinBadges() {
     if (zone.kind !== 'animals') return;
     const el = document.getElementById('count-' + zone.id);
     if (!el) return;
-    const found = zone.animalIds.filter(id => mapDiscoveredSet.has(id)).length;
-    el.textContent = found + '/' + zone.animalIds.length;
-    el.classList.toggle('full', found === zone.animalIds.length);
+    el.textContent = zone.animalIds.length;
+    el.classList.add('full');
   });
 }
 

@@ -402,8 +402,8 @@
       </div>
 
       <div class="ficha-fact-card">
-        <div class="ficha-fact-card-k">🥗 Alimentación y Nutrición Zootécnica</div>
-        <div class="ficha-fact-card-v">${facts.alimentacion || 'Dieta balanceada zootécnica rica en nutrientes y fibra.'}</div>
+        <div class="ficha-fact-card-k">🥗 Alimentación y Dieta Saludable</div>
+        <div class="ficha-fact-card-v">${facts.alimentacion || 'Dieta balanceada rica en nutrientes y fibra.'}</div>
       </div>
 
       <div class="ficha-fact-card">
@@ -458,10 +458,10 @@
       quote: `¡Hola! Soy ${a.name}, habitante del Liceo B-13. ¡Explora mi ficha para conocer mis secretos biológicos!`,
       joke: {
         question: "¿Por qué los animales de la Granja B-13 sacan las mejores notas del liceo?",
-        punchline: "¡Porque se pasan todo el día en el campo practicando ciencias naturales al aire libre! 🌾🦉 ¡Puro 7 zootécnico!"
+        punchline: "¡Porque se pasan todo el día en el campo practicando ciencias naturales al aire libre! 🌾🦉 ¡Puro 7 en ciencias!"
       },
       superpower: {
-        name: "⚡ Adaptación Zootécnica de Terreno",
+        name: "⚡ Adaptación y Habilidad de Terreno",
         desc: "Excelente resiliencia ambiental y convivencia comunitaria en los espacios educativos del liceo."
       },
       curiosity: "La granja escolar del Liceo B-13 fomenta el bienestar animal, la tenencia responsable y el aprendizaje vivencial de las ciencias naturales."
@@ -498,7 +498,7 @@
       <div class="animal-joke-box" id="fichaWideJokeBox_${a.id}" style="margin-bottom:18px;">
         <div class="joke-header">
           <span class="joke-title-tag">🌾 Chiste de Granja</span>
-          <span class="joke-sub">¡Humor zootécnico del Liceo B-13!</span>
+          <span class="joke-sub">¡Humor de la granja del Liceo B-13!</span>
         </div>
         <div class="joke-q">${funProfile.joke.question}</div>
         <div class="joke-punchline" id="punchlineWide_${a.id}" style="display:none;background:#fef3c7;border:2px dashed #d97706;border-radius:10px;padding:12px;margin:12px 0;font-size:1.02rem;color:#78350f;">
@@ -621,7 +621,7 @@
 
     container.innerHTML = `
       <div class="anatomy-box" style="display:block;">
-        <div class="k" style="font-size:1.1rem;margin-bottom:12px;">🔬 Radiografía y Diagrama de Fisiología Zootécnica</div>
+        <div class="k" style="font-size:1.1rem;margin-bottom:12px;">🔬 Radiografía y Diagrama de Anatomía</div>
         <div class="anatomy-diagram" id="anatomyWideDiagram" style="display:block;margin-top:10px;">
           ${a.anatomyImage ? buildAnatomyImage(a) : buildAnatomySVG(a)}
         </div>

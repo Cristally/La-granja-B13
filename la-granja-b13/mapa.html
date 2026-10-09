@@ -13,7 +13,7 @@
 <div class="app">
 
   <nav class="view-nav">
-    <a href="index.html">🌾 Potrero</a>
+    <a href="index.html">🌾 Inicio/Potrero</a>
     <a href="mapa.html" class="active">🗺️ Mapa de la Granja</a>
     <a href="galeria-real.html">📸 Granja Real B-13</a>
     <a href="juegos.html">🎮 Juega en la Granja</a>
@@ -48,7 +48,7 @@
       <button id="leaderboardBtn" class="tool-btn leaderboard-tool-btn" type="button" title="Ver Salón de Honor y Ranking">🏆 Ranking</button>
       <button id="achievementsBtn" class="tool-btn" type="button">🎖️ Logros</button>
       <button id="rulesBtn" class="tool-btn" type="button">📋 Normas</button>
-      <button id="commentsBtn" class="tool-btn" type="button" title="Muro comunitario de preguntas y observaciones de la granja">💬 Muro Granja</button>
+      <a href="perfil.html" class="tool-btn btn-mi-perfil" id="btnMiPerfil" title="Ver mi Cuaderno de Campo, perfil y credencial escolar">👤 Mi Perfil</a>
       <button id="soundBtn" class="tool-btn" type="button">🔊 Sonido</button>
       <button id="teacherBtn" class="tool-btn" type="button" style="display:none;">👩‍🏫 Panel docente</button>
     </div>
@@ -68,10 +68,29 @@
   
   <div class="study-advice-banner" style="max-width:840px;margin:10px auto;padding:10px 16px;background:#eef6ea;border:1.5px solid var(--grass-dark);border-radius:8px;font-size:0.84rem;color:var(--ink);display:flex;align-items:center;gap:10px;justify-content:center;box-shadow:0 2px 4px rgba(0,0,0,0.05);text-align:left;">
     <span style="font-size:1.3rem;">💡</span>
-    <div><b>Consejo zootécnico:</b> ¿Sabías que en el <a href="index.html" style="color:var(--grass-dark);font-weight:700;text-decoration:underline;">Potrero en vivo</a> los animales te revelan pistas y curiosidades que aparecen en estos desafíos? ¡Obsérvalos antes de responder para asegurar tus décimas!</div>
+    <div><b>Consejo de campo:</b> ¿Sabías que en el <a href="index.html" style="color:var(--grass-dark);font-weight:700;text-decoration:underline;">Potrero en vivo</a> los animales te revelan pistas y curiosidades que aparecen en estos desafíos? ¡Obsérvalos antes de responder para asegurar tus décimas!</div>
   </div>
 
-  <div class="badges-bar" id="badgesBar"></div>
+  <!-- Vitrina de Logros e Insignias B-13 (Diseño Gamificado y Ordenado) -->
+  <section class="badges-showcase-card" id="badgesShowcaseCard">
+    <div class="badges-showcase-header">
+      <div class="badges-showcase-title-wrap">
+        <span class="badges-showcase-icon">🎖️</span>
+        <div>
+          <h3 class="badges-showcase-title">Vitrina de Logros e Insignias</h3>
+          <p class="badges-showcase-subtitle">Explora la granja, supera desafíos y desbloquea tus medallas escolares</p>
+        </div>
+      </div>
+      <div class="badges-showcase-actions">
+        <div class="badges-progress-pill" id="badgesProgressPill">
+          <span class="badges-progress-icon">🏆</span>
+          <span class="badges-count-text"><b id="badgesEarnedCount">0</b> / <span id="badgesTotalCount">14</span> Desbloqueadas</span>
+        </div>
+        <a href="perfil.html" class="badges-view-profile-btn" title="Ver mi Cuaderno de Campo y vitrina completa">Ver Perfil ➔</a>
+      </div>
+    </div>
+    <div class="badges-bar" id="badgesBar"></div>
+  </section>
 
   <footer class="ods">
     Vinculado a ODS 4 (Educación de calidad) y ODS 15 (Vida de ecosistemas terrestres). Proyecto <b>La Granja B13</b> — Go Innova, Hecho Proyecto B-13.
