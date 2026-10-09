@@ -1253,7 +1253,17 @@ function openFichaOverlay(a, opts) {
   if (typeof window !== 'undefined' && window.location && !window.location.pathname.includes('ficha.html')) {
     const isMap = window.location.pathname.includes('mapa');
     const fromPage = isMap ? 'mapa.html' : 'index.html';
-    window.location.href = `ficha.html?id=${encodeURIComponent(a.id)}&from=${encodeURIComponent(fromPage)}`;
+    const POTRERO_MAP = {
+      conejo: 'nesquik',
+      gallina: 'cleo',
+      gallo: 'vicente',
+      catita: 'las_catitas',
+      agapornis: 'pastelito',
+      pato: 'sal',
+      matias_vicente: 'matias'
+    };
+    const targetId = POTRERO_MAP[a.id] || a.id;
+    window.location.href = `ficha.html?id=${encodeURIComponent(targetId)}&from=${encodeURIComponent(fromPage)}`;
     return;
   }
 

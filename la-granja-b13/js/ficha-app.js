@@ -7,24 +7,25 @@
 (function() {
   'use strict';
 
-  // Lista consolidada de animales oficiales del Liceo B-13 (23 ejemplares reales)
+  // Mapeo de especies genéricas a sus mascotas residentes oficiales del B-13
+  const ALIAS_MAP = {
+    conejo: 'nesquik',
+    gallina: 'cleo',
+    gallo: 'vicente',
+    catita: 'las_catitas',
+    agapornis: 'pastelito',
+    pato: 'sal',
+    matias_vicente: 'matias'
+  };
+
+  // Lista consolidada de animales oficiales del Liceo B-13 (los 23 ejemplares reales)
   function getAllSpeciesList() {
     const list = [];
     const seen = new Set();
 
-    // 1. Animales específicos del Liceo B-13 (los 23 ejemplares oficiales de los pósters)
+    // Animales oficiales del Liceo B-13 (los 23 ejemplares reales de los pósters)
     if (typeof MAP_ANIMALS !== 'undefined' && Array.isArray(MAP_ANIMALS)) {
       MAP_ANIMALS.forEach(a => {
-        if (!seen.has(a.id)) {
-          seen.add(a.id);
-          list.push(a);
-        }
-      });
-    }
-
-    // 2. Animales del Potrero principal (especies generales de soporte)
-    if (typeof ANIMALS !== 'undefined' && Array.isArray(ANIMALS)) {
-      ANIMALS.forEach(a => {
         if (!seen.has(a.id)) {
           seen.add(a.id);
           list.push(a);
@@ -45,7 +46,8 @@
   let currentCategory = 'all';
   let currentAnimalImageMode = 'real';
   const fromParam = getQueryParam('from') || 'index.html';
-  const initialId = getQueryParam('id') || 'nesquik';
+  const rawInitialId = getQueryParam('id') || 'nesquik';
+  const initialId = ALIAS_MAP[rawInitialId] || rawInitialId;
 
   function init() {
     setupBackButton();
@@ -64,58 +66,29 @@
     }
   }
 
-  function applyAnimalImageMode(mode) {
-    currentAnimalImageMode = mode;
-    const btnReal = document.getElementById('btnModeReal');
-    const btnPixel = document.getElementById('btnModePixel');
+  function applyAnimalImageMode() {
+    currentAnimalImageMode = 'real';
     const heroImg = document.getElementById('fichaHeroImg');
     const heroEmoji = document.getElementById('fichaHeroEmoji');
     const labelEl = document.getElementById('fichaPhotoModeLabel');
 
-    if (btnReal) btnReal.classList.toggle('active', mode === 'real');
-    if (btnPixel) btnPixel.classList.toggle('active', mode === 'pixel');
-
-    const duoReal = document.getElementById('duoItemReal');
-    const duoPixel = document.getElementById('duoItemPixel');
-    if (duoReal) duoReal.classList.toggle('selected', mode === 'real');
-    if (duoPixel) duoPixel.classList.toggle('selected', mode === 'pixel');
-
     if (!currentAnimal) return;
 
-    const realSrc = currentAnimal.photo_real || currentAnimal.img_real || currentAnimal.photo;
-    const pixelSrc = currentAnimal.photo_pixel || currentAnimal.img_pixel || ('assets/img/animals/' + currentAnimal.id + '.png');
+    const realSrc = currentAnimal.photo_real || currentAnimal.photo || currentAnimal.img_real;
 
-    if (mode === 'real') {
-      if (realSrc && heroImg) {
-        heroImg.src = realSrc;
-        heroImg.alt = `${currentAnimal.name} (Fotografía Realista)`;
-        heroImg.className = 'ficha-hero-photo mode-real';
-        heroImg.style.display = 'block';
-        if (heroEmoji) heroEmoji.style.display = 'none';
-      }
-      if (labelEl) labelEl.innerHTML = '🌿 Fotografía Realista Oficial (Principal)';
-    } else {
-      if (pixelSrc && heroImg) {
-        heroImg.src = pixelSrc;
-        heroImg.alt = `${currentAnimal.name} (Avatar Pixel Art)`;
-        heroImg.className = 'ficha-hero-photo mode-pixel';
-        heroImg.style.display = 'block';
-        if (heroEmoji) heroEmoji.style.display = 'none';
-      }
-      if (labelEl) labelEl.innerHTML = '👾 Avatar Pixel Art Oficial Liceo B-13';
+    if (realSrc && heroImg) {
+      heroImg.src = realSrc;
+      heroImg.alt = `${currentAnimal.name} (Fotografía Realista Oficial)`;
+      heroImg.className = 'ficha-hero-photo mode-real';
+      heroImg.style.display = 'block';
+      if (heroEmoji) heroEmoji.style.display = 'none';
     }
+    if (labelEl) labelEl.innerHTML = '🌿 Fotografía Real Oficial Liceo B-13';
   }
   window.setAnimalPhotoView = applyAnimalImageMode;
 
   function setupImageModeSwitcher() {
-    const btnReal = document.getElementById('btnModeReal');
-    const btnPixel = document.getElementById('btnModePixel');
-    if (btnReal) {
-      btnReal.addEventListener('click', () => applyAnimalImageMode('real'));
-    }
-    if (btnPixel) {
-      btnPixel.addEventListener('click', () => applyAnimalImageMode('pixel'));
-    }
+    // Modo realista exclusivo: no se requieren conmutadores de imagen
   }
 
   function setupBackButton() {
@@ -154,18 +127,14 @@
     const allSpecies = getAllSpeciesList();
     const filtered = allSpecies.filter(a => {
       if (currentCategory === 'all') return true;
-      if (a.group) return a.group === currentCategory;
-      if (currentCategory === 'conejos') return a.id.includes('conejo') || a.species === 'conejo';
-      if (currentCategory === 'gallinas') return a.id.includes('gallo') || a.id.includes('gallina');
-      if (currentCategory === 'loros') return a.id.includes('catita') || a.id.includes('agapornis');
-      if (currentCategory === 'patos') return a.id.includes('pato');
-      return true;
+      return a.group === currentCategory;
     });
 
     ribbon.innerHTML = filtered.map(a => {
       const isCur = currentAnimal ? (a.id === currentAnimal.id) : (a.id === initialId);
-      const thumbHtml = a.photo
-        ? `<img src="${a.photo}" alt="${a.name}" class="ficha-species-btn-thumb">`
+      const thumbSrc = a.photo_real || a.photo || a.img_real;
+      const thumbHtml = thumbSrc
+        ? `<img src="${thumbSrc}" alt="${a.name}" class="ficha-species-btn-thumb">`
         : `<span class="ficha-species-btn-emoji">${a.emoji || '🐾'}</span>`;
       return `
         <button type="button" class="ficha-species-btn ${isCur ? 'active' : ''}" data-id="${a.id}">
@@ -422,8 +391,17 @@
     const discEl = document.getElementById('discovered');
     if (scoreEl && typeof state !== 'undefined') scoreEl.textContent = state.score || 0;
     if (discEl && typeof state !== 'undefined') {
-      const disc = (state.discovered || []).length + (state.mapDiscovered || []).length;
-      discEl.textContent = disc;
+      const allSpecies = getAllSpeciesList();
+      const combined = new Set([
+        ...(state.discovered || []),
+        ...(state.mapDiscovered || [])
+      ]);
+      const officialIds = new Set(allSpecies.map(s => s.id));
+      let count = 0;
+      officialIds.forEach(id => {
+        if (combined.has(id)) count++;
+      });
+      discEl.textContent = Math.min(count, allSpecies.length);
     }
   }
   window.updateHeader = updateHeader;
@@ -433,34 +411,8 @@
     if (!grid) return;
 
     const facts = a.facts || {};
-    const realSrc = a.photo_real || a.img_real || a.photo;
-    const pixelSrc = a.photo_pixel || a.img_pixel || ('assets/img/animals/' + a.id + '.png');
 
     grid.innerHTML = `
-      <div class="ficha-fact-card full-col ficha-duo-gallery-card">
-        <div class="ficha-fact-card-k">🖼️ Galería Visual Oficial: Realista (Principal) vs. Pixel Art</div>
-        <div class="ficha-duo-gallery-wrap">
-          <div class="ficha-duo-item ${currentAnimalImageMode === 'real' ? 'selected' : ''}" id="duoItemReal">
-            <div class="ficha-duo-tag">🌿 Fotografía Realista Oficial (Principal)</div>
-            <div class="ficha-duo-img-box">
-              <img src="${realSrc}" alt="${a.name} Realista" class="ficha-duo-img real">
-            </div>
-            <button type="button" class="ficha-duo-btn" onclick="window.setAnimalPhotoView && window.setAnimalPhotoView('real')">
-              👁️ Ver en Cabecera (Realista)
-            </button>
-          </div>
-          <div class="ficha-duo-item ${currentAnimalImageMode === 'pixel' ? 'selected' : ''}" id="duoItemPixel">
-            <div class="ficha-duo-tag">👾 Avatar Pixel Art de la Granja</div>
-            <div class="ficha-duo-img-box">
-              <img src="${pixelSrc}" alt="${a.name} Pixel Art" class="ficha-duo-img pixel">
-            </div>
-            <button type="button" class="ficha-duo-btn" onclick="window.setAnimalPhotoView && window.setAnimalPhotoView('pixel')">
-              👁️ Ver en Cabecera (Pixel Art)
-            </button>
-          </div>
-        </div>
-      </div>
-
       <div class="ficha-fact-card full-col">
         <div class="ficha-fact-card-k">🏷️ Clasificación Biológica y Taxonómica</div>
         <div class="ficha-fact-card-v">${facts.clasificacion || 'Fauna de granja escolar, Liceo Domingo Herrera Rivera B-13.'}</div>
