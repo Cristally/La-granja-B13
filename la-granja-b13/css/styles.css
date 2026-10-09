@@ -229,10 +229,11 @@ body.bg-is-dark header.top {
 
 .tool-buttons{display:inline-flex;gap:6px;flex-wrap:wrap;align-items:center;}
 .tool-btn{
-  background:var(--paper-dark);border:2px solid var(--ink);border-radius:6px;
-  padding:6px 10px;font-family:'Karla',sans-serif;font-weight:700;font-size:0.76rem;
+  background:var(--paper-dark);border:2px solid var(--ink);border-radius:20px;
+  padding:6px 14px;font-family:'Karla',sans-serif;font-weight:700;font-size:0.78rem;
   cursor:pointer;color:var(--ink);transition:background .12s, transform .12s, box-shadow .12s;
   box-shadow: 2px 2px 0 rgba(40,49,27,0.12);white-space:nowrap;
+  display:inline-flex;align-items:center;justify-content:center;
 }
 .tool-btn:hover{background:#fff;transform:translateY(-1px);box-shadow: 3px 3px 0 rgba(40,49,27,0.2);}
 .tool-btn.off{opacity:0.55;}
@@ -1466,26 +1467,39 @@ footer.ods{
 @media (max-width: 680px){
   .app{padding:12px 10px 30px;}
   
-  /* 1. Navegación superior: de uno en uno hacia abajo */
-  .view-nav{
-    display:flex;
-    flex-direction:column;
-    gap:6px;
-    margin-bottom:14px;
-    width:100%;
+  /* 1. Navegación superior: compacta, en 2 columnas parejas y botones pequeños */
+  .view-nav {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+    margin-bottom: 12px;
+    width: 100%;
+    box-sizing: border-box;
   }
   .view-nav a,
   .nav-switch-btn {
-    width:100%;
-    box-sizing:border-box;
-    text-align:center;
-    padding:9px 12px;
-    font-size:0.84rem;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    border-radius:8px;
+    width: 100%;
+    box-sizing: border-box;
+    text-align: center;
+    padding: 6px 8px;
+    font-size: 0.74rem;
+    font-weight: 700;
+    min-height: 35px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 18px;
     margin-left: 0;
+    line-height: 1.15;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .view-nav > :last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+  }
+  .nav-extra-text {
+    display: none;
   }
 
   header.top{display:flex;flex-direction:row;align-items:center;justify-content:space-between;gap:8px;}
@@ -1507,26 +1521,42 @@ footer.ods{
   }
   .student-change-btn{flex-shrink:0;padding:3px 7px;font-size:0.85rem;}
   
-  /* 2. Botones de herramientas: de dos en dos centralizado (2x2 simétrico) */
-  .tool-buttons{
-    width:100%;
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:6px;
+  /* 2. Botones de herramientas: de dos en dos uniforme y organizado (grilla 2x3 simétrica con bordes redondeados parejos) */
+  .tool-buttons {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
   }
-  .tool-buttons > :nth-child(5){
-    grid-column:1 / -1;
+  .tool-buttons > :last-child:nth-child(odd) {
+    grid-column: 1 / -1;
   }
-  .tool-btn{
-    padding:9px 6px;
-    font-size:0.76rem;
-    text-align:center;
-    min-width:0;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    box-sizing:border-box;
-    white-space:nowrap;
+  .tool-buttons > #soundBtn:nth-child(5) {
+    grid-column: 1 / -1;
+  }
+  .tool-btn {
+    width: 100%;
+    height: 100%;
+    min-height: 42px;
+    padding: 8px 10px;
+    font-size: 0.76rem;
+    font-weight: 700;
+    text-align: center;
+    border-radius: 20px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    white-space: nowrap;
+    box-shadow: 1px 2px 0 rgba(40, 49, 27, 0.12);
+  }
+  .tool-btn.btn-mi-perfil {
+    width: 100%;
+    min-height: 42px;
+    padding: 8px 10px;
+    font-size: 0.76rem;
+    border-radius: 20px;
+    box-sizing: border-box;
   }
 
   .stage{height:340px;}

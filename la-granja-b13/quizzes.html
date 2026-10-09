@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Desafíos Formativos & Quizzes por Décimas — La Granja B13</title>
+<meta name="description" content="Espacio dedicado a desafíos formativos y quizzes zootécnicos por décimas para estudiantes del Liceo B-13 Antofagasta.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Karla:wght@400;500;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+<style>
+/* Estilos dedicados para la vista de Quizzes & Desafíos */
+.quizzes-app {
+  max-width: 1040px;
+  margin: 0 auto;
+}
+
+.quizzes-stats-banner {
+  background: linear-gradient(135deg, #ffffff 0%, #fdf8f0 100%);
+  border: 2.5px solid var(--wheat, #d4a373);
+  border-radius: 16px;
+  padding: 18px 24px;
+  margin-bottom: 22px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  box-shadow: 0 8px 24px rgba(46, 56, 33, 0.08);
+}
+
+.quizzes-stat-box {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.quizzes-stat-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  background: var(--hay, #faedcd);
+  border: 2px solid var(--wheat, #d4a373);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.8rem;
+  flex-shrink: 0;
+}
+
+.quizzes-stat-data b {
+  font-family: 'Fraunces', serif;
+  font-size: 1.6rem;
+  color: var(--ink);
+  line-height: 1.1;
+  display: block;
+}
+
+.quizzes-stat-data span {
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--ink-light);
+  letter-spacing: 0.5px;
+}
+
+.quizzes-cat-nav {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 10px;
+  margin-bottom: 20px;
+  scrollbar-width: thin;
+}
+
+.quizzes-cat-btn {
+  padding: 10px 18px;
+  border-radius: 25px;
+  border: 2px solid var(--wheat);
+  background: var(--paper);
+  color: var(--ink);
+  font-size: 0.86rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.25s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.quizzes-cat-btn:hover {
+  background: #fff;
+  border-color: var(--grass-dark);
+  transform: translateY(-1px);
+}
+
+.quizzes-cat-btn.active {
+  background: #78350f;
+  border-color: #b45309;
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(120, 53, 15, 0.25);
+}
+
+.quizzes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.quiz-card {
+  background: #ffffff;
+  border: 2.5px solid #e7e5e4;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+  position: relative;
+}
+
+.quiz-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 28px rgba(0,0,0,0.12);
+  border-color: var(--grass-dark);
+}
+
+.quiz-card.completed {
+  border-color: #10b981;
+}
+
+.quiz-card-head {
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: linear-gradient(135deg, #fafaf9 0%, #f5f5f4 100%);
+  border-bottom: 1.5px solid #e7e5e4;
+}
+
+.quiz-card-thumb-wrap {
+  width: 58px;
+  height: 58px;
+  border-radius: 12px;
+  border: 2px solid var(--wheat);
+  background: #fff;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.quiz-card-thumb-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.quiz-card-meta {
+  flex: 1;
+  min-width: 0;
+}
+
+.quiz-card-title {
+  font-family: 'Fraunces', serif;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--ink);
+  margin: 0 0 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.quiz-card-sub {
+  font-size: 0.78rem;
+  color: var(--grass-dark);
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.quiz-card-body {
+  padding: 16px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.quiz-card-info-pills {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.quiz-card-pill {
+  font-size: 0.74rem;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: 12px;
+  background: #f1f5f9;
+  color: #475569;
+}
+
+.quiz-card-pill.pill-status-done {
+  background: #d1fae5;
+  color: #065f46;
+  border: 1px solid #10b981;
+}
+
+.quiz-card-pill.pill-status-pending {
+  background: #fef3c7;
+  color: #92400e;
+  border: 1px solid #f59e0b;
+}
+
+.quiz-card-desc {
+  font-size: 0.86rem;
+  color: #444;
+  line-height: 1.45;
+  margin: 0 0 16px;
+  flex: 1;
+}
+
+.quiz-card-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.quiz-btn-play {
+  flex: 1;
+  padding: 10px 14px;
+  font-size: 0.88rem;
+  font-weight: 800;
+  border-radius: 10px;
+  border: 2px solid var(--ink);
+  background: var(--hay);
+  color: var(--ink);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.quiz-btn-play:hover {
+  background: #ffd83d;
+  transform: scale(1.02);
+}
+
+.quiz-btn-ficha {
+  padding: 10px 12px;
+  font-size: 0.88rem;
+  border-radius: 10px;
+  border: 1.5px solid #cbd5e1;
+  background: #f8fafc;
+  color: #334155;
+  text-decoration: none;
+  font-weight: 700;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.quiz-btn-ficha:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+/* Modal del Jugador de Quiz */
+.quiz-player-modal {
+  max-width: 620px;
+  width: 95%;
+}
+
+.quiz-player-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 2px solid #e2e8f0;
+  padding-bottom: 12px;
+  margin-bottom: 16px;
+}
+
+.quiz-player-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.quiz-player-thumb {
+  width: 48px;
+  height: 48px;
+  border-radius: 10px;
+  object-fit: cover;
+  border: 2px solid var(--wheat);
+}
+
+.quiz-player-prog-bar {
+  width: 100%;
+  height: 8px;
+  background: #e2e8f0;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 18px;
+}
+
+.quiz-player-prog-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #10b981 0%, #059669 100%);
+  width: 0%;
+  transition: width 0.3s ease;
+}
+
+.quiz-question-box {
+  background: #fdfbf7;
+  border: 2px solid var(--wheat);
+  border-radius: 14px;
+  padding: 16px 20px;
+  font-family: 'Fraunces', serif;
+  font-size: 1.18rem;
+  font-weight: 600;
+  color: var(--ink);
+  line-height: 1.4;
+  margin-bottom: 18px;
+}
+
+.quiz-options-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.quiz-option-btn {
+  padding: 13px 18px;
+  border: 2px solid #cbd5e1;
+  border-radius: 12px;
+  background: #ffffff;
+  color: var(--ink);
+  font-size: 0.94rem;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  line-height: 1.35;
+}
+
+.quiz-option-btn:hover:not(:disabled) {
+  border-color: #3b82f6;
+  background: #eff6ff;
+  transform: translateX(4px);
+}
+
+.quiz-option-btn.opt-correct {
+  border-color: #10b981 !important;
+  background: #ecfdf5 !important;
+  color: #065f46 !important;
+  font-weight: 700;
+}
+
+.quiz-option-btn.opt-wrong {
+  border-color: #ef4444 !important;
+  background: #fef2f2 !important;
+  color: #991b1b !important;
+}
+
+.quiz-feedback-box {
+  padding: 14px 18px;
+  border-radius: 12px;
+  margin-bottom: 18px;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  display: none;
+}
+
+.quiz-feedback-box.correct {
+  display: block;
+  background: #ecfdf5;
+  border: 2px solid #10b981;
+  color: #065f46;
+}
+
+.quiz-feedback-box.incorrect {
+  display: block;
+  background: #fff1f2;
+  border: 2px solid #f43f5e;
+  color: #9f1239;
+}
+
+.quiz-next-btn {
+  width: 100%;
+  padding: 12px;
+  font-size: 0.95rem;
+  font-weight: 800;
+  border-radius: 10px;
+  border: 2px solid var(--ink);
+  background: #10b981;
+  color: #ffffff;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: none;
+}
+
+.quiz-next-btn:hover {
+  filter: brightness(1.1);
+  transform: translateY(-2px);
+}
+</style>
+</head>
+<body>
+<div class="app quizzes-app">
+
+  <!-- Barra de regreso y navegación -->
+  <div class="nav-back-bar">
+    <a href="index.html" class="btn-volver-estetico" title="Regresar al potrero principal">
+      <span class="btn-volver-icon">←</span> <span class="btn-volver-text">Volver</span>
+    </a>
+    <nav class="view-nav" style="margin:0;">
+      <a href="index.html">🌾 Potrero</a>
+      <a href="mapa.html">🗺️ Mapa<span class="nav-extra-text"> de la Granja</span></a>
+      <a href="quizzes.html" class="active">⭐ Desafíos<span class="nav-extra-text"> de Décimas</span></a>
+      <a href="galeria-real.html">📸 Granja Real<span class="nav-extra-text"> B-13</span></a>
+      <a href="juegos.html">🎮 Juegos<span class="nav-extra-text"> en la Granja</span></a>
+      <a href="muro.html">💬 Muro</a>
+      <button id="navBtnCambiarModo" class="nav-switch-btn" type="button" title="Cerrar sesión actual">🚪 Cerrar Sesión</button>
+    </nav>
+  </div>
+
+  <!-- Encabezado Oficial -->
+  <header class="top">
+    <div class="brand-wrap">
+      <img src="assets/img/logo.png" alt="Logo Granja B-13" class="app-logo">
+      <div>
+        <h1 class="pixel-title">Desafíos Formativos & Quizzes por Décimas</h1>
+        <div class="sub">Demuestra tu aprendizaje zootécnico y acumula décimas reales para tu libreta de notas</div>
+      </div>
+    </div>
+    <div class="scorebox">
+      PUNTAJE: <b id="score">0</b><br>
+      DÉCIMAS: <span id="quizzesScoreEarned">0.0</span> pts
+    </div>
+  </header>
+
+  <!-- Barra de Herramientas y Estudiante -->
+  <div class="toolbar" style="margin-bottom:16px;">
+    <div class="student-pill" id="studentPill" title="Toca para ir a tu Cuaderno de Campo y Perfil" style="cursor:pointer;">
+      <span class="student-icon">🎒</span>
+      <div class="student-info">
+        <span class="student-label">ESTUDIANTE</span>
+        <b id="studentDisplayName">(Sin registrar)</b>
+      </div>
+      <button id="changeStudentBtn" class="student-change-btn" type="button" aria-label="Editar estudiante">✏️</button>
+    </div>
+    <div class="tool-buttons">
+      <button id="leaderboardBtn" class="tool-btn leaderboard-tool-btn" type="button" title="Ver Salón de Honor y Ranking">🏆 Ranking</button>
+      <button id="achievementsBtn" class="tool-btn" type="button">🎖️ Logros</button>
+      <button id="rulesBtn" class="tool-btn" type="button">📋 Normas</button>
+      <a href="perfil.html" class="tool-btn btn-mi-perfil" title="Ver mi Cuaderno y Calificaciones">👤 Mi Perfil</a>
+      <button id="soundBtn" class="tool-btn" type="button">🔊 Sonido</button>
+      <button id="teacherBtn" class="tool-btn" type="button" style="display:none;">👩‍🏫 Panel docente</button>
+    </div>
+  </div>
+
+  <!-- Banner de Estadísticas y Décimas Formativas -->
+  <div class="quizzes-stats-banner">
+    <div class="quizzes-stat-box">
+      <div class="quizzes-stat-icon">⭐</div>
+      <div class="quizzes-stat-data">
+        <b id="statTotalScore">0</b>
+        <span>Puntos Puros</span>
+      </div>
+    </div>
+    <div class="quizzes-stat-box">
+      <div class="quizzes-stat-icon">📝</div>
+      <div class="quizzes-stat-data">
+        <b id="statQuizzesDone">0 / 23</b>
+        <span>Desafíos Completados</span>
+      </div>
+    </div>
+    <div class="quizzes-stat-box">
+      <div class="quizzes-stat-icon">🎯</div>
+      <div class="quizzes-stat-data">
+        <b id="statAccuracy">100%</b>
+        <span>Precisión de Respuestas</span>
+      </div>
+    </div>
+    <div class="quizzes-stat-box">
+      <div class="quizzes-stat-icon">🏅</div>
+      <div class="quizzes-stat-data">
+        <b id="statDecimasTotal">0.0</b>
+        <span>Décimas Oficiales</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filtro por Categorías -->
+  <div class="quizzes-cat-nav" id="quizzesCatNav">
+    <button type="button" class="quizzes-cat-btn active" data-cat="all">🌟 Todos los Desafíos</button>
+    <button type="button" class="quizzes-cat-btn" data-cat="conejos">🐇 Conejeras Oficiales (9)</button>
+    <button type="button" class="quizzes-cat-btn" data-cat="gallinas">🐔 Gallinero y Gallos (9)</button>
+    <button type="button" class="quizzes-cat-btn" data-cat="loros">🦜 Aviario de Aves Menores (3)</button>
+    <button type="button" class="quizzes-cat-btn" data-cat="patos">🦆 Recinto de Patos (2)</button>
+    <button type="button" class="quizzes-cat-btn" data-cat="bioetica">🌾 Potrero & Bioética ODS 15</button>
+    <button type="button" class="quizzes-cat-btn" data-cat="docente">👩‍🏫 Desafíos del Profesor</button>
+  </div>
+
+  <!-- Rejilla de Tarjetas de Quiz -->
+  <div class="quizzes-grid" id="quizzesGrid">
+    <!-- Se inyecta dinámicamente con js/quizzes-app.js -->
+  </div>
+
+  <footer class="ods">
+    Vinculado a ODS 4 (Educación de calidad) y ODS 15 (Vida de ecosistemas terrestres). Proyecto <b>La Granja B13</b> — Go Innova, Hecho Proyecto B-13.
+  </footer>
+</div>
+
+<!-- ============================================================
+     MODALES GLOBALES Y JUGADOR DE QUIZ
+     ============================================================ -->
+
+<!-- Modal Interactivo del Quiz -->
+<div class="overlay" id="quizPlayerOverlay">
+  <div class="card quiz-player-modal">
+    <button class="close-btn" data-close="quizPlayerOverlay" aria-label="Cerrar desafío">✕</button>
+    
+    <div class="quiz-player-header">
+      <div class="quiz-player-title-wrap">
+        <img src="" alt="" class="quiz-player-thumb" id="playerThumb">
+        <div>
+          <h2 style="margin:0;font-size:1.25rem;font-family:'Fraunces',serif;" id="playerTitle">Desafío</h2>
+          <div style="font-size:0.8rem;color:var(--grass-dark);font-weight:600;" id="playerSubtitle">Liceo B-13</div>
+        </div>
+      </div>
+      <div style="font-size:0.82rem;font-weight:700;color:var(--ink-light);" id="playerQuestionIndex">
+        Pregunta 1 de 3
+      </div>
+    </div>
+
+    <div class="quiz-player-prog-bar">
+      <div class="quiz-player-prog-fill" id="playerProgFill"></div>
+    </div>
+
+    <div class="card-body" style="padding:0;">
+      <div class="quiz-question-box" id="playerQuestionText">
+        Cargando pregunta...
+      </div>
+
+      <div class="quiz-options-list" id="playerOptionsList">
+        <!-- Opciones inyectadas dinámicamente -->
+      </div>
+
+      <div class="quiz-feedback-box" id="playerFeedbackBox">
+        <div id="playerFeedbackTitle" style="font-weight:800;margin-bottom:4px;"></div>
+        <div id="playerFeedbackExplain"></div>
+      </div>
+
+      <button type="button" class="quiz-next-btn" id="playerNextBtn">
+        Siguiente Pregunta ➔
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast de notificaciones -->
+<div class="toast" id="toast"></div>
+
+<!-- Scripts requeridos -->
+<script src="js/data.js"></script>
+<script src="js/map-data.js"></script>
+<script src="js/audio.js"></script>
+<script src="js/state.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/auth-ui.js"></script>
+<script src="js/granjita-portal.js"></script>
+<script src="js/card.js"></script>
+<script src="js/ranking.js"></script>
+<script src="js/quizzes-app.js"></script>
+</body>
+</html>

@@ -937,6 +937,10 @@ app.get(['/perfil', '/cuaderno'], (req, res) => {
   res.sendFile(path.join(__dirname, 'perfil.html'));
 });
 
+app.get(['/quizzes', '/desafios'], (req, res) => {
+  res.sendFile(path.join(__dirname, 'quizzes.html'));
+});
+
 app.get(['/muro', '/comunidad'], (req, res) => {
   res.sendFile(path.join(__dirname, 'muro.html'));
 });
