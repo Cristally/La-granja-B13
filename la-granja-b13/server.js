@@ -1020,10 +1020,6 @@ app.get(['/muro', '/comunidad'], (req, res) => {
   res.sendFile(path.join(__dirname, 'muro.html'));
 });
 
-app.get(['/visitas', '/visitas-guiadas', '/guias'], (req, res) => {
-  res.sendFile(path.join(__dirname, 'visitas.html'));
-});
-
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
