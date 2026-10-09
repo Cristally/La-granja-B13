@@ -177,17 +177,13 @@
       facts: document.getElementById('panelFichaFacts'),
       jokes: document.getElementById('panelFichaJokes'),
       anatomy: document.getElementById('panelFichaAnatomy'),
-      accessories: document.getElementById('panelFichaAccessories'),
-      quiz: document.getElementById('panelFichaQuiz')
+      accessories: document.getElementById('panelFichaAccessories')
     };
 
     Object.keys(panels).forEach(k => {
       if (panels[k]) panels[k].style.display = (k === tab) ? 'block' : 'none';
     });
 
-    if (tab === 'quiz' && currentAnimal && typeof renderQuiz === 'function') {
-      renderQuiz(currentAnimal);
-    }
     if (tab === 'accessories' && currentAnimal && typeof renderPersonalizar === 'function') {
       renderPersonalizar(currentAnimal);
     }
@@ -375,10 +371,7 @@
       }
     }
 
-    // Renderizar Pestaña 5: Quiz Formativo
-    if (typeof renderQuiz === 'function') {
-      renderQuiz(a);
-    }
+
 
     // Sincronizar UI de estudiante e insignias
     if (typeof updateStudentUI === 'function') updateStudentUI();

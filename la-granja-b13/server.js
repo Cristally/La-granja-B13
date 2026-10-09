@@ -137,6 +137,9 @@ function readDatabase() {
     if (!Array.isArray(parsed.comments)) {
       parsed.comments = [];
     }
+    if (!Array.isArray(parsed.visitas)) {
+      parsed.visitas = [];
+    }
     if (!parsed.quizzes || typeof parsed.quizzes !== 'object') {
       parsed.quizzes = Object.create(null);
     }
@@ -841,6 +844,78 @@ app.post('/api/quizzes', (req, res) => {
   }
 });
 
+// ============================================================
+// Endpoints de Visitas Guiadas a la Granja Real B-13
+// ============================================================
+app.get('/api/visitas', (req, res) => {
+  try {
+    const db = readDatabase();
+    const visitas = Array.isArray(db.visitas) ? db.visitas : [];
+    res.json({ success: true, total: visitas.length, visitas });
+  } catch (err) {
+    res.status(500).json({ error: 'Error al obtener solicitudes de visitas guiadas.' });
+  }
+});
+
+app.post('/api/visitas', (req, res) => {
+  try {
+    const { nombre, institucion, email, telefono, tipoGrupo, cantidad, fecha, horario, enfoque, comentarios, codigo } = req.body || {};
+
+    const cleanNombre = sanitizeForSecurity(nombre || 'Docente / Responsable', 100);
+    const cleanInstitucion = sanitizeForSecurity(institucion || 'Particular', 120);
+    const cleanEmail = sanitizeForSecurity(email || '', 120);
+    const cleanTelefono = sanitizeForSecurity(telefono || '', 30);
+    const cleanTipoGrupo = sanitizeForSecurity(tipoGrupo || 'General', 80);
+    const cleanCantidad = Math.min(Math.max(parseInt(cantidad, 10) || 1, 1), 60);
+    const cleanFecha = sanitizeForSecurity(fecha || '', 20);
+    const cleanHorario = sanitizeForSecurity(horario || '', 60);
+    const cleanEnfoque = sanitizeForSecurity(enfoque || 'Bioalfabetización y Bienestar Animal', 120);
+    const cleanComentarios = sanitizeForSecurity(comentarios || '', 400);
+
+    const folioRandom = Math.floor(1000 + Math.random() * 9000);
+    const finalCodigo = sanitizeForSecurity(codigo || `#VIS-B13-${folioRandom}`, 20);
+
+    const db = readDatabase();
+    if (!Array.isArray(db.visitas)) db.visitas = [];
+
+    const nuevaVisita = {
+      id: finalCodigo,
+      codigo: finalCodigo,
+      nombre: cleanNombre,
+      institucion: cleanInstitucion,
+      email: cleanEmail,
+      telefono: cleanTelefono,
+      tipoGrupo: cleanTipoGrupo,
+      cantidad: cleanCantidad,
+      fecha: cleanFecha,
+      horario: cleanHorario,
+      enfoque: cleanEnfoque,
+      comentarios: cleanComentarios,
+      timestamp: new Date().toISOString(),
+      estado: 'Recibida en Demo'
+    };
+
+    db.visitas.unshift(nuevaVisita);
+    if (db.visitas.length > 100) {
+      db.visitas = db.visitas.slice(0, 100);
+    }
+
+    addActivityLog(db, {
+      type: 'visita_guiada',
+      user: cleanNombre,
+      course: cleanInstitucion,
+      role: 'visita',
+      detail: `Solicitó recorrido guiado para ${cleanCantidad} personas el día ${cleanFecha} (${cleanHorario}). Ref: ${finalCodigo}`,
+      icon: '🚜'
+    });
+
+    writeDatabase(db);
+    res.json({ success: true, id: finalCodigo, visita: nuevaVisita });
+  } catch (err) {
+    res.status(500).json({ error: 'Error al registrar solicitud de visita guiada.' });
+  }
+});
+
 // Estadísticas generales para el panel docente y directivo
 app.get('/api/stats', (req, res) => {
   try {
@@ -943,6 +1018,10 @@ app.get(['/quizzes', '/desafios'], (req, res) => {
 
 app.get(['/muro', '/comunidad'], (req, res) => {
   res.sendFile(path.join(__dirname, 'muro.html'));
+});
+
+app.get(['/visitas', '/visitas-guiadas', '/guias'], (req, res) => {
+  res.sendFile(path.join(__dirname, 'visitas.html'));
 });
 
 app.get('*', (req, res) => {

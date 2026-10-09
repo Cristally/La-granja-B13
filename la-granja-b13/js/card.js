@@ -51,6 +51,9 @@ function openOverlayId(id) {
 }
 
 function closeOverlayId(id) {
+  if (id === 'quizPlayerOverlay' && window.isQuizPlayerActive) {
+    return;
+  }
   const el = document.getElementById(id);
   if (el) {
     el.classList.remove('open');
@@ -3374,7 +3377,7 @@ document.querySelectorAll('[data-close]').forEach(btn => {
 });
 
 document.querySelectorAll('.overlay').forEach(el => {
-  if (el.id === 'overlay') return;
+  if (el.id === 'overlay' || el.id === 'quizPlayerOverlay') return;
   el.addEventListener('click', e => { if (e.target === el) closeOverlayId(el.id); });
 });
 

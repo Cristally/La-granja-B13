@@ -23,6 +23,7 @@
       <a href="mapa.html">🗺️ Mapa<span class="nav-extra-text"> de la Granja</span></a>
       <a href="quizzes.html">⭐ Desafíos</a>
       <a href="galeria-real.html">📸 Granja Real<span class="nav-extra-text"> B-13</span></a>
+      <a href="visitas.html">🚜 Visitas Guiadas<span class="nav-extra-text"> B-13</span></a>
       <a href="juegos.html">🎮 Juegos<span class="nav-extra-text"> en la Granja</span></a>
       <a href="muro.html">💬 Muro</a>
       <button id="navBtnCambiarModo" class="nav-switch-btn" type="button" title="Cerrar sesión actual">🚪 Cerrar Sesión</button>
@@ -55,9 +56,6 @@
       <button id="changeStudentBtn" class="student-change-btn" type="button" aria-label="Editar estudiante">✏️</button>
     </div>
     <div class="tool-buttons">
-      <button id="leaderboardBtn" class="tool-btn leaderboard-tool-btn" type="button" title="Ver Salón de Honor y Ranking">🏆 Ranking</button>
-      <button id="achievementsBtn" class="tool-btn" type="button">🎖️ Logros</button>
-      <button id="rulesBtn" class="tool-btn" type="button">📋 Normas</button>
       <a href="perfil.html" class="tool-btn btn-mi-perfil" id="btnMiPerfil" title="Ver mi Cuaderno de Campo, perfil y credencial escolar">👤 Mi Perfil</a>
       <button id="soundBtn" class="tool-btn" type="button">🔊 Sonido</button>
       <button id="teacherBtn" class="tool-btn" type="button" style="display:none;">👩‍🏫 Panel docente</button>
@@ -119,9 +117,6 @@
     <button type="button" class="ficha-tab-btn" data-tab="accessories">
       <span>🎨</span> Personalizar Accesorio
     </button>
-    <button type="button" class="ficha-tab-btn" data-tab="quiz">
-      <span>📝</span> Quiz Formativo (Por Décimas)
-    </button>
   </div>
 
   <!-- Contenedor General de Pestañas -->
@@ -131,6 +126,16 @@
     <div class="ficha-panel" id="panelFichaFacts" style="display:block;">
       <div class="ficha-facts-wide-grid" id="fichaFactsWideGrid">
         <!-- Inyectado dinámicamente -->
+      </div>
+      <!-- Banner pedagógico hacia Desafíos de Décimas -->
+      <div class="ficha-quiz-invite-banner" style="margin-top:22px;padding:16px 20px;background:#f0fdf4;border:2px solid #86efac;border-radius:14px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px;">
+        <div>
+          <div style="font-weight:800;color:#166534;font-size:1.02rem;">⭐ ¿Quieres ganar décimas con este animal?</div>
+          <div style="color:#14532d;font-size:0.86rem;margin-top:2px;">Todos los quizzes formativos por décimas se responden en el apartado exclusivo de <b>Desafíos</b>.</div>
+        </div>
+        <a href="quizzes.html" class="tool-btn" style="background:#15803d;color:#ffffff;border:2px solid #166534;padding:8px 16px;font-weight:700;border-radius:20px;text-decoration:none;display:inline-flex;align-items:center;gap:6px;">
+          <span>🎯</span> Ir a Desafíos de Décimas ➜
+        </a>
       </div>
     </div>
 
@@ -152,13 +157,6 @@
     <div class="ficha-panel" id="panelFichaAccessories" style="display:none;">
       <div id="panel-personalizar">
         <!-- Reutiliza la función renderPersonalizar() de card.js -->
-      </div>
-    </div>
-
-    <!-- Pestaña 5: Quiz Formativo -->
-    <div class="ficha-panel" id="panelFichaQuiz" style="display:none;">
-      <div id="panel-quiz">
-        <!-- Reutiliza la función renderQuiz() de card.js -->
       </div>
     </div>
 
@@ -197,21 +195,6 @@
   </div>
 </div>
 
-<!-- Normas de Convivencia y Seguridad en la Granja -->
-<div class="overlay" id="rulesOverlay">
-  <div class="card rules-card">
-    <button class="close-btn" data-close="rulesOverlay" aria-label="Cerrar">✕</button>
-    <div class="card-head">
-      <div class="big-sprite">📋</div>
-      <div>
-        <h2>Normas de la Granja B13</h2>
-        <div class="lat">Reglamento escolar y tenencia responsable</div>
-      </div>
-    </div>
-    <div class="card-body" id="rulesModalBody"></div>
-  </div>
-</div>
-
 <!-- Panel Docente -->
 <div class="overlay" id="teacherOverlay">
   <div class="card teacher-card">
@@ -224,43 +207,6 @@
       </div>
     </div>
     <div class="card-body teacher-body" id="teacherContent"></div>
-  </div>
-</div>
-
-<!-- Catálogo de Logros e Insignias -->
-<div class="overlay" id="achievementsOverlay">
-  <div class="card achievements-card">
-    <button class="close-btn" data-close="achievementsOverlay" aria-label="Cerrar">✕</button>
-    <div class="card-head">
-      <div class="big-sprite">🎖️</div>
-      <div>
-        <h2>Logros e Insignias B-13</h2>
-        <div class="lat">Completa desafíos para desbloquear todas las insignias de campo</div>
-      </div>
-    </div>
-    <div class="card-body" id="achievementsModalBody"></div>
-  </div>
-</div>
-
-<!-- Detalle de Insignia Individual -->
-<div class="overlay" id="badgeOverlay">
-  <div class="card small-card badge-detail-card">
-    <button class="close-btn" data-close="badgeOverlay" aria-label="Cerrar">✕</button>
-    <div class="card-head">
-      <div class="big-sprite" id="badgeModalIcon">🏆</div>
-      <div>
-        <h2 id="badgeModalTitle">Insignia</h2>
-        <div class="lat" id="badgeModalStatus">Estado del logro</div>
-      </div>
-    </div>
-    <div class="card-body">
-      <div class="stamp" id="badgeModalStamp">LOGRO OFICIAL</div>
-      <p id="badgeModalDesc" style="font-size:0.92rem;line-height:1.5;margin:10px 0 12px;"></p>
-      <div class="badge-hint-box" id="badgeModalHint" style="background:var(--paper-dark);border:1.5px dashed var(--ink);border-radius:6px;padding:10px;font-size:0.82rem;line-height:1.4;margin-bottom:14px;"></div>
-      <button class="tool-btn" data-close="badgeOverlay" type="button" style="width:100%;padding:10px;background:var(--hay);color:var(--ink);font-weight:700;font-size:0.88rem;">
-        ✓ Entendido
-      </button>
-    </div>
   </div>
 </div>
 

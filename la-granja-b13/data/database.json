@@ -66,6 +66,16 @@
   },
   "activityLogs": [
     {
+      "id": "act_1791522744044_rgv8m",
+      "type": "visita_guiada",
+      "user": "Prof. Ana Torres",
+      "course": "Colegio San Luis",
+      "role": "visita",
+      "detail": "Solicitó recorrido guiado para 25 personas el día 2026-10-20 (Jornada Ma�ana Bloque 1 (09:30 - 10:30 hrs)). Ref: #VIS-B13-3331",
+      "icon": "🚜",
+      "timestamp": "2026-10-09T05:12:24.044Z"
+    },
+    {
       "id": "act_1790886807375_79g1o",
       "type": "reply",
       "user": "Profesor/a B-13",
@@ -153,5 +163,23 @@
       ]
     }
   ],
-  "quizzes": {}
+  "quizzes": {},
+  "visitas": [
+    {
+      "id": "#VIS-B13-3331",
+      "codigo": "#VIS-B13-3331",
+      "nombre": "Prof. Ana Torres",
+      "institucion": "Colegio San Luis",
+      "email": "ana.torres@sanluis.cl",
+      "telefono": "+56912345678",
+      "tipoGrupo": "Ense�anza B�sica Inicial (1 a 4 B�sico)",
+      "cantidad": 25,
+      "fecha": "2026-10-20",
+      "horario": "Jornada Ma�ana Bloque 1 (09:30 - 10:30 hrs)",
+      "enfoque": "Bioalfabetizaci�n y Bienestar Animal",
+      "comentarios": "Prueba de verificaci�n de sistema",
+      "timestamp": "2026-10-09T05:12:24.043Z",
+      "estado": "Recibida en Demo"
+    }
+  ]
 }

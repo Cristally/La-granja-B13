@@ -17,6 +17,7 @@
     <a href="mapa.html" class="active">🗺️ Mapa<span class="nav-extra-text"> de la Granja</span></a>
     <a href="quizzes.html">⭐ Desafíos</a>
     <a href="galeria-real.html">📸 Granja Real<span class="nav-extra-text"> B-13</span></a>
+    <a href="visitas.html">🚜 Visitas Guiadas<span class="nav-extra-text"> B-13</span></a>
     <a href="juegos.html">🎮 Juegos<span class="nav-extra-text"> en la Granja</span></a>
     <a href="muro.html">💬 Muro</a>
     <button id="navBtnCambiarModo" class="nav-switch-btn" type="button" title="Cerrar sesión actual">🚪 Cerrar Sesión</button>
@@ -46,8 +47,6 @@
       <button id="changeStudentBtn" class="student-change-btn" type="button" aria-label="Editar estudiante">✏️</button>
     </div>
     <div class="tool-buttons">
-      <button id="leaderboardBtn" class="tool-btn leaderboard-tool-btn" type="button" title="Ver Salón de Honor y Ranking">🏆 Ranking</button>
-      <button id="achievementsBtn" class="tool-btn" type="button">🎖️ Logros</button>
       <button id="rulesBtn" class="tool-btn" type="button">📋 Normas</button>
       <a href="perfil.html" class="tool-btn btn-mi-perfil" id="btnMiPerfil" title="Ver mi Cuaderno de Campo, perfil y credencial escolar">👤 Mi Perfil</a>
       <button id="soundBtn" class="tool-btn" type="button">🔊 Sonido</button>
@@ -140,11 +139,9 @@
     <div class="tabs">
       <button data-tab="ficha" class="active" type="button">Ficha</button>
       <button data-tab="personalizar" type="button">Personalizar</button>
-      <button data-tab="quiz" type="button">Quiz</button>
     </div>
     <div class="tabpanel active" id="panel-ficha"></div>
     <div class="tabpanel" id="panel-personalizar"></div>
-    <div class="tabpanel" id="panel-quiz"></div>
   </div>
 </div>
 
@@ -218,44 +215,7 @@
   </div>
 </div>
 
-<!-- Modal de Lista Vertical de Logros e Insignias -->
-<div class="overlay" id="achievementsOverlay">
-  <div class="card">
-    <button class="close-btn" data-close="achievementsOverlay" aria-label="Cerrar">✕</button>
-    <div class="card-head">
-      <div class="big-sprite">🏆</div>
-      <div>
-        <h2>Cuaderno de Logros e Insignias</h2>
-        <div class="lat">Desafíos y metas de aprendizaje en La Granja B13</div>
-      </div>
-    </div>
-    <div class="card-body">
-      <div class="achievements-vertical-list" id="achievementsList"></div>
-    </div>
-  </div>
-</div>
 
-<!-- Modal de Información Individual de Insignia -->
-<div class="overlay" id="badgeOverlay">
-  <div class="card small-card">
-    <button class="close-btn" data-close="badgeOverlay" aria-label="Cerrar">✕</button>
-    <div class="card-head">
-      <div class="big-sprite" id="badgeModalIcon">🏆</div>
-      <div>
-        <h2 id="badgeModalTitle">Insignia</h2>
-        <div class="lat" id="badgeModalStatus">Estado del logro</div>
-      </div>
-    </div>
-    <div class="card-body">
-      <div class="stamp" id="badgeModalStamp">LOGRO DE CAMPO</div>
-      <p id="badgeModalDesc" style="font-size:0.92rem;line-height:1.5;margin:10px 0 14px;"></p>
-      <div id="badgeModalHint" style="font-size:0.82rem;color:var(--grass-dark);margin-bottom:14px;background:var(--paper-dark);padding:9px 12px;border-radius:4px;border-left:3px solid var(--hay);"></div>
-      <button class="tool-btn" data-close="badgeOverlay" type="button" style="width:100%;padding:10px;background:var(--hay);color:var(--ink);font-weight:700;font-size:0.88rem;">
-        ✓ Entendido
-      </button>
-    </div>
-  </div>
-</div>
 
 <!-- Modal de Escudo / Logo del Proyecto -->
 <div class="overlay" id="logoOverlay">

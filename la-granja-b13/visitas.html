@@ -1,0 +1,1463 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Visitas Guiadas — La Granja Real del Liceo B-13</title>
+<meta name="description" content="¿Quieres solicitar un recorrido por la Granja Real del Liceo Domingo Herrera Rivera B-13? Solicita tu visita pedagógica guiada en Antofagasta.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700;9..144,800&family=Karla:wght@400;500;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+<style>
+/* ============================================================
+   Estilos dedicados para el Apartado de Visitas Guiadas B-13
+   ============================================================ */
+
+.visitas-page-app {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 20px 18px 70px;
+}
+
+/* Card contenedor común */
+.visitas-card {
+  background: var(--paper-card, #FFFDF7);
+  border: 2.5px solid var(--border-on-bg, var(--ink));
+  border-radius: 16px;
+  box-shadow: var(--card-shadow, 0 6px 20px rgba(40,49,27,0.12));
+  padding: 24px;
+  margin-bottom: 24px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Hero de Bienvenida a las Visitas */
+.visitas-hero {
+  background: linear-gradient(135deg, rgba(255,253,247,0.98) 0%, rgba(245,238,217,0.92) 100%);
+  position: relative;
+  overflow: hidden;
+  border-left: 8px solid var(--grass-dark, #3B5832);
+}
+
+body.theme-dark .visitas-hero {
+  background: linear-gradient(135deg, #1f2a1c 0%, #151e13 100%);
+  border-left-color: var(--grass-dark, #81c784);
+}
+
+.visitas-pill-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(59, 88, 50, 0.12);
+  color: var(--grass-dark, #3B5832);
+  border: 1.5px solid var(--grass-dark, #3B5832);
+  border-radius: 999px;
+  padding: 5px 14px;
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+}
+
+body.theme-dark .visitas-pill-badge {
+  background: rgba(129, 199, 132, 0.15);
+  color: #a5d6a7;
+  border-color: #81c784;
+}
+
+.visitas-hero-title {
+  font-family: 'Fraunces', serif;
+  font-size: 1.95rem;
+  color: var(--grass-dark, #2d4624);
+  line-height: 1.25;
+  margin: 0 0 12px;
+}
+
+body.theme-dark .visitas-hero-title {
+  color: #a5d6a7;
+}
+
+.visitas-hero-desc {
+  font-size: 1.02rem;
+  line-height: 1.6;
+  color: var(--ink, #28311B);
+  margin-bottom: 20px;
+  max-width: 820px;
+}
+
+/* Grid de Pilares Informativos del Recorrido */
+.visitas-features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 14px;
+  margin-top: 18px;
+}
+
+.visitas-feature-item {
+  background: rgba(255, 255, 255, 0.7);
+  border: 1.5px solid rgba(40, 49, 27, 0.18);
+  border-radius: 12px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+body.theme-dark .visitas-feature-item {
+  background: #192317;
+  border-color: #3b4c34;
+}
+
+.visitas-feature-icon {
+  font-size: 1.6rem;
+}
+
+.visitas-feature-title {
+  font-family: 'Fraunces', serif;
+  font-size: 0.98rem;
+  font-weight: 700;
+  color: var(--grass-dark, #3B5832);
+}
+
+body.theme-dark .visitas-feature-title {
+  color: #81c784;
+}
+
+.visitas-feature-text {
+  font-size: 0.84rem;
+  color: var(--ink, #28311B);
+  line-height: 1.4;
+  margin: 0;
+}
+
+/* Banner Informativo de Modo Demo */
+.visitas-demo-banner {
+  background: #fff8e1;
+  border: 2px dashed #f59e0b;
+  border-radius: 12px;
+  padding: 14px 18px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 22px;
+  color: #78350f;
+}
+
+body.theme-dark .visitas-demo-banner {
+  background: #262011;
+  border-color: #f59e0b;
+  color: #fef3c7;
+}
+
+.visitas-demo-banner .demo-ic {
+  font-size: 1.4rem;
+  flex-shrink: 0;
+}
+
+.visitas-demo-banner-text {
+  font-size: 0.88rem;
+  line-height: 1.45;
+}
+
+.visitas-demo-banner-text b {
+  color: #b45309;
+}
+
+body.theme-dark .visitas-demo-banner-text b {
+  color: #fbbf24;
+}
+
+/* Encabezados de Sección */
+.visitas-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 2px solid var(--paper-dark, #EADBBE);
+  padding-bottom: 12px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+body.theme-dark .visitas-section-header {
+  border-bottom-color: #3e5035;
+}
+
+.visitas-section-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.visitas-section-title-wrap .sec-ic {
+  font-size: 1.8rem;
+}
+
+.visitas-section-title-wrap h2 {
+  font-family: 'Fraunces', serif;
+  font-size: 1.35rem;
+  color: var(--ink, #28311B);
+  margin: 0;
+}
+
+body.theme-dark .visitas-section-title-wrap h2 {
+  color: #eef3e5;
+}
+
+.visitas-section-sub {
+  font-size: 0.82rem;
+  color: var(--grass-dark, #5C8446);
+  font-weight: 700;
+}
+
+body.theme-dark .visitas-section-sub {
+  color: #a5d6a7;
+}
+
+/* Estilos de Formulario */
+.visitas-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.visitas-form-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+@media (min-width: 680px) {
+  .visitas-form-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.visitas-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  text-align: left;
+}
+
+.visitas-field.col-full {
+  grid-column: 1 / -1;
+}
+
+.visitas-field label {
+  font-size: 0.86rem;
+  font-weight: 700;
+  color: var(--ink, #28311B);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+body.theme-dark .visitas-field label {
+  color: #eef3e5;
+}
+
+.visitas-field label .req {
+  color: #dc2626;
+  font-weight: 800;
+}
+
+.visitas-input,
+.visitas-select,
+.visitas-textarea {
+  font-family: 'Karla', sans-serif;
+  font-size: 0.95rem;
+  padding: 10px 14px;
+  border: 2px solid var(--paper-dark, #EADBBE);
+  border-radius: 10px;
+  background: #ffffff;
+  color: var(--ink, #28311B);
+  transition: border-color 0.18s ease, box-shadow 0.18s ease;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+body.theme-dark .visitas-input,
+body.theme-dark .visitas-select,
+body.theme-dark .visitas-textarea {
+  background: #141a12 !important;
+  color: #eef3e5 !important;
+  border-color: #3e5035 !important;
+}
+
+.visitas-input:focus,
+.visitas-select:focus,
+.visitas-textarea:focus {
+  outline: none;
+  border-color: var(--grass-dark, #3B5832) !important;
+  box-shadow: 0 0 0 3px rgba(59, 88, 50, 0.22);
+}
+
+.visitas-input:invalid:not(:placeholder-shown),
+.visitas-input.has-error {
+  border-color: #dc2626 !important;
+}
+
+.visitas-field-hint {
+  font-size: 0.76rem;
+  color: #666666;
+  line-height: 1.3;
+}
+
+body.theme-dark .visitas-field-hint {
+  color: #a0b298;
+}
+
+.visitas-checkbox-wrap {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background: rgba(59, 88, 50, 0.05);
+  border: 1.5px solid var(--paper-dark, #EADBBE);
+  border-radius: 10px;
+  padding: 12px 14px;
+  cursor: pointer;
+}
+
+body.theme-dark .visitas-checkbox-wrap {
+  background: rgba(129, 199, 132, 0.06);
+  border-color: #3e5035;
+}
+
+.visitas-checkbox-wrap input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  accent-color: var(--grass-dark, #3B5832);
+  margin-top: 2px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.visitas-checkbox-label {
+  font-size: 0.88rem;
+  line-height: 1.45;
+  color: var(--ink, #28311B);
+}
+
+body.theme-dark .visitas-checkbox-label {
+  color: #eef3e5;
+}
+
+/* Botones de acción del formulario */
+.visitas-actions-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.visitas-submit-btn {
+  background: var(--grass-dark, #3B5832);
+  color: #ffffff;
+  border: 2px solid var(--ink, #28311B);
+  border-radius: 10px;
+  padding: 12px 24px;
+  font-family: 'Karla', sans-serif;
+  font-size: 1.05rem;
+  font-weight: 800;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 4px 12px rgba(40,49,27,0.18);
+  transition: transform 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.visitas-submit-btn:hover {
+  background: #2b4124;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(40,49,27,0.25);
+}
+
+.visitas-submit-btn:active {
+  transform: translateY(1px);
+}
+
+body.theme-dark .visitas-submit-btn {
+  background: #2e5326;
+  border-color: #ffd54f;
+  color: #ffd54f;
+}
+
+body.theme-dark .visitas-submit-btn:hover {
+  background: #396730;
+}
+
+.visitas-secondary-btns {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.visitas-btn-demo {
+  background: #fef3c7;
+  color: #92400e;
+  border: 1.5px solid #f59e0b;
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-size: 0.84rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.visitas-btn-demo:hover {
+  background: #fde68a;
+}
+
+body.theme-dark .visitas-btn-demo {
+  background: #342813;
+  color: #fef08a;
+  border-color: #ca8a04;
+}
+
+.visitas-btn-clear {
+  background: transparent;
+  color: var(--ink, #28311B);
+  border: 1.5px solid var(--paper-dark, #EADBBE);
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-size: 0.84rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+body.theme-dark .visitas-btn-clear {
+  color: #c5e1a5;
+  border-color: #3e5035;
+}
+
+/* ============================================================
+   Sección de Google Maps y Ubicación
+   ============================================================ */
+.visitas-map-container {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+}
+
+@media (min-width: 820px) {
+  .visitas-map-container {
+    grid-template-columns: 1.25fr 1fr;
+  }
+}
+
+.visitas-map-frame-wrap {
+  position: relative;
+  border: 2px solid var(--border-on-bg, var(--ink));
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.1);
+  min-height: 380px;
+  background: #eae7dc;
+}
+
+.visitas-map-frame-wrap iframe {
+  width: 100%;
+  height: 100%;
+  min-height: 380px;
+  border: 0;
+  display: block;
+}
+
+.visitas-map-badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(8px);
+  border: 1.5px solid var(--ink);
+  border-radius: 20px;
+  padding: 4px 12px;
+  font-size: 0.74rem;
+  font-weight: 800;
+  color: var(--ink);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  pointer-events: none;
+}
+
+.visitas-location-info {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.visitas-loc-card {
+  background: rgba(255, 255, 255, 0.75);
+  border: 1.5px solid rgba(40, 49, 27, 0.15);
+  border-radius: 12px;
+  padding: 12px 14px;
+}
+
+body.theme-dark .visitas-loc-card {
+  background: #192317;
+  border-color: #3b4c34;
+}
+
+.visitas-loc-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 0.88rem;
+  line-height: 1.4;
+  color: var(--ink, #28311B);
+}
+
+body.theme-dark .visitas-loc-item {
+  color: #eef3e5;
+}
+
+.visitas-loc-item .loc-ic {
+  font-size: 1.3rem;
+  flex-shrink: 0;
+  margin-top: -1px;
+}
+
+.visitas-loc-btn-gps {
+  margin-top: 6px;
+  background: #1d4ed8;
+  color: #ffffff;
+  border: 2px solid #1e3a8a;
+  border-radius: 10px;
+  padding: 10px 18px;
+  font-family: 'Karla', sans-serif;
+  font-size: 0.92rem;
+  font-weight: 700;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: 0 3px 8px rgba(29, 78, 216, 0.25);
+  transition: transform 0.15s ease, background 0.15s;
+}
+
+.visitas-loc-btn-gps:hover {
+  background: #2563eb;
+  transform: translateY(-1px);
+}
+
+/* ============================================================
+   Historial Local de Solicitudes (Demo Interactiva)
+   ============================================================ */
+.visitas-history-list {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+.visitas-ticket-card {
+  background: rgba(255, 255, 255, 0.85);
+  border: 1.5px solid var(--paper-dark, #EADBBE);
+  border-left: 5px solid var(--grass-dark, #3B5832);
+  border-radius: 10px;
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: all 0.15s ease;
+}
+
+body.theme-dark .visitas-ticket-card {
+  background: #1a2417;
+  border-color: #3e5035;
+  border-left-color: #81c784;
+}
+
+.visitas-ticket-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.visitas-ticket-code {
+  font-family: 'Space Mono', monospace;
+  font-weight: 700;
+  font-size: 0.88rem;
+  color: var(--grass-dark, #3B5832);
+}
+
+body.theme-dark .visitas-ticket-code {
+  color: #ffd54f;
+}
+
+.visitas-ticket-badge {
+  background: #fef3c7;
+  color: #92400e;
+  border-radius: 999px;
+  padding: 3px 10px;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.visitas-ticket-body {
+  font-size: 0.86rem;
+  line-height: 1.4;
+  color: var(--ink);
+}
+
+body.theme-dark .visitas-ticket-body {
+  color: #eef3e5;
+}
+
+.visitas-ticket-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.visitas-ticket-btn {
+  background: transparent;
+  border: 1px solid var(--paper-dark, #EADBBE);
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-size: 0.76rem;
+  font-weight: 700;
+  cursor: pointer;
+  color: var(--ink);
+}
+
+body.theme-dark .visitas-ticket-btn {
+  border-color: #3e5035;
+  color: #eef3e5;
+}
+
+.visitas-ticket-btn:hover {
+  background: rgba(0,0,0,0.05);
+}
+
+.visitas-history-empty {
+  text-align: center;
+  padding: 24px 12px;
+  color: #666;
+  font-size: 0.9rem;
+}
+
+body.theme-dark .visitas-history-empty {
+  color: #a0b298;
+}
+
+/* ============================================================
+   Galería Sneak Peek de la Granja Real
+   ============================================================ */
+.visitas-sneak-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 14px;
+  margin-top: 14px;
+}
+
+.visitas-sneak-item {
+  border: 2px solid var(--paper-dark, #EADBBE);
+  border-radius: 12px;
+  overflow: hidden;
+  background: #fff;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+body.theme-dark .visitas-sneak-item {
+  border-color: #3e5035;
+  background: #1b2418;
+}
+
+.visitas-sneak-item:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+}
+
+.visitas-sneak-img {
+  width: 100%;
+  height: 140px;
+  object-fit: cover;
+  display: block;
+}
+
+.visitas-sneak-caption {
+  padding: 8px 10px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--ink);
+  line-height: 1.3;
+}
+
+body.theme-dark .visitas-sneak-caption {
+  color: #eef3e5;
+}
+
+/* ============================================================
+   Modal de Confirmación y Derivación a Correo
+   ============================================================ */
+.visitas-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(20, 28, 19, 0.75);
+  backdrop-filter: blur(6px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 16px;
+}
+
+.visitas-modal-overlay.active {
+  display: flex;
+}
+
+.visitas-modal-card {
+  background: var(--paper-card, #FFFDF7);
+  border: 3px solid var(--border-on-bg, var(--ink));
+  border-radius: 18px;
+  max-width: 620px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35);
+  padding: 24px;
+  position: relative;
+  animation: modalPop 0.25s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+}
+
+body.theme-dark .visitas-modal-card {
+  background: #1f2a1c;
+  border-color: #ffd54f;
+  color: #eef3e5;
+}
+
+@keyframes modalPop {
+  from { transform: scale(0.92); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.visitas-modal-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  border-bottom: 2px solid var(--paper-dark, #EADBBE);
+  padding-bottom: 14px;
+  margin-bottom: 16px;
+}
+
+body.theme-dark .visitas-modal-head {
+  border-bottom-color: #3e5035;
+}
+
+.visitas-modal-close {
+  background: transparent;
+  border: none;
+  font-size: 1.4rem;
+  cursor: pointer;
+  color: var(--ink);
+  line-height: 1;
+}
+
+body.theme-dark .visitas-modal-close {
+  color: #ffd54f;
+}
+
+.visitas-modal-voucher {
+  background: #fdfbf7;
+  border: 2px dashed var(--grass-dark, #3B5832);
+  border-radius: 12px;
+  padding: 16px;
+  margin: 16px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+body.theme-dark .visitas-modal-voucher {
+  background: #151e13;
+  border-color: #81c784;
+}
+
+.visitas-voucher-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.88rem;
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+  padding-bottom: 6px;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+body.theme-dark .visitas-voucher-row {
+  border-bottom-color: rgba(255,255,255,0.08);
+}
+
+.visitas-voucher-row .lbl {
+  font-weight: 700;
+  color: var(--grass-dark, #3B5832);
+}
+
+body.theme-dark .visitas-voucher-row .lbl {
+  color: #a5d6a7;
+}
+
+.visitas-voucher-row .val {
+  color: var(--ink);
+}
+
+body.theme-dark .visitas-voucher-row .val {
+  color: #eef3e5;
+}
+
+.visitas-modal-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+@media (min-width: 520px) {
+  .visitas-modal-actions {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+  .visitas-modal-actions > * {
+    flex: 1 1 calc(50% - 10px);
+  }
+}
+
+.visitas-btn-mail {
+  background: #0284c7;
+  color: #ffffff;
+  border: 2px solid #0369a1;
+  border-radius: 10px;
+  padding: 10px 16px;
+  font-family: 'Karla', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(2, 132, 199, 0.25);
+  transition: background 0.15s;
+}
+
+.visitas-btn-mail:hover {
+  background: #0369a1;
+}
+
+.visitas-btn-copy {
+  background: var(--hay, #E8A838);
+  color: #1a1a1a;
+  border: 2px solid #b45309;
+  border-radius: 10px;
+  padding: 10px 16px;
+  font-family: 'Karla', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.visitas-btn-copy:hover {
+  background: #d97706;
+  color: #fff;
+}
+
+.visitas-btn-dismiss {
+  background: transparent;
+  color: var(--ink);
+  border: 1.5px solid var(--paper-dark, #EADBBE);
+  border-radius: 10px;
+  padding: 10px 16px;
+  font-family: 'Karla', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+body.theme-dark .visitas-btn-dismiss {
+  border-color: #3e5035;
+  color: #eef3e5;
+}
+</style>
+</head>
+<body>
+<div class="app visitas-page-app">
+
+  <!-- Navegación unificada entre espacios -->
+  <nav class="view-nav" aria-label="Navegación principal de La Granja B13">
+    <a href="index.html">🌾 Inicio<span class="nav-extra-text"> / Potrero</span></a>
+    <a href="mapa.html">🗺️ Mapa<span class="nav-extra-text"> de la Granja</span></a>
+    <a href="quizzes.html">⭐ Desafíos</a>
+    <a href="galeria-real.html">📸 Granja Real<span class="nav-extra-text"> B-13</span></a>
+    <a href="visitas.html" class="active">🚜 Visitas Guiadas<span class="nav-extra-text"> B-13</span></a>
+    <a href="juegos.html">🎮 Juegos<span class="nav-extra-text"> en la Granja</span></a>
+    <a href="muro.html">💬 Muro</a>
+    <button id="navBtnCambiarModo" class="nav-switch-btn" type="button" title="Cerrar sesión actual">🚪 Cerrar Sesión</button>
+  </nav>
+
+  <!-- Encabezado de la página -->
+  <header class="top">
+    <div class="brand-wrap">
+      <img src="assets/img/logo.png" alt="Logo Liceo Domingo Herrera Rivera B-13" class="app-logo">
+      <div>
+        <h1>Visitas Guiadas</h1>
+        <div class="sub">Recorridos pedagógicos en la Granja Real — Liceo Domingo Herrera Rivera B-13 Antofagasta</div>
+      </div>
+    </div>
+    <div class="scorebox">
+      PUNTAJE: <b id="score">0</b><br>
+      SOLICITUDES: <span id="visitasCountBadge">0</span>
+    </div>
+  </header>
+
+  <!-- Barra de herramientas (Sesión / Sonido / Tema) -->
+  <div class="toolbar">
+    <div class="student-pill" id="studentPill" title="Toca para ir a tu Cuaderno de Campo y Perfil" style="cursor:pointer;">
+      <span class="student-icon">🎒</span>
+      <div class="student-info">
+        <span class="student-label">MODALIDAD</span>
+        <b id="studentDisplayName">Recorridos Presenciales</b>
+      </div>
+      <button id="changeStudentBtn" class="student-change-btn" type="button" aria-label="Editar estado">✏️</button>
+    </div>
+    <div class="tool-buttons">
+      <a href="perfil.html" class="tool-btn btn-mi-perfil" id="btnMiPerfil" title="Ver mi Cuaderno de Campo y credencial escolar">👤 Mi Perfil</a>
+      <button id="soundBtn" class="tool-btn" type="button" title="Activar / desactivar efectos de sonido">🔊 Sonido</button>
+      <button id="themeToggleBtn" class="tool-btn" type="button" title="Alternar entre modo día y noche">🌓 Tema</button>
+    </div>
+  </div>
+
+  <!-- ==================== SECCIÓN 1: BIENVENIDA & HERO EXCLUSIVO DE VISITAS ==================== -->
+  <section class="visitas-card visitas-hero" aria-labelledby="visitasHeroTitle">
+    <div class="visitas-pill-badge">
+      <span>🚜</span> EXPERIENCIA EN TERRENO · LICEO DOMINGO HERRERA RIVERA B-13
+    </div>
+
+    <h2 class="visitas-hero-title" id="visitasHeroTitle">
+      ¿Quieres solicitar un recorrido por la Granja Real del Liceo B-13?
+    </h2>
+
+    <p class="visitas-hero-desc">
+      ¡Te damos una afectuosa bienvenida! Te invitamos a conocer en vivo nuestro proyecto pedagógico de <b>bioalfabetización y bienestar animal</b>. Delegaciones escolares de básica y media, jardines infantiles, docentes, agrupaciones científicas y familias de Antofagasta pueden solicitar un recorrido guiado por las instalaciones reales de nuestra granja escolar, compartiendo junto a nuestros monitores y animales en un ambiente educativo, protegido y enriquecedor.
+    </p>
+
+    <!-- 4 Pilares de la Visita Guiada -->
+    <div class="visitas-features-grid">
+      <div class="visitas-feature-item">
+        <span class="visitas-feature-icon">🧑‍🌾</span>
+        <div class="visitas-feature-title">Guías Estudiantiles & Docentes</div>
+        <p class="visitas-feature-text">Recorrido liderado por estudiantes monitores capacitados en tenencia responsable y profesores guías del Liceo B-13.</p>
+      </div>
+
+      <div class="visitas-feature-item">
+        <span class="visitas-feature-icon">🐇</span>
+        <div class="visitas-feature-title">Conoce Animales Reales</div>
+        <p class="visitas-feature-text">Encuentro guiado con los conejos Nesquik, Quesito y Canela, patos Sal y Pimienta, gallitos japoneses, aviario y el huerto pedagógico.</p>
+      </div>
+
+      <div class="visitas-feature-item">
+        <span class="visitas-feature-icon">🛡️</span>
+        <div class="visitas-feature-title">Bioseguridad & Bienestar Ético</div>
+        <p class="visitas-feature-text">Protocolos estrictos de higiene, lavado de manos, respeto por las zonas de descanso y alimentación supervisada de cada especie.</p>
+      </div>
+
+      <div class="visitas-feature-item">
+        <span class="visitas-feature-icon">🆓</span>
+        <div class="visitas-feature-title">100% Pedagógico y Gratuito</div>
+        <p class="visitas-feature-text">Iniciativa sin costo articulada con los ODS 4 (Educación de Calidad) y ODS 15 (Ecosistemas Terrestres) en el marco de Go Innova.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== SECCIÓN 2: FORMULARIO DE SOLICITUD ==================== -->
+  <section class="visitas-card" id="seccionFormulario" aria-labelledby="formSectionTitle">
+    <div class="visitas-section-header">
+      <div class="visitas-section-title-wrap">
+        <span class="sec-ic">📋</span>
+        <div>
+          <h2 id="formSectionTitle">Formulario de Solicitud de Visita Guiada</h2>
+          <div class="visitas-section-sub">Reserva tu fecha y coordina la visita de tu delegación</div>
+        </div>
+      </div>
+      <div class="visitas-secondary-btns">
+        <button type="button" class="visitas-btn-demo" id="btnLlenarDemo" title="Completar formulario con datos de ejemplo realistas">
+          🧪 Llenar Datos de Prueba (Demo)
+        </button>
+      </div>
+    </div>
+
+    <!-- Banner explicativo de modo Demostración -->
+    <div class="visitas-demo-banner" role="status">
+      <span class="demo-ic">💡</span>
+      <div class="visitas-demo-banner-text">
+        <b>Modo Demostración Activo:</b> Este formulario valida y procesa tu solicitud en vivo. Al enviarlo se generará un número de comprobante único (<b>#VIS-B13-XXXX</b>), quedará registrado en tu historial de la plataforma y te permitirá generar un correo con todos los datos prellenados para la coordinación docente del Liceo B-13.
+      </div>
+    </div>
+
+    <!-- Formulario interactivo -->
+    <form class="visitas-form" id="visitaForm" novalidate>
+      <div class="visitas-form-grid">
+
+        <!-- 1. Nombre del Responsable -->
+        <div class="visitas-field">
+          <label for="campoNombre">
+            <span>👤 Nombre y Apellidos del Responsable</span>
+            <span class="req">*</span>
+          </label>
+          <input
+            type="text"
+            id="campoNombre"
+            name="nombre"
+            class="visitas-input"
+            placeholder="Ej: Prof. Marcela Vega Contreras"
+            required
+            autocomplete="name"
+            maxlength="100"
+          >
+          <span class="visitas-field-hint">Docente a cargo, directivo o apoderado representante de la delegación.</span>
+        </div>
+
+        <!-- 2. Institución o Colegio -->
+        <div class="visitas-field">
+          <label for="campoInstitucion">
+            <span>🏫 Institución / Colegio / Agrupación</span>
+            <span class="req">*</span>
+          </label>
+          <input
+            type="text"
+            id="campoInstitucion"
+            name="institucion"
+            class="visitas-input"
+            placeholder="Ej: Escuela D-68 José Papic / Jardín Infantil / Familia"
+            required
+            maxlength="120"
+          >
+          <span class="visitas-field-hint">Nombre de la escuela, liceo, universidad u organización comunitaria.</span>
+        </div>
+
+        <!-- 3. Correo Electrónico -->
+        <div class="visitas-field">
+          <label for="campoEmail">
+            <span>📧 Correo Electrónico de Contacto</span>
+            <span class="req">*</span>
+          </label>
+          <input
+            type="email"
+            id="campoEmail"
+            name="email"
+            class="visitas-input"
+            placeholder="profesora.marcela@colegio.cl"
+            required
+            autocomplete="email"
+            maxlength="120"
+          >
+          <span class="visitas-field-hint">Donde recibirás la confirmación de agenda y detalles logísticos.</span>
+        </div>
+
+        <!-- 4. Teléfono de Contacto -->
+        <div class="visitas-field">
+          <label for="campoTelefono">
+            <span>📞 Teléfono / WhatsApp de Contacto</span>
+            <span class="req">*</span>
+          </label>
+          <input
+            type="tel"
+            id="campoTelefono"
+            name="telefono"
+            class="visitas-input"
+            placeholder="+56 9 8765 4321"
+            required
+            autocomplete="tel"
+            maxlength="25"
+          >
+          <span class="visitas-field-hint">Para contacto rápido y coordinación en el día de la visita.</span>
+        </div>
+
+        <!-- 5. Perfil del Grupo / Nivel Educativo -->
+        <div class="visitas-field">
+          <label for="campoTipoGrupo">
+            <span>👥 Perfil del Grupo / Nivel Educativo</span>
+            <span class="req">*</span>
+          </label>
+          <select id="campoTipoGrupo" name="tipoGrupo" class="visitas-select" required>
+            <option value="" disabled selected>Selecciona el nivel o tipo de delegación...</option>
+            <option value="Educación Parvularia (Prekínder y Kínder)">👶 Educación Parvularia (Prekínder y Kínder)</option>
+            <option value="Enseñanza Básica Inicial (1° a 4° Básico)">🌱 Enseñanza Básica Inicial (1° a 4° Básico)</option>
+            <option value="Enseñanza Básica Superior (5° a 8° Básico)">🌿 Enseñanza Básica Superior (5° a 8° Básico)</option>
+            <option value="Enseñanza Media (1° a 4° Medio)">🎓 Enseñanza Media (1° a 4° Medio)</option>
+            <option value="Delegación Docente / Superior / Científica">🔬 Delegación Docente / Universitaria / Científica</option>
+            <option value="Grupo Familiar / Vecinal Comunitario">🏡 Grupo Familiar / Comunidad Vecinal</option>
+            <option value="Otra Organización Social o Cultural">🤝 Otra Organización Social o Cultural</option>
+          </select>
+          <span class="visitas-field-hint">Nos permite adaptar las explicaciones de los monitores a su edad.</span>
+        </div>
+
+        <!-- 6. Cantidad de Visitantes -->
+        <div class="visitas-field">
+          <label for="campoCantidad">
+            <span>🔢 Cantidad Estimada de Asistentes</span>
+            <span class="req">*</span>
+          </label>
+          <input
+            type="number"
+            id="campoCantidad"
+            name="cantidad"
+            class="visitas-input"
+            min="1"
+            max="45"
+            value="22"
+            required
+          >
+          <span class="visitas-field-hint">Alumnos + acompañantes adultos. Recomendado máx. 30 por turno de bienestar.</span>
+        </div>
+
+        <!-- 7. Fecha Preferida para la Visita -->
+        <div class="visitas-field">
+          <label for="campoFecha">
+            <span>📅 Fecha Propuesta para la Visita</span>
+            <span class="req">*</span>
+          </label>
+          <input
+            type="date"
+            id="campoFecha"
+            name="fecha"
+            class="visitas-input"
+            required
+          >
+          <span class="visitas-field-hint">Días hábiles de lunes a viernes (sujeto a disponibilidad escolar).</span>
+        </div>
+
+        <!-- 8. Horario / Bloque Preferido -->
+        <div class="visitas-field">
+          <label for="campoHorario">
+            <span>⏰ Bloque Horario Preferido</span>
+            <span class="req">*</span>
+          </label>
+          <select id="campoHorario" name="horario" class="visitas-select" required>
+            <option value="" disabled selected>Selecciona el bloque de horario deseado...</option>
+            <option value="Jornada Mañana Bloque 1 (09:30 - 10:30 hrs)">☀️ Jornada Mañana Bloque 1 (09:30 - 10:30 hrs)</option>
+            <option value="Jornada Mañana Bloque 2 (11:00 - 12:00 hrs)">☀️ Jornada Mañana Bloque 2 (11:00 - 12:00 hrs)</option>
+            <option value="Jornada Tarde Bloque 1 (14:30 - 15:30 hrs)">🌤️ Jornada Tarde Bloque 1 (14:30 - 15:30 hrs)</option>
+            <option value="Jornada Tarde Bloque 2 (16:00 - 17:00 hrs)">🌤️ Jornada Tarde Bloque 2 (16:00 - 17:00 hrs)</option>
+          </select>
+          <span class="visitas-field-hint">Duración del recorrido: 45 a 60 minutos aproximados.</span>
+        </div>
+
+        <!-- 9. Enfoque Pedagógico / Temática de Interés -->
+        <div class="visitas-field col-full">
+          <label for="campoEnfoque">
+            <span>🎯 Enfoque Pedagógico o Interés Principal</span>
+            <span class="req">*</span>
+          </label>
+          <select id="campoEnfoque" name="enfoque" class="visitas-select" required>
+            <option value="Bioalfabetización y Bienestar Animal (Tenencia Ética)" selected>🐾 Bioalfabetización y Bienestar Animal (Tenencia Responsable y Respeto)</option>
+            <option value="Ciencias Naturales y Biodiversidad (ODS 15)">🔬 Ciencias Naturales, Adaptación de Especies y Biodiversidad (ODS 15)</option>
+            <option value="Agricultura Urbana y Huerto Escolar Sustentable">🌱 Agricultura Urbana, Compostaje y Huerto en el Desierto Costero</option>
+            <option value="Innovación Educativa y Gamificación (Go Innova)">💡 Proyecto Tecnológico Go Innova y Gamificación Escolar</option>
+            <option value="Convivencia Escolar y Vinculación Comunitaria">🤝 Convivencia Escolar, Recorrido Formativo y Salida a Terreno</option>
+          </select>
+          <span class="visitas-field-hint">Permite a los monitores enfocar el contenido pedagógico de la experiencia.</span>
+        </div>
+
+        <!-- 10. Requerimientos Especiales o Comentarios -->
+        <div class="visitas-field col-full">
+          <label for="campoComentarios">
+            <span>💬 Requerimientos Especiales, Alergias o Comentarios Adicionales</span>
+          </label>
+          <textarea
+            id="campoComentarios"
+            name="comentarios"
+            class="visitas-textarea"
+            rows="3"
+            placeholder="Indícanos si en la delegación asisten personas con movilidad reducida, alergias a heno/pelaje, o consultas particulares..."
+            maxlength="400"
+          ></textarea>
+          <span class="visitas-field-hint">Opcional. Máximo 400 caracteres.</span>
+        </div>
+
+        <!-- 11. Compromiso Ético y Normas -->
+        <div class="visitas-field col-full">
+          <label class="visitas-checkbox-wrap" for="campoCompromiso">
+            <input type="checkbox" id="campoCompromiso" name="compromiso" required>
+            <span class="visitas-checkbox-label">
+              <b>Compromiso con el Bienestar Animal:</b> Declaro conocer y comprometerme a que nuestra delegación respetará las normas de bioseguridad, el silencio prudente y el trato digno a los animales durante toda la visita en las dependencias del Liceo Domingo Herrera Rivera B-13.
+            </span>
+          </label>
+        </div>
+
+      </div>
+
+      <!-- Fila de Acciones y Envío -->
+      <div class="visitas-actions-row">
+        <button type="submit" class="visitas-submit-btn" id="btnEnviarVisita">
+          <span>🚀</span> Enviar Solicitud de Visita Guiada
+        </button>
+        <div class="visitas-secondary-btns">
+          <button type="reset" class="visitas-btn-clear" id="btnLimpiarForm">
+            ↺ Limpiar Campos
+          </button>
+        </div>
+      </div>
+    </form>
+  </section>
+
+  <!-- ==================== SECCIÓN 3: VISUALIZACIÓN DE GOOGLE MAPS ==================== -->
+  <section class="visitas-card" id="seccionMapa" aria-labelledby="mapSectionTitle">
+    <div class="visitas-section-header">
+      <div class="visitas-section-title-wrap">
+        <span class="sec-ic">📍</span>
+        <div>
+          <h2 id="mapSectionTitle">¿Dónde queda la Granja del Liceo B-13?</h2>
+          <div class="visitas-section-sub">Liceo Domingo Herrera Rivera B-13 — Llanquihue 4350, Antofagasta, Chile</div>
+        </div>
+      </div>
+      <a
+        href="https://www.google.com/maps/search/?api=1&query=Liceo+Domingo+Herrera+Rivera+B-13+Llanquihue+4350+Antofagasta"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="visitas-loc-btn-gps"
+        title="Abrir ubicación directamente en la aplicación de Google Maps"
+      >
+        <span>🗺️</span> Abrir en Google Maps Oficial ↗
+      </a>
+    </div>
+
+    <div class="visitas-map-container">
+      
+      <!-- Frame interactivo de Google Maps -->
+      <div class="visitas-map-frame-wrap" aria-label="Mapa interactivo con la ubicación de Liceo Domingo Herrera Rivera B-13">
+        <div class="visitas-map-badge">
+          📍 Liceo Domingo Herrera Rivera B-13
+        </div>
+        <iframe
+          title="Ubicación de Liceo Domingo Herrera Rivera B-13 en Google Maps"
+          src="https://maps.google.com/maps?q=-23.63063,-70.38751+(Liceo+Domingo+Herrera+Rivera+B-13)&amp;t=&amp;z=16&amp;ie=UTF8&amp;iwloc=&amp;output=embed"
+          loading="lazy"
+          allowfullscreen=""
+          referrerpolicy="no-referrer-when-downgrade"
+        ></iframe>
+      </div>
+
+      <!-- Tarjetas de información práctica para visitantes -->
+      <div class="visitas-location-info">
+        
+        <div class="visitas-loc-card">
+          <div class="visitas-loc-item">
+            <span class="loc-ic">🏫</span>
+            <div>
+              <b>Dirección Oficial:</b><br>
+              Llanquihue 4350, Antofagasta, Región de Antofagasta, Chile.
+            </div>
+          </div>
+        </div>
+
+        <div class="visitas-loc-card">
+          <div class="visitas-loc-item">
+            <span class="loc-ic">🚪</span>
+            <div>
+              <b>Punto de Ingreso y Recepción:</b><br>
+              Acceso por portería principal o portón lateral agropecuario del establecimiento. Los monitores estudiantiles reciben a la delegación en la entrada.
+            </div>
+          </div>
+        </div>
+
+        <div class="visitas-loc-card">
+          <div class="visitas-loc-item">
+            <span class="loc-ic">🚌</span>
+            <div>
+              <b>Locomoción Colectiva:</b><br>
+              Líneas del TransAntofagasta: <b>102, 104, 119 y 129</b>. Líneas de taxis colectivos sector Corvallis / Llanquihue / Rendic.
+            </div>
+          </div>
+        </div>
+
+        <div class="visitas-loc-card">
+          <div class="visitas-loc-item">
+            <span class="loc-ic">🕒</span>
+            <div>
+              <b>Horarios Escolares de Granja:</b><br>
+              Lunes a Viernes: 09:30 a 12:30 hrs y 14:30 a 17:00 hrs (coordinación previa obligatoria para resguardo pedagógico).
+            </div>
+          </div>
+        </div>
+
+        <div class="visitas-loc-card" style="border-left: 4px solid var(--hay, #E8A838);">
+          <div class="visitas-loc-item">
+            <span class="loc-ic">💡</span>
+            <div>
+              <b>Recomendaciones para el Grupo:</b><br>
+              Asistir con calzado cerrado cómodo, jockey o sombrero para el sol, bloqueador solar y botella de agua reutilizable.
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ==================== SECCIÓN 4: HISTORIAL DE SOLICITUDES EN ESTA DEMO ==================== -->
+  <section class="visitas-card" id="seccionHistorial" aria-labelledby="historialTitle">
+    <div class="visitas-section-header">
+      <div class="visitas-section-title-wrap">
+        <span class="sec-ic">📑</span>
+        <div>
+          <h2 id="historialTitle">Solicitudes Registradas en esta Demostración</h2>
+          <div class="visitas-section-sub">Seguimiento local de los requerimientos ingresados en tu navegador</div>
+        </div>
+      </div>
+      <button type="button" class="visitas-btn-clear" id="btnBorrarHistorial" style="display:none;">
+        🗑️ Vaciar Historial Demo
+      </button>
+    </div>
+
+    <div class="visitas-history-list" id="contenedorHistorial">
+      <div class="visitas-history-empty" id="historialVacioMensaje">
+        🌾 Aún no has registrado solicitudes de visita guiada. ¡Completa el formulario de arriba para generar tu primer requerimiento en la demo!
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== SECCIÓN 5: VISTA PREVIA DE LA GRANJA REAL ==================== -->
+  <section class="visitas-card" aria-labelledby="previewGalleryTitle">
+    <div class="visitas-section-header">
+      <div class="visitas-section-title-wrap">
+        <span class="sec-ic">📸</span>
+        <div>
+          <h2 id="previewGalleryTitle">Lo que Conocerás en el Recorrido Presencial</h2>
+          <div class="visitas-section-sub">Instalaciones reales del Liceo Domingo Herrera Rivera B-13</div>
+        </div>
+      </div>
+      <a href="galeria-real.html" class="tool-btn" style="text-decoration:none;font-weight:700;">
+        📸 Ver Galería Real Completa (28 Registros) ➤
+      </a>
+    </div>
+
+    <div class="visitas-sneak-grid">
+      <div class="visitas-sneak-item">
+        <img src="assets/img/real/porton_lapices_mural.jpg" alt="Portón de Lápices y Mural Granja B-13" class="visitas-sneak-img" loading="lazy">
+        <div class="visitas-sneak-caption">🎨 Portón de Bienvenida y Mural de Lápices B-13</div>
+      </div>
+
+      <div class="visitas-sneak-item">
+        <img src="assets/img/real/conejos_caricia_estudiantes.jpg" alt="Estudiantes acariciando a los conejos" class="visitas-sneak-img" loading="lazy">
+        <div class="visitas-sneak-caption">🐇 Interacción Supervisada con Conejos</div>
+      </div>
+
+      <div class="visitas-sneak-item">
+        <img src="assets/img/real/huerto_pozo_panoramica.jpg" alt="Panorámica del huerto escolar y pozo pedagógico" class="visitas-sneak-img" loading="lazy">
+        <div class="visitas-sneak-caption">🌿 Huerto Escolar y Pozo Pedagógico</div>
+      </div>
+
+      <div class="visitas-sneak-item">
+        <img src="assets/img/real/gallinero_cleo_hd.jpg" alt="Corral de gallinas y gallitos japoneses" class="visitas-sneak-img" loading="lazy">
+        <div class="visitas-sneak-caption">🐔 Corral de Gallinas Enanas y Gallitos</div>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<!-- ==================== MODAL DE CONFIRMACIÓN & DERIVACIÓN A CORREO ==================== -->
+<div class="visitas-modal-overlay" id="visitaModal" role="dialog" aria-modal="true" aria-labelledby="visitaModalTitle">
+  <div class="visitas-modal-card">
+    <div class="visitas-modal-head">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <span style="font-size:2.2rem;">🎉</span>
+        <div>
+          <h2 id="visitaModalTitle" style="font-family:'Fraunces',serif;margin:0;font-size:1.35rem;color:var(--grass-dark,#3B5832);">
+            ¡Solicitud Registrada con Éxito!
+          </h2>
+          <div style="font-size:0.8rem;color:var(--ink);font-weight:700;">
+            Liceo Domingo Herrera Rivera B-13 · La Granja B-13
+          </div>
+        </div>
+      </div>
+      <button class="visitas-modal-close" id="btnCerrarModal" type="button" aria-label="Cerrar modal">✕</button>
+    </div>
+
+    <p style="font-size:0.92rem;line-height:1.5;margin-bottom:12px;color:var(--ink);">
+      Tu solicitud de recorrido guiado ha sido validada y registrada correctamente en la plataforma. Como estamos en la <b>versión demostrativa</b>, tu requerimiento fue archivado con el siguiente comprobante institucional:
+    </p>
+
+    <!-- Comprobante / Voucher -->
+    <div class="visitas-modal-voucher" id="modalVoucherBox">
+      <div class="visitas-voucher-row">
+        <span class="lbl">Código de Seguimiento:</span>
+        <span class="val" id="voucherCodigo" style="font-family:'Space Mono',monospace;font-weight:700;color:var(--hay);">#VIS-B13-0000</span>
+      </div>
+      <div class="visitas-voucher-row">
+        <span class="lbl">Responsable:</span>
+        <span class="val" id="voucherNombre">--</span>
+      </div>
+      <div class="visitas-voucher-row">
+        <span class="lbl">Institución:</span>
+        <span class="val" id="voucherInstitucion">--</span>
+      </div>
+      <div class="visitas-voucher-row">
+        <span class="lbl">Fecha y Horario:</span>
+        <span class="val" id="voucherFechaHorario">--</span>
+      </div>
+      <div class="visitas-voucher-row">
+        <span class="lbl">Grupo & Cantidad:</span>
+        <span class="val" id="voucherGrupoCantidad">--</span>
+      </div>
+      <div class="visitas-voucher-row">
+        <span class="lbl">Contacto:</span>
+        <span class="val" id="voucherContacto">--</span>
+      </div>
+      <div class="visitas-voucher-row">
+        <span class="lbl">Enfoque:</span>
+        <span class="val" id="voucherEnfoque">--</span>
+      </div>
+      <div class="visitas-voucher-row" style="border-bottom:none;">
+        <span class="lbl">Estado Demo:</span>
+        <span class="val" style="color:#059669;font-weight:700;">🟢 Recibida & Registrada</span>
+      </div>
+    </div>
+
+    <p style="font-size:0.86rem;line-height:1.45;color:#555;margin-bottom:16px;">
+      💡 <b>¿Quieres derivar formalmente esta solicitud por correo?</b> Toca el botón a continuación para abrir tu cliente de correo (Gmail, Outlook, etc.) con todos los datos ordenados y listos para enviar a la docente coordinadora del proyecto.
+    </p>
+
+    <!-- Acciones del Modal -->
+    <div class="visitas-modal-actions">
+      <a href="#" class="visitas-btn-mail" id="btnMailtoModal" target="_blank" rel="noopener noreferrer">
+        <span>📧</span> Enviar Borrador al Correo
+      </a>
+      <button type="button" class="visitas-btn-copy" id="btnCopiarResumen">
+        <span>📋</span> Copiar Resumen
+      </button>
+      <button type="button" class="visitas-btn-dismiss" id="btnImprimirComprobante">
+        <span>🖨️</span> Imprimir Comprobante
+      </button>
+      <button type="button" class="visitas-btn-dismiss" id="btnCerrarModalBottom">
+        ✓ Entendido / Volver
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Elemento global de notificación flotante (Toast) -->
+<div class="toast" id="toast"></div>
+
+<!-- Scripts de la Plataforma -->
+<script src="js/data.js"></script>
+<script src="js/audio.js"></script>
+<script src="js/state.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/visitas-app.js"></script>
+</body>
+</html>

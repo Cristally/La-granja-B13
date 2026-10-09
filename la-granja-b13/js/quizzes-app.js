@@ -422,6 +422,7 @@
 
   function startQuizPlayer(quizItem) {
     isQuizActive = true;
+    window.isQuizPlayerActive = true;
     activeQuizItem = quizItem;
     activeQuestions = quizItem.questions;
     currentQuestionIdx = 0;
@@ -492,8 +493,8 @@
       const letters = ['A', 'B', 'C', 'D'];
       optsList.innerHTML = q.options.map((opt, i) => `
         <button type="button" class="quiz-option-btn" data-opt="${i}">
-          <b style="color:#2563eb;font-family:'Space Mono',monospace;">${letters[i]})</b>
-          <span>${opt}</span>
+          <span class="quiz-option-badge">${letters[i]}</span>
+          <span class="quiz-option-text">${opt}</span>
         </button>
       `).join('');
 
@@ -580,14 +581,34 @@
     const overlay = document.getElementById('quizPlayerOverlay');
     if (overlay) {
       overlay.addEventListener('click', e => {
-        if (isQuizActive) {
-          // No permitir salir si el quiz está en curso
+        // Si el clic fue adentro de la tarjeta del modal y no es el botón de cerrar, permitir interacción interna
+        if (e.target.closest('.quiz-player-modal') && !e.target.classList.contains('close-btn')) {
           return;
         }
+
+        if (isQuizActive) {
+          // Bloqueo estricto: El estudiante NO puede salir haciendo clic fuera del modal
+          e.preventDefault();
+          e.stopPropagation();
+          e.stopImmediatePropagation();
+
+          const modal = overlay.querySelector('.quiz-player-modal');
+          if (modal) {
+            modal.classList.remove('modal-shake');
+            void modal.offsetWidth;
+            modal.classList.add('modal-shake');
+            setTimeout(() => modal.classList.remove('modal-shake'), 400);
+          }
+          if (typeof showToast === 'function') {
+            showToast('⚠️ No puedes salir del desafío hasta responder todas las preguntas.', 2500);
+          }
+          return false;
+        }
+
         if (e.target === overlay || e.target.classList.contains('close-btn')) {
           closeQuizPlayerAndUnlock();
         }
-      });
+      }, true); // Capture phase para interceptar antes de cualquier otro listener
     }
 
     // Bloqueo de tecla Escape mientras el quiz está activo
@@ -712,6 +733,7 @@
   // Cerrar el modal y desbloquear al estudiante tras presionar Finalizar
   function closeQuizPlayerAndUnlock() {
     isQuizActive = false;
+    window.isQuizPlayerActive = false;
     const overlay = document.getElementById('quizPlayerOverlay');
     if (overlay) {
       overlay.classList.remove('open');

@@ -17,6 +17,7 @@
     <a href="mapa.html">🗺️ Mapa<span class="nav-extra-text"> de la Granja</span></a>
     <a href="quizzes.html">⭐ Desafíos</a>
     <a href="galeria-real.html">📸 Granja Real<span class="nav-extra-text"> B-13</span></a>
+    <a href="visitas.html">🚜 Visitas Guiadas<span class="nav-extra-text"> B-13</span></a>
     <a href="juegos.html">🎮 Juegos<span class="nav-extra-text"> en la Granja</span></a>
     <a href="muro.html">💬 Muro</a>
     <button id="navBtnCambiarModo" class="nav-switch-btn" type="button" title="Cerrar sesión actual">🚪 Cerrar Sesión</button>
@@ -128,6 +129,9 @@
             <a href="galeria-real.html" class="derivation-btn" title="Ir a la Galería Fotográfica Real">
               <span>📸</span> Granja Real B-13
             </a>
+            <a href="visitas.html" class="derivation-btn" title="Solicitar Recorrido Guiado por la Granja Real B-13">
+              <span>🚜</span> Visitas Guiadas
+            </a>
             <a href="juegos.html" class="derivation-btn" title="Ir a los Juegos y Desafíos">
               <span>🎮</span> Juega en la Granja
             </a>
@@ -215,8 +219,6 @@
     <div class="tool-buttons">
       <button id="dayNightBtn" class="tool-btn" type="button" title="Alternar ciclo Día y Noche">🌙 Noche</button>
       <button id="leaderboardBtn" class="tool-btn leaderboard-tool-btn" type="button" title="Ver Salón de Honor y Ranking">🏆 Ranking</button>
-      <button id="achievementsBtn" class="tool-btn" type="button">🎖️ Logros</button>
-      <button id="rulesBtn" class="tool-btn" type="button">📋 Normas</button>
       <a href="perfil.html" class="tool-btn btn-mi-perfil" id="btnMiPerfil" title="Ver mi Cuaderno de Campo, perfil y credencial escolar">👤 Mi Perfil</a>
       <button id="soundBtn" class="tool-btn" type="button">🔊 Sonido</button>
       <button id="teacherBtn" class="tool-btn" type="button" style="display:none;">👩‍🏫 Panel docente</button>
@@ -245,26 +247,7 @@
   </div>
   <div class="legend">Cada animal camina libremente por el potrero virtual del liceo B-13. Al observarlo y tocarlo te dirá pistas y curiosidades de campo para preparar tus desafíos.</div>
 
-  <!-- Vitrina de Logros e Insignias B-13 (Diseño Gamificado y Ordenado) -->
-  <section class="badges-showcase-card" id="badgesShowcaseCard">
-    <div class="badges-showcase-header">
-      <div class="badges-showcase-title-wrap">
-        <span class="badges-showcase-icon">🎖️</span>
-        <div>
-          <h3 class="badges-showcase-title">Vitrina de Logros e Insignias</h3>
-          <p class="badges-showcase-subtitle">Explora la granja, supera desafíos y desbloquea tus medallas escolares</p>
-        </div>
-      </div>
-      <div class="badges-showcase-actions">
-        <div class="badges-progress-pill" id="badgesProgressPill">
-          <span class="badges-progress-icon">🏆</span>
-          <span class="badges-count-text"><b id="badgesEarnedCount">0</b> / <span id="badgesTotalCount">14</span> Desbloqueadas</span>
-        </div>
-        <a href="perfil.html" class="badges-view-profile-btn" title="Ver mi Cuaderno de Campo y vitrina completa">Ver Perfil ➔</a>
-      </div>
-    </div>
-    <div class="badges-bar" id="badgesBar"></div>
-  </section>
+
 
   <footer class="ods">
     Vinculado a ODS 4 (Educación de calidad) y ODS 15 (Vida de ecosistemas terrestres). Proyecto <b>La Granja B13</b> — Go Innova, Hecho Proyecto B-13.
@@ -311,27 +294,6 @@
   </div>
 </div>
 
-<!-- Normas de la granja -->
-<div class="overlay" id="rulesOverlay">
-  <div class="card rules-card">
-    <button class="close-btn" data-close="rulesOverlay" aria-label="Cerrar">✕</button>
-    <div class="card-head" style="flex-direction:column;align-items:center;text-align:center;gap:4px;padding-bottom:6px;">
-      <div class="rules-badge-pill">🌱 CUIDADO Y BIENESTAR ANIMAL · ODS 15</div>
-      <h2 style="font-family:'Fraunces',serif;color:#14532d;font-size:1.4rem;margin:0;">Antes de Visitar La Granja B-13</h2>
-      <div class="lat" style="color:#64748b;font-size:0.86rem;">Guía de convivencia, respeto y bioseguridad para estudiantes y visitas</div>
-    </div>
-    <div class="card-body" style="padding-top:4px;">
-      <div id="rulesList"></div>
-      <div class="rules-save-note">
-        ✨ <b>Compromiso Escolar:</b> Practicar estas normas protege a nuestras especies y asegura un entorno educativo armónico.
-      </div>
-      <button type="button" class="rules-accept-btn" id="rulesAcceptBtn">
-        <span>🌟</span> ¡Entendido! Me Comprometo a Cuidar la Granja
-      </button>
-    </div>
-  </div>
-</div>
-
 <!-- Panel docente -->
 <div class="overlay" id="teacherOverlay">
   <div class="card">
@@ -360,45 +322,6 @@
     </div>
     <div class="card-body">
       <p id="finalMessage" class="final-message"></p>
-    </div>
-  </div>
-</div>
-
-<!-- Modal de Lista Vertical de Logros e Insignias -->
-<div class="overlay" id="achievementsOverlay">
-  <div class="card">
-    <button class="close-btn" data-close="achievementsOverlay" aria-label="Cerrar">✕</button>
-    <div class="card-head">
-      <div class="big-sprite">🏆</div>
-      <div>
-        <h2>Cuaderno de Logros e Insignias</h2>
-        <div class="lat">Desafíos y metas de aprendizaje en La Granja B13</div>
-      </div>
-    </div>
-    <div class="card-body">
-      <div class="achievements-vertical-list" id="achievementsList"></div>
-    </div>
-  </div>
-</div>
-
-<!-- Modal de Información Individual de Insignia -->
-<div class="overlay" id="badgeOverlay">
-  <div class="card small-card">
-    <button class="close-btn" data-close="badgeOverlay" aria-label="Cerrar">✕</button>
-    <div class="card-head">
-      <div class="big-sprite" id="badgeModalIcon">🏆</div>
-      <div>
-        <h2 id="badgeModalTitle">Insignia</h2>
-        <div class="lat" id="badgeModalStatus">Estado del logro</div>
-      </div>
-    </div>
-    <div class="card-body">
-      <div class="stamp" id="badgeModalStamp">LOGRO DE CAMPO</div>
-      <p id="badgeModalDesc" style="font-size:0.92rem;line-height:1.5;margin:10px 0 14px;"></p>
-      <div id="badgeModalHint" style="font-size:0.82rem;color:var(--grass-dark);margin-bottom:14px;background:var(--paper-dark);padding:9px 12px;border-radius:4px;border-left:3px solid var(--hay);"></div>
-      <button class="tool-btn" data-close="badgeOverlay" type="button" style="width:100%;padding:10px;background:var(--hay);color:var(--ink);font-weight:700;font-size:0.88rem;">
-        ✓ Entendido
-      </button>
     </div>
   </div>
 </div>
