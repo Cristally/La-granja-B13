@@ -481,13 +481,6 @@
           </button>
         </div>
       </div>
-
-      <div class="ficha-fact-card full-col" style="background:#f0f9ff;border:1.5px solid #0284c7;text-align:center;padding:16px;">
-        <p style="margin:0 0 10px;font-size:0.86rem;color:#0369a1;font-weight:700;">¿Tienes dudas o hiciste una observación interesante sobre ${a.name}?</p>
-        <button type="button" class="tool-btn" id="btnFichaComment_${a.id}" style="padding:10px 20px;font-size:0.88rem;font-weight:700;background:#0284c7;color:#fff;border-radius:8px;cursor:pointer;border:none;box-shadow:0 2px 4px rgba(2,132,199,0.25);">
-          💬 Abrir Muro Comunitario para ${a.name}
-        </button>
-      </div>
     `;
 
     const btnHandling = document.getElementById(`btnGoTabHandling_${a.id}`);
@@ -501,15 +494,6 @@
     if (btnDict) {
       btnDict.addEventListener('click', () => {
         switchFichaTab('dictionary');
-      });
-    }
-
-    const cBtn = document.getElementById(`btnFichaComment_${a.id}`);
-    if (cBtn) {
-      cBtn.addEventListener('click', () => {
-        if (typeof openCommentsModal === 'function') {
-          openCommentsModal(a.id);
-        }
       });
     }
   }

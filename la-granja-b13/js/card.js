@@ -31,10 +31,6 @@ function openOverlayId(id) {
     window.location.href = 'perfil.html';
     return;
   }
-  if (id === 'commentsOverlay') {
-    window.location.href = 'muro.html';
-    return;
-  }
 
   const el = document.getElementById(id);
   if (el) {
@@ -1462,13 +1458,6 @@ function renderFicha(a) {
         </div>
       </div>
 
-      <!-- Botón directo al Muro Comunitario de la Granja -->
-      <div style="margin:10px 0 14px;">
-        <button type="button" class="tool-btn" id="cardCommentBtn_${a.id}" style="width:100%;padding:10px;background:#f0f9ff;border:1.5px solid #0284c7;color:#0369a1;font-weight:700;border-radius:8px;font-size:0.86rem;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;">
-          <span>💬</span> Preguntar o Dejar Observación sobre ${a.name} en el Muro
-        </button>
-      </div>
-
       <!-- Grilla de Fichas Zootécnicas y Científicas -->
       <div class="facts-grid">
         <div class="fact-card full-width">
@@ -1640,13 +1629,6 @@ function renderFicha(a) {
         jokeAudioBtn.disabled = false;
         jokeAudioBtn.style.opacity = '1';
       }
-    });
-  }
-
-  const cardCommentBtn = document.getElementById(`cardCommentBtn_${a.id}`);
-  if (cardCommentBtn) {
-    cardCommentBtn.addEventListener('click', () => {
-      openCommentsModal(a.id);
     });
   }
 
@@ -3223,8 +3205,7 @@ function fallbackReplyLocally(cid, replyData) {
 }
 
 function openCommentsModal(animalId) {
-  const targetUrl = 'muro.html' + (animalId ? `?animal=${encodeURIComponent(animalId)}` : '');
-  window.location.href = targetUrl;
+  // Muro comunitario retirado a solicitud
 }
 
 window.openCommentsModal = openCommentsModal;
