@@ -18,13 +18,13 @@ const DEFAULT_Y_POSITIONS = {
   agapornis: 156   // Plano alto (cielo bajo / pradera alta)
 };
 
-// Sectores preferentes de patrullaje horizontal para mantener a los animales separados y facilitar su toque en móvil
+// Sectores preferentes de patrullaje horizontal para mantener a los animales con espacio de movimiento amplio
 const ANIMAL_SECTORS = {
-  gallo:     { min: 0.04, max: 0.36 },
-  gallina:   { min: 0.20, max: 0.54 },
-  conejo:    { min: 0.38, max: 0.72 },
-  catita:    { min: 0.56, max: 0.90 },
-  agapornis: { min: 0.32, max: 0.86 }
+  gallo:     { min: 0.04, max: 0.48 },
+  gallina:   { min: 0.16, max: 0.65 },
+  conejo:    { min: 0.28, max: 0.78 },
+  catita:    { min: 0.45, max: 0.92 },
+  agapornis: { min: 0.20, max: 0.85 }
 };
 
 function getAnimalTargetX(animalId, availW) {
@@ -123,7 +123,7 @@ if (stage) {
     const sectorMid = (sector.min + sector.max) / 2;
     a.x = 8 + sectorMid * availW;
     a.targetX = getAnimalTargetX(a.id, availW);
-    a.speed = 0.20 + Math.random() * 0.16;
+    a.speed = 0.65 + Math.random() * 0.35;
     el.style.left = a.x + 'px';
   });
 }
@@ -169,7 +169,7 @@ function showSpeechBubble(animalId, customText) {
   el._bubbleTimer = setTimeout(() => {
     bubble.classList.add('fade-out');
     setTimeout(() => bubble.remove(), 400);
-  }, 4200);
+  }, 9000);
 }
 window.showSpeechBubble = showSpeechBubble;
 
@@ -183,7 +183,7 @@ function speakRandomCuriosity() {
   const chosen = wakingAnimals[Math.floor(Math.random() * wakingAnimals.length)];
   showSpeechBubble(chosen.id);
 }
-setInterval(speakRandomCuriosity, 8500);
+setInterval(speakRandomCuriosity, 11000);
 
 function refreshSprite(a) {
   const el = sprites[a.id];
@@ -292,9 +292,9 @@ function animate() {
       // De noche los animales descansan y no caminan
       if (isNightMode || a.paused || a.hovered) return;
       const dx = a.targetX - a.x;
-      if (Math.abs(dx) < 3) {
+      if (Math.abs(dx) < 4) {
         a.targetX = getAnimalTargetX(a.id, availW);
-        a.pauseTimer = 20 + Math.random() * 45;
+        a.pauseTimer = 15 + Math.random() * 30;
       }
       if (a.pauseTimer > 0) { a.pauseTimer--; return; }
       const dir = dx > 0 ? 1 : -1;
@@ -304,18 +304,18 @@ function animate() {
       if (a.x < minX) { a.x = minX; a.targetX = getAnimalTargetX(a.id, availW); }
       if (a.x > maxX) { a.x = maxX; a.targetX = getAnimalTargetX(a.id, availW); }
 
-      // Separación suave entre animales para evitar que se superpongan al tocar en móvil
+      // Separación suave entre animales para evitar que se superpongan exactamente
       POTRERO_ANIMALS.forEach(other => {
         if (other.id !== a.id) {
           const horizDist = Math.abs(a.x - other.x);
           const yA = DEFAULT_Y_POSITIONS[a.id] || 0;
           const yO = DEFAULT_Y_POSITIONS[other.id] || 0;
           const vertDist = Math.abs(yA - yO);
-          if (horizDist < 52 && vertDist < 42) {
+          if (horizDist < 36 && vertDist < 25) {
             if (a.x < other.x) {
-              a.x = Math.max(minX, a.x - 0.25);
+              a.x = Math.max(minX, a.x - 0.08);
             } else {
-              a.x = Math.min(maxX, a.x + 0.25);
+              a.x = Math.min(maxX, a.x + 0.08);
             }
           }
         }

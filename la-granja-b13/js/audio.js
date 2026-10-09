@@ -70,16 +70,17 @@ function isSoundOn() {
 }
 
 let realAudioEl = null;
-function playRealSound(src) {
-  if (!src || !isSoundOn()) return;
+function playRealSound(src, force = false) {
+  if (!src) return;
+  if (!force && !isSoundOn()) return;
   if (typeof trackAnimalSound === 'function' && !src.includes('victoria')) {
     trackAnimalSound(src);
   }
   try {
     if (realAudioEl) { realAudioEl.pause(); }
     realAudioEl = new Audio(src);
-    // Volumen atenuado y confortable (22%) para proteger oídos de estudiantes
-    realAudioEl.volume = 0.22;
+    // Volumen óptimo y claro (50%) para parlantes de laptops y celulares
+    realAudioEl.volume = 0.50;
     realAudioEl.play().catch(() => {});
   } catch (e) {
     // Fallback silencioso si el navegador bloquea autoplay

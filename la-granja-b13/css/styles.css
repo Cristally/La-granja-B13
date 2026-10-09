@@ -149,7 +149,7 @@ body.theme-dark .nav-switch-btn {
   border-color: #8d4f24;
 }
 .app{
-  max-width:900px;
+  max-width:1060px;
   margin:0 auto;
   padding:22px 20px 50px;
 }
@@ -1313,11 +1313,28 @@ footer.ods{
 /* ============================================================
    Navegación entre vistas (Potrero / Mapa de la Granja)
    ============================================================ */
-.view-nav{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:14px;}
+.view-nav{
+  display:flex;
+  align-items:center;
+  flex-wrap:nowrap;
+  gap:7px;
+  margin-bottom:14px;
+  width:100%;
+  box-sizing:border-box;
+}
 .view-nav a{
-  font-family:'Karla',sans-serif;font-weight:700;font-size:0.8rem;text-decoration:none;
-  color:var(--ink);background:var(--paper-dark);border:2px solid var(--ink);border-radius:20px;
-  padding:6px 14px;transition:all 0.15s ease;
+  font-family:'Karla',sans-serif;
+  font-weight:700;
+  font-size:0.81rem;
+  text-decoration:none;
+  color:var(--ink);
+  background:var(--paper-dark);
+  border:2px solid var(--ink);
+  border-radius:20px;
+  padding:6px 11px;
+  transition:all 0.15s ease;
+  white-space:nowrap;
+  flex-shrink:0;
 }
 .view-nav a.active{background:var(--ink);color:var(--paper);}
 .view-nav a:hover:not(.active){background:#fff;}
@@ -1328,16 +1345,35 @@ footer.ods{
   color: #ffd83d;
   border: 2px solid #ffd83d;
   border-radius: 20px;
-  padding: 6px 14px;
+  padding: 6px 12px;
   font-family: 'Karla', sans-serif;
-  font-size: 0.82rem;
+  font-size: 0.81rem;
   font-weight: 700;
   cursor: pointer;
   transition: all 0.18s ease;
   display: inline-flex;
   align-items: center;
   gap: 6px;
+  white-space: nowrap;
+  flex-shrink: 0;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.22);
+}
+
+@media (max-width: 960px) and (min-width: 681px) {
+  .view-nav {
+    gap: 5px;
+  }
+  .view-nav a {
+    padding: 5px 8px;
+    font-size: 0.77rem;
+  }
+  .nav-switch-btn {
+    padding: 5px 9px;
+    font-size: 0.77rem;
+  }
+  .nav-extra-text {
+    display: none;
+  }
 }
 .nav-switch-btn:hover {
   background: #961637;

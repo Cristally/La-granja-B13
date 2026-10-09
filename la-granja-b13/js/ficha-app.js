@@ -332,7 +332,7 @@
         soundBtn.style.color = '#ffffff';
         soundBtn.style.boxShadow = `0 4px 12px ${glowColor}`;
         soundBtn.onclick = () => {
-          if (typeof playRealSound === 'function') playRealSound(a.sound);
+          if (typeof playRealSound === 'function') playRealSound(a.sound, true);
         };
       } else {
         soundBtn.style.display = 'none';
