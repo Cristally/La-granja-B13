@@ -1097,7 +1097,7 @@ function renderBadgesBar() {
   if (totalEl) totalEl.textContent = String(totalOfficial);
 
   const officialHtml = BADGES.map(b => {
-    const earned = state.badges.includes(b.id);
+    const earned = (state.badges || []).includes(b.id);
     return `
       <button type="button" class="badge${earned ? ' earned' : ''}" data-badge="${b.id}" title="${b.label}: ${b.desc}">
         <span class="badge-icon-box">${b.icon}</span>

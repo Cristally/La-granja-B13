@@ -562,10 +562,10 @@ body.bg-is-dark header.top {
   box-shadow: 3px 3px 0 var(--ink);
 }
 
-/* Grilla organizada y armónica de insignias */
+/* Grilla organizada y armónica de insignias (Vitrina B-13) */
 .badges-bar {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  grid-template-columns: repeat(3, 1fr);
   gap: 10px;
   margin: 0 auto;
   max-width: 100%;
@@ -577,51 +577,58 @@ body.bg-is-dark header.top {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 10px;
-  border: 1.5px solid #e2e8f0;
-  border-radius: 12px;
-  padding: 8px 12px;
-  font-size: 0.8rem;
-  font-weight: 700;
-  background: #ffffff;
-  color: #334155;
-  cursor: pointer;
-  opacity: 0.88;
-  filter: none;
-  transition: all 0.18s ease;
-  font-family: 'Karla', sans-serif;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
-  text-align: left;
+  gap: 8px;
+  width: 100%;
+  min-width: 0;
   min-height: 52px;
+  height: 100%;
+  border: 2px solid var(--ink);
+  border-radius: 24px;
+  padding: 6px 12px;
+  font-family: 'Karla', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 700;
+  background: var(--paper-dark);
+  color: var(--ink);
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+  box-shadow: 1px 2px 0 rgba(40, 49, 27, 0.12);
+  text-align: left;
   box-sizing: border-box;
 }
 
 .badge:hover {
-  transform: translateY(-2px);
-  opacity: 1;
   background: #ffffff;
-  border-color: #94a3b8;
-  box-shadow: 0 5px 14px rgba(0, 0, 0, 0.08);
+  transform: translateY(-1.5px);
+  box-shadow: 2px 3px 0 rgba(40, 49, 27, 0.18);
 }
 
 .badge.earned {
-  opacity: 1;
-  background: linear-gradient(135deg, #ffffff 0%, #f0fdf4 100%);
-  border: 1.5px solid #86efac;
-  box-shadow: 0 2px 8px rgba(34, 197, 94, 0.12);
-  color: #14532d;
+  background: #E3F0D8;
+  border-color: var(--grass-dark);
+  color: var(--grass-dark);
+  box-shadow: 2px 2px 0 rgba(67, 94, 58, 0.25);
 }
 
 .badge.earned:hover {
-  border-color: #22c55e;
-  box-shadow: 0 6px 16px rgba(34, 197, 94, 0.22);
+  background: #ecf8e5;
+  border-color: #1b381a;
+  transform: translateY(-1.5px);
+  box-shadow: 2px 4px 0 rgba(67, 94, 58, 0.35);
 }
 
 .badge.secret-badge {
-  background: linear-gradient(135deg, #ffffff 0%, #fffbeb 100%) !important;
-  border: 1.5px solid #fde047 !important;
-  box-shadow: 0 2px 8px rgba(234, 179, 8, 0.15) !important;
+  background: #fffdf0 !important;
+  border: 2px solid #eab308 !important;
   color: #854d0e !important;
+  box-shadow: 2px 2px 0 rgba(202, 138, 4, 0.2) !important;
+}
+
+.badge.secret-badge:hover {
+  background: #ffffff !important;
+  border-color: #ca8a04 !important;
+  transform: translateY(-1.5px);
+  box-shadow: 2px 4px 0 rgba(202, 138, 4, 0.3) !important;
 }
 
 .badge-icon-box {
@@ -630,44 +637,62 @@ body.bg-is-dark header.top {
   justify-content: center;
   width: 32px;
   height: 32px;
-  border-radius: 8px;
-  background: #f1f5f9;
-  font-size: 1.2rem;
+  min-width: 32px;
+  border-radius: 9px;
+  background: #ffffff;
+  border: 1px solid rgba(40, 49, 27, 0.18);
+  font-size: 1.15rem;
   flex-shrink: 0;
-  border: 1px solid #e2e8f0;
+  box-sizing: border-box;
 }
 
 .badge.earned .badge-icon-box {
   background: #dcfce7;
-  border-color: #bbf7d0;
+  border-color: #86efac;
+}
+
+.badge.secret-badge .badge-icon-box {
+  background: #fef08a !important;
+  border-color: #fde047 !important;
 }
 
 .badge-info-wrap {
   display: flex;
   flex-direction: column;
+  justify-content: center;
   flex: 1;
   min-width: 0;
   gap: 1px;
+  text-align: left;
 }
 
 .badge-label {
+  font-family: 'Karla', sans-serif;
   font-weight: 700;
-  font-size: 0.8rem;
+  font-size: 0.79rem;
+  line-height: 1.2;
+  white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
-  line-height: 1.25;
+  color: inherit;
 }
 
 .badge-status-sub {
-  font-size: 0.68rem;
+  font-size: 0.67rem;
   font-weight: 600;
-  color: #94a3b8;
   line-height: 1.1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #64748b;
 }
 
 .badge.earned .badge-status-sub {
-  color: #16a34a;
+  color: #15803d;
+}
+
+.badge.secret-badge .badge-status-sub {
+  color: #b45309 !important;
 }
 
 .badge-state-icon {
@@ -676,15 +701,22 @@ body.bg-is-dark header.top {
   justify-content: center;
   width: 22px;
   height: 22px;
+  min-width: 22px;
   border-radius: 50%;
   flex-shrink: 0;
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
+  background: rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(40, 49, 27, 0.2);
+  box-sizing: border-box;
 }
 
 .badge.earned .badge-state-icon {
   background: #22c55e;
-  border-color: #16a34a;
+  border-color: #15803d;
+}
+
+.badge.secret-badge .badge-state-icon {
+  background: #eab308 !important;
+  border-color: #ca8a04 !important;
 }
 
 .badge-check {
@@ -692,15 +724,6 @@ body.bg-is-dark header.top {
   font-weight: 900;
   font-size: 0.72rem;
   line-height: 1;
-}
-
-.badge.secret-badge .badge-check {
-  color: #ffffff;
-}
-
-.badge.secret-badge .badge-state-icon {
-  background: #eab308;
-  border-color: #ca8a04;
 }
 
 .badge-lock {
@@ -729,9 +752,17 @@ body.bg-is-dark header.top {
   transform: translateY(-1px);
 }
 
-@media (max-width: 640px) {
+@media (max-width: 900px) {
+  .badges-bar {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+}
+
+@media (max-width: 580px) {
   .badges-bar {
     grid-template-columns: 1fr;
+    gap: 8px;
   }
   .badges-showcase-card {
     padding: 14px;
@@ -1223,17 +1254,6 @@ body.bg-is-dark header.top {
   background:var(--paper-dark);color:#666;border:1px solid #aaa;
 }
 
-/* ---------- Barra de Insignias ---------- */
-.badges-bar{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:16px;}
-.badge{
-  display:inline-flex;align-items:center;gap:6px;background:var(--paper-dark);
-  border:2px solid var(--ink);border-radius:20px;padding:6px 12px;
-  font-family:'Karla',sans-serif;font-size:0.78rem;font-weight:700;
-  cursor:pointer;color:var(--ink);transition:all .15s ease;
-  box-shadow: 1px 2px 0 rgba(40,49,27,0.12);
-}
-.badge:hover{background:#fff;transform:translateY(-1px);}
-.badge.earned{background:#E3F0D8;border-color:var(--grass-dark);box-shadow: 2px 2px 0 rgba(67,94,58,0.25);}
 
 /* ---------- Panel docente ---------- */
 .teacher-summary{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:14px;}
@@ -1532,39 +1552,41 @@ footer.ods{
     white-space:normal;box-sizing:border-box;
   }
   
-  /* 3. Logros / Insignias de abajo: de dos en dos compacto y centralizado (grilla 2x3) */
-  .badges-bar{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:6px;
-    width:100%;
-    box-sizing:border-box;
-    margin-top:16px;
+  /* 3. Logros / Insignias en pantalla pequeña */
+  .badges-bar {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    width: 100%;
+    box-sizing: border-box;
+    margin-top: 0;
   }
-  .badge{
-    width:100%;
-    box-sizing:border-box;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    padding:7px 8px;
-    font-size:0.72rem;
-    min-width:0;
-    border-radius:6px;
+  .badge {
+    width: 100%;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 10px;
+    font-size: 0.74rem;
+    min-width: 0;
+    border-radius: 20px;
+    min-height: 48px;
   }
-  .badge .ic{font-size:0.95rem;flex-shrink:0;}
-  .badge .badge-label{
-    flex:1;
-    min-width:0;
-    overflow:hidden;
-    text-overflow:ellipsis;
-    white-space:nowrap;
-    margin:0 4px;
-    text-align:left;
+  .badge .badge-label {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-align: left;
   }
-  .badge .badge-check, .badge .badge-lock{
-    font-size:0.75rem;
-    flex-shrink:0;
+}
+
+@media (max-width: 520px) {
+  .badges-bar {
+    grid-template-columns: 1fr;
+    gap: 8px;
   }
 }
 
@@ -5346,32 +5368,195 @@ body.rol-admin .badges-bar {
 .ficha-hero-photo-wrap {
   position: relative;
   width: 100%;
-  aspect-ratio: 1 / 1;
-  max-width: 240px;
+  max-width: 250px;
   margin: 0 auto;
   border-radius: 18px;
-  overflow: hidden;
   border: 3.5px solid var(--animal-accent, var(--ink));
   box-shadow: 0 8px 24px var(--animal-glow, rgba(40,49,27,0.2));
-  background: #fff;
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px;
+  gap: 8px;
+  transition: border-color 0.4s ease, box-shadow 0.4s ease;
+}
+
+.ficha-photo-mode-switcher {
+  display: flex;
+  width: 100%;
+  background: #f1f5f9;
+  padding: 3px;
+  border-radius: 12px;
+  gap: 4px;
+  border: 1px solid #cbd5e1;
+}
+
+.ficha-photo-mode-btn {
+  flex: 1;
+  padding: 6px 4px;
+  font-size: 0.76rem;
+  font-weight: 700;
+  border: none;
+  border-radius: 9px;
+  background: transparent;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.25s ease;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: border-color 0.4s ease, box-shadow 0.4s ease;
+  gap: 3px;
+  line-height: 1.2;
+}
+
+.ficha-photo-mode-btn .badge-sub-primary {
+  font-size: 0.65rem;
+  opacity: 0.9;
+}
+
+.ficha-photo-mode-btn.active {
+  background: var(--animal-theme-color, #78350f);
+  color: #ffffff;
+  box-shadow: 0 2px 8px var(--animal-glow, rgba(0,0,0,0.2));
+}
+
+.ficha-img-stage {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 14px;
+  overflow: hidden;
+  background: radial-gradient(circle, #ffffff 45%, #f8fafc 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1.5px solid #e2e8f0;
 }
 
 .ficha-hero-photo {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
+  display: block;
+  transition: transform 0.35s ease, opacity 0.25s ease;
+}
+
+.ficha-hero-photo.mode-real {
+  image-rendering: auto;
+  object-fit: contain;
+  background: radial-gradient(circle, #ffffff 50%, #fef8ee 100%);
+}
+
+.ficha-hero-photo.mode-pixel {
   image-rendering: pixelated;
   image-rendering: crisp-edges;
-  display: block;
-  transition: transform 0.35s ease;
+  object-fit: contain;
+  background: radial-gradient(circle, #ffffff 50%, #f0fdf4 100%);
+}
+
+.ficha-photo-mode-label {
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: var(--animal-theme-color, var(--ink));
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  text-align: center;
 }
 
 .ficha-hero-photo:hover {
-  transform: scale(1.05);
+  transform: scale(1.04);
+}
+
+/* Tarjeta Duo Galería: Comparación Realista vs Pixel Art */
+.ficha-duo-gallery-card {
+  background: #ffffff;
+}
+
+.ficha-duo-gallery-wrap {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-top: 10px;
+}
+
+@media (max-width: 580px) {
+  .ficha-duo-gallery-wrap {
+    grid-template-columns: 1fr;
+  }
+}
+
+.ficha-duo-item {
+  background: #fafaf9;
+  border: 2px solid #e7e5e4;
+  border-radius: 14px;
+  padding: 12px;
+  text-align: center;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.ficha-duo-item.selected {
+  border-color: var(--animal-accent, #b45309);
+  box-shadow: 0 6px 18px var(--animal-glow, rgba(180,83,9,0.2));
+  background: #fff;
+  transform: translateY(-2px);
+}
+
+.ficha-duo-tag {
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: var(--ink);
+  margin-bottom: 8px;
+}
+
+.ficha-duo-img-box {
+  flex: 1;
+  min-height: 160px;
+  max-height: 200px;
+  background: #ffffff;
+  border-radius: 10px;
+  border: 1px solid #e7e5e4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  margin-bottom: 10px;
+  padding: 8px;
+}
+
+.ficha-duo-img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+.ficha-duo-img.real {
+  image-rendering: auto;
+}
+
+.ficha-duo-img.pixel {
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+.ficha-duo-btn {
+  padding: 8px 12px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  border-radius: 8px;
+  border: 1.5px solid var(--animal-accent, var(--ink));
+  background: var(--animal-theme-color, #78350f);
+  color: #ffffff;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.ficha-duo-btn:hover {
+  filter: brightness(1.1);
+  transform: scale(1.02);
 }
 
 .ficha-hero-emoji {
